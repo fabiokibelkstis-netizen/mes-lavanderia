@@ -61,7 +61,7 @@
             const data = document.getElementById('filtro_data').value;
 
             try {
-                const res = await fetch(`http://localhost:3000/api/metrics/${data}`);
+                const res = await fetch(`https://mes-lavanderia-api.onrender.com/api/metrics/${data}`);
                 if (!res.ok) throw new Error('Sem dados');
                 const metricas = await res.json();
 
