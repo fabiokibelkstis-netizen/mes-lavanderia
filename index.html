@@ -2,11 +2,119 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="refresh" content="0; url=apontamentos.html">
-    <title>MES - Dona Zara</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MES - Menu Principal | Lavanderia Dona Zara</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
-<body style="font-family: sans-serif; text-align: center; padding-top: 50px;">
-    <p>A redirecionar para o terminal de apontamentos...</p>
-    <p>Se não for redirecionado automaticamente, <a href="apontamentos.html">clique aqui</a>.</p>
+<body class="bg-slate-100 font-sans min-h-screen flex flex-col justify-between">
+
+    <header class="bg-slate-900 text-white p-4 shadow-lg sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto flex flex-wrap justify-between items-center gap-4">
+            
+            <div class="flex items-center gap-3">
+                <div class="bg-blue-600 p-2.5 rounded-xl text-white shadow">
+                    <i class="fa-solid fa-industry text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold tracking-wider">MES - Lavanderia Dona Zara</h1>
+                    <p class="text-xs text-slate-400">Sistema de Controle Operacional e Pesagem</p>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-3">
+                <a href="usuarios.html" class="bg-indigo-700 hover:bg-indigo-600 text-white text-xs font-bold px-3.5 py-2 rounded-lg transition shadow flex items-center gap-2">
+                    <i class="fa-solid fa-users-gear"></i>
+                    <span>Usuários</span>
+                </a>
+
+                <a href="configuracoes.html" class="bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold px-3.5 py-2 rounded-lg border border-slate-700 transition shadow flex items-center gap-2">
+                    <i class="fa-solid fa-gear text-amber-400"></i>
+                    <span>Configurações</span>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-5xl mx-auto w-full p-4 my-auto space-y-8">
+        
+        <div class="text-center space-y-2">
+            <h2 class="text-2xl font-black text-slate-800 tracking-tight">Painel de Operação de Pesagem</h2>
+            <p class="text-sm text-slate-500 max-w-lg mx-auto">
+                Selecione o fluxo produtivo desejado para iniciar a pesagem na balança industrial.
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+
+            <a href="pesagemrecebimento.html" class="group bg-white p-8 rounded-3xl shadow-md border-2 border-slate-200 hover:border-blue-500 hover:shadow-2xl transition-all duration-300 flex flex-col justify-between space-y-6 cursor-pointer">
+                <div class="space-y-4">
+                    <div class="flex justify-between items-center">
+                        <div class="bg-blue-100 text-blue-600 w-16 h-16 rounded-2xl flex items-center justify-center text-2xl group-hover:bg-blue-600 group-hover:text-white transition-colors">
+                            <i class="fa-solid fa-truck-ramp-box"></i>
+                        </div>
+                        <span class="bg-blue-50 text-blue-700 text-xs font-extrabold px-3 py-1 rounded-full uppercase tracking-wider">Entrada</span>
+                    </div>
+
+                    <div>
+                        <h3 class="text-xl font-black text-slate-800 group-hover:text-blue-600 transition-colors">
+                            Pesagem de Recebimento
+                        </h3>
+                        <p class="text-xs text-slate-500 mt-2 leading-relaxed">
+                            Registro de entrada da roupa suja recolhida dos clientes. Cadastre novas Ordens de Serviço (OS), selecione o tipo de processamento e realize a pesagem bruta/líquida das gaiolas.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="pt-4 border-t border-slate-100 flex justify-between items-center text-xs font-bold text-blue-600 group-hover:translate-x-1 transition-transform">
+                    <span>Acessar Recebimento</span>
+                    <i class="fa-solid fa-arrow-right"></i>
+                </div>
+            </a>
+
+            <a href="pesagemexpedicao.html" class="group bg-white p-8 rounded-3xl shadow-md border-2 border-slate-200 hover:border-emerald-500 hover:shadow-2xl transition-all duration-300 flex flex-col justify-between space-y-6 cursor-pointer">
+                <div class="space-y-4">
+                    <div class="flex justify-between items-center">
+                        <div class="bg-emerald-100 text-emerald-600 w-16 h-16 rounded-2xl flex items-center justify-center text-2xl group-hover:bg-emerald-600 group-hover:text-white transition-colors">
+                            <i class="fa-solid fa-boxes-packing"></i>
+                        </div>
+                        <span class="bg-emerald-50 text-emerald-700 text-xs font-extrabold px-3 py-1 rounded-full uppercase tracking-wider">Saída</span>
+                    </div>
+
+                    <div>
+                        <h3 class="text-xl font-black text-slate-800 group-hover:text-emerald-600 transition-colors">
+                            Pesagem de Expedição
+                        </h3>
+                        <p class="text-xs text-slate-500 mt-2 leading-relaxed">
+                            Pesagem final da roupa limpa pronta para devolução ao cliente. Selecione uma OS pendente originada no recebimento e realize a pesagem de saída para cálculo de quebra/produtividade.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="pt-4 border-t border-slate-100 flex justify-between items-center text-xs font-bold text-emerald-600 group-hover:translate-x-1 transition-transform">
+                    <span>Acessar Expedição</span>
+                    <i class="fa-solid fa-arrow-right"></i>
+                </div>
+            </a>
+
+        </div>
+
+        <div class="bg-slate-200/60 rounded-2xl p-4 flex flex-wrap justify-around items-center gap-4 text-center text-xs text-slate-600">
+            <div class="flex items-center gap-2">
+                <i class="fa-solid fa-circle-check text-green-600"></i>
+                <span>Conexão Balança: <strong>Disponível (WebSerial)</strong></span>
+            </div>
+            <div class="flex items-center gap-2">
+                <i class="fa-solid fa-shield-halved text-indigo-600"></i>
+                <span>Sessão: <strong>Modo Operacional MES</strong></span>
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="bg-white border-t border-slate-200 p-4 text-center text-xs text-slate-500">
+        MES Dona Zara &copy; 2026 - Módulo de Pesagem & Automação Industrial
+    </footer>
+
 </body>
 </html>

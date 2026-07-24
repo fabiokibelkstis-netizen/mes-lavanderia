@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MES - Pesagem de Expedição</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body class="bg-slate-100 font-sans min-h-screen flex flex-col justify-between">
+
+    <header class="bg-slate-900 text-white p-4 shadow-lg">
+        <div class="max-w-6xl mx-auto flex justify-between items-center">
+            <div>
+                <h1 class="text-xl font-bold tracking-wider">MES - Lavanderia Dona Zara</h1>
+                <p class="text-xs text-slate-400">Terminal de Pesagem & Expedição (Saída)</p>
+            </div>
+            <div class="flex items-center gap-2">
+                <a href="pesagemrecebimento.html" class="bg-slate-700 hover:bg-slate-600 text-xs font-bold px-4 py-2 rounded-lg transition">⬅️ Voltar</a>
+                <button id="btnConectarBalanca" onclick="conectarBalanca()" class="bg-amber-500 text-slate-900 text-xs font-bold px-3 py-1.5 rounded-full">🔌 Conectar Balança</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-6xl mx-auto w-full p-4 my-4 space-y-6">
+        
+        <div class="bg-white rounded-2xl shadow-md p-6 border border-slate-200">
+            <h2 class="text-base font-bold text-slate-800 mb-4 border-b pb-2 flex items-center gap-2">
+                <i class="fa-solid fa-magnifying-glass text-blue-600"></i>
+                1. Selecionar Ordem de Serviço Pendente (Recebimento)
+            </h2>
+            
+            <div class="overflow-y-auto max-h-60 border rounded-lg">
+                <table class="w-full text-left text-xs border-collapse">
+                    <thead class="bg-slate-100 sticky top-0">
+                        <tr>
+                            <th class="p-3 border">Cliente</th>
+                            <th class="p-3 border">Número OS</th>
+                            <th class="p-3 border">Tipo</th>
+                            <th class="p-3 border">Peso Entr. (Kg)</th>
+                            <th class="p-3 border">Data Rec.</th>
+                            <th class="p-3 border text-center">Ação</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabelaOsPendentes">
+                        </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="secaoPesagem" class="hidden space-y-6">
+            <div class="bg-blue-900 text-white p-5 rounded-2xl shadow-lg flex justify-between items-center">
+                <div>
+                    <p class="text-[10px] uppercase tracking-widest opacity-70">OS Selecionada para Expedição</p>
+                    <h3 id="infoOsNome" class="text-xl font-bold">-</h3>
+                    <p id="infoOsDetalhes" class="text-xs opacity-80">-</p>
+                </div>
+                <div class="text-right">
+                    <p class="text-[10px] uppercase opacity-70">Peso Recebido</p>
+                    <p id="infoPesoRecebido" class="text-2xl font-black text-amber-400">0.00 Kg</p>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-2xl shadow-md p-6 border border-slate-200">
+                <h2 class="text-base font-bold text-slate-800 mb-4 border-b pb-2">2. Pesagem de Gaiolas de Saída</h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end bg-slate-50 p-4 rounded-xl border mb-6">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Tipo / Tara</label>
+                        <select id="taraGaiola" onchange="atualizarValoresPesagem()" class="w-full p-2.5 border rounded-lg text-sm bg-white outline-none">
+                            <option value="0">Sem Tara</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Peso Bruto (Kg)</label>
+                        <div class="flex gap-1">
+                            <input type="number" step="0.01" id="pesoBruto" oninput="atualizarValoresPesagem()" class="w-full p-2.5 border rounded-lg text-lg font-bold text-blue-900">
+                            <button onclick="capturarPesoBalanca()" class="bg-slate-800 text-white px-3 rounded-lg">⚖️</button>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Peso Líquido (Saída)</label>
+                        <input type="text" id="pesoLiquidoCalculado" readonly class="w-full p-2.5 border rounded-lg text-lg font-black text-green-700 bg-green-50" value="0.00 Kg">
+                    </div>
+                    <button onclick="adicionarGaiola()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg transition">➕ Adicionar</button>
+                </div>
+
+                <table class="w-full text-left text-sm border-collapse">
+                    <thead class="bg-slate-100 text-xs">
+                        <tr>
+                            <th class="p-3 border"># Gaiola</th>
+                            <th class="p-3 border">Tara (Kg)</th>
+                            <th class="p-3 border">Bruto (Kg)</th>
+                            <th class="p-3 border">Líquido (Kg)</th>
+                            <th class="p-3 border text-center">Ação</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabelaGaiolasSaida"></tbody>
+                    <tfoot class="bg-slate-900 text-white font-bold">
+                        <tr>
+                            <td colspan="3" class="p-3 text-right">Total Expedição:</td>
+                            <td id="totalPesoSaida" class="p-3 text-amber-400">0.00 Kg</td>
+                            <td></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+
+            <div class="flex justify-end gap-4">
+                <button onclick="limparSelecao()" class="bg-slate-200 text-slate-700 px-6 py-3 rounded-xl font-bold">Cancelar</button>
+                <button onclick="finalizarExpedicao()" class="bg-green-600 hover:bg-green-700 text-white px-10 py-4 rounded-xl font-black shadow-xl transition">
+                    💾 FINALIZAR EXPEDIÇÃO
+                </button>
+            </div>
+        </div>
+
+        <div id="statusMessage" class="hidden p-4 rounded-xl text-center font-bold"></div>
+    </main>
+
+    <script>
+        const API_URL = 'https://mes-lavanderia-api.onrender.com';
+        let osSelecionada = null;
+        let gaiolasSaida = [];
+        let portSerial = null;
+
+        // CARREGAR OS PENDENTES
+        async function carregarOsPendentes() {
+            const tbody = document.getElementById('tabelaOsPendentes');
+            try {
+                const res = await fetch(`${API_URL}/api/os-pendentes-expedicao`);
+                const dados = await res.json();
+                
+                if(dados.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="6" class="p-4 text-center italic text-slate-400">Nenhuma OS pendente de saída.</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = dados.map(os => `
+                    <tr class="hover:bg-blue-50 transition">
+                        <td class="p-3 border font-medium">${os.cliente}</td>
+                        <td class="p-3 border font-bold">${os.numero_os}</td>
+                        <td class="p-3 border">${os.tipo_os}</td>
+                        <td class="p-3 border font-bold text-blue-700">${os.peso_coleta} Kg</td>
+                        <td class="p-3 border">${new Date(os.data_coleta).toLocaleDateString()}</td>
+                        <td class="p-3 border text-center">
+                            <button onclick='selecionarOs(${JSON.stringify(os)})' class="bg-blue-600 text-white px-3 py-1 rounded text-[10px] font-bold">SELECIONAR</button>
+                        </td>
+                    </tr>
+                `).join('');
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        function selecionarOs(os) {
+            osSelecionada = os;
+            document.getElementById('secaoPesagem').classList.remove('hidden');
+            document.getElementById('infoOsNome').innerText = os.cliente;
+            document.getElementById('infoOsDetalhes').innerText = `OS: ${os.numero_os} | Tipo: ${os.tipo_os}`;
+            document.getElementById('infoPesoRecebido').innerText = `${os.peso_coleta} Kg`;
+            window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+        }
+
+        function limparSelecao() {
+            osSelecionada = null;
+            gaiolasSaida = [];
+            document.getElementById('secaoPesagem').classList.add('hidden');
+            renderizarGaiolas();
+        }
+
+        // --- LÓGICA DE PESAGEM (Reutilizada do Recebimento) ---
+        async function carregarTaras() {
+            const select = document.getElementById('taraGaiola');
+            const res = await fetch(`${API_URL}/api/taras-gaiolas`);
+            const dados = await res.json();
+            select.innerHTML = '<option value="0" data-nome="Sem Tara">Sem Tara (0 Kg)</option>';
+            dados.forEach(t => select.innerHTML += `<option value="${t.peso_tara}" data-nome="${t.nome}">${t.nome} (${t.peso_tara} Kg)</option>`);
+        }
+
+        function atualizarValoresPesagem() {
+            const bruto = parseFloat(document.getElementById('pesoBruto').value) || 0;
+            const tara = parseFloat(document.getElementById('taraGaiola').value) || 0;
+            document.getElementById('pesoLiquidoCalculado').value = Math.max(0, bruto - tara).toFixed(2) + " Kg";
+        }
+
+        function adicionarGaiola() {
+            if(!osSelecionada) return;
+            const bruto = parseFloat(document.getElementById('pesoBruto').value) || 0;
+            const select = document.getElementById('taraGaiola');
+            const tara = parseFloat(select.value) || 0;
+            const nomeTara = select.options[select.selectedIndex].getAttribute('data-nome');
+
+            if(bruto <= 0) return alert("Peso inválido!");
+
+            gaiolasSaida.push({
+                numero: gaiolasSaida.length + 1,
+                tipoGaiola: nomeTara,
+                pesoBruto: bruto,
+                pesoTara: tara,
+                pesoLiquido: bruto - tara
+            });
+
+            renderizarGaiolas();
+            document.getElementById('pesoBruto').value = '';
+            atualizarValoresPesagem();
+        }
+
+        function renderizarGaiolas() {
+            const tbody = document.getElementById('tabelaGaiolasSaida');
+            tbody.innerHTML = gaiolasSaida.map((g, i) => `
+                <tr>
+                    <td class="p-2 border">Gaiola #${g.numero}</td>
+                    <td class="p-2 border">${g.pesoTara.toFixed(2)}</td>
+                    <td class="p-2 border">${g.pesoBruto.toFixed(2)}</td>
+                    <td class="p-2 border font-bold text-green-700">${g.pesoLiquido.toFixed(2)}</td>
+                    <td class="p-2 border text-center"><button onclick="removerGaiola(${i})" class="text-red-600">❌</button></td>
+                </tr>
+            `).join('');
+            
+            const total = gaiolasSaida.reduce((acc, g) => acc + g.pesoLiquido, 0);
+            document.getElementById('totalPesoSaida').innerText = total.toFixed(2) + " Kg";
+        }
+
+        function removerGaiola(i) {
+            gaiolasSaida.splice(i, 1);
+            renderizarGaiolas();
+        }
+
+        async function finalizarExpedicao() {
+            if(gaiolasSaida.length === 0) return alert("Nenhuma gaiola pesada!");
+
+            const total = gaiolasSaida.reduce((acc, g) => acc + g.pesoLiquido, 0);
+            const status = document.getElementById('statusMessage');
+
+            try {
+                const res = await fetch(`${API_URL}/api/salvar-expedicao`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        apontamentoId: osSelecionada.id,
+                        pesoTotalExpedicao: total,
+                        gaiolas: gaiolasSaida
+                    })
+                });
+
+                if(res.ok) {
+                    alert("Expedição realizada com sucesso!");
+                    limparSelecao();
+                    carregarOsPendentes();
+                }
+            } catch (err) { alert("Erro ao salvar!"); }
+        }
+
+        // BALANÇA (Simulada conforme seu padrão)
+        async function conectarBalanca() {
+            if (!("serial" in navigator)) return alert("Navegador não suportado");
+            portSerial = await navigator.serial.requestPort();
+            await portSerial.open({ baudRate: 9600 });
+            document.getElementById('btnConectarBalanca').innerText = "✅ Conectado";
+        }
+
+        async function capturarPesoBalanca() {
+            if(!portSerial) return alert("Conecte a balança");
+            const textDecoder = new TextDecoderStream();
+            portSerial.readable.pipeTo(textDecoder.writable);
+            const reader = textDecoder.readable.getReader();
+            let buffer = "";
+            while(true) {
+                const { value, done } = await reader.read();
+                if (done) break;
+                buffer += value;
+                const match = buffer.match(/\d+\.\d+/);
+                if (match) {
+                    document.getElementById('pesoBruto').value = parseFloat(match[0]);
+                    atualizarValoresPesagem();
+                    reader.cancel();
+                    break;
+                }
+            }
+        }
+
+        // INICIALIZAÇÃO
+        carregarOsPendentes();
+        carregarTaras();
+    </script>
+</body>
+</html>

@@ -306,3 +306,54 @@ app.delete('/api/usuarios/:id', async (req, res) => {
         res.status(500).json({ mensagem: 'Erro ao excluir usuário' });
     }
 });
+
+// Listar OS que já foram recebidas mas ainda não foram expedidas
+app.get('/api/os-pendentes-expedicao', async (req, res) => {
+    try {
+        const query = `
+            SELECT id, cliente, numero_os, tipo_os, data_coleta, peso_coleta, qtd_gaiolas 
+            FROM apontamentos 
+            WHERE peso_entrega = 0 
+            ORDER BY created_at DESC;
+        `;
+        const result = await pool.query(query);
+        res.json(result.rows);
+    } catch (err) {
+        res.status(500).json({ mensagem: 'Erro ao buscar OS pendentes' });
+    }
+});
+
+// Salvar a Pesagem de Expedição
+app.post('/api/salvar-expedicao', async (req, res) => {
+    const { apontamentoId, pesoTotalExpedicao, gaiolas } = req.body;
+    const clientBD = await pool.connect();
+
+    try {
+        await clientBD.query('BEGIN');
+
+        // 1. Atualiza o peso de entrega na tabela principal
+        await clientBD.query(
+            'UPDATE apontamentos SET peso_entrega = $1 WHERE id = $2',
+            [pesoTotalExpedicao, apontamentoId]
+        );
+
+        // 2. Insere as gaiolas da expedição
+        const queryGaiola = `
+            INSERT INTO apontamentos_gaiolas (apontamento_id, numero_gaiola, tipo_gaiola, peso_bruto, peso_tara, peso_liquido, fase)
+            VALUES ($1, $2, $3, $4, $5, $6, 'expedicao');
+        `;
+        for (const g of gaiolas) {
+            await clientBD.query(queryGaiola, [
+                apontamentoId, g.numero, g.tipoGaiola, g.pesoBruto, g.pesoTara, g.pesoLiquido
+            ]);
+        }
+
+        await clientBD.query('COMMIT');
+        res.status(200).json({ sucesso: true, mensagem: 'Expedição finalizada com sucesso!' });
+    } catch (err) {
+        await clientBD.query('ROLLBACK');
+        res.status(500).json({ mensagem: 'Erro ao processar expedição' });
+    } finally {
+        clientBD.release();
+    }
+});
