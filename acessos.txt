@@ -2,3 +2,8 @@ cd "C:\Users\DZ - Gerencia\OneDrive\Desktop\Dona Zara\Dona Zara\Relatórios\Gemi
 
 
 dz2026gerencia
+
+
+git add .
+git commit -m
+git push origin main

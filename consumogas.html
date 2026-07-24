@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MES - Consumo de Gás | Lavanderia Dona Zara</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body class="bg-slate-100 font-sans min-h-screen flex flex-col justify-between">
+
+    <header class="bg-slate-900 text-white p-4 shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="bg-orange-600 p-2.5 rounded-xl text-white shadow">
+                    <i class="fa-solid fa-fire-flame-simple text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold tracking-wider">MES - Gestão de Gás</h1>
+                    <p class="text-xs text-slate-400">Monitoramento de Consumo de GLP/GN</p>
+                </div>
+            </div>
+            <a href="index.html" class="bg-slate-700 hover:bg-slate-600 text-xs font-bold px-4 py-2 rounded-lg transition">⬅️ Menu</a>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto w-full p-4 my-4 space-y-6">
+
+        <div class="bg-white rounded-2xl shadow-md p-6 border border-slate-200">
+            <h2 class="text-base font-bold text-slate-800 mb-4 border-b pb-2 flex items-center gap-2">
+                <i class="fa-solid fa-pen-to-square text-orange-600"></i>
+                Lançamento de Leituras de Relógio
+            </h2>
+
+            <form id="formGas" onsubmit="salvarConsumo(event)" class="space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4 items-end">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Data da Leitura</label>
+                        <input type="date" id="inputData" required class="w-full p-2.5 border rounded-lg text-sm bg-slate-50 outline-none">
+                    </div>
+
+                    <div id="containerRelogios" class="lg:col-span-3 grid grid-cols-1 md:grid-cols-3 gap-4">
+                        </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Total Captação (m³)</label>
+                        <input type="text" id="calcTotal" readonly class="w-full p-2.5 border rounded-lg text-sm font-bold bg-slate-100 text-slate-800">
+                    </div>
+
+                    <button type="submit" class="bg-orange-600 hover:bg-orange-700 text-white font-bold py-2.5 rounded-lg text-sm transition shadow-md">
+                        💾 SALVAR
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="bg-white p-5 rounded-2xl shadow-sm border-l-4 border-orange-500">
+                <span class="text-xs font-bold text-slate-500 uppercase tracking-tight">Consumo Últimas 24h</span>
+                <p id="kpiConsumoDiario" class="text-2xl font-black text-slate-800 mt-1">0.000 m³</p>
+            </div>
+            <div class="bg-white p-5 rounded-2xl shadow-sm border-l-4 border-blue-500">
+                <span class="text-xs font-bold text-slate-500 uppercase tracking-tight">Total Acumulado (Mês)</span>
+                <p id="kpiConsumoMes" class="text-2xl font-black text-slate-800 mt-1">0.000 m³</p>
+            </div>
+            <div class="bg-white p-5 rounded-2xl shadow-sm border-l-4 border-emerald-500">
+                <span class="text-xs font-bold text-slate-500 uppercase tracking-tight">Média m³ / Gaiola</span>
+                <p id="kpiMediaGaiola" class="text-2xl font-black text-slate-800 mt-1">0.00 m³</p>
+            </div>
+        </div>
+
+        <div class="bg-white p-6 rounded-2xl shadow-md border border-slate-200">
+            <h3 class="text-sm font-bold text-slate-800 mb-4">Tendência de Consumo de Gás (m³)</h3>
+            <div class="h-64">
+                <canvas id="chartGas"></canvas>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-2xl shadow-md p-6 border border-slate-200">
+            <h3 class="text-sm font-bold text-slate-800 mb-4 border-b pb-2">Histórico de Consumo</h3>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-xs border-collapse">
+                    <thead class="bg-slate-100">
+                        <tr id="headerTabela">
+                            <th class="p-3 border">Data</th>
+                            <th class="p-3 border text-right">Total Captação (m³)</th>
+                            <th class="p-3 border text-right">Consumo Diário (m³)</th>
+                            <th class="p-3 border text-center">Ação</th>
+                        </tr>
+                    </thead>
+                    <tbody id="corpoTabela"></tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Configuração simulada (pode vir do banco posteriormente)
+        let configGas = JSON.parse(localStorage.getItem('mes_config_gas') || '{"qtd": 2}');
+        let historicoGas = JSON.parse(localStorage.getItem('mes_historico_gas') || '[]');
+        let chartInstance = null;
+
+        document.getElementById('inputData').valueAsDate = new Date();
+
+        function inicializarTela() {
+            const container = document.getElementById('containerRelogios');
+            const header = document.getElementById('headerTabela');
+            
+            // Gerar Inputs
+            container.innerHTML = '';
+            for(let i=1; i <= configGas.qtd; i++) {
+                container.innerHTML += `
+                    <div>
+                        <label class="block text-[10px] font-bold text-slate-500 mb-1 uppercase">Relógio ${i} (m³)</label>
+                        <input type="number" step="0.001" id="relogio_${i}" oninput="calcularTotal()" required 
+                               class="w-full p-2 border rounded-lg text-sm focus:ring-2 focus:ring-orange-500 outline-none">
+                    </div>
+                `;
+                
+                // Adicionar coluna na tabela (antes do Total)
+                const th = document.createElement('th');
+                th.className = "p-3 border text-right";
+                th.innerText = `R${i} (m³)`;
+                header.insertBefore(th, header.children[i]);
+            }
+            
+            renderizarTabela();
+            renderizarGrafico();
+        }
+
+        function calcularTotal() {
+            let total = 0;
+            for(let i=1; i <= configGas.qtd; i++) {
+                total += parseFloat(document.getElementById(`relogio_${i}`).value) || 0;
+            }
+            document.getElementById('calcTotal').value = total.toFixed(3);
+        }
+
+        function salvarConsumo(e) {
+            e.preventDefault();
+            const data = document.getElementById('inputData').value;
+            const leituras = [];
+            for(let i=1; i <= configGas.qtd; i++) {
+                leituras.push(parseFloat(document.getElementById(`relogio_${i}`).value) || 0);
+            }
+            
+            const totalCaptacao = leituras.reduce((a, b) => a + b, 0);
+            
+            // Cálculo do consumo diário (Diferença para o dia anterior)
+            let consumoDiario = 0;
+            if(historicoGas.length > 0) {
+                const ultimoTotal = historicoGas[historicoGas.length - 1].total;
+                consumoDiario = totalCaptacao - ultimoTotal;
+            }
+
+            const registro = { data, leituras, total: totalCaptacao, consumo: consumoDiario };
+            historicoGas.push(registro);
+            localStorage.setItem('mes_historico_gas', JSON.stringify(historicoGas));
+            
+            alert("Leitura salva com sucesso!");
+            location.reload();
+        }
+
+        function renderizarTabela() {
+            const tbody = document.getElementById('corpoTabela');
+            tbody.innerHTML = historicoGas.map((reg, idx) => `
+                <tr class="hover:bg-slate-50 transition">
+                    <td class="p-3 border font-medium">${new Date(reg.data + 'T00:00:00').toLocaleDateString('pt-BR')}</td>
+                    ${reg.leituras.map(l => `<td class="p-3 border text-right">${l.toFixed(3)}</td>`).join('')}
+                    <td class="p-3 border text-right font-bold">${reg.total.toFixed(3)}</td>
+                    <td class="p-3 border text-right font-bold text-orange-600">${reg.consumo.toFixed(3)}</td>
+                    <td class="p-3 border text-center">
+                        <button onclick="remover(${idx})" class="text-red-500">❌</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function renderizarGrafico() {
+            const ctx = document.getElementById('chartGas').getContext('2d');
+            const labels = historicoGas.map(h => h.data);
+            const dados = historicoGas.map(h => h.consumo);
+
+            if(chartInstance) chartInstance.destroy();
+            chartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels,
+                    datasets: [{
+                        label: 'Consumo Diário (m³)',
+                        data: dados,
+                        borderColor: '#ea580c',
+                        backgroundColor: 'rgba(234, 88, 12, 0.1)',
+                        fill: true,
+                        tension: 0.3
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false }
+            });
+        }
+
+        function remover(i) {
+            if(confirm("Excluir registro?")) {
+                historicoGas.splice(i, 1);
+                localStorage.setItem('mes_historico_gas', JSON.stringify(historicoGas));
+                location.reload();
+            }
+        }
+
+        inicializarTela();
+    </script>
+</body>
+</html>
