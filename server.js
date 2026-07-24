@@ -367,3 +367,33 @@ const queryUltimos = `
     ORDER BY a.created_at DESC
     LIMIT 10;
 `;
+
+// LISTAR HORAS
+app.get('/api/horas-trabalhadas', async (req, res) => {
+    try {
+        const { rows } = await pool.query('SELECT * FROM horas_trabalhadas ORDER BY data DESC');
+        res.json(rows);
+    } catch (err) {
+        res.status(500).json({ erro: err.message });
+    }
+});
+
+// SALVAR / ATUALIZAR HORA DIÁRIA
+app.post('/api/horas-trabalhadas', async (req, res) => {
+    const { data, normais, extras, absenteismo } = req.body;
+    try {
+        const query = `
+            INSERT INTO horas_trabalhadas (data, horas_normais, horas_extras, horas_absenteismo)
+            VALUES ($1, $2, $3, $4)
+            ON CONFLICT (data) DO UPDATE SET
+                horas_normais = EXCLUDED.horas_normais,
+                horas_extras = EXCLUDED.horas_extras,
+                horas_absenteismo = EXCLUDED.horas_absenteismo
+            RETURNING *;
+        `;
+        const { rows } = await pool.query(query, [data, normais, extras, absenteismo]);
+        res.status(201).json(rows[0]);
+    } catch (err) {
+        res.status(500).json({ erro: err.message });
+    }
+});
