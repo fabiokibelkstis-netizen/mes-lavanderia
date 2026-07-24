@@ -9,14 +9,16 @@
 </head>
 <body class="bg-gray-100 font-sans min-h-screen">
 
-    <header class="bg-slate-900 text-white p-4 shadow-md flex justify-between items-center px-8">
+    <header class="bg-slate-900 text-white p-4 shadow-md flex flex-wrap justify-between items-center px-8 gap-4">
         <div>
             <h1 class="text-xl font-bold tracking-wide">MES - Painel Gerencial</h1>
-            <p class="text-xs text-slate-400">Visão Geral da Operação da Lavanderia</p>
+            <p class="text-xs text-slate-400">Lavanderia Dona Zara - Indicadores em Tempo Real</p>
         </div>
-        <div class="flex items-center gap-4">
-            <input type="date" id="filtro_data" value="2026-07-01" onchange="carregarDashboard()" class="text-gray-800 p-2 rounded border focus:outline-none font-semibold">
-            <button onclick="carregarDashboard()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded font-bold transition">🔄 Atualizar</button>
+        <div class="flex items-center gap-3">
+            <input type="date" id="filtro_data" onchange="carregarDashboard()" class="text-gray-800 p-2 rounded border focus:outline-none font-semibold">
+            <button onclick="carregarDashboard()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded font-bold transition flex items-center gap-1">
+                🔄 <span>Atualizar</span>
+            </button>
         </div>
     </header>
 
@@ -55,6 +57,9 @@
     </main>
 
     <script>
+        // Define a data de hoje por padrão
+        document.getElementById('filtro_data').valueAsDate = new Date();
+
         let chartPesagem, chartQualidade;
 
         async function carregarDashboard() {
@@ -62,7 +67,11 @@
 
             try {
                 const res = await fetch(`https://mes-lavanderia-api.onrender.com/api/metrics/${data}`);
-                if (!res.ok) throw new Error('Sem dados');
+                
+                if (!res.ok) {
+                    throw new Error('Nenhum dado encontrado para esta data.');
+                }
+                
                 const metricas = await res.json();
 
                 // Atualizar Cards
@@ -80,10 +89,12 @@
                 atualizarGraficos(coleta, entrega, retorno, nc);
 
             } catch (err) {
+                console.warn(err.message);
                 document.getElementById('kpi_coleta').innerText = '0 Kg';
                 document.getElementById('kpi_entrega').innerText = '0 Kg';
                 document.getElementById('kpi_retorno').innerText = '0%';
                 document.getElementById('kpi_nc').innerText = '0%';
+                atualizarGraficos(0, 0, 0, 0);
             }
         }
 
@@ -95,29 +106,31 @@
             chartPesagem = new Chart(ctxPesagem, {
                 type: 'bar',
                 data: {
-                    labels: ['Coletado', 'Entregue'],
+                    labels: ['Coletado (Sujo)', 'Entregue (Limpo)'],
                     datasets: [{
                         label: 'Quilogramas (Kg)',
                         data: [coleta, entrega],
                         backgroundColor: ['#2563eb', '#16a34a']
                     }]
-                }
+                },
+                options: { responsive: true }
             });
 
             const ctxQualidade = document.getElementById('chartQualidade').getContext('2d');
             chartQualidade = new Chart(ctxQualidade, {
                 type: 'doughnut',
                 data: {
-                    labels: ['Rendimento OK', 'Não Conformidade'],
+                    labels: ['Rendimento OK', 'Perda / NC'],
                     datasets: [{
                         data: [retorno, nc],
                         backgroundColor: ['#4f46e5', '#dc2626']
                     }]
-                }
+                },
+                options: { responsive: true }
             });
         }
 
-        // Carregar automaticamente na abertura
+        // Carregar dados na abertura da página
         carregarDashboard();
     </script>
 </body>
