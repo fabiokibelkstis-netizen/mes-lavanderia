@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MES - Lavanderia Industrial</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="flex h-screen bg-gray-100 font-sans">
+    <aside class="w-64 bg-slate-900 text-white flex flex-col p-6">
+        <h1 class="text-2xl font-bold tracking-wider">MES Lavanderia</h1>
+        <p class="text-xs text-slate-400 mt-1">Painel Operacional</p>
+        <nav class="mt-8 space-y-3">
+            <button class="w-full text-left px-4 py-2 bg-blue-600 rounded font-semibold">📊 Visão Geral</button>
+            <button class="w-full text-left px-4 py-2 hover:bg-slate-800 rounded text-slate-300">⚖️ Produção</button>
+            <button class="w-full text-left px-4 py-2 hover:bg-slate-800 rounded text-slate-300">💧 Consumos</button>
+            <button class="w-full text-left px-4 py-2 hover:bg-slate-800 rounded text-slate-300">🧪 Químicos</button>
+        </nav>
+    </aside>
+
+    <main class="flex-1 p-8 overflow-y-auto">
+        <header class="flex justify-between items-center mb-6 bg-white p-4 rounded shadow-sm">
+            <h2 class="text-xl font-bold text-gray-800">Indicadores do Dia</h2>
+            <span class="text-sm bg-green-100 text-green-800 px-3 py-1 rounded-full font-medium">Data: 01/07/2026</span>
+        </header>
+
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <div class="bg-white p-6 rounded shadow-sm border-l-4 border-blue-500">
+                <p class="text-xs text-gray-500 font-semibold uppercase">Peso Coletado</p>
+                <p class="text-3xl font-bold text-gray-800 mt-1">25.000 <span class="text-sm font-normal">Kg</span></p>
+            </div>
+            <div class="bg-white p-6 rounded shadow-sm border-l-4 border-green-500">
+                <p class="text-xs text-gray-500 font-semibold uppercase">Peso Entregue</p>
+                <p class="text-3xl font-bold text-gray-800 mt-1">23.750 <span class="text-sm font-normal">Kg</span></p>
+            </div>
+            <div class="bg-white p-6 rounded shadow-sm border-l-4 border-indigo-500">
+                <p class="text-xs text-gray-500 font-semibold uppercase">Retorno (Yield)</p>
+                <p class="text-3xl font-bold text-gray-800 mt-1">95.0%</p>
+            </div>
+            <div class="bg-white p-6 rounded shadow-sm border-l-4 border-red-500">
+                <p class="text-xs text-gray-500 font-semibold uppercase">Não Conformidade</p>
+                <p class="text-3xl font-bold text-gray-800 mt-1">0.03%</p>
+            </div>
+        </div>
+    </main>
+</body>
+</html>
