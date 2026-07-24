@@ -347,3 +347,23 @@ app.get('/api/dashboard', async (req, res) => {
         res.status(500).json({ erro: 'Erro ao carregar dados do dashboard', detalhe: err.message });
     }
 });
+
+// 3. Resumo dos Últimos Apontamentos (com gaiolas por fase e % de retorno)
+const queryUltimos = `
+    SELECT 
+        a.id, 
+        a.cliente, 
+        a.numero_os, 
+        a.tipo_os, 
+        a.data_coleta, 
+        a.peso_coleta, 
+        a.peso_entrega,
+        COALESCE(SUM(CASE WHEN g.fase = 'recebimento' THEN 1 ELSE 0 END), 0) AS gaiolas_entrada,
+        COALESCE(SUM(CASE WHEN g.fase = 'expedicao' THEN 1 ELSE 0 END), 0) AS gaiolas_saida
+    FROM apontamentos a
+    LEFT JOIN apontamentos_gaiolas g ON g.apontamento_id = a.id
+    ${whereClause}
+    GROUP BY a.id, a.cliente, a.numero_os, a.tipo_os, a.data_coleta, a.peso_coleta, a.peso_entrega, a.created_at
+    ORDER BY a.created_at DESC
+    LIMIT 10;
+`;

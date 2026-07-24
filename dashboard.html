@@ -18,7 +18,7 @@
                 </div>
                 <div>
                     <h1 class="text-xl font-bold tracking-wider">MES - Dashboard Operacional</h1>
-                    <p class="text-xs text-slate-400">Indicadores de Produção, Pesagem & Enxoval</p>
+                    <p class="text-xs text-slate-400">Indicadores de Produção, Pesagem & Retorno de Enxoval</p>
                 </div>
             </div>
             <a href="index.html" class="bg-slate-700 hover:bg-slate-600 text-xs font-bold px-4 py-2 rounded-lg transition">⬅️ Menu Principal</a>
@@ -94,15 +94,15 @@
 
             <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 flex flex-col justify-between">
                 <div class="flex justify-between items-center text-slate-500 text-xs font-bold">
-                    <span>GAIOLAS</span>
+                    <span>GAIOLAS (ENT / SAÍ)</span>
                     <i class="fa-solid fa-dolly text-amber-500 text-lg"></i>
                 </div>
                 <div class="mt-3">
-                    <p class="text-lg font-black text-slate-800">
+                    <p class="text-2xl font-black text-slate-800">
                         <span id="kpiGaiolasEntrada" class="text-blue-600">0</span> / 
                         <span id="kpiGaiolasSaida" class="text-emerald-600">0</span>
                     </p>
-                    <p class="text-[10px] text-slate-400 mt-0.5">Entrada / Saída</p>
+                    <p class="text-[10px] text-slate-400 mt-0.5">Total de Gaiolas Pesadas</p>
                 </div>
             </div>
 
@@ -112,7 +112,7 @@
                     <i class="fa-solid fa-users text-indigo-500 text-lg"></i>
                 </div>
                 <div class="mt-3">
-                    <p class="text-lg font-black text-slate-800">
+                    <p class="text-xl font-black text-slate-800">
                         <span id="kpiClientes" class="text-indigo-600">0</span> Clientes
                     </p>
                     <p id="kpiTotalOs" class="text-[10px] text-slate-400 mt-0.5">0 OSs registradas</p>
@@ -122,7 +122,7 @@
         </div>
 
         <div class="bg-white p-6 rounded-2xl shadow-md border border-slate-200">
-            <h3 class="text-sm font-bold text-slate-800 mb-4">Comparativo de Balanço: Entrada vs. Saída (Kg)</h3>
+            <h3 class="text-sm font-bold text-slate-800 mb-4">Balanço de Enxoval: Recebimento vs. Expedição (Kg)</h3>
             <div class="h-64">
                 <canvas id="chartProducao"></canvas>
             </div>
@@ -138,9 +138,10 @@
                             <th class="p-3 border">Nº OS</th>
                             <th class="p-3 border">Tipo</th>
                             <th class="p-3 border">Data</th>
-                            <th class="p-3 border">Gaiolas</th>
+                            <th class="p-3 border text-center">Gaiolas (Ent. / Saí.)</th>
                             <th class="p-3 border">Peso Ent. (Kg)</th>
                             <th class="p-3 border">Peso Saí. (Kg)</th>
+                            <th class="p-3 border text-center">% Retorno</th>
                             <th class="p-3 border text-center">Status</th>
                         </tr>
                     </thead>
@@ -150,6 +151,10 @@
         </div>
 
     </main>
+
+    <footer class="bg-white border-t border-slate-200 p-4 text-center text-xs text-slate-500">
+        MES Dona Zara &copy; 2026 - Módulo de Pesagem & Automação Industrial
+    </footer>
 
     <script>
         const API_URL = 'https://mes-lavanderia-api.onrender.com';
@@ -178,7 +183,7 @@
 
                 const t = data.totais;
 
-                // Preencher KPIs
+                // Atualizar KPIs
                 document.getElementById('kpiPesoEntrada').innerText = `${t.pesoTotalEntrada.toFixed(2)} Kg`;
                 document.getElementById('kpiPesoSaida').innerText = `${t.pesoTotalSaida.toFixed(2)} Kg`;
                 document.getElementById('kpiGaiolasEntrada').innerText = t.gaiolasEntrada;
@@ -186,7 +191,7 @@
                 document.getElementById('kpiClientes').innerText = t.totalClientes;
                 document.getElementById('kpiTotalOs').innerText = `${t.totalOs} OSs processadas`;
 
-                // Calcular % de Retorno
+                // Calcular % de Retorno Acumulado
                 if (t.pesoTotalEntrada > 0) {
                     const ret = (t.pesoTotalSaida / t.pesoTotalEntrada) * 100;
                     const diff = t.pesoTotalSaida - t.pesoTotalEntrada;
@@ -197,10 +202,8 @@
                     document.getElementById('kpiQuebra').innerText = 'Diferença: 0.00 Kg';
                 }
 
-                // Atualizar Tabela
+                // Renderizar Tabela e Gráfico
                 renderizarTabela(data.ultimosApontamentos);
-
-                // Renderizar Gráfico
                 renderizarGrafico(t.pesoTotalEntrada, t.pesoTotalSaida);
 
             } catch (e) {
@@ -211,21 +214,39 @@
         function renderizarTabela(lista) {
             const tbody = document.getElementById('tabelaApontamentosRecentes');
             if (!lista || lista.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="8" class="p-4 text-center italic text-slate-400">Nenhum registro encontrado.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="9" class="p-4 text-center italic text-slate-400">Nenhum registro encontrado.</td></tr>';
                 return;
             }
 
             tbody.innerHTML = lista.map(item => {
-                const pendente = parseFloat(item.peso_entrega) === 0;
+                const pesoEntrada = parseFloat(item.peso_coleta) || 0;
+                const pesoSaida = parseFloat(item.peso_entrega) || 0;
+                const pendente = pesoSaida === 0;
+
+                // % de retorno por OS
+                let percentualRetorno = 0;
+                if (pesoEntrada > 0 && pesoSaida > 0) {
+                    percentualRetorno = (pesoSaida / pesoEntrada) * 100;
+                }
+
+                const gaiolasEnt = parseInt(item.gaiolas_entrada) || 0;
+                const gaiolasSai = parseInt(item.gaiolas_saida) || 0;
+
                 return `
                     <tr class="hover:bg-slate-50 transition">
                         <td class="p-3 border font-medium text-slate-800">${item.cliente}</td>
                         <td class="p-3 border font-bold">${item.numero_os}</td>
                         <td class="p-3 border">${item.tipo_os}</td>
                         <td class="p-3 border">${new Date(item.data_coleta).toLocaleDateString('pt-BR')}</td>
-                        <td class="p-3 border text-center font-bold">${item.qtd_gaiolas || 0}</td>
-                        <td class="p-3 border font-bold text-blue-700">${parseFloat(item.peso_coleta).toFixed(2)} Kg</td>
-                        <td class="p-3 border font-bold text-emerald-700">${parseFloat(item.peso_entrega).toFixed(2)} Kg</td>
+                        <td class="p-3 border text-center font-bold">
+                            <span class="text-blue-600">${gaiolasEnt}</span> / 
+                            <span class="text-emerald-600">${gaiolasSai}</span>
+                        </td>
+                        <td class="p-3 border font-bold text-blue-700">${pesoEntrada.toFixed(2)} Kg</td>
+                        <td class="p-3 border font-bold text-emerald-700">${pesoSaida.toFixed(2)} Kg</td>
+                        <td class="p-3 border text-center font-black ${percentualRetorno > 0 ? 'text-purple-700' : 'text-slate-400'}">
+                            ${percentualRetorno > 0 ? percentualRetorno.toFixed(1) + ' %' : '-'}
+                        </td>
                         <td class="p-3 border text-center">
                             <span class="${pendente ? 'bg-amber-100 text-amber-800' : 'bg-green-100 text-green-800'} text-[10px] font-extrabold px-2 py-1 rounded-full uppercase">
                                 ${pendente ? 'Pendente' : 'Finalizada'}
@@ -246,7 +267,7 @@
                 data: {
                     labels: ['Peso Entrada (Recebimento)', 'Peso Saída (Expedição)'],
                     datasets: [{
-                        label: 'Peso (Kg)',
+                        label: 'Peso Total (Kg)',
                         data: [entrada, saida],
                         backgroundColor: ['#2563eb', '#059669'],
                         borderRadius: 8
