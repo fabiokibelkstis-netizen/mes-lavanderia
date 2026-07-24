@@ -138,3 +138,17 @@ app.post('/api/taras-gaiolas', async (req, res) => {
         res.status(500).json({ mensagem: 'Erro ao cadastrar tara' });
     }
 });
+
+// Rota de Autenticação / Login
+app.post('/api/login', (req, res) => {
+    const { senha } = req.body;
+
+    // Digite aqui a sua nova senha desejada:
+    const SENHA_GERENCIA = "SUA_NOVA_SENHA_AQUI";
+
+    if (senha === SENHA_GERENCIA) {
+        return res.json({ sucesso: true, token: "session_token_dz_2026" });
+    } else {
+        return res.status(401).json({ sucesso: false, mensagem: "Senha incorreta!" });
+    }
+});
