@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="refresh" content="0; url=apontamentos.html">
+    <title>MES - Dona Zara</title>
+</head>
+<body style="font-family: sans-serif; text-align: center; padding-top: 50px;">
+    <p>A redirecionar para o terminal de apontamentos...</p>
+    <p>Se não for redirecionado automaticamente, <a href="apontamentos.html">clique aqui</a>.</p>
+</body>
+</html>
