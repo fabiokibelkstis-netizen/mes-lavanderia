@@ -86,3 +86,31 @@ const PORT = 3000;
 app.listen(PORT, () => {
     console.log(`[MES API] Servidor rodando em http://localhost:${PORT}`);
 });
+
+// Rota para listar todos os Tipos de OS
+app.get('/api/tipos-os', async (req, res) => {
+    try {
+        const result = await pool.query('SELECT * FROM tipos_os ORDER BY nome ASC');
+        res.json(result.rows);
+    } catch (err) {
+        console.error('Erro ao buscar tipos de OS:', err);
+        res.status(500).json({ mensagem: 'Erro ao buscar tipos de OS' });
+    }
+});
+
+// Rota para cadastrar um novo Tipo de OS
+app.post('/api/tipos-os', async (req, res) => {
+    const { nome } = req.body;
+    if (!nome) return res.status(400).json({ mensagem: 'Nome é obrigatório' });
+
+    try {
+        const result = await pool.query(
+            'INSERT INTO tipos_os (nome) VALUES ($1) ON CONFLICT (nome) DO NOTHING RETURNING *',
+            [nome.trim()]
+        );
+        res.status(201).json({ sucesso: true, tipo: result.rows[0] });
+    } catch (err) {
+        console.error('Erro ao cadastrar tipo de OS:', err);
+        res.status(500).json({ mensagem: 'Erro ao cadastrar tipo de OS' });
+    }
+});

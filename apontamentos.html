@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MES - Apontamento de Produção</title>
+    <title>MES - Apontamento de Coleta</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-slate-100 font-sans min-h-screen flex flex-col justify-between">
@@ -12,34 +12,64 @@
         <div class="max-w-4xl mx-auto flex justify-between items-center">
             <div>
                 <h1 class="text-xl font-bold tracking-wider">MES - Lavanderia Dona Zara</h1>
-                <p class="text-xs text-slate-400">Terminal de Apontamento Operacional</p>
+                <p class="text-xs text-slate-400">Terminal de Coleta Operacional</p>
             </div>
             <span class="bg-green-500 text-slate-900 text-xs font-extrabold px-3 py-1 rounded-full uppercase">Online</span>
         </div>
     </header>
 
-    <main class="max-w-md mx-auto w-full p-4 my-8">
+    <main class="max-w-lg mx-auto w-full p-4 my-6">
         <div class="bg-white rounded-2xl shadow-xl p-6 border border-slate-200">
-            <h2 class="text-lg font-bold text-slate-800 mb-6 text-center border-b pb-3">Registro de Pesagem Diária</h2>
+            <h2 class="text-lg font-bold text-slate-800 mb-6 text-center border-b pb-3">Registro de Coleta</h2>
             
-            <form id="formApontamento" class="space-y-5">
+            <form id="formApontamento" class="space-y-4">
+                
                 <div>
-                    <label class="block text-sm font-semibold text-slate-700 mb-1">Data da Operação</label>
-                    <input type="date" id="data" required class="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-slate-800 font-medium">
+                    <label class="block text-sm font-semibold text-slate-700 mb-1">Cliente</label>
+                    <input type="text" id="cliente" placeholder="Ex: Hospital Central / Hotel Plaza" required class="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-slate-800 font-medium">
                 </div>
 
-                <div>
-                    <label class="block text-sm font-semibold text-slate-700 mb-1">Peso Coletado (Sujo - Kg)</label>
-                    <input type="number" step="0.01" id="pesoColeta" placeholder="Ex: 1250.50" required class="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-slate-800 text-lg font-bold">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-1">Número da OS</label>
+                        <input type="text" id="numeroOs" placeholder="Ex: OS-2026-089" required class="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-slate-800 font-medium">
+                    </div>
+
+                    <div>
+                        <div class="flex justify-between items-center mb-1">
+                            <label class="block text-sm font-semibold text-slate-700">Tipo de OS</label>
+                            <button type="button" onclick="cadastrarNovoTipoOS()" class="text-xs text-blue-600 hover:underline font-bold">+ Novo Tipo</button>
+                        </div>
+                        <select id="tipoOs" required class="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-slate-800 font-medium">
+                            <option value="">A carregar tipos...</option>
+                        </select>
+                    </div>
                 </div>
 
-                <div>
-                    <label class="block text-sm font-semibold text-slate-700 mb-1">Peso Entregue (Limpo - Kg)</label>
-                    <input type="number" step="0.01" id="pesoEntrega" placeholder="Ex: 1180.20" required class="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-slate-800 text-lg font-bold">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-1">Data da Coleta</label>
+                        <input type="date" id="dataColeta" required class="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-slate-800 font-medium">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-1">Qtd. de Gaiolas</label>
+                        <input type="number" id="qtdGaiolas" min="1" placeholder="Ex: 5" required class="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-slate-800 font-medium">
+                    </div>
                 </div>
 
-                <button type="submit" id="btnSalvar" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 px-4 rounded-lg shadow-md transition duration-200 flex items-center justify-center gap-2">
-                    <span>💾 Registrar Pesagem</span>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-1">Peso Coletado (Sujo - Kg)</label>
+                        <input type="number" step="0.01" id="pesoColeta" placeholder="0.00" required class="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-slate-800 text-lg font-bold">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-1">Peso Entregue (Limpo - Kg)</label>
+                        <input type="number" step="0.01" id="pesoEntrega" placeholder="0.00" class="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-slate-800 text-lg font-bold">
+                    </div>
+                </div>
+
+                <button type="submit" id="btnSalvar" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 px-4 rounded-lg shadow-md transition duration-200 flex items-center justify-center gap-2 mt-2">
+                    <span>💾 Registrar Apontamento</span>
                 </button>
             </form>
 
@@ -48,30 +78,74 @@
     </main>
 
     <footer class="text-center p-4 text-xs text-slate-500 border-t bg-white">
-        MES Dona Zara &copy; 2026 - Conectado à Nuvem (Render / Supabase)
+        MES Dona Zara &copy; 2026 - Conectado à Nuvem
     </footer>
 
     <script>
-        // Definir data atual como padrão
-        document.getElementById('data').valueAsDate = new Date();
+        const API_URL = 'https://mes-lavanderia-api.onrender.com';
 
-        const form = document.getElementById('formApontamento');
-        const statusMsg = document.getElementById('statusMessage');
+        document.getElementById('dataColeta').valueAsDate = new Date();
 
-        form.addEventListener('submit', async (e) => {
+        // Função para carregar a lista de Tipos de OS no <select>
+        async function carregarTiposOS() {
+            const selectTipo = document.getElementById('tipoOs');
+            try {
+                const res = await fetch(`${API_URL}/api/tipos-os`);
+                const tipos = await res.json();
+
+                selectTipo.innerHTML = '<option value="">Selecione o tipo...</option>';
+                tipos.forEach(t => {
+                    selectTipo.innerHTML += `<option value="${t.nome}">${t.nome}</option>`;
+                });
+            } catch (err) {
+                console.error('Erro ao carregar tipos de OS:', err);
+                selectTipo.innerHTML = '<option value="">Erro ao carregar</option>';
+            }
+        }
+
+        // Função para cadastrar novo Tipo de OS dinamicamente
+        async function cadastrarNovoTipoOS() {
+            const novoTipo = prompt("Digite o nome do novo Tipo de OS:");
+            if (!novoTipo || !novoTipo.trim()) return;
+
+            try {
+                const res = await fetch(`${API_URL}/api/tipos-os`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ nome: novoTipo.trim() })
+                });
+
+                if (res.ok) {
+                    await carregarTiposOS();
+                    document.getElementById('tipoOs').value = novoTipo.trim();
+                } else {
+                    alert("Erro ao cadastrar novo tipo.");
+                }
+            } catch (err) {
+                alert("Erro de conexão ao cadastrar tipo.");
+            }
+        }
+
+        // Submeter o formulário principal
+        document.getElementById('formApontamento').addEventListener('submit', async (e) => {
             e.preventDefault();
 
+            const statusMsg = document.getElementById('statusMessage');
             const dados = {
-                data: document.getElementById('data').value,
+                cliente: document.getElementById('cliente').value.trim(),
+                numeroOs: document.getElementById('numeroOs').value.trim(),
+                tipoOs: document.getElementById('tipoOs').value,
+                dataColeta: document.getElementById('dataColeta').value,
+                qtdGaiolas: parseInt(document.getElementById('qtdGaiolas').value),
                 pesoColeta: parseFloat(document.getElementById('pesoColeta').value),
-                pesoEntrega: parseFloat(document.getElementById('pesoEntrega').value)
+                pesoEntrega: parseFloat(document.getElementById('pesoEntrega').value) || 0
             };
 
             statusMsg.className = "mt-4 p-3 rounded-lg text-sm text-center font-semibold bg-blue-100 text-blue-800 block";
             statusMsg.innerText = "A enviar dados para a nuvem...";
 
             try {
-                const response = await fetch('https://mes-lavanderia-api.onrender.com/api/apontamento', {
+                const response = await fetch(`${API_URL}/api/apontamento`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(dados)
@@ -82,8 +156,9 @@
                 if (response.ok) {
                     statusMsg.className = "mt-4 p-3 rounded-lg text-sm text-center font-semibold bg-green-100 text-green-800 block";
                     statusMsg.innerText = "✅ " + resultado.mensagem;
-                    form.reset();
-                    document.getElementById('data').valueAsDate = new Date();
+                    document.getElementById('formApontamento').reset();
+                    document.getElementById('dataColeta').valueAsDate = new Date();
+                    carregarTiposOS();
                 } else {
                     throw new Error(resultado.mensagem || "Erro ao salvar");
                 }
@@ -92,6 +167,9 @@
                 statusMsg.innerText = "❌ Erro: " + err.message;
             }
         });
+
+        // Inicializar a lista de tipos de OS ao abrir a página
+        carregarTiposOS();
     </script>
 </body>
 </html>
