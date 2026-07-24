@@ -260,3 +260,90 @@ app.post('/api/salvar-expedicao', async (req, res) => {
 app.listen(port, () => {
     console.log(`🚀 Servidor MES rodando na porta ${port}`);
 });
+
+// ROTA DO DASHBOARD OPERACIONAL
+app.get('/api/dashboard', async (req, res) => {
+    try {
+        const { dataInicio, dataFim, cliente } = req.query;
+
+        let OSRecentesWhere = [];
+        let params = [];
+        let paramIndex = 1;
+
+        if (dataInicio) {
+            OSRecentesWhere.push(`a.data_coleta >= $${paramIndex++}`);
+            params.push(dataInicio);
+        }
+        if (dataFim) {
+            OSRecentesWhere.push(`a.data_coleta <= $${paramIndex++}`);
+            params.push(dataFim);
+        }
+        if (cliente) {
+            OSRecentesWhere.push(`a.cliente = $${paramIndex++}`);
+            params.push(cliente);
+        }
+
+        const whereClause = OSRecentesWhere.length > 0 ? `WHERE ${OSRecentesWhere.join(' AND ')}` : '';
+
+        // 1. Totais Gerais de Peso e OSs
+        const queryTotais = `
+            SELECT 
+                COUNT(a.id) AS total_os,
+                COUNT(DISTINCT a.cliente) AS total_clientes,
+                COALESCE(SUM(a.peso_coleta), 0) AS peso_total_entrada,
+                COALESCE(SUM(a.peso_entrega), 0) AS peso_total_saida
+            FROM apontamentos a
+            ${whereClause};
+        `;
+
+        // 2. Contagem de Gaiolas por Fase (Entrada / Saída)
+        const queryGaiolas = `
+            SELECT 
+                g.fase,
+                COUNT(g.id) AS qtd_gaiolas,
+                COALESCE(SUM(g.peso_liquido), 0) AS peso_liquido_fase
+            FROM apontamentos_gaiolas g
+            JOIN apontamentos a ON g.apontamento_id = a.id
+            ${whereClause}
+            GROUP BY g.fase;
+        `;
+
+        // 3. Resumo dos Últimos Apontamentos
+        const queryUltimos = `
+            SELECT a.id, a.cliente, a.numero_os, a.tipo_os, a.data_coleta, a.peso_coleta, a.peso_entrega, a.qtd_gaiolas
+            FROM apontamentos a
+            ${whereClause}
+            ORDER BY a.created_at DESC
+            LIMIT 10;
+        `;
+
+        const resTotais = await pool.query(queryTotais, params);
+        const resGaiolas = await pool.query(queryGaiolas, params);
+        const resUltimos = await pool.query(queryUltimos, params);
+
+        // Organizar gaiolas por fase
+        let gaiolasEntrada = 0;
+        let gaiolasSaida = 0;
+
+        resGaiolas.rows.forEach(r => {
+            if (r.fase === 'recebimento') gaiolasEntrada = parseInt(r.qtd_gaiolas);
+            if (r.fase === 'expedicao') gaiolasSaida = parseInt(r.qtd_gaiolas);
+        });
+
+        res.json({
+            totais: {
+                totalOs: parseInt(resTotais.rows[0].total_os),
+                totalClientes: parseInt(resTotais.rows[0].total_clientes),
+                pesoTotalEntrada: parseFloat(resTotais.rows[0].peso_total_entrada),
+                pesoTotalSaida: parseFloat(resTotais.rows[0].peso_total_saida),
+                gaiolasEntrada,
+                gaiolasSaida
+            },
+            ultimosApontamentos: resUltimos.rows
+        });
+
+    } catch (err) {
+        console.error('Erro ao carregar dados do dashboard:', err);
+        res.status(500).json({ erro: 'Erro ao carregar dados do dashboard', detalhe: err.message });
+    }
+});

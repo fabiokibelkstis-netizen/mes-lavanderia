@@ -3,151 +3,273 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MES - Dashboard Gerencial</title>
+    <title>MES - Dashboard Operacional | Lavanderia Dona Zara</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<button onclick="logout()" class="bg-red-600 hover:bg-red-700 text-white text-xs px-3 py-2 rounded font-bold transition">
-    🚪 Sair
-</button>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
-<body class="bg-gray-100 font-sans min-h-screen">
+<body class="bg-slate-100 font-sans min-h-screen flex flex-col justify-between">
 
-    <header class="bg-slate-900 text-white p-4 shadow-md flex flex-wrap justify-between items-center px-8 gap-4">
-        <div>
-            <h1 class="text-xl font-bold tracking-wide">MES - Painel Gerencial</h1>
-            <p class="text-xs text-slate-400">Lavanderia Dona Zara - Indicadores em Tempo Real</p>
-        </div>
-        <div class="flex items-center gap-3">
-            <input type="date" id="filtro_data" onchange="carregarDashboard()" class="text-gray-800 p-2 rounded border focus:outline-none font-semibold">
-            <button onclick="carregarDashboard()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded font-bold transition flex items-center gap-1">
-                🔄 <span>Atualizar</span>
-            </button>
+    <header class="bg-slate-900 text-white p-4 shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto flex flex-wrap justify-between items-center gap-4">
+            <div class="flex items-center gap-3">
+                <div class="bg-indigo-600 p-2.5 rounded-xl text-white shadow">
+                    <i class="fa-solid fa-chart-line text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold tracking-wider">MES - Dashboard Operacional</h1>
+                    <p class="text-xs text-slate-400">Indicadores de Produção, Pesagem & Enxoval</p>
+                </div>
+            </div>
+            <a href="index.html" class="bg-slate-700 hover:bg-slate-600 text-xs font-bold px-4 py-2 rounded-lg transition">⬅️ Menu Principal</a>
         </div>
     </header>
 
-    <main class="p-8 max-w-7xl mx-auto space-y-8">
+    <main class="max-w-7xl mx-auto w-full p-4 my-4 space-y-6">
 
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-            <div class="bg-white p-6 rounded-xl shadow border-l-4 border-blue-600">
-                <span class="text-xs text-gray-500 uppercase font-bold">Peso Coletado</span>
-                <p id="kpi_coleta" class="text-3xl font-extrabold text-gray-800 mt-2">-- <span class="text-base font-normal">Kg</span></p>
-            </div>
-            <div class="bg-white p-6 rounded-xl shadow border-l-4 border-green-600">
-                <span class="text-xs text-gray-500 uppercase font-bold">Peso Entregue</span>
-                <p id="kpi_entrega" class="text-3xl font-extrabold text-gray-800 mt-2">-- <span class="text-base font-normal">Kg</span></p>
-            </div>
-            <div class="bg-white p-6 rounded-xl shadow border-l-4 border-indigo-600">
-                <span class="text-xs text-gray-500 uppercase font-bold">Rendimento (Yield)</span>
-                <p id="kpi_retorno" class="text-3xl font-extrabold text-gray-800 mt-2">--%</p>
-            </div>
-            <div class="bg-white p-6 rounded-xl shadow border-l-4 border-red-600">
-                <span class="text-xs text-gray-500 uppercase font-bold">Não Conformidade</span>
-                <p id="kpi_nc" class="text-3xl font-extrabold text-gray-800 mt-2">--%</p>
+        <div class="bg-white rounded-2xl shadow-md p-5 border border-slate-200">
+            <h2 class="text-sm font-bold text-slate-700 mb-3 flex items-center gap-2">
+                <i class="fa-solid fa-filter text-blue-600"></i> Filtros de Pesquisa
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Data Início</label>
+                    <input type="date" id="filtroDataInicio" class="w-full p-2.5 border rounded-lg text-sm bg-slate-50 outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Data Fim</label>
+                    <input type="date" id="filtroDataFim" class="w-full p-2.5 border rounded-lg text-sm bg-slate-50 outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">Cliente</label>
+                    <select id="filtroCliente" class="w-full p-2.5 border rounded-lg text-sm bg-slate-50 outline-none">
+                        <option value="">Todos os Clientes</option>
+                    </select>
+                </div>
+                <div class="flex gap-2">
+                    <button onclick="carregarDashboard()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 rounded-lg transition text-sm">
+                        🔍 Filtrar
+                    </button>
+                    <button onclick="limparFiltros()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold px-4 py-2.5 rounded-lg transition text-sm">
+                        Limpar
+                    </button>
+                </div>
             </div>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div class="bg-white p-6 rounded-xl shadow">
-                <h3 class="text-base font-bold text-gray-700 mb-4">Balanço de Pesagem (Kg)</h3>
-                <canvas id="chartPesagem" height="150"></canvas>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+            
+            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 flex flex-col justify-between">
+                <div class="flex justify-between items-center text-slate-500 text-xs font-bold">
+                    <span>PESO ENTRADA</span>
+                    <i class="fa-solid fa-truck-ramp-box text-blue-500 text-lg"></i>
+                </div>
+                <div class="mt-3">
+                    <p id="kpiPesoEntrada" class="text-2xl font-black text-blue-900">0.00 Kg</p>
+                    <p class="text-[10px] text-slate-400 mt-0.5">Recebimento acumulado</p>
+                </div>
             </div>
-            <div class="bg-white p-6 rounded-xl shadow">
-                <h3 class="text-base font-bold text-gray-700 mb-4">Indicadores de Qualidade (%)</h3>
-                <canvas id="chartQualidade" height="150"></canvas>
+
+            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 flex flex-col justify-between">
+                <div class="flex justify-between items-center text-slate-500 text-xs font-bold">
+                    <span>PESO SAÍDA</span>
+                    <i class="fa-solid fa-boxes-packing text-emerald-500 text-lg"></i>
+                </div>
+                <div class="mt-3">
+                    <p id="kpiPesoSaida" class="text-2xl font-black text-emerald-700">0.00 Kg</p>
+                    <p class="text-[10px] text-slate-400 mt-0.5">Expedição acumulada</p>
+                </div>
+            </div>
+
+            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 flex flex-col justify-between">
+                <div class="flex justify-between items-center text-slate-500 text-xs font-bold">
+                    <span>% RETORNO</span>
+                    <i class="fa-solid fa-percent text-purple-500 text-lg"></i>
+                </div>
+                <div class="mt-3">
+                    <p id="kpiRetorno" class="text-2xl font-black text-purple-700">0.0 %</p>
+                    <p id="kpiQuebra" class="text-[10px] text-slate-400 mt-0.5">Diferença: 0.00 Kg</p>
+                </div>
+            </div>
+
+            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 flex flex-col justify-between">
+                <div class="flex justify-between items-center text-slate-500 text-xs font-bold">
+                    <span>GAIOLAS</span>
+                    <i class="fa-solid fa-dolly text-amber-500 text-lg"></i>
+                </div>
+                <div class="mt-3">
+                    <p class="text-lg font-black text-slate-800">
+                        <span id="kpiGaiolasEntrada" class="text-blue-600">0</span> / 
+                        <span id="kpiGaiolasSaida" class="text-emerald-600">0</span>
+                    </p>
+                    <p class="text-[10px] text-slate-400 mt-0.5">Entrada / Saída</p>
+                </div>
+            </div>
+
+            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 flex flex-col justify-between">
+                <div class="flex justify-between items-center text-slate-500 text-xs font-bold">
+                    <span>ATENDIMENTOS</span>
+                    <i class="fa-solid fa-users text-indigo-500 text-lg"></i>
+                </div>
+                <div class="mt-3">
+                    <p class="text-lg font-black text-slate-800">
+                        <span id="kpiClientes" class="text-indigo-600">0</span> Clientes
+                    </p>
+                    <p id="kpiTotalOs" class="text-[10px] text-slate-400 mt-0.5">0 OSs registradas</p>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="bg-white p-6 rounded-2xl shadow-md border border-slate-200">
+            <h3 class="text-sm font-bold text-slate-800 mb-4">Comparativo de Balanço: Entrada vs. Saída (Kg)</h3>
+            <div class="h-64">
+                <canvas id="chartProducao"></canvas>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-2xl shadow-md p-6 border border-slate-200">
+            <h3 class="text-sm font-bold text-slate-800 mb-4 border-b pb-2">Últimas Ordens de Serviço Processadas</h3>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-xs border-collapse">
+                    <thead class="bg-slate-100 text-slate-700">
+                        <tr>
+                            <th class="p-3 border">Cliente</th>
+                            <th class="p-3 border">Nº OS</th>
+                            <th class="p-3 border">Tipo</th>
+                            <th class="p-3 border">Data</th>
+                            <th class="p-3 border">Gaiolas</th>
+                            <th class="p-3 border">Peso Ent. (Kg)</th>
+                            <th class="p-3 border">Peso Saí. (Kg)</th>
+                            <th class="p-3 border text-center">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabelaApontamentosRecentes"></tbody>
+                </table>
             </div>
         </div>
 
     </main>
 
     <script>
+        const API_URL = 'https://mes-lavanderia-api.onrender.com';
+        let chartInstance = null;
 
-
-    // Trava de Segurança: Redireciona para o login se não estiver autenticado
-    if (!localStorage.getItem('mes_auth_token')) {
-        window.location.href = 'login.html';
-    }
-
-    function logout() {
-        localStorage.removeItem('mes_auth_token');
-        window.location.href = 'login.html';
-    }
-
-    // ... restante do código existente do dashboard.html ...
-
-        // Define a data de hoje por padrão
-        document.getElementById('filtro_data').valueAsDate = new Date();
-
-        let chartPesagem, chartQualidade;
+        async function carregarClientes() {
+            const select = document.getElementById('filtroCliente');
+            try {
+                const res = await fetch(`${API_URL}/api/clientes`);
+                const clientes = await res.json();
+                select.innerHTML = '<option value="">Todos os Clientes</option>';
+                clientes.forEach(c => select.innerHTML += `<option value="${c.nome}">${c.nome}</option>`);
+            } catch (e) { console.error('Erro ao carregar clientes:', e); }
+        }
 
         async function carregarDashboard() {
-            const data = document.getElementById('filtro_data').value;
+            const inicio = document.getElementById('filtroDataInicio').value;
+            const fim = document.getElementById('filtroDataFim').value;
+            const cliente = document.getElementById('filtroCliente').value;
+
+            let query = `?dataInicio=${inicio}&dataFim=${fim}&cliente=${encodeURIComponent(cliente)}`;
 
             try {
-                const res = await fetch(`https://mes-lavanderia-api.onrender.com/api/metrics/${data}`);
-                
-                if (!res.ok) {
-                    throw new Error('Nenhum dado encontrado para esta data.');
+                const res = await fetch(`${API_URL}/api/dashboard${query}`);
+                const data = await res.json();
+
+                const t = data.totais;
+
+                // Preencher KPIs
+                document.getElementById('kpiPesoEntrada').innerText = `${t.pesoTotalEntrada.toFixed(2)} Kg`;
+                document.getElementById('kpiPesoSaida').innerText = `${t.pesoTotalSaida.toFixed(2)} Kg`;
+                document.getElementById('kpiGaiolasEntrada').innerText = t.gaiolasEntrada;
+                document.getElementById('kpiGaiolasSaida').innerText = t.gaiolasSaida;
+                document.getElementById('kpiClientes').innerText = t.totalClientes;
+                document.getElementById('kpiTotalOs').innerText = `${t.totalOs} OSs processadas`;
+
+                // Calcular % de Retorno
+                if (t.pesoTotalEntrada > 0) {
+                    const ret = (t.pesoTotalSaida / t.pesoTotalEntrada) * 100;
+                    const diff = t.pesoTotalSaida - t.pesoTotalEntrada;
+                    document.getElementById('kpiRetorno').innerText = `${ret.toFixed(1)} %`;
+                    document.getElementById('kpiQuebra').innerText = `Diferença: ${diff.toFixed(2)} Kg`;
+                } else {
+                    document.getElementById('kpiRetorno').innerText = '0.0 %';
+                    document.getElementById('kpiQuebra').innerText = 'Diferença: 0.00 Kg';
                 }
-                
-                const metricas = await res.json();
 
-                // Atualizar Cards
-                const coleta = parseFloat(metricas.peso_coleta_kg || 0);
-                const entrega = parseFloat(metricas.peso_entrega_kg || 0);
-                const retorno = parseFloat(metricas.retorno_perc || 0);
-                const nc = parseFloat(metricas.nc_perc || 0);
+                // Atualizar Tabela
+                renderizarTabela(data.ultimosApontamentos);
 
-                document.getElementById('kpi_coleta').innerText = coleta.toLocaleString('pt-BR') + ' Kg';
-                document.getElementById('kpi_entrega').innerText = entrega.toLocaleString('pt-BR') + ' Kg';
-                document.getElementById('kpi_retorno').innerText = retorno.toFixed(1) + '%';
-                document.getElementById('kpi_nc').innerText = nc.toFixed(2) + '%';
+                // Renderizar Gráfico
+                renderizarGrafico(t.pesoTotalEntrada, t.pesoTotalSaida);
 
-                // Renderizar Gráficos
-                atualizarGraficos(coleta, entrega, retorno, nc);
-
-            } catch (err) {
-                console.warn(err.message);
-                document.getElementById('kpi_coleta').innerText = '0 Kg';
-                document.getElementById('kpi_entrega').innerText = '0 Kg';
-                document.getElementById('kpi_retorno').innerText = '0%';
-                document.getElementById('kpi_nc').innerText = '0%';
-                atualizarGraficos(0, 0, 0, 0);
+            } catch (e) {
+                console.error('Erro ao carregar dashboard:', e);
             }
         }
 
-        function atualizarGraficos(coleta, entrega, retorno, nc) {
-            if (chartPesagem) chartPesagem.destroy();
-            if (chartQualidade) chartQualidade.destroy();
+        function renderizarTabela(lista) {
+            const tbody = document.getElementById('tabelaApontamentosRecentes');
+            if (!lista || lista.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" class="p-4 text-center italic text-slate-400">Nenhum registro encontrado.</td></tr>';
+                return;
+            }
 
-            const ctxPesagem = document.getElementById('chartPesagem').getContext('2d');
-            chartPesagem = new Chart(ctxPesagem, {
+            tbody.innerHTML = lista.map(item => {
+                const pendente = parseFloat(item.peso_entrega) === 0;
+                return `
+                    <tr class="hover:bg-slate-50 transition">
+                        <td class="p-3 border font-medium text-slate-800">${item.cliente}</td>
+                        <td class="p-3 border font-bold">${item.numero_os}</td>
+                        <td class="p-3 border">${item.tipo_os}</td>
+                        <td class="p-3 border">${new Date(item.data_coleta).toLocaleDateString('pt-BR')}</td>
+                        <td class="p-3 border text-center font-bold">${item.qtd_gaiolas || 0}</td>
+                        <td class="p-3 border font-bold text-blue-700">${parseFloat(item.peso_coleta).toFixed(2)} Kg</td>
+                        <td class="p-3 border font-bold text-emerald-700">${parseFloat(item.peso_entrega).toFixed(2)} Kg</td>
+                        <td class="p-3 border text-center">
+                            <span class="${pendente ? 'bg-amber-100 text-amber-800' : 'bg-green-100 text-green-800'} text-[10px] font-extrabold px-2 py-1 rounded-full uppercase">
+                                ${pendente ? 'Pendente' : 'Finalizada'}
+                            </span>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function renderizarGrafico(entrada, saida) {
+            const ctx = document.getElementById('chartProducao').getContext('2d');
+            
+            if (chartInstance) chartInstance.destroy();
+
+            chartInstance = new Chart(ctx, {
                 type: 'bar',
                 data: {
-                    labels: ['Coletado (Sujo)', 'Entregue (Limpo)'],
+                    labels: ['Peso Entrada (Recebimento)', 'Peso Saída (Expedição)'],
                     datasets: [{
-                        label: 'Quilogramas (Kg)',
-                        data: [coleta, entrega],
-                        backgroundColor: ['#2563eb', '#16a34a']
+                        label: 'Peso (Kg)',
+                        data: [entrada, saida],
+                        backgroundColor: ['#2563eb', '#059669'],
+                        borderRadius: 8
                     }]
                 },
-                options: { responsive: true }
-            });
-
-            const ctxQualidade = document.getElementById('chartQualidade').getContext('2d');
-            chartQualidade = new Chart(ctxQualidade, {
-                type: 'doughnut',
-                data: {
-                    labels: ['Rendimento OK', 'Perda / NC'],
-                    datasets: [{
-                        data: [retorno, nc],
-                        backgroundColor: ['#4f46e5', '#dc2626']
-                    }]
-                },
-                options: { responsive: true }
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: { y: { beginAtZero: true } }
+                }
             });
         }
 
-        // Carregar dados na abertura da página
+        function limparFiltros() {
+            document.getElementById('filtroDataInicio').value = '';
+            document.getElementById('filtroDataFim').value = '';
+            document.getElementById('filtroCliente').value = '';
+            carregarDashboard();
+        }
+
+        // Inicialização
+        carregarClientes();
         carregarDashboard();
     </script>
 </body>
