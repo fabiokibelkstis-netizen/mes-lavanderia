@@ -357,3 +357,13 @@ app.post('/api/salvar-expedicao', async (req, res) => {
         clientBD.release();
     }
 });
+
+// Garante que 'data' receba o valor do front-end ou a data/hora atual caso venha undefined/null
+const dataRegistro = dataColeta || data || new Date().toISOString().split('T')[0];
+
+const queryProducao = `
+    INSERT INTO producao_diaria (data, peso_coleta, ...)
+    VALUES ($1, $2, ...)
+`;
+
+await clientBD.query(queryProducao, [dataRegistro, pesoColeta, ...]);
