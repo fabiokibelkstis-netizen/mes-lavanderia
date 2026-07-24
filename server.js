@@ -114,3 +114,27 @@ app.post('/api/tipos-os', async (req, res) => {
         res.status(500).json({ mensagem: 'Erro ao cadastrar tipo de OS' });
     }
 });
+
+// Buscar lista de Taras de Gaiolas
+app.get('/api/taras-gaiolas', async (req, res) => {
+    try {
+        const result = await pool.query('SELECT * FROM taras_gaiolas ORDER BY nome ASC');
+        res.json(result.rows);
+    } catch (err) {
+        res.status(500).json({ mensagem: 'Erro ao buscar taras' });
+    }
+});
+
+// Cadastrar nova Tara de Gaiola
+app.post('/api/taras-gaiolas', async (req, res) => {
+    const { nome, pesoTara } = req.body;
+    try {
+        const result = await pool.query(
+            'INSERT INTO taras_gaiolas (nome, peso_tara) VALUES ($1, $2) RETURNING *',
+            [nome.trim(), parseFloat(pesoTara)]
+        );
+        res.status(201).json({ sucesso: true, tara: result.rows[0] });
+    } catch (err) {
+        res.status(500).json({ mensagem: 'Erro ao cadastrar tara' });
+    }
+});

@@ -3,19 +3,377 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MES - Apontamento de Coleta</title>
+    <title>MES - Coleta com Captura de Balança</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-slate-100 font-sans min-h-screen flex flex-col justify-between">
 
     <header class="bg-slate-900 text-white p-4 shadow-lg">
-        <div class="max-w-4xl mx-auto flex justify-between items-center">
+        <div class="max-w-5xl mx-auto flex justify-between items-center">
             <div>
                 <h1 class="text-xl font-bold tracking-wider">MES - Lavanderia Dona Zara</h1>
-                <p class="text-xs text-slate-400">Terminal de Coleta Operacional</p>
+                <p class="text-xs text-slate-400">Terminal de Pesagem & Coleta Industrial</p>
             </div>
-            <span class="bg-green-500 text-slate-900 text-xs font-extrabold px-3 py-1 rounded-full uppercase">Online</span>
+            <button id="btnConectarBalanca" onclick="conectarBalanca()" class="bg-amber-500 hover:bg-amber-600 text-slate-900 text-xs font-bold px-3 py-1.5 rounded-full flex items-center gap-1 transition">
+                🔌 Conectar Balança Serial
+            </button>
         </div>
     </header>
 
-    <main class="max-w-lg mx-auto w-full p-4 my-6">
+    <main class="max-w-5xl mx-auto w-full p-4 my-4 space-y-6">
+        
+        <div class="bg-white rounded-2xl shadow-md p-6 border border-slate-200">
+            <h2 class="text-base font-bold text-slate-800 mb-4 border-b pb-2">1. Dados da Ordem de Serviço</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Cliente</label>
+                    <input type="text" id="cliente" placeholder="Ex: Hospital Central" required class="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm font-medium">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Número da OS</label>
+                    <input type="text" id="numeroOs" placeholder="Ex: OS-2026-089" required class="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm font-medium">
+                </div>
+                <div>
+                    <div class="flex justify-between items-center mb-1">
+                        <label class="block text-xs font-semibold text-slate-700">Tipo de OS</label>
+                        <button type="button" onclick="cadastrarNovoTipoOS()" class="text-xs text-blue-600 hover:underline font-bold">+ Novo</button>
+                    </div>
+                    <select id="tipoOs" required class="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm font-medium">
+                        <option value="">A carregar...</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Data da Coleta</label>
+                    <input type="date" id="dataColeta" required class="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm font-medium">
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-2xl shadow-md p-6 border border-slate-200">
+            <h2 class="text-base font-bold text-slate-800 mb-4 border-b pb-2">2. Pesagem de Gaiolas</h2>
+
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end bg-slate-50 p-4 rounded-xl border mb-6">
+                <div>
+                    <div class="flex justify-between items-center mb-1">
+                        <label class="block text-xs font-semibold text-slate-700">Tipo / Tara da Gaiola</label>
+                        <button type="button" onclick="cadastrarNovaTara()" class="text-xs text-blue-600 hover:underline font-bold">+ Nova Tara</button>
+                    </div>
+                    <select id="taraGaiola" onchange="atualizarValoresPesagem()" class="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm font-medium bg-white">
+                        <option value="0">Sem Tara (0 Kg)</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Peso Bruto (Kg)</label>
+                    <div class="flex gap-1">
+                        <input type="number" step="0.01" id="pesoBruto" placeholder="0.00" oninput="atualizarValoresPesagem()" class="w-full p-2.5 border rounded-lg text-lg font-bold text-blue-900 bg-white">
+                        <button type="button" onclick="capturarPesoBalanca()" title="Ler da Balança" class="bg-slate-800 hover:bg-slate-900 text-white p-2.5 rounded-lg font-bold">
+                            ⚖️
+                        </button>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Peso Líquido Calculado</label>
+                    <input type="text" id="pesoLiquidoCalculado" readonly value="0.00 Kg" class="w-full p-2.5 border rounded-lg text-lg font-extrabold text-green-700 bg-green-50">
+                </div>
+
+                <div>
+                    <button type="button" onclick="adicionarGaiolaNaLista()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 px-4 rounded-lg shadow transition">
+                        ➕ Adicionar Gaiola
+                    </button>
+                </div>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-sm text-slate-600 border-collapse">
+                    <thead class="bg-slate-100 text-slate-700 uppercase text-xs">
+                        <tr>
+                            <th class="p-3 border"># Gaiola</th>
+                            <th class="p-3 border">Tipo / Tara</th>
+                            <th class="p-3 border">Peso Bruto (Kg)</th>
+                            <th class="p-3 border">Tara (Kg)</th>
+                            <th class="p-3 border">Peso Líquido (Kg)</th>
+                            <th class="p-3 border text-center">Ação</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabelaGaiolas">
+                        <tr>
+                            <td colspan="6" class="p-4 text-center text-slate-400 italic">Nenhuma gaiola adicionada ainda.</td>
+                        </tr>
+                    </tbody>
+                    <tfoot class="bg-slate-50 font-bold text-slate-800">
+                        <tr>
+                            <td colspan="2" class="p-3 border text-right">Totais:</td>
+                            <td id="totalPesoBruto" class="p-3 border">0.00 Kg</td>
+                            <td id="totalTara" class="p-3 border">0.00 Kg</td>
+                            <td id="totalPesoLiquido" class="p-3 border text-green-700 text-base">0.00 Kg</td>
+                            <td class="p-3 border"></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+
+        <div class="flex justify-end">
+            <button type="button" id="btnSalvarTudo" onclick="submeterApontamentoCompleto()" class="bg-green-600 hover:bg-green-700 text-white font-extrabold py-4 px-8 rounded-xl shadow-lg transition text-base flex items-center gap-2">
+                <span>💾 Finalizar e Salvar Coleta</span>
+            </button>
+        </div>
+
+        <div id="statusMessage" class="hidden p-3 rounded-lg text-sm text-center font-semibold"></div>
+    </main>
+
+    <script>
+        const API_URL = 'https://mes-lavanderia-api.onrender.com';
+        let gaiolasAdicionadas = [];
+        let portSerial = null;
+
+        document.getElementById('dataColeta').valueAsDate = new Date();
+
+        // ----------------------------------------------------
+        // 1. INTEGRAÇÃO WEB SERIAL COM A BALANÇA
+        // ----------------------------------------------------
+        async function conectarBalanca() {
+            if (!("serial" in navigator)) {
+                alert("O seu navegador não suporta conexão Serial direta. Use o Google Chrome ou Microsoft Edge.");
+                return;
+            }
+            try {
+                portSerial = await navigator.serial.requestPort();
+                await portSerial.open({ baudRate: 9600 });
+                document.getElementById('btnConectarBalanca').className = "bg-green-500 text-slate-900 text-xs font-bold px-3 py-1.5 rounded-full flex items-center gap-1";
+                document.getElementById('btnConectarBalanca').innerText = "✅ Balança Conectada";
+            } catch (err) {
+                console.error("Erro ao conectar à balança:", err);
+                alert("Não foi possível conectar à balança.");
+            }
+        }
+
+        async function capturarPesoBalanca() {
+            if (!portSerial) {
+                alert("Por favor, clique em 'Conectar Balança Serial' primeiro.");
+                return;
+            }
+
+            try {
+                const textDecoder = new TextDecoderStream();
+                const readableStreamClosed = portSerial.readable.pipeTo(textDecoder.writable);
+                const reader = textDecoder.readable.getReader();
+
+                let buffer = "";
+                while (true) {
+                    const { value, done } = await reader.read();
+                    if (done) break;
+                    buffer += value;
+                    
+                    // Extrai os números do sinal serial recebido da balança
+                    const match = buffer.match(/\d+\.\d+/);
+                    if (match) {
+                        document.getElementById('pesoBruto').value = parseFloat(match[0]);
+                        atualizarValoresPesagem();
+                        reader.cancel();
+                        break;
+                    }
+                }
+            } catch (err) {
+                console.error("Erro ao ler dados da balança:", err);
+                alert("Falha na leitura da balança.");
+            }
+        }
+
+        // ----------------------------------------------------
+        // 2. GERENCIAMENTO DE TARAS E TIPOS
+        // ----------------------------------------------------
+        async function carregarTaras() {
+            const selectTara = document.getElementById('taraGaiola');
+            try {
+                const res = await fetch(`${API_URL}/api/taras-gaiolas`);
+                const taras = await res.json();
+                selectTara.innerHTML = '<option value="0" data-nome="Sem Tara">Sem Tara (0.00 Kg)</option>';
+                taras.forEach(t => {
+                    selectTara.innerHTML += `<option value="${t.peso_tara}" data-nome="${t.nome}">${t.nome} (${t.peso_tara} Kg)</option>`;
+                });
+            } catch (err) {
+                console.error('Erro ao carregar taras:', err);
+            }
+        }
+
+        async function cadastrarNovaTara() {
+            const nome = prompt("Nome/Modelo da Gaiola:");
+            if (!nome) return;
+            const pesoTara = prompt("Peso da Tara (em Kg):");
+            if (!pesoTara) return;
+
+            try {
+                const res = await fetch(`${API_URL}/api/taras-gaiolas`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ nome, pesoTara })
+                });
+                if (res.ok) {
+                    await carregarTaras();
+                }
+            } catch (err) {
+                alert("Erro ao salvar nova tara.");
+            }
+        }
+
+        async function carregarTiposOS() {
+            const selectTipo = document.getElementById('tipoOs');
+            try {
+                const res = await fetch(`${API_URL}/api/tipos-os`);
+                const tipos = await res.json();
+                selectTipo.innerHTML = '<option value="">Selecione...</option>';
+                tipos.forEach(t => {
+                    selectTipo.innerHTML += `<option value="${t.nome}">${t.nome}</option>`;
+                });
+            } catch (err) {
+                console.error('Erro ao carregar tipos:', err);
+            }
+        }
+
+        function atualizarValoresPesagem() {
+            const bruto = parseFloat(document.getElementById('pesoBruto').value) || 0;
+            const tara = parseFloat(document.getElementById('taraGaiola').value) || 0;
+            const liquido = Math.max(0, bruto - tara);
+            document.getElementById('pesoLiquidoCalculado').value = liquido.toFixed(2) + " Kg";
+        }
+
+        // ----------------------------------------------------
+        // 3. TABELA DINÂMICA DE GAIOLAS
+        // ----------------------------------------------------
+        function adicionarGaiolaNaLista() {
+            const bruto = parseFloat(document.getElementById('pesoBruto').value) || 0;
+            const selectTara = document.getElementById('taraGaiola');
+            const tara = parseFloat(selectTara.value) || 0;
+            const nomeTara = selectTara.options[selectTara.selectedIndex].getAttribute('data-nome') || 'Gaiola';
+
+            if (bruto <= 0) {
+                alert("Informe um peso bruto válido!");
+                return;
+            }
+
+            const liquido = Math.max(0, bruto - tara);
+
+            const gaiola = {
+                numero: gaiolasAdicionadas.length + 1,
+                tipoGaiola: nomeTara,
+                pesoBruto: bruto,
+                pesoTara: tara,
+                pesoLiquido: liquido
+            };
+
+            gaiolasAdicionadas.push(gaiola);
+            renderizarTabelaGaiolas();
+
+            // Limpar campo de peso para a próxima gaiola
+            document.getElementById('pesoBruto').value = '';
+            atualizarValoresPesagem();
+        }
+
+        function removerGaiola(index) {
+            gaiolasAdicionadas.splice(index, 1);
+            // Reordenar número das gaiolas
+            gaiolasAdicionadas.forEach((g, i) => g.numero = i + 1);
+            renderizarTabelaGaiolas();
+        }
+
+        function renderizarTabelaGaiolas() {
+            const tbody = document.getElementById('tabelaGaiolas');
+            
+            if (gaiolasAdicionadas.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="p-4 text-center text-slate-400 italic">Nenhuma gaiola adicionada ainda.</td></tr>';
+                document.getElementById('totalPesoBruto').innerText = '0.00 Kg';
+                document.getElementById('totalTara').innerText = '0.00 Kg';
+                document.getElementById('totalPesoLiquido').innerText = '0.00 Kg';
+                return;
+            }
+
+            let html = '';
+            let totBruto = 0, totTara = 0, totLiquido = 0;
+
+            gaiolasAdicionadas.forEach((g, i) => {
+                totBruto += g.pesoBruto;
+                totTara += g.pesoTara;
+                totLiquido += g.pesoLiquido;
+
+                html += `
+                    <tr class="hover:bg-slate-50">
+                        <td class="p-3 border font-bold">Gaiola #${g.numero}</td>
+                        <td class="p-3 border">${g.tipoGaiola}</td>
+                        <td class="p-3 border font-semibold">${g.pesoBruto.toFixed(2)} Kg</td>
+                        <td class="p-3 border">${g.pesoTara.toFixed(2)} Kg</td>
+                        <td class="p-3 border font-bold text-green-700">${g.pesoLiquido.toFixed(2)} Kg</td>
+                        <td class="p-3 border text-center">
+                            <button type="button" onclick="removerGaiola(${i})" class="text-red-600 hover:text-red-800 font-bold text-xs">❌ Remover</button>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            tbody.innerHTML = html;
+            document.getElementById('totalPesoBruto').innerText = totBruto.toFixed(2) + ' Kg';
+            document.getElementById('totalTara').innerText = totTara.toFixed(2) + ' Kg';
+            document.getElementById('totalPesoLiquido').innerText = totLiquido.toFixed(2) + ' Kg';
+        }
+
+        // ----------------------------------------------------
+        // 4. SUBMETER O APONTAMENTO COMPLETO
+        // ----------------------------------------------------
+        async function submeterApontamentoCompleto() {
+            if (gaiolasAdicionadas.length === 0) {
+                alert("Adicione pelo menos uma gaiola pesada antes de salvar!");
+                return;
+            }
+
+            const statusMsg = document.getElementById('statusMessage');
+            const totalLiquido = gaiolasAdicionadas.reduce((sum, g) => sum + g.pesoLiquido, 0);
+
+            const payload = {
+                cliente: document.getElementById('cliente').value.trim(),
+                numeroOs: document.getElementById('numeroOs').value.trim(),
+                tipoOs: document.getElementById('tipoOs').value,
+                dataColeta: document.getElementById('dataColeta').value,
+                qtdGaiolas: gaiolasAdicionadas.length,
+                pesoColeta: totalLiquido,
+                gaiolas: gaiolasAdicionadas
+            };
+
+            statusMsg.className = "p-3 rounded-lg text-sm text-center font-semibold bg-blue-100 text-blue-800 block";
+            statusMsg.innerText = "A guardar apontamento no banco de dados...";
+
+            try {
+                const response = await fetch(`${API_URL}/api/apontamento`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const resultado = await response.json();
+
+                if (response.ok) {
+                    statusMsg.className = "p-3 rounded-lg text-sm text-center font-semibold bg-green-100 text-green-800 block";
+                    statusMsg.innerText = "✅ Apontamento de Coleta salvo com sucesso!";
+                    
+                    // Reset da tela
+                    gaiolasAdicionadas = [];
+                    renderizarTabelaGaiolas();
+                    document.getElementById('cliente').value = '';
+                    document.getElementById('numeroOs').value = '';
+                } else {
+                    throw new Error(resultado.mensagem || "Erro ao salvar");
+                }
+            } catch (err) {
+                statusMsg.className = "p-3 rounded-lg text-sm text-center font-semibold bg-red-100 text-red-800 block";
+                statusMsg.innerText = "❌ Erro: " + err.message;
+            }
+        }
+
+        // Inicializar dropdowns ao carregar
+        carregarTiposOS();
+        carregarTaras();
+    </script>
+</body>
+</html>
