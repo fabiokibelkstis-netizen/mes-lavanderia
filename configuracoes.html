@@ -17,7 +17,7 @@
                 </div>
                 <div>
                     <h1 class="text-xl font-bold tracking-wider">MES - Configurações Gerais</h1>
-                    <p class="text-xs text-slate-400">Parâmetros de Operação, Medidores e Balança</p>
+                    <p class="text-xs text-slate-400">Parâmetros de Operação, Hidrômetros, Medidores e Balança</p>
                 </div>
             </div>
             <a href="index.html" class="bg-slate-700 hover:bg-slate-600 text-xs font-bold px-4 py-2 rounded-lg transition">⬅️ Menu Principal</a>
@@ -30,8 +30,47 @@
 
             <div class="bg-white p-6 rounded-2xl shadow-md border border-slate-200 space-y-4">
                 <h3 class="text-sm font-bold text-slate-800 border-b pb-2 flex items-center gap-2">
+                    <i class="fa-solid fa-droplet text-cyan-600"></i>
+                    1. Cadastro de Hidrômetros / Relógios de Água
+                </h3>
+                <p class="text-xs text-slate-500">
+                    Defina a quantidade e nomeie os hidrômetros de Captação (Poços) e Consumo (Equipamentos).
+                </p>
+
+                <form onsubmit="salvarConfigAgua(event)" class="space-y-4">
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">Poços (Captação)</label>
+                            <select id="setQtdPocos" onchange="gerarCamposAgua()" class="w-full p-2.5 border rounded-lg text-sm bg-slate-50 outline-none focus:ring-2 focus:ring-cyan-500">
+                                <option value="1">1 Poço</option>
+                                <option value="2">2 Poços</option>
+                                <option value="3">3 Poços</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">Pontos de Consumo</label>
+                            <select id="setQtdPontosConsumo" onchange="gerarCamposAgua()" class="w-full p-2.5 border rounded-lg text-sm bg-slate-50 outline-none focus:ring-2 focus:ring-cyan-500">
+                                <option value="1">1 Ponto</option>
+                                <option value="2">2 Pontos</option>
+                                <option value="3">3 Pontos</option>
+                                <option value="4">4 Pontos</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div id="containerNomesAgua" class="space-y-3 pt-2 border-t border-slate-100">
+                        </div>
+
+                    <button type="submit" class="w-full bg-cyan-600 hover:bg-cyan-700 text-white font-bold py-2.5 rounded-lg text-xs transition shadow">
+                        💾 SALVAR CONFIGURAÇÃO DE ÁGUA
+                    </button>
+                </form>
+            </div>
+
+            <div class="bg-white p-6 rounded-2xl shadow-md border border-slate-200 space-y-4">
+                <h3 class="text-sm font-bold text-slate-800 border-b pb-2 flex items-center gap-2">
                     <i class="fa-solid fa-fire-flame-simple text-orange-600"></i>
-                    1. Cadastro de Medidores de Gás (GLP/GN)
+                    2. Cadastro de Medidores de Gás (GLP/GN)
                 </h3>
                 <p class="text-xs text-slate-500">
                     Defina a quantidade de relógios e personalize a identificação de cada ponto de medição.
@@ -60,7 +99,7 @@
             <div class="bg-white p-6 rounded-2xl shadow-md border border-slate-200 space-y-4">
                 <h3 class="text-sm font-bold text-slate-800 border-b pb-2 flex items-center gap-2">
                     <i class="fa-solid fa-bolt text-yellow-500"></i>
-                    2. Cadastro de Medidores de Energia Elétrica
+                    3. Cadastro de Medidores de Energia Elétrica
                 </h3>
                 <p class="text-xs text-slate-500">
                     Defina a quantidade de medidores e personalize os nomes das entradas de energia.
@@ -89,17 +128,14 @@
             <div class="bg-white p-6 rounded-2xl shadow-md border border-slate-200 space-y-4">
                 <h3 class="text-sm font-bold text-slate-800 border-b pb-2 flex items-center gap-2">
                     <i class="fa-solid fa-scale-balanced text-blue-600"></i>
-                    3. Parâmetros da Balança Industrial
+                    4. Parâmetros de Balança & Armazenamento
                 </h3>
-                <p class="text-xs text-slate-500">
-                    Ajuste a taxa de transmissão serial (Baud Rate) e a tolerância de oscilação de peso.
-                </p>
 
-                <form onsubmit="salvarConfigBalanca(event)" class="space-y-4">
+                <form onsubmit="salvarConfigBalanca(event)" class="space-y-3">
                     <div class="grid grid-cols-2 gap-3">
                         <div>
                             <label class="block text-xs font-semibold text-slate-700 mb-1">Baud Rate (bps)</label>
-                            <select id="setBaudRate" class="w-full p-2.5 border rounded-lg text-sm bg-slate-50 outline-none">
+                            <select id="setBaudRate" class="w-full p-2 border rounded-lg text-xs bg-slate-50 outline-none">
                                 <option value="9600">9600 bps (Padrão)</option>
                                 <option value="4800">4800 bps</option>
                                 <option value="19200">19200 bps</option>
@@ -108,32 +144,21 @@
                         </div>
                         <div>
                             <label class="block text-xs font-semibold text-slate-700 mb-1">Tolerância (Kg)</label>
-                            <input type="number" step="0.01" id="setTolerancia" class="w-full p-2.5 border rounded-lg text-sm bg-slate-50 outline-none" value="0.05">
+                            <input type="number" step="0.01" id="setTolerancia" class="w-full p-2 border rounded-lg text-xs bg-slate-50 outline-none" value="0.05">
                         </div>
                     </div>
-
-                    <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 rounded-lg text-xs transition shadow">
+                    <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 rounded-lg text-xs transition shadow">
                         💾 SALVAR PARÂMETROS DA BALANÇA
                     </button>
                 </form>
-            </div>
 
-            <div class="bg-white p-6 rounded-2xl shadow-md border border-slate-200 space-y-4">
-                <h3 class="text-sm font-bold text-slate-800 border-b pb-2 flex items-center gap-2">
-                    <i class="fa-solid fa-database text-purple-600"></i>
-                    4. Dados Locais e Armazenamento
-                </h3>
-                <p class="text-xs text-slate-500">
-                    Redefina ou limpe as configurações salvas em cache neste dispositivo.
-                </p>
-
-                <div class="bg-slate-50 p-4 rounded-xl border flex justify-between items-center">
+                <div class="bg-slate-50 p-3 rounded-xl border flex justify-between items-center pt-3">
                     <div>
-                        <h4 class="text-xs font-bold text-slate-800">Limpar Configurações Salvas</h4>
-                        <p class="text-[11px] text-slate-500">Restaura os padrões de fábrica do navegador.</p>
+                        <h4 class="text-xs font-bold text-slate-800">Limpar Dados Locais</h4>
+                        <p class="text-[11px] text-slate-500">Restaura configurações padrão do navegador.</p>
                     </div>
-                    <button type="button" onclick="limparCacheLocal()" class="bg-red-600 hover:bg-red-700 text-white font-bold px-3 py-2 rounded-lg text-xs transition">
-                        🗑️ Limpar Cache
+                    <button type="button" onclick="limparCacheLocal()" class="bg-red-600 hover:bg-red-700 text-white font-bold px-3 py-1.5 rounded-lg text-xs transition">
+                        🗑️ Limpar
                     </button>
                 </div>
             </div>
@@ -152,20 +177,79 @@
         });
 
         function carregarTodasConfiguracoes() {
-            // 1. Config Gás
+            // 1. Config Água
+            const configAgua = JSON.parse(localStorage.getItem('mes_config_agua') || '{"qtdPocos": 2, "nomesPocos": ["Poço 1", "Poço 2"], "qtdConsumo": 3, "nomesConsumo": ["Túnel 1", "Túnel 2", "Extratoras"]}');
+            document.getElementById('setQtdPocos').value = configAgua.qtdPocos;
+            document.getElementById('setQtdPontosConsumo').value = configAgua.qtdConsumo;
+            gerarCamposAgua(configAgua.nomesPocos, configAgua.nomesConsumo);
+
+            // 2. Config Gás
             const configGas = JSON.parse(localStorage.getItem('mes_config_gas') || '{"qtd": 2, "nomes": ["Relógio 1", "Relógio 2"]}');
             document.getElementById('setQtdRelogiosGas').value = configGas.qtd;
             gerarCamposRelogiosGas(configGas.nomes);
 
-            // 2. Config Energia
+            // 3. Config Energia
             const configEnergia = JSON.parse(localStorage.getItem('mes_config_energia') || '{"qtd": 2, "nomes": ["Medidor Principal", "Medidor Auxiliar"]}');
             document.getElementById('setQtdRelogiosEnergia').value = configEnergia.qtd;
             gerarCamposRelogiosEnergia(configEnergia.nomes);
 
-            // 3. Config Balança
+            // 4. Config Balança
             const configBalanca = JSON.parse(localStorage.getItem('mes_config_balanca') || '{"baudRate": "9600", "tolerancia": "0.05"}');
             document.getElementById('setBaudRate').value = configBalanca.baudRate;
             document.getElementById('setTolerancia').value = configBalanca.tolerancia;
+        }
+
+        // --- HIDRÔMETROS DE ÁGUA ---
+        function gerarCamposAgua(nomesPocosExistentes = [], nomesConsumoExistentes = []) {
+            const qtdPocos = parseInt(document.getElementById('setQtdPocos').value);
+            const qtdConsumo = parseInt(document.getElementById('setQtdPontosConsumo').value);
+            const container = document.getElementById('containerNomesAgua');
+            container.innerHTML = '';
+
+            // Bloco Poços
+            let htmlPocos = `<h4 class="text-[11px] font-bold text-cyan-800 uppercase tracking-wider">Captação (Poços)</h4>`;
+            for (let i = 1; i <= qtdPocos; i++) {
+                const valor = nomesPocosExistentes[i - 1] || `Poço ${i}`;
+                htmlPocos += `
+                    <div>
+                        <label class="block text-[11px] font-semibold text-slate-600 mb-0.5">Nome do Hidrômetro Poço ${i}</label>
+                        <input type="text" id="nome_poco_${i}" value="${valor}" required class="w-full p-2 border rounded-lg text-xs bg-slate-50 outline-none focus:ring-1 focus:ring-cyan-500">
+                    </div>
+                `;
+            }
+
+            // Bloco Consumo
+            let htmlConsumo = `<h4 class="text-[11px] font-bold text-blue-800 uppercase tracking-wider pt-2">Pontos de Consumo (Equipamentos)</h4>`;
+            for (let i = 1; i <= qtdConsumo; i++) {
+                const valor = nomesConsumoExistentes[i - 1] || (i === 1 ? "Túnel 1" : i === 2 ? "Túnel 2" : i === 3 ? "Extratoras" : `Ponto ${i}`);
+                htmlConsumo += `
+                    <div>
+                        <label class="block text-[11px] font-semibold text-slate-600 mb-0.5">Nome do Ponto de Consumo ${i}</label>
+                        <input type="text" id="nome_consumo_${i}" value="${valor}" required class="w-full p-2 border rounded-lg text-xs bg-slate-50 outline-none focus:ring-1 focus:ring-cyan-500">
+                    </div>
+                `;
+            }
+
+            container.innerHTML = htmlPocos + htmlConsumo;
+        }
+
+        function salvarConfigAgua(e) {
+            e.preventDefault();
+            const qtdPocos = parseInt(document.getElementById('setQtdPocos').value);
+            const qtdConsumo = parseInt(document.getElementById('setQtdPontosConsumo').value);
+
+            const nomesPocos = [];
+            for (let i = 1; i <= qtdPocos; i++) {
+                nomesPocos.push(document.getElementById(`nome_poco_${i}`).value || `Poço ${i}`);
+            }
+
+            const nomesConsumo = [];
+            for (let i = 1; i <= qtdConsumo; i++) {
+                nomesConsumo.push(document.getElementById(`nome_consumo_${i}`).value || `Ponto ${i}`);
+            }
+
+            localStorage.setItem('mes_config_agua', JSON.stringify({ qtdPocos, nomesPocos, qtdConsumo, nomesConsumo }));
+            alert("Configurações dos hidrômetros de água salvas com sucesso!");
         }
 
         // --- RELÓGIOS DE GÁS ---
