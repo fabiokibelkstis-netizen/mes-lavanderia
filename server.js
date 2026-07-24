@@ -3,17 +3,15 @@ const cors = require('cors');
 const { Pool } = require('pg');
 
 const app = express();
+const port = process.env.PORT || 3000;
 
+// Middlewares
 app.use(cors());
 app.use(express.json());
 
-// String de conexão direta do Supabase
-// Substitua [SUA_SENHA] e [SEU_PROJETO] pelos dados do seu painel Supabase
-const connectionString = 'postgresql://postgres.gpplwgegiiuihxwzndrz:Fabiokibe@300376@aws-0-sa-east-1.pooler.supabase.com:6543/postgres';
-
-
+// Configuração do PostgreSQL / Supabase
 const pool = new Pool({
-    connectionString: connectionString,
+    connectionString: process.env.DATABASE_URL,
     ssl: {
         rejectUnauthorized: false
     }
@@ -22,292 +20,181 @@ const pool = new Pool({
 // Teste de conexão
 pool.connect((err, client, release) => {
     if (err) {
-        console.error('❌ Erro ao conectar ao Supabase:', err.message);
-    } else {
-        console.log('✅ Conectado com sucesso ao Supabase!');
-        release();
+        return console.error('❌ Erro ao conectar ao banco PostgreSQL:', err.stack);
     }
+    console.log('✅ Conectado ao banco de dados PostgreSQL com sucesso!');
+    release();
 });
 
-// Rota de Autenticação / Login
-app.post('/api/login', (req, res) => {
-    const { senha } = req.body;
+// =================================================================
+// 1. ROTAS DE CADASTRO (CLIENTES, TIPOS DE OS, TARAS)
+// =================================================================
 
-    // Defina a senha de acesso da gerência aqui
-    const SENHA_GERENCIA = "dz2026gerencia";
-
-    if (senha === SENHA_GERENCIA) {
-        return res.json({ sucesso: true, token: "session_token_dz_2026" });
-    } else {
-        return res.status(401).json({ sucesso: false, mensagem: "Senha incorreta!" });
-    }
-});
-
-// Rota de Apontamento
-app.post('/api/apontamento', async (req, res) => {
-    const { data, pesoColeta, pesoEntrega } = req.body;
-
-    try {
-        const query = `
-            INSERT INTO producao_diaria (data, peso_coleta_kg, peso_entrega_kg)
-            VALUES ($1, $2, $3)
-            ON CONFLICT (data) 
-            DO UPDATE SET 
-                peso_coleta_kg = EXCLUDED.peso_coleta_kg,
-                peso_entrega_kg = EXCLUDED.peso_entrega_kg;
-        `;
-        await pool.query(query, [data, pesoColeta || 0, pesoEntrega || 0]);
-        res.json({ status: 'sucesso', mensagem: 'Apontamento gravado com sucesso!' });
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ status: 'erro', mensagem: 'Erro ao salvar no banco.' });
-    }
-});
-
-// Rota de Busca de Métricas
-app.get('/api/metrics/:data', async (req, res) => {
-    const { data } = req.params;
-
-    try {
-        const result = await pool.query('SELECT * FROM producao_diaria WHERE data = $1', [data]);
-        
-        if (result.rows.length === 0) {
-            return res.status(404).json({ mensagem: 'Nenhum registro encontrado.' });
-        }
-
-        res.json(result.rows[0]);
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ mensagem: 'Erro ao buscar métricas.' });
-    }
-});
-
-const PORT = 3000;
-app.listen(PORT, () => {
-    console.log(`[MES API] Servidor rodando em http://localhost:${PORT}`);
-});
-
-// Rota para listar todos os Tipos de OS
-app.get('/api/tipos-os', async (req, res) => {
-    try {
-        const result = await pool.query('SELECT * FROM tipos_os ORDER BY nome ASC');
-        res.json(result.rows);
-    } catch (err) {
-        console.error('Erro ao buscar tipos de OS:', err);
-        res.status(500).json({ mensagem: 'Erro ao buscar tipos de OS' });
-    }
-});
-
-// Rota para cadastrar um novo Tipo de OS
-app.post('/api/tipos-os', async (req, res) => {
-    const { nome } = req.body;
-    if (!nome) return res.status(400).json({ mensagem: 'Nome é obrigatório' });
-
-    try {
-        const result = await pool.query(
-            'INSERT INTO tipos_os (nome) VALUES ($1) ON CONFLICT (nome) DO NOTHING RETURNING *',
-            [nome.trim()]
-        );
-        res.status(201).json({ sucesso: true, tipo: result.rows[0] });
-    } catch (err) {
-        console.error('Erro ao cadastrar tipo de OS:', err);
-        res.status(500).json({ mensagem: 'Erro ao cadastrar tipo de OS' });
-    }
-});
-
-// Buscar lista de Taras de Gaiolas
-app.get('/api/taras-gaiolas', async (req, res) => {
-    try {
-        const result = await pool.query('SELECT * FROM taras_gaiolas ORDER BY nome ASC');
-        res.json(result.rows);
-    } catch (err) {
-        res.status(500).json({ mensagem: 'Erro ao buscar taras' });
-    }
-});
-
-// Cadastrar nova Tara de Gaiola
-app.post('/api/taras-gaiolas', async (req, res) => {
-    const { nome, pesoTara } = req.body;
-    try {
-        const result = await pool.query(
-            'INSERT INTO taras_gaiolas (nome, peso_tara) VALUES ($1, $2) RETURNING *',
-            [nome.trim(), parseFloat(pesoTara)]
-        );
-        res.status(201).json({ sucesso: true, tara: result.rows[0] });
-    } catch (err) {
-        res.status(500).json({ mensagem: 'Erro ao cadastrar tara' });
-    }
-});
-
-// Rota de Autenticação / Login
-app.post('/api/login', (req, res) => {
-    const { senha } = req.body;
-
-    // Digite aqui a sua nova senha desejada:
-    const SENHA_GERENCIA = "SUA_NOVA_SENHA_AQUI";
-
-    if (senha === SENHA_GERENCIA) {
-        return res.json({ sucesso: true, token: "session_token_dz_2026" });
-    } else {
-        return res.status(401).json({ sucesso: false, mensagem: "Senha incorreta!" });
-    }
-});
-
-// Rota para listar todos os Clientes
+// Clientes
 app.get('/api/clientes', async (req, res) => {
     try {
-        const result = await pool.query('SELECT * FROM clientes ORDER BY nome ASC');
-        res.json(result.rows);
+        const { rows } = await pool.query('SELECT * FROM clientes ORDER BY nome ASC');
+        res.json(rows);
     } catch (err) {
-        console.error('Erro ao buscar clientes:', err);
-        res.status(500).json({ mensagem: 'Erro ao buscar clientes' });
+        res.status(500).json({ erro: err.message });
     }
 });
 
-// Rota para cadastrar um novo Cliente
 app.post('/api/clientes', async (req, res) => {
     const { nome } = req.body;
-    if (!nome) return res.status(400).json({ mensagem: 'Nome do cliente é obrigatório' });
-
     try {
-        const result = await pool.query(
-            'INSERT INTO clientes (nome) VALUES ($1) ON CONFLICT (nome) DO NOTHING RETURNING *',
-            [nome.trim()]
-        );
-        res.status(201).json({ sucesso: true, cliente: result.rows[0] });
+        const { rows } = await pool.query('INSERT INTO clientes (nome) VALUES ($1) RETURNING *', [nome]);
+        res.status(201).json(rows[0]);
     } catch (err) {
-        console.error('Erro ao cadastrar cliente:', err);
-        res.status(500).json({ mensagem: 'Erro ao cadastrar cliente' });
+        res.status(500).json({ erro: err.message });
     }
 });
 
-// ==========================================
-// ROTAS DE CLIENTES (EDIÇÃO E REMOÇÃO)
-// ==========================================
-
-// Atualizar nome do Cliente
 app.put('/api/clientes/:id', async (req, res) => {
     const { id } = req.params;
     const { nome } = req.body;
-    if (!nome) return res.status(400).json({ mensagem: 'Nome é obrigatório' });
-
     try {
-        const result = await pool.query(
-            'UPDATE clientes SET nome = $1 WHERE id = $2 RETURNING *',
-            [nome.trim(), id]
-        );
-        res.json({ sucesso: true, cliente: result.rows[0] });
+        await pool.query('UPDATE clientes SET nome = $1 WHERE id = $2', [nome, id]);
+        res.json({ mensagem: 'Cliente atualizado' });
     } catch (err) {
-        console.error('Erro ao editar cliente:', err);
-        res.status(500).json({ mensagem: 'Erro ao editar cliente' });
+        res.status(500).json({ erro: err.message });
     }
 });
 
-// Excluir Cliente
-app.delete('/api/clientes/:id', async (req, res) => {
+// Tipos de OS
+app.get('/api/tipos-os', async (req, res) => {
+    try {
+        const { rows } = await pool.query('SELECT * FROM tipos_os ORDER BY nome ASC');
+        res.json(rows);
+    } catch (err) {
+        res.status(500).json({ erro: err.message });
+    }
+});
+
+app.post('/api/tipos-os', async (req, res) => {
+    const { nome } = req.body;
+    try {
+        const { rows } = await pool.query('INSERT INTO tipos_os (nome) VALUES ($1) RETURNING *', [nome]);
+        res.status(201).json(rows[0]);
+    } catch (err) {
+        res.status(500).json({ erro: err.message });
+    }
+});
+
+app.put('/api/tipos-os/:id', async (req, res) => {
     const { id } = req.params;
+    const { nome } = req.body;
     try {
-        await pool.query('DELETE FROM clientes WHERE id = $1', [id]);
-        res.json({ sucesso: true, mensagem: 'Cliente excluído com sucesso' });
+        await pool.query('UPDATE tipos_os SET nome = $1 WHERE id = $2', [nome, id]);
+        res.json({ mensagem: 'Tipo de OS atualizado' });
     } catch (err) {
-        console.error('Erro ao excluir cliente:', err);
-        res.status(500).json({ mensagem: 'Erro ao excluir cliente' });
+        res.status(500).json({ erro: err.message });
     }
 });
 
-// ==========================================
-// ROTAS DE TARAS DE GAIOLAS (CADASTRO E EDIÇÃO)
-// ==========================================
+// Taras de Gaiolas
+app.get('/api/taras-gaiolas', async (req, res) => {
+    try {
+        const { rows } = await pool.query('SELECT * FROM taras_gaiolas ORDER BY nome ASC');
+        res.json(rows);
+    } catch (err) {
+        res.status(500).json({ erro: err.message });
+    }
+});
 
-// Cadastrar / Atualizar Tara de Gaiola
 app.post('/api/taras-gaiolas', async (req, res) => {
     const { nome, pesoTara } = req.body;
-    if (!nome || pesoTara === undefined) {
-        return res.status(400).json({ mensagem: 'Nome e peso da tara são obrigatórios' });
-    }
-
     try {
-        const result = await pool.query(
-            `INSERT INTO taras_gaiolas (nome, peso_tara) 
-             VALUES ($1, $2) 
-             ON CONFLICT (nome) DO UPDATE SET peso_tara = EXCLUDED.peso_tara 
-             RETURNING *`,
-            [nome.trim(), parseFloat(pesoTara)]
-        );
-        res.status(201).json({ sucesso: true, tara: result.rows[0] });
+        const query = `
+            INSERT INTO taras_gaiolas (nome, peso_tara) 
+            VALUES ($1, $2)
+            ON CONFLICT (nome) DO UPDATE SET peso_tara = EXCLUDED.peso_tara
+            RETURNING *;
+        `;
+        const { rows } = await pool.query(query, [nome, pesoTara]);
+        res.status(201).json(rows[0]);
     } catch (err) {
-        console.error('Erro ao cadastrar tara:', err);
-        res.status(500).json({ mensagem: 'Erro ao cadastrar tara' });
+        res.status(500).json({ erro: err.message });
     }
 });
 
-// Listar todos os usuários
-app.get('/api/usuarios', async (req, res) => {
-    try {
-        const result = await pool.query('SELECT id, nome, usuario, nivel_acesso FROM usuarios ORDER BY nome ASC');
-        res.json(result.rows);
-    } catch (err) {
-        console.error('Erro ao buscar usuários:', err);
-        res.status(500).json({ mensagem: 'Erro ao buscar usuários' });
-    }
-});
+// =================================================================
+// 2. ROTAS DE PROCESSAMENTO (RECEBIMENTO E EXPEDIÇÃO)
+// =================================================================
 
-// Cadastrar novo usuário
-app.post('/api/usuarios', async (req, res) => {
-    const { nome, usuario, senha, nivelAcesso } = req.body;
-    if (!nome || !usuario || !senha || !nivelAcesso) {
-        return res.status(400).json({ mensagem: 'Todos os campos são obrigatórios' });
+// SALVAR PESAGEM DE RECEBIMENTO (ENTRADA)
+app.post('/api/apontamento', async (req, res) => {
+    const { cliente, numeroOs, tipoOs, dataColeta, qtdGaiolas, pesoColeta, gaiolas } = req.body;
+
+    if (!cliente || !numeroOs || !tipoOs) {
+        return res.status(400).json({ mensagem: 'Campos obrigatórios ausentes.' });
     }
 
-    try {
-        const result = await pool.query(
-            'INSERT INTO usuarios (nome, usuario, senha, nivel_acesso) VALUES ($1, $2, $3, $4) RETURNING id, nome, usuario, nivel_acesso',
-            [nome.trim(), usuario.trim().toLowerCase(), senha, nivelAcesso]
-        );
-        res.status(201).json({ sucesso: true, usuario: result.rows[0] });
-    } catch (err) {
-        console.error('Erro ao cadastrar usuário:', err);
-        res.status(500).json({ mensagem: 'Erro ou usuário já existente' });
-    }
-});
-
-// Alterar nível de acesso ou senha do usuário
-app.put('/api/usuarios/:id', async (req, res) => {
-    const { id } = req.params;
-    const { nome, nivelAcesso, senha } = req.body;
+    const clientBD = await pool.connect();
 
     try {
-        if (senha) {
-            await pool.query(
-                'UPDATE usuarios SET nome = $1, nivel_acesso = $2, senha = $3 WHERE id = $4',
-                [nome.trim(), nivelAcesso, senha, id]
-            );
-        } else {
-            await pool.query(
-                'UPDATE usuarios SET nome = $1, nivel_acesso = $2 WHERE id = $3',
-                [nome.trim(), nivelAcesso, id]
-            );
+        await clientBD.query('BEGIN');
+
+        // Define a data segura para gravação (trata 'null' ou 'undefined')
+        const dataTratada = dataColeta || new Date().toISOString().split('T')[0];
+
+        // 1. Grava o Apontamento Principal
+        const queryApontamento = `
+            INSERT INTO apontamentos (cliente, numero_os, tipo_os, data_coleta, qtd_gaiolas, peso_coleta, peso_entrega)
+            VALUES ($1, $2, $3, $4, $5, $6, 0)
+            RETURNING id;
+        `;
+        const resApontamento = await clientBD.query(queryApontamento, [
+            cliente,
+            numeroOs,
+            tipoOs,
+            dataTratada,
+            qtdGaiolas || (gaiolas ? gaiolas.length : 0),
+            pesoColeta || 0
+        ]);
+
+        const apontamentoId = resApontamento.rows[0].id;
+
+        // 2. Grava os Detalhes das Gaiolas
+        if (Array.isArray(gaiolas) && gaiolas.length > 0) {
+            const queryGaiola = `
+                INSERT INTO apontamentos_gaiolas (apontamento_id, numero_gaiola, tipo_gaiola, peso_bruto, peso_tara, peso_liquido, fase)
+                VALUES ($1, $2, $3, $4, $5, $6, 'recebimento');
+            `;
+
+            for (const g of gaiolas) {
+                await clientBD.query(queryGaiola, [
+                    apontamentoId,
+                    g.numero || 1,
+                    g.tipoGaiola || 'Padrão',
+                    g.pesoBruto || 0,
+                    g.pesoTara || 0,
+                    g.pesoLiquido || 0
+                ]);
+            }
         }
-        res.json({ sucesso: true, mensagem: 'Usuário atualizado com sucesso' });
+
+        // 3. Atualiza ou Insere o Resumo na Produção Diária (Se a tabela for utilizada)
+        const queryProducao = `
+            INSERT INTO producao_diaria (data, peso_coleta)
+            VALUES ($1, $2)
+            ON CONFLICT (data) DO UPDATE SET peso_coleta = producao_diaria.peso_coleta + EXCLUDED.peso_coleta;
+        `;
+        await clientBD.query(queryProducao, [dataTratada, pesoColeta || 0]);
+
+        await clientBD.query('COMMIT');
+        return res.status(201).json({ sucesso: true, id: apontamentoId });
+
     } catch (err) {
-        console.error('Erro ao atualizar usuário:', err);
-        res.status(500).json({ mensagem: 'Erro ao atualizar usuário' });
+        await clientBD.query('ROLLBACK');
+        console.error('❌ Erro no banco ao salvar recebimento:', err);
+        return res.status(500).json({ erro: 'Erro ao salvar recebimento', detalhe: err.message });
+    } finally {
+        clientBD.release();
     }
 });
 
-// Excluir usuário
-app.delete('/api/usuarios/:id', async (req, res) => {
-    const { id } = req.params;
-    try {
-        await pool.query('DELETE FROM usuarios WHERE id = $1', [id]);
-        res.json({ sucesso: true, mensagem: 'Usuário removido' });
-    } catch (err) {
-        console.error('Erro ao excluir usuário:', err);
-        res.status(500).json({ mensagem: 'Erro ao excluir usuário' });
-    }
-});
-
-// Listar OS que já foram recebidas mas ainda não foram expedidas
+// LISTAR OS PENDENTES PARA EXPEDIÇÃO
 app.get('/api/os-pendentes-expedicao', async (req, res) => {
     try {
         const query = `
@@ -316,35 +203,45 @@ app.get('/api/os-pendentes-expedicao', async (req, res) => {
             WHERE peso_entrega = 0 
             ORDER BY created_at DESC;
         `;
-        const result = await pool.query(query);
-        res.json(result.rows);
+        const { rows } = await pool.query(query);
+        res.json(rows);
     } catch (err) {
-        res.status(500).json({ mensagem: 'Erro ao buscar OS pendentes' });
+        res.status(500).json({ erro: err.message });
     }
 });
 
-// Salvar a Pesagem de Expedição
+// SALVAR PESAGEM DE EXPEDIÇÃO (SAÍDA)
 app.post('/api/salvar-expedicao', async (req, res) => {
     const { apontamentoId, pesoTotalExpedicao, gaiolas } = req.body;
+
+    if (!apontamentoId || !gaiolas) {
+        return res.status(400).json({ mensagem: 'Parâmetros inválidos.' });
+    }
+
     const clientBD = await pool.connect();
 
     try {
         await clientBD.query('BEGIN');
 
-        // 1. Atualiza o peso de entrega na tabela principal
+        // 1. Atualiza a OS com o peso final de entrega
         await clientBD.query(
             'UPDATE apontamentos SET peso_entrega = $1 WHERE id = $2',
             [pesoTotalExpedicao, apontamentoId]
         );
 
-        // 2. Insere as gaiolas da expedição
+        // 2. Grava as gaiolas da fase de expedição
         const queryGaiola = `
             INSERT INTO apontamentos_gaiolas (apontamento_id, numero_gaiola, tipo_gaiola, peso_bruto, peso_tara, peso_liquido, fase)
             VALUES ($1, $2, $3, $4, $5, $6, 'expedicao');
         `;
         for (const g of gaiolas) {
             await clientBD.query(queryGaiola, [
-                apontamentoId, g.numero, g.tipoGaiola, g.pesoBruto, g.pesoTara, g.pesoLiquido
+                apontamentoId,
+                g.numero,
+                g.tipoGaiola,
+                g.pesoBruto,
+                g.pesoTara,
+                g.pesoLiquido
             ]);
         }
 
@@ -352,18 +249,14 @@ app.post('/api/salvar-expedicao', async (req, res) => {
         res.status(200).json({ sucesso: true, mensagem: 'Expedição finalizada com sucesso!' });
     } catch (err) {
         await clientBD.query('ROLLBACK');
-        res.status(500).json({ mensagem: 'Erro ao processar expedição' });
+        console.error('❌ Erro no banco ao salvar expedição:', err);
+        res.status(500).json({ erro: 'Erro ao salvar expedição', detalhe: err.message });
     } finally {
         clientBD.release();
     }
 });
 
-// Garante que 'data' receba o valor do front-end ou a data/hora atual caso venha undefined/null
-const dataRegistro = dataColeta || data || new Date().toISOString().split('T')[0];
-
-const queryProducao = `
-    INSERT INTO producao_diaria (data, peso_coleta, ...)
-    VALUES ($1, $2, ...)
-`;
-
-await clientBD.query(queryProducao, [dataRegistro, pesoColeta, ...]);
+// Start Server
+app.listen(port, () => {
+    console.log(`🚀 Servidor MES rodando na porta ${port}`);
+});
