@@ -9,7 +9,8 @@ app.use(express.json());
 
 // String de conexão direta do Supabase
 // Substitua [SUA_SENHA] e [SEU_PROJETO] pelos dados do seu painel Supabase
-const connectionString = 'postgresql://postgres:Fabiokibe@300376@db.gpplwgegiiuihxwzndrz.supabase.co:5432/postgres';
+const connectionString = 'postgresql://postgres.gpplwgegiiuihxwzndrz:Fabiokibe@300376@aws-0-sa-east-1.pooler.supabase.com:6543/postgres';
+
 
 const pool = new Pool({
     connectionString: connectionString,
