@@ -17,7 +17,7 @@
                 </div>
                 <div>
                     <h1 class="text-xl font-bold tracking-wider">MES - Configurações Gerais</h1>
-                    <p class="text-xs text-slate-400">Parâmetros de Operação, Balança e Utilidades</p>
+                    <p class="text-xs text-slate-400">Parâmetros de Operação, Medidores e Balança</p>
                 </div>
             </div>
             <a href="index.html" class="bg-slate-700 hover:bg-slate-600 text-xs font-bold px-4 py-2 rounded-lg transition">⬅️ Menu Principal</a>
@@ -31,23 +31,24 @@
             <div class="bg-white p-6 rounded-2xl shadow-md border border-slate-200 space-y-4">
                 <h3 class="text-sm font-bold text-slate-800 border-b pb-2 flex items-center gap-2">
                     <i class="fa-solid fa-fire-flame-simple text-orange-600"></i>
-                    1. Medidores de Consumo de Gás
+                    1. Cadastro de Medidores de Gás (GLP/GN)
                 </h3>
                 <p class="text-xs text-slate-500">
-                    Defina quantos relógios de medição de gás o sistema deve disponibilizar na tela de lançamento diário.
+                    Defina a quantidade de relógios e personalize a identificação de cada ponto de medição.
                 </p>
 
                 <form onsubmit="salvarConfigGas(event)" class="space-y-4">
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 mb-1">Quantidade de Relógios</label>
-                        <select id="setQtdRelogios" class="w-full p-2.5 border rounded-lg text-sm bg-slate-50 outline-none focus:ring-2 focus:ring-orange-500">
-                            <option value="1">1 Relógio de Medição</option>
-                            <option value="2">2 Relógios de Medição</option>
-                            <option value="3">3 Relógios de Medição</option>
+                        <select id="setQtdRelogiosGas" onchange="gerarCamposRelogiosGas()" class="w-full p-2.5 border rounded-lg text-sm bg-slate-50 outline-none focus:ring-2 focus:ring-orange-500">
+                            <option value="1">1 Relógio</option>
+                            <option value="2">2 Relógios</option>
+                            <option value="3">3 Relógios</option>
+                            <option value="4">4 Relógios</option>
                         </select>
                     </div>
 
-                    <div id="previewRelogios" class="bg-orange-50 p-3 rounded-lg border border-orange-200 text-xs text-orange-800">
+                    <div id="containerNomesGas" class="space-y-2 pt-2 border-t border-slate-100">
                         </div>
 
                     <button type="submit" class="w-full bg-orange-600 hover:bg-orange-700 text-white font-bold py-2.5 rounded-lg text-xs transition shadow">
@@ -58,8 +59,37 @@
 
             <div class="bg-white p-6 rounded-2xl shadow-md border border-slate-200 space-y-4">
                 <h3 class="text-sm font-bold text-slate-800 border-b pb-2 flex items-center gap-2">
+                    <i class="fa-solid fa-bolt text-yellow-500"></i>
+                    2. Cadastro de Medidores de Energia Elétrica
+                </h3>
+                <p class="text-xs text-slate-500">
+                    Defina a quantidade de medidores e personalize os nomes das entradas de energia.
+                </p>
+
+                <form onsubmit="salvarConfigEnergia(event)" class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Quantidade de Relógios</label>
+                        <select id="setQtdRelogiosEnergia" onchange="gerarCamposRelogiosEnergia()" class="w-full p-2.5 border rounded-lg text-sm bg-slate-50 outline-none focus:ring-2 focus:ring-yellow-500">
+                            <option value="1">1 Relógio</option>
+                            <option value="2">2 Relógios</option>
+                            <option value="3">3 Relógios</option>
+                            <option value="4">4 Relógios</option>
+                        </select>
+                    </div>
+
+                    <div id="containerNomesEnergia" class="space-y-2 pt-2 border-t border-slate-100">
+                        </div>
+
+                    <button type="submit" class="w-full bg-yellow-500 hover:bg-yellow-600 text-slate-900 font-bold py-2.5 rounded-lg text-xs transition shadow">
+                        💾 SALVAR CONFIGURAÇÃO DE ENERGIA
+                    </button>
+                </form>
+            </div>
+
+            <div class="bg-white p-6 rounded-2xl shadow-md border border-slate-200 space-y-4">
+                <h3 class="text-sm font-bold text-slate-800 border-b pb-2 flex items-center gap-2">
                     <i class="fa-solid fa-scale-balanced text-blue-600"></i>
-                    2. Parâmetros da Balança Industrial
+                    3. Parâmetros da Balança Industrial
                 </h3>
                 <p class="text-xs text-slate-500">
                     Ajuste a taxa de transmissão serial (Baud Rate) e a tolerância de oscilação de peso.
@@ -83,24 +113,27 @@
                     </div>
 
                     <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 rounded-lg text-xs transition shadow">
-                        💾 SALVAR CONFIGURAÇÃO DA BALANÇA
+                        💾 SALVAR PARÂMETROS DA BALANÇA
                     </button>
                 </form>
             </div>
 
-            <div class="bg-white p-6 rounded-2xl shadow-md border border-slate-200 space-y-4 md:col-span-2">
+            <div class="bg-white p-6 rounded-2xl shadow-md border border-slate-200 space-y-4">
                 <h3 class="text-sm font-bold text-slate-800 border-b pb-2 flex items-center gap-2">
                     <i class="fa-solid fa-database text-purple-600"></i>
-                    3. Armazenamento Local e Dados Off-line
+                    4. Dados Locais e Armazenamento
                 </h3>
+                <p class="text-xs text-slate-500">
+                    Redefina ou limpe as configurações salvas em cache neste dispositivo.
+                </p>
 
-                <div class="flex flex-wrap items-center justify-between gap-4 bg-slate-50 p-4 rounded-xl border">
+                <div class="bg-slate-50 p-4 rounded-xl border flex justify-between items-center">
                     <div>
-                        <h4 class="text-xs font-bold text-slate-800">Limpar Dados Locais (LocalStorage)</h4>
-                        <p class="text-[11px] text-slate-500">Remove preferências salvas temporariamente no navegador.</p>
+                        <h4 class="text-xs font-bold text-slate-800">Limpar Configurações Salvas</h4>
+                        <p class="text-[11px] text-slate-500">Restaura os padrões de fábrica do navegador.</p>
                     </div>
-                    <button onclick="limparCacheLocal()" class="bg-red-600 hover:bg-red-700 text-white font-bold px-4 py-2 rounded-lg text-xs transition">
-                        🗑️ Limpar Cache Local
+                    <button type="button" onclick="limparCacheLocal()" class="bg-red-600 hover:bg-red-700 text-white font-bold px-3 py-2 rounded-lg text-xs transition">
+                        🗑️ Limpar Cache
                     </button>
                 </div>
             </div>
@@ -110,34 +143,105 @@
     </main>
 
     <footer class="bg-white border-t border-slate-200 p-4 text-center text-xs text-slate-500">
-        MES Dona Zara &copy; 2026 - Módulo de Configurações Gerais
+        MES Dona Zara &copy; 2026 - Módulo de Configurações do Sistema
     </footer>
 
     <script>
-        // Carregar configurações do localStorage na inicialização
         document.addEventListener('DOMContentLoaded', () => {
-            carregarConfiguracoes();
-            document.getElementById('setQtdRelogios').addEventListener('change', atualizarPreviewGas);
+            carregarTodasConfiguracoes();
         });
 
-        function carregarConfiguracoes() {
-            // Config Gás
-            const configGas = JSON.parse(localStorage.getItem('mes_config_gas') || '{"qtd": 2}');
-            document.getElementById('setQtdRelogios').value = configGas.qtd;
-            atualizarPreviewGas();
+        function carregarTodasConfiguracoes() {
+            // 1. Config Gás
+            const configGas = JSON.parse(localStorage.getItem('mes_config_gas') || '{"qtd": 2, "nomes": ["Relógio 1", "Relógio 2"]}');
+            document.getElementById('setQtdRelogiosGas').value = configGas.qtd;
+            gerarCamposRelogiosGas(configGas.nomes);
 
-            // Config Balança
+            // 2. Config Energia
+            const configEnergia = JSON.parse(localStorage.getItem('mes_config_energia') || '{"qtd": 2, "nomes": ["Medidor Principal", "Medidor Auxiliar"]}');
+            document.getElementById('setQtdRelogiosEnergia').value = configEnergia.qtd;
+            gerarCamposRelogiosEnergia(configEnergia.nomes);
+
+            // 3. Config Balança
             const configBalanca = JSON.parse(localStorage.getItem('mes_config_balanca') || '{"baudRate": "9600", "tolerancia": "0.05"}');
             document.getElementById('setBaudRate').value = configBalanca.baudRate;
             document.getElementById('setTolerancia').value = configBalanca.tolerancia;
         }
 
-        function atualizarPreviewGas() {
-            const qtd = parseInt(document.getElementById('setQtdRelogios').value);
-            const preview = document.getElementById('previewRelogios');
-            let texto = `Configuração Atual: A tela de consumo exibirá <strong>${qtd}</strong> relógio(s) de medição`;
-            if (qtd > 1) {
-                texto += ` e calculará a soma automática (Total Captação).`;
-            } else {
-                texto += `.`;
+        // --- RELÓGIOS DE GÁS ---
+        function gerarCamposRelogiosGas(nomesExistentes = []) {
+            const qtd = parseInt(document.getElementById('setQtdRelogiosGas').value);
+            const container = document.getElementById('containerNomesGas');
+            container.innerHTML = '';
+
+            for (let i = 1; i <= qtd; i++) {
+                const valor = nomesExistentes[i - 1] || `Relógio ${i}`;
+                container.innerHTML += `
+                    <div>
+                        <label class="block text-[11px] font-semibold text-slate-600 mb-0.5">Nome do Relógio ${i}</label>
+                        <input type="text" id="nome_gas_${i}" value="${valor}" required class="w-full p-2 border rounded-lg text-xs bg-slate-50 outline-none focus:ring-1 focus:ring-orange-500">
+                    </div>
+                `;
             }
+        }
+
+        function salvarConfigGas(e) {
+            e.preventDefault();
+            const qtd = parseInt(document.getElementById('setQtdRelogiosGas').value);
+            const nomes = [];
+            for (let i = 1; i <= qtd; i++) {
+                nomes.push(document.getElementById(`nome_gas_${i}`).value || `Relógio ${i}`);
+            }
+
+            localStorage.setItem('mes_config_gas', JSON.stringify({ qtd, nomes }));
+            alert("Configurações dos medidores de gás salvas com sucesso!");
+        }
+
+        // --- RELÓGIOS DE ENERGIA ---
+        function gerarCamposRelogiosEnergia(nomesExistentes = []) {
+            const qtd = parseInt(document.getElementById('setQtdRelogiosEnergia').value);
+            const container = document.getElementById('containerNomesEnergia');
+            container.innerHTML = '';
+
+            for (let i = 1; i <= qtd; i++) {
+                const valor = nomesExistentes[i - 1] || `Medidor ${i}`;
+                container.innerHTML += `
+                    <div>
+                        <label class="block text-[11px] font-semibold text-slate-600 mb-0.5">Nome do Medidor ${i}</label>
+                        <input type="text" id="nome_energia_${i}" value="${valor}" required class="w-full p-2 border rounded-lg text-xs bg-slate-50 outline-none focus:ring-1 focus:ring-yellow-500">
+                    </div>
+                `;
+            }
+        }
+
+        function salvarConfigEnergia(e) {
+            e.preventDefault();
+            const qtd = parseInt(document.getElementById('setQtdRelogiosEnergia').value);
+            const nomes = [];
+            for (let i = 1; i <= qtd; i++) {
+                nomes.push(document.getElementById(`nome_energia_${i}`).value || `Medidor ${i}`);
+            }
+
+            localStorage.setItem('mes_config_energia', JSON.stringify({ qtd, nomes }));
+            alert("Configurações dos medidores de energia salvas com sucesso!");
+        }
+
+        // --- BALANÇA E LIMPEZA ---
+        function salvarConfigBalanca(e) {
+            e.preventDefault();
+            const baudRate = document.getElementById('setBaudRate').value;
+            const tolerancia = document.getElementById('setTolerancia').value;
+            localStorage.setItem('mes_config_balanca', JSON.stringify({ baudRate, tolerancia }));
+            alert("Parâmetros da balança atualizados!");
+        }
+
+        function limparCacheLocal() {
+            if (confirm("Deseja realmente redefinir todas as configurações salvas neste navegador?")) {
+                localStorage.clear();
+                alert("Configurações restauradas!");
+                location.reload();
+            }
+        }
+    </script>
+</body>
+</html>
