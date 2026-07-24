@@ -152,3 +152,31 @@ app.post('/api/login', (req, res) => {
         return res.status(401).json({ sucesso: false, mensagem: "Senha incorreta!" });
     }
 });
+
+// Rota para listar todos os Clientes
+app.get('/api/clientes', async (req, res) => {
+    try {
+        const result = await pool.query('SELECT * FROM clientes ORDER BY nome ASC');
+        res.json(result.rows);
+    } catch (err) {
+        console.error('Erro ao buscar clientes:', err);
+        res.status(500).json({ mensagem: 'Erro ao buscar clientes' });
+    }
+});
+
+// Rota para cadastrar um novo Cliente
+app.post('/api/clientes', async (req, res) => {
+    const { nome } = req.body;
+    if (!nome) return res.status(400).json({ mensagem: 'Nome do cliente é obrigatório' });
+
+    try {
+        const result = await pool.query(
+            'INSERT INTO clientes (nome) VALUES ($1) ON CONFLICT (nome) DO NOTHING RETURNING *',
+            [nome.trim()]
+        );
+        res.status(201).json({ sucesso: true, cliente: result.rows[0] });
+    } catch (err) {
+        console.error('Erro ao cadastrar cliente:', err);
+        res.status(500).json({ mensagem: 'Erro ao cadastrar cliente' });
+    }
+});
