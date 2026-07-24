@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MES - Lançamento de Produtos Químicos | Lavanderia Dona Zara</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body class="bg-slate-100 font-sans min-h-screen flex flex-col justify-between">
+
+    <header class="bg-slate-900 text-white p-4 shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="bg-purple-600 p-2.5 rounded-xl text-white shadow">
+                    <i class="fa-solid fa-vial text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold tracking-wider">MES - Consumo de Produtos Químicos</h1>
+                    <p class="text-xs text-slate-400">Controle de Estoque, Consumo (L/Kg) e Custo Financeiro (R$)</p>
+                </div>
+            </div>
+            <a href="index.html" class="bg-slate-700 hover:bg-slate-600 text-xs font-bold px-4 py-2 rounded-lg transition">⬅️ Menu Principal</a>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto w-full p-4 my-4 space-y-6">
+
+        <div class="bg-white rounded-2xl shadow-md p-6 border border-slate-200 space-y-4">
+            <h2 class="text-base font-bold text-slate-800 border-b pb-2 flex items-center justify-between">
+                <span class="flex items-center gap-2">
+                    <i class="fa-solid fa-boxes-packing text-purple-600"></i>
+                    Lançamento Diário por Produto Químico
+                </span>
+                <span id="labelTotalGeral" class="text-sm font-black text-purple-700 bg-purple-50 px-3 py-1 rounded-lg border border-purple-200">
+                    Total do Dia: R$ 0,00
+                </span>
+            </h2>
+
+            <form id="formQuimicos" onsubmit="salvarLancamento(event)" class="space-y-6">
+                
+                <div class="max-w-xs">
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Data do Lançamento</label>
+                    <input type="date" id="inputData" required class="w-full p-2.5 border rounded-lg text-sm bg-slate-50 outline-none focus:ring-2 focus:ring-purple-500">
+                </div>
+
+                <div id="gridProdutos" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    </div>
+
+                <div class="flex justify-end gap-3 pt-4 border-t">
+                    <button type="button" onclick="limparFormulario()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-5 py-2.5 rounded-lg text-xs font-bold transition">Limpar</button>
+                    <button type="submit" class="bg-purple-600 hover:bg-purple-700 text-white font-bold px-8 py-2.5 rounded-lg text-xs transition shadow-md">
+                        💾 SALVAR CONSUMO DE QUÍMICOS
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div class="bg-white p-5 rounded-2xl shadow-sm border-l-4 border-purple-600">
+                <span class="text-xs font-bold text-slate-500 uppercase">Custo Acumulado no Mês</span>
+                <p id="kpiCustoTotal" class="text-2xl font-black text-slate-800 mt-1">R$ 0,00</p>
+            </div>
+            <div class="bg-white p-5 rounded-2xl shadow-sm border-l-4 border-blue-600">
+                <span class="text-xs font-bold text-slate-500 uppercase">Maior Custo por Produto</span>
+                <p id="kpiMaiorInsumo" class="text-lg font-black text-slate-800 mt-1">-</p>
+            </div>
+            <div class="bg-white p-5 rounded-2xl shadow-sm border-l-4 border-emerald-600">
+                <span class="text-xs font-bold text-slate-500 uppercase">Média Diária de Custo</span>
+                <p id="kpiMediaDiaria" class="text-2xl font-black text-slate-800 mt-1">R$ 0,00</p>
+            </div>
+        </div>
+
+        <div class="bg-white p-6 rounded-2xl shadow-md border border-slate-200">
+            <h3 class="text-sm font-bold text-slate-800 mb-4">Evolução dos Custos de Insumos Químicos (R$)</h3>
+            <div class="h-64">
+                <canvas id="chartQuimicos"></canvas>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-2xl shadow-md p-6 border border-slate-200">
+            <h3 class="text-sm font-bold text-slate-800 mb-4 border-b pb-2">Histórico Detalhado por Produto</h3>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-[11px] border-collapse min-w-[2000px]">
+                    <thead class="bg-slate-100 text-slate-700">
+                        <tr id="headerTabela1">
+                            <th rowspan="2" class="p-2 border sticky left-0 bg-slate-100 z-10">Data</th>
+                            <th rowspan="2" class="p-2 border text-right bg-purple-100 text-purple-900 font-bold sticky right-0 z-10">Total (R$)</th>
+                            <th rowspan="2" class="p-2 border text-center">Ações</th>
+                        </tr>
+                        <tr id="headerTabela2">
+                            </tr>
+                    </thead>
+                    <tbody id="tabelaHistorico"></tbody>
+                </table>
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="bg-white border-t border-slate-200 p-4 text-center text-xs text-slate-500">
+        MES Dona Zara &copy; 2026 - Módulo de Gestão de Insumos Químicos
+    </footer>
+
+    <script>
+        // LISTA DE PRODUTOS SOLICITADOS
+        const PRODUTOS = [
+            { id: "beiclean_cwt", nome: "BEICLEAN CWT", desc: "Detergente concentrado", un: "L" },
+            { id: "beipur_msc", nome: "BEIPUR MSC", desc: "Alcalino concentrado - soda", un: "L" },
+            { id: "beibleach_pe", nome: "BEIBLEACH PE", desc: "Ácido Peracético", un: "L" },
+            { id: "beibleach_hc_liq", nome: "BEIBLEACH HC LIQ", desc: "Hipoclorito de Sódio", un: "L" },
+            { id: "beibleach_net", nome: "BEIBLEACH NET", desc: "Bissulfito", un: "L" },
+            { id: "beiplex_cab", nome: "BEIPLEX CAB", desc: "Complexante", un: "L" },
+            { id: "beiblanc_had", nome: "BEIBLANC HAD", desc: "Branqueador óptico", un: "L" },
+            { id: "beibleach_blue", nome: "BEIBLEACH BLUE ACTIVE", desc: "Ativador Peróxido", un: "L" },
+            { id: "beiacid_wsd", nome: "BEIACID WSD", desc: "Ácido fórmico", un: "L" },
+            { id: "wp35", nome: "WP35", desc: "Peróxido de Hidrogênio", un: "L" },
+            { id: "beisoft_avra", nome: "BEISOFT AVRA", desc: "Amaciante", un: "L" },
+            { id: "sal_grosso", nome: "SAL GROSSO", desc: "Pacote c/ 25kg", un: "Kg" }
+        ];
+
+        let historicoQuimicos = JSON.parse(localStorage.getItem('mes_historico_quimicos') || '[]');
+        let chartInstance = null;
+
+        document.getElementById('inputData').valueAsDate = new Date();
+
+        function inicializarFormulario() {
+            const grid = document.getElementById('gridProdutos');
+            grid.innerHTML = '';
+
+            PRODUTOS.forEach(p => {
+                grid.innerHTML += `
+                    <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200 space-y-2">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h4 class="text-xs font-bold text-slate-800">${p.nome}</h4>
+                                <span class="text-[10px] text-slate-500">${p.desc}</span>
+                            </div>
+                            <span class="text-[10px] bg-slate-200 text-slate-700 px-1.5 py-0.5 rounded font-bold">${p.un}</span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2 text-xs">
+                            <div>
+                                <label class="block text-[10px] text-slate-600">Custo Unit (R$)</label>
+                                <input type="number" step="0.01" min="0" id="custo_${p.id}" oninput="calcularTotais()" placeholder="0.00" class="w-full p-1.5 border rounded bg-white">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-slate-600">Estoque (${p.un})</label>
+                                <input type="number" step="0.01" min="0" id="estoque_${p.id}" placeholder="0" class="w-full p-1.5 border rounded bg-white">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-slate-600">Consumo (${p.un})</label>
+                                <input type="number" step="0.01" min="0" id="consumo_${p.id}" oninput="calcularTotais()" placeholder="0" class="w-full p-1.5 border rounded bg-white">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-slate-600">Consumo (R$)</label>
+                                <input type="text" id="total_rs_${p.id}" readonly value="R$ 0,00" class="w-full p-1.5 border rounded bg-slate-100 font-bold text-slate-700">
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            montarCabecalhoTabela();
+            renderizarTela();
+        }
+
+        function calcularTotais() {
+            let totalDia = 0;
+
+            PRODUTOS.forEach(p => {
+                const custo = parseFloat(document.getElementById(`custo_${p.id}`).value) || 0;
+                const consumo = parseFloat(document.getElementById(`consumo_${p.id}`).value) || 0;
+                const subtotal = custo * consumo;
+
+                document.getElementById(`total_rs_${p.id}`).value = `R$ ${subtotal.toFixed(2).replace('.', ',')}`;
+                totalDia += subtotal;
+            });
+
+            document.getElementById('labelTotalGeral').innerText = `Total do Dia: R$ ${totalDia.toFixed(2).replace('.', ',')}`;
+            return totalDia;
+        }
+
+        function salvarLancamento(e) {
+            e.preventDefault();
+            const data = document.getElementById('inputData').value;
+            const itens = {};
+
+            PRODUTOS.forEach(p => {
+                const custo = parseFloat(document.getElementById(`custo_${p.id}`).value) || 0;
+                const estoque = parseFloat(document.getElementById(`estoque_${p.id}`).value) || 0;
+                const consumo = parseFloat(document.getElementById(`consumo_${p.id}`).value) || 0;
+                const consumoRS = custo * consumo;
+
+                itens[p.id] = { custo, estoque, consumo, consumoRS };
+            });
+
+            const totalGeral = Object.values(itens).reduce((acc, curr) => acc + curr.consumoRS, 0);
+
+            const registro = { data, itens, totalGeral };
+
+            const index = historicoQuimicos.findIndex(h => h.data === data);
+            if (index >= 0) {
+                historicoQuimicos[index] = registro;
+            } else {
+                historicoQuimicos.push(registro);
+            }
+
+            historicoQuimicos.sort((a, b) => new Date(a.data) - new Date(b.data));
+            localStorage.setItem('mes_historico_quimicos', JSON.stringify(historicoQuimicos));
+
+            limparFormulario();
+            renderizarTela();
+        }
+
+        function montarCabecalhoTabela() {
+            const h1 = document.getElementById('headerTabela1');
+            const h2 = document.getElementById('headerTabela2');
+
+            // Limpa manter apenas a data no inicio e total no fim
+            h1.innerHTML = `<th rowspan="2" class="p-2 border sticky left-0 bg-slate-100 z-10">Data</th>`;
+            h2.innerHTML = ``;
+
+            PRODUTOS.forEach(p => {
+                h1.innerHTML += `<th colspan="4" class="p-2 border text-center font-bold bg-slate-200">${p.nome}</th>`;
+                h2.innerHTML += `
+                    <th class="p-1 border text-right text-[10px]">Custo (R$)</th>
+                    <th class="p-1 border text-right text-[10px]">Estoque (${p.un})</th>
+                    <th class="p-1 border text-right text-[10px]">Consumo (${p.un})</th>
+                    <th class="p-1 border text-right text-[10px] bg-purple-50">Consumo (R$)</th>
+                `;
+            });
+
+            h1.innerHTML += `
+                <th rowspan="2" class="p-2 border text-right bg-purple-100 text-purple-900 font-bold">Total (R$)</th>
+                <th rowspan="2" class="p-2 border text-center">Ações</th>
+            `;
+        }
+
+        function renderizarTela() {
+            renderizarTabela();
+            renderizarKPIs();
+            renderizarGrafico();
+        }
+
+        function renderizarTabela() {
+            const tbody = document.getElementById('tabelaHistorico');
+            if (historicoQuimicos.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="${(PRODUTOS.length * 4) + 3}" class="p-4 text-center italic text-slate-400">Nenhum lançamento cadastrado.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = historicoQuimicos.map((reg, idx) => {
+                let colsProd = '';
+                PRODUTOS.forEach(p => {
+                    const item = reg.itens[p.id] || { custo: 0, estoque: 0, consumo: 0, consumoRS: 0 };
+                    colsProd += `
+                        <td class="p-1.5 border text-right">${item.custo.toFixed(2)}</td>
+                        <td class="p-1.5 border text-right">${item.estoque.toFixed(1)}</td>
+                        <td class="p-1.5 border text-right font-semibold">${item.consumo.toFixed(1)}</td>
+                        <td class="p-1.5 border text-right font-bold bg-purple-50/50 text-purple-900">R$ ${item.consumoRS.toFixed(2)}</td>
+                    `;
+                });
+
+                return `
+                    <tr class="hover:bg-slate-50 transition">
+                        <td class="p-2 border font-medium text-slate-800 sticky left-0 bg-white">${new Date(reg.data + 'T00:00:00').toLocaleDateString('pt-BR')}</td>
+                        ${colsProd}
+                        <td class="p-2 border text-right font-black text-purple-800 bg-purple-100/50">R$ ${reg.totalGeral.toFixed(2)}</td>
+                        <td class="p-2 border text-center">
+                            <button onclick="remover(${idx})" class="text-red-600 font-bold px-1" title="Excluir">❌</button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function renderizarKPIs() {
+            const totalGeral = historicoQuimicos.reduce((acc, h) => acc + h.totalGeral, 0);
+            const mediaDiaria = historicoQuimicos.length > 0 ? totalGeral / historicoQuimicos.length : 0;
+
+            // Descobrir maior insumo
+            const totaisPorInsumo = {};
+            historicoQuimicos.forEach(h => {
+                PRODUTOS.forEach(p => {
+                    const item = h.itens[p.id];
+                    if (item) {
+                        totaisPorInsumo[p.nome] = (totaisPorInsumo[p.nome] || 0) + item.consumoRS;
+                    }
+                });
+            });
+
+            let maiorInsumo = "-";
+            let maiorValor = 0;
+            Object.entries(totaisPorInsumo).forEach(([nome, val]) => {
+                if (val > maiorValor) {
+                    maiorValor = val;
+                    maiorInsumo = nome;
+                }
+            });
+
+            document.getElementById('kpiCustoTotal').innerText = `R$ ${totalGeral.toFixed(2).replace('.', ',')}`;
+            document.getElementById('kpiMediaDiaria').innerText = `R$ ${mediaDiaria.toFixed(2).replace('.', ',')}`;
+            document.getElementById('kpiMaiorInsumo').innerText = maiorInsumo !== "-" ? `${maiorInsumo} (R$ ${maiorValor.toFixed(2)})` : "-";
+        }
+
+        function renderizarGrafico() {
+            const ctx = document.getElementById('chartQuimicos').getContext('2d');
+            if (chartInstance) chartInstance.destroy();
+
+            const labels = historicoQuimicos.map(h => new Date(h.data + 'T00:00:00').toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }));
+            const dados = historicoQuimicos.map(h => h.totalGeral);
+
+            chartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels,
+                    datasets: [{
+                        label: 'Custo Diário Total (R$)',
+                        data: dados,
+                        backgroundColor: '#9333ea',
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: { y: { beginAtZero: true } }
+                }
+            });
+        }
+
+        function limparFormulario() {
+            document.getElementById('formQuimicos').reset();
+            document.getElementById('inputData').valueAsDate = new Date();
+            calcularTotais();
+        }
+
+        function remover(i) {
+            if (confirm("Deseja excluir este registro de consumo?")) {
+                historicoQuimicos.splice(i, 1);
+                localStorage.setItem('mes_historico_quimicos', JSON.stringify(historicoQuimicos));
+                renderizarTela();
+            }
+        }
+
+        // Inicializar no carregamento
+        inicializarFormulario();
+    </script>
+</body>
+</html>

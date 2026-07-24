@@ -17,7 +17,7 @@
                 </div>
                 <div>
                     <h1 class="text-xl font-bold tracking-wider">MES - Configurações Gerais</h1>
-                    <p class="text-xs text-slate-400">Parâmetros de Operação, Hidrômetros, Medidores e Balança</p>
+                    <p class="text-xs text-slate-400">Produtos Químicos, Hidrômetros, Medidores e Balança</p>
                 </div>
             </div>
             <a href="index.html" class="bg-slate-700 hover:bg-slate-600 text-xs font-bold px-4 py-2 rounded-lg transition">⬅️ Menu Principal</a>
@@ -26,15 +26,47 @@
 
     <main class="max-w-7xl mx-auto w-full p-4 my-4 space-y-6">
 
+        <div class="bg-white p-6 rounded-2xl shadow-md border border-slate-200 space-y-4">
+            <div class="flex justify-between items-center border-b pb-2">
+                <h3 class="text-sm font-bold text-slate-800 flex items-center gap-2">
+                    <i class="fa-solid fa-vial text-purple-600"></i>
+                    1. Cadastro e Tabela de Produtos Químicos
+                </h3>
+                <button type="button" onclick="abrirModalProduto()" class="bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition">
+                    ➕ Novo Produto
+                </button>
+            </div>
+            <p class="text-xs text-slate-500">
+                Gerencie a lista de insumos químicos, altere custos unitários padrões e defina unidades de medida (L ou Kg).
+            </p>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-xs border-collapse">
+                    <thead class="bg-slate-100 text-slate-700">
+                        <tr>
+                            <th class="p-2.5 border">Código / ID</th>
+                            <th class="p-2.5 border">Nome do Produto</th>
+                            <th class="p-2.5 border">Descrição / Função</th>
+                            <th class="p-2.5 border text-center">Unidade</th>
+                            <th class="p-2.5 border text-right">Custo Unit. Padrão (R$)</th>
+                            <th class="p-2.5 border text-center">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabelaProdutosQuimicos">
+                        </tbody>
+                </table>
+            </div>
+        </div>
+
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 
             <div class="bg-white p-6 rounded-2xl shadow-md border border-slate-200 space-y-4">
                 <h3 class="text-sm font-bold text-slate-800 border-b pb-2 flex items-center gap-2">
                     <i class="fa-solid fa-droplet text-cyan-600"></i>
-                    1. Cadastro de Hidrômetros / Relógios de Água
+                    2. Cadastro de Hidrômetros / Relógios de Água
                 </h3>
                 <p class="text-xs text-slate-500">
-                    Defina a quantidade e nomeie os hidrômetros de Captação (Poços) e Consumo (Equipamentos).
+                    Defina a quantidade e nomeie os hidrômetros de Captação (Poços) e Consumo.
                 </p>
 
                 <form onsubmit="salvarConfigAgua(event)" class="space-y-4">
@@ -70,7 +102,7 @@
             <div class="bg-white p-6 rounded-2xl shadow-md border border-slate-200 space-y-4">
                 <h3 class="text-sm font-bold text-slate-800 border-b pb-2 flex items-center gap-2">
                     <i class="fa-solid fa-fire-flame-simple text-orange-600"></i>
-                    2. Cadastro de Medidores de Gás (GLP/GN)
+                    3. Cadastro de Medidores de Gás (GLP/GN)
                 </h3>
                 <p class="text-xs text-slate-500">
                     Defina a quantidade de relógios e personalize a identificação de cada ponto de medição.
@@ -99,7 +131,7 @@
             <div class="bg-white p-6 rounded-2xl shadow-md border border-slate-200 space-y-4">
                 <h3 class="text-sm font-bold text-slate-800 border-b pb-2 flex items-center gap-2">
                     <i class="fa-solid fa-bolt text-yellow-500"></i>
-                    3. Cadastro de Medidores de Energia Elétrica
+                    4. Cadastro de Medidores de Energia Elétrica
                 </h3>
                 <p class="text-xs text-slate-500">
                     Defina a quantidade de medidores e personalize os nomes das entradas de energia.
@@ -128,7 +160,7 @@
             <div class="bg-white p-6 rounded-2xl shadow-md border border-slate-200 space-y-4">
                 <h3 class="text-sm font-bold text-slate-800 border-b pb-2 flex items-center gap-2">
                     <i class="fa-solid fa-scale-balanced text-blue-600"></i>
-                    4. Parâmetros de Balança & Armazenamento
+                    5. Parâmetros de Balança & Armazenamento
                 </h3>
 
                 <form onsubmit="salvarConfigBalanca(event)" class="space-y-3">
@@ -167,36 +199,188 @@
 
     </main>
 
+    <div id="modalProduto" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-2xl p-6 w-full max-w-md shadow-xl space-y-4">
+            <h3 id="modalProdutoTitulo" class="text-sm font-bold text-slate-800 border-b pb-2 flex items-center gap-2">
+                <i class="fa-solid fa-vial text-purple-600"></i>
+                Novo Produto Químico
+            </h3>
+            
+            <form onsubmit="salvarProdutoQuimico(event)" class="space-y-3">
+                <input type="hidden" id="prodEditId" value="">
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Código / ID (único)</label>
+                    <input type="text" id="prodId" required placeholder="ex: beiclean_cwt" class="w-full p-2 border rounded-lg text-xs bg-slate-50 outline-none focus:ring-1 focus:ring-purple-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Nome do Produto</label>
+                    <input type="text" id="prodNome" required placeholder="ex: BEICLEAN CWT" class="w-full p-2 border rounded-lg text-xs bg-slate-50 outline-none focus:ring-1 focus:ring-purple-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Descrição / Função</label>
+                    <input type="text" id="prodDesc" placeholder="ex: Detergente concentrado" class="w-full p-2 border rounded-lg text-xs bg-slate-50 outline-none focus:ring-1 focus:ring-purple-500">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Unidade</label>
+                        <select id="prodUn" class="w-full p-2 border rounded-lg text-xs bg-slate-50 outline-none">
+                            <option value="L">L (Litro)</option>
+                            <option value="Kg">Kg (Quilo)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Custo Unit. Padrão (R$)</label>
+                        <input type="number" step="0.01" min="0" id="prodCusto" placeholder="0.00" class="w-full p-2 border rounded-lg text-xs bg-slate-50 outline-none">
+                    </div>
+                </div>
+
+                <div class="flex justify-end gap-2 pt-3">
+                    <button type="button" onclick="fecharModalProduto()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-4 py-2 rounded-lg text-xs font-bold transition">Cancelar</button>
+                    <button type="submit" class="bg-purple-600 hover:bg-purple-700 text-white font-bold px-5 py-2 rounded-lg text-xs transition shadow">Salvar Produto</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <footer class="bg-white border-t border-slate-200 p-4 text-center text-xs text-slate-500">
         MES Dona Zara &copy; 2026 - Módulo de Configurações do Sistema
     </footer>
 
     <script>
+        // PRODUTOS PADRÃO DE FÁBRICA
+        const PRODUTOS_PADRAO = [
+            { id: "beiclean_cwt", nome: "BEICLEAN CWT", desc: "Detergente concentrado", un: "L", custoPadrao: 0 },
+            { id: "beipur_msc", nome: "BEIPUR MSC", desc: "Alcalino concentrado - soda", un: "L", custoPadrao: 0 },
+            { id: "beibleach_pe", nome: "BEIBLEACH PE", desc: "Ácido Peracético", un: "L", custoPadrao: 0 },
+            { id: "beibleach_hc_liq", nome: "BEIBLEACH HC LIQ", desc: "Hipoclorito de Sódio", un: "L", custoPadrao: 0 },
+            { id: "beibleach_net", nome: "BEIBLEACH NET", desc: "Bissulfito", un: "L", custoPadrao: 0 },
+            { id: "beiplex_cab", nome: "BEIPLEX CAB", desc: "Complexante", un: "L", custoPadrao: 0 },
+            { id: "beiblanc_had", nome: "BEIBLANC HAD", desc: "Branqueador óptico", un: "L", custoPadrao: 0 },
+            { id: "beibleach_blue", nome: "BEIBLEACH BLUE ACTIVE", desc: "Ativador Peróxido", un: "L", custoPadrao: 0 },
+            { id: "beiacid_wsd", nome: "BEIACID WSD", desc: "Ácido fórmico", un: "L", custoPadrao: 0 },
+            { id: "wp35", nome: "WP35", desc: "Peróxido de Hidrogênio", un: "L", custoPadrao: 0 },
+            { id: "beisoft_avra", nome: "BEISOFT AVRA", desc: "Amaciante", un: "L", custoPadrao: 0 },
+            { id: "sal_grosso", nome: "SAL GROSSO", desc: "Pacote c/ 25kg", un: "Kg", custoPadrao: 0 }
+        ];
+
+        let listaProdutosQuimicos = [];
+
         document.addEventListener('DOMContentLoaded', () => {
             carregarTodasConfiguracoes();
         });
 
         function carregarTodasConfiguracoes() {
-            // 1. Config Água
+            // 1. Químicos
+            listaProdutosQuimicos = JSON.parse(localStorage.getItem('mes_config_quimicos')) || PRODUTOS_PADRAO;
+            renderizarTabelaQuimicos();
+
+            // 2. Config Água
             const configAgua = JSON.parse(localStorage.getItem('mes_config_agua') || '{"qtdPocos": 2, "nomesPocos": ["Poço 1", "Poço 2"], "qtdConsumo": 3, "nomesConsumo": ["Túnel 1", "Túnel 2", "Extratoras"]}');
             document.getElementById('setQtdPocos').value = configAgua.qtdPocos;
             document.getElementById('setQtdPontosConsumo').value = configAgua.qtdConsumo;
             gerarCamposAgua(configAgua.nomesPocos, configAgua.nomesConsumo);
 
-            // 2. Config Gás
+            // 3. Config Gás
             const configGas = JSON.parse(localStorage.getItem('mes_config_gas') || '{"qtd": 2, "nomes": ["Relógio 1", "Relógio 2"]}');
             document.getElementById('setQtdRelogiosGas').value = configGas.qtd;
             gerarCamposRelogiosGas(configGas.nomes);
 
-            // 3. Config Energia
+            // 4. Config Energia
             const configEnergia = JSON.parse(localStorage.getItem('mes_config_energia') || '{"qtd": 2, "nomes": ["Medidor Principal", "Medidor Auxiliar"]}');
             document.getElementById('setQtdRelogiosEnergia').value = configEnergia.qtd;
             gerarCamposRelogiosEnergia(configEnergia.nomes);
 
-            // 4. Config Balança
+            // 5. Config Balança
             const configBalanca = JSON.parse(localStorage.getItem('mes_config_balanca') || '{"baudRate": "9600", "tolerancia": "0.05"}');
             document.getElementById('setBaudRate').value = configBalanca.baudRate;
             document.getElementById('setTolerancia').value = configBalanca.tolerancia;
+        }
+
+        // --- GESTÃO DE PRODUTOS QUÍMICOS ---
+        function renderizarTabelaQuimicos() {
+            const tbody = document.getElementById('tabelaProdutosQuimicos');
+            if (listaProdutosQuimicos.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-center italic text-slate-400">Nenhum produto químico cadastrado.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = listaProdutosQuimicos.map((p, idx) => `
+                <tr class="hover:bg-slate-50 transition">
+                    <td class="p-2.5 border font-mono text-[11px] text-slate-600">${p.id}</td>
+                    <td class="p-2.5 border font-bold text-slate-800">${p.nome}</td>
+                    <td class="p-2.5 border text-slate-600">${p.desc || '-'}</td>
+                    <td class="p-2.5 border text-center font-semibold text-purple-700">${p.un}</td>
+                    <td class="p-2.5 border text-right font-bold text-slate-800">R$ ${(p.custoPadrao || 0).toFixed(2)}</td>
+                    <td class="p-2.5 border text-center">
+                        <button onclick="editarProdutoQuimico(${idx})" class="text-blue-600 hover:text-blue-800 font-bold px-1" title="Editar">✏️</button>
+                        <button onclick="excluirProdutoQuimico(${idx})" class="text-red-600 hover:text-red-800 font-bold px-1" title="Excluir">❌</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function abrirModalProduto() {
+            document.getElementById('prodEditId').value = "";
+            document.getElementById('prodId').value = "";
+            document.getElementById('prodId').disabled = false;
+            document.getElementById('prodNome').value = "";
+            document.getElementById('prodDesc').value = "";
+            document.getElementById('prodUn').value = "L";
+            document.getElementById('prodCusto').value = "";
+            document.getElementById('modalProdutoTitulo').innerHTML = `<i class="fa-solid fa-vial text-purple-600"></i> Novo Produto Químico`;
+            document.getElementById('modalProduto').classList.remove('hidden');
+        }
+
+        function fecharModalProduto() {
+            document.getElementById('modalProduto').classList.add('hidden');
+        }
+
+        function editarProdutoQuimico(idx) {
+            const p = listaProdutosQuimicos[idx];
+            document.getElementById('prodEditId').value = idx;
+            document.getElementById('prodId').value = p.id;
+            document.getElementById('prodId').disabled = true;
+            document.getElementById('prodNome').value = p.nome;
+            document.getElementById('prodDesc').value = p.desc || "";
+            document.getElementById('prodUn').value = p.un || "L";
+            document.getElementById('prodCusto').value = p.custoPadrao || 0;
+            document.getElementById('modalProdutoTitulo').innerHTML = `<i class="fa-solid fa-pen text-purple-600"></i> Editar Produto Químico`;
+            document.getElementById('modalProduto').classList.remove('hidden');
+        }
+
+        function salvarProdutoQuimico(e) {
+            e.preventDefault();
+            const editIdx = document.getElementById('prodEditId').value;
+            const id = document.getElementById('prodId').value.trim().toLowerCase().replace(/\s+/g, '_');
+            const nome = document.getElementById('prodNome').value.trim();
+            const desc = document.getElementById('prodDesc').value.trim();
+            const un = document.getElementById('prodUn').value;
+            const custoPadrao = parseFloat(document.getElementById('prodCusto').value) || 0;
+
+            const produto = { id, nome, desc, un, custoPadrao };
+
+            if (editIdx !== "") {
+                listaProdutosQuimicos[parseInt(editIdx)] = produto;
+            } else {
+                if (listaProdutosQuimicos.some(p => p.id === id)) {
+                    alert("Já existe um produto cadastrado com este Código/ID!");
+                    return;
+                }
+                listaProdutosQuimicos.push(produto);
+            }
+
+            localStorage.setItem('mes_config_quimicos', JSON.stringify(listaProdutosQuimicos));
+            fecharModalProduto();
+            renderizarTabelaQuimicos();
+        }
+
+        function excluirProdutoQuimico(idx) {
+            if (confirm(`Deseja realmente remover o produto "${listaProdutosQuimicos[idx].nome}"?`)) {
+                listaProdutosQuimicos.splice(idx, 1);
+                localStorage.setItem('mes_config_quimicos', JSON.stringify(listaProdutosQuimicos));
+                renderizarTabelaQuimicos();
+            }
         }
 
         // --- HIDRÔMETROS DE ÁGUA ---
@@ -206,7 +390,6 @@
             const container = document.getElementById('containerNomesAgua');
             container.innerHTML = '';
 
-            // Bloco Poços
             let htmlPocos = `<h4 class="text-[11px] font-bold text-cyan-800 uppercase tracking-wider">Captação (Poços)</h4>`;
             for (let i = 1; i <= qtdPocos; i++) {
                 const valor = nomesPocosExistentes[i - 1] || `Poço ${i}`;
@@ -218,7 +401,6 @@
                 `;
             }
 
-            // Bloco Consumo
             let htmlConsumo = `<h4 class="text-[11px] font-bold text-blue-800 uppercase tracking-wider pt-2">Pontos de Consumo (Equipamentos)</h4>`;
             for (let i = 1; i <= qtdConsumo; i++) {
                 const valor = nomesConsumoExistentes[i - 1] || (i === 1 ? "Túnel 1" : i === 2 ? "Túnel 2" : i === 3 ? "Extratoras" : `Ponto ${i}`);
