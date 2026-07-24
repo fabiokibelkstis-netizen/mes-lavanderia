@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MES - Acesso Gerencial</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-900 font-sans min-h-screen flex items-center justify-center p-4">
+
+    <div class="bg-white rounded-2xl shadow-2xl p-8 max-w-sm w-full">
+        <div class="text-center mb-6">
+            <h1 class="text-2xl font-bold text-slate-800">MES - Dona Zara</h1>
+            <p class="text-xs text-slate-500 mt-1">Área Restrita - Gerência</p>
+        </div>
+
+        <form id="formLogin" class="space-y-4">
+            <div>
+                <label class="block text-sm font-semibold text-slate-700 mb-1">Senha de Acesso</label>
+                <input type="password" id="senha" required placeholder="••••••••" class="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-slate-800">
+            </div>
+
+            <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg shadow-md transition">
+                🔓 Entrar no Dashboard
+            </button>
+        </form>
+
+        <div id="msgErro" class="hidden mt-4 p-3 rounded-lg text-xs text-center font-bold bg-red-100 text-red-700"></div>
+
+        <div class="mt-6 text-center">
+            <a href="apontamentos.html" class="text-xs text-blue-600 hover:underline">Voltar para Apontamento de Produção</a>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('formLogin').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const senha = document.getElementById('senha').value;
+            const msgErro = document.getElementById('msgErro');
+
+            try {
+                const response = await fetch('https://mes-lavanderia-api.onrender.com/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ senha })
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.sucesso) {
+                    localStorage.setItem('mes_auth_token', data.token);
+                    window.location.href = 'dashboard.html';
+                } else {
+                    msgErro.innerText = data.mensagem || 'Acesso negado!';
+                    msgErro.classList.remove('hidden');
+                }
+            } catch (err) {
+                msgErro.innerText = 'Erro ao conectar ao servidor.';
+                msgErro.classList.remove('hidden');
+            }
+        });
+    </script>
+</body>
+</html>

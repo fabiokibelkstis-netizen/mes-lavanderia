@@ -29,6 +29,20 @@ pool.connect((err, client, release) => {
     }
 });
 
+// Rota de Autenticação / Login
+app.post('/api/login', (req, res) => {
+    const { senha } = req.body;
+
+    // Defina a senha de acesso da gerência aqui
+    const SENHA_GERENCIA = "dz2026gerencia";
+
+    if (senha === SENHA_GERENCIA) {
+        return res.json({ sucesso: true, token: "session_token_dz_2026" });
+    } else {
+        return res.status(401).json({ sucesso: false, mensagem: "Senha incorreta!" });
+    }
+});
+
 // Rota de Apontamento
 app.post('/api/apontamento', async (req, res) => {
     const { data, pesoColeta, pesoEntrega } = req.body;

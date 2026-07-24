@@ -6,6 +6,9 @@
     <title>MES - Dashboard Gerencial</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<button onclick="logout()" class="bg-red-600 hover:bg-red-700 text-white text-xs px-3 py-2 rounded font-bold transition">
+    🚪 Sair
+</button>
 </head>
 <body class="bg-gray-100 font-sans min-h-screen">
 
@@ -57,6 +60,20 @@
     </main>
 
     <script>
+
+
+    // Trava de Segurança: Redireciona para o login se não estiver autenticado
+    if (!localStorage.getItem('mes_auth_token')) {
+        window.location.href = 'login.html';
+    }
+
+    function logout() {
+        localStorage.removeItem('mes_auth_token');
+        window.location.href = 'login.html';
+    }
+
+    // ... restante do código existente do dashboard.html ...
+
         // Define a data de hoje por padrão
         document.getElementById('filtro_data').valueAsDate = new Date();
 
