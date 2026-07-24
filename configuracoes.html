@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MES - Configurações e Cadastros</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-100 font-sans min-h-screen">
+
+    <header class="bg-slate-900 text-white p-4 shadow-lg">
+        <div class="max-w-5xl mx-auto flex justify-between items-center">
+            <h1 class="text-xl font-bold">⚙️ Painel de Configurações MES</h1>
+            <a href="apontamentos.html" class="bg-slate-700 hover:bg-slate-600 text-xs font-bold px-4 py-2 rounded-lg">
+                ⬅️ Voltar para Pesagem
+            </a>
+        </div>
+    </header>
+
+    <div id="areaLogin" class="max-w-md mx-auto my-12 bg-white p-6 rounded-2xl shadow-md border">
+        <h2 class="text-lg font-bold text-slate-800 mb-2">🔒 Acesso Restrito</h2>
+        <p class="text-xs text-slate-500 mb-4">Insira a senha de administrador/gerência para acessar os cadastros.</p>
+        <input type="password" id="senhaAcesso" placeholder="Digite a senha..." class="w-full p-2.5 border rounded-lg mb-4 text-sm">
+        <button onclick="autenticarAcesso()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 rounded-lg">
+            Acessar Painel
+        </button>
+    </div>
+
+    <main id="areaPainel" class="hidden max-w-5xl mx-auto p-4 my-6 space-y-6">
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+            <div class="bg-white p-5 rounded-2xl shadow-sm border space-y-4">
+                <h3 class="font-bold text-slate-800 border-b pb-2">🏢 Clientes</h3>
+                <button onclick="cadastrarCliente()" class="w-full bg-blue-600 text-white font-bold py-2 text-xs rounded-lg">+ Cadastrar Cliente</button>
+                <div id="listaClientes" class="space-y-2 max-h-60 overflow-y-auto text-xs"></div>
+            </div>
+
+            <div class="bg-white p-5 rounded-2xl shadow-sm border space-y-4">
+                <h3 class="font-bold text-slate-800 border-b pb-2">📋 Tipos de OS</h3>
+                <button onclick="cadastrarTipoOS()" class="w-full bg-blue-600 text-white font-bold py-2 text-xs rounded-lg">+ Cadastrar Tipo OS</button>
+                <div id="listaTipos" class="space-y-2 max-h-60 overflow-y-auto text-xs"></div>
+            </div>
+
+            <div class="bg-white p-5 rounded-2xl shadow-sm border space-y-4">
+                <h3 class="font-bold text-slate-800 border-b pb-2">⚖️ Taras de Gaiolas</h3>
+                <button onclick="cadastrarTara()" class="w-full bg-blue-600 text-white font-bold py-2 text-xs rounded-lg">+ Cadastrar Gaiola / Tara</button>
+                <div id="listaTaras" class="space-y-2 max-h-60 overflow-y-auto text-xs"></div>
+            </div>
+
+        </div>
+    </main>
+
+    <script>
+        const API_URL = 'https://mes-lavanderia-api.onrender.com';
+
+        function autenticarAcesso() {
+            const senha = document.getElementById('senhaAcesso').value;
+            if (senha === "dz2026gerencia") {
+                document.getElementById('areaLogin').classList.add('hidden');
+                document.getElementById('areaPainel').classList.remove('hidden');
+                carregarTudo();
+            } else {
+                alert("Senha incorreta!");
+            }
+        }
+
+        async function carregarTudo() {
+            carregarClientes();
+            carregarTipos();
+            carregarTaras();
+        }
+
+        // CLIENTES
+        async function carregarClientes() {
+            const res = await fetch(`${API_URL}/api/clientes`);
+            const dados = await res.json();
+            const div = document.getElementById('listaClientes');
+            div.innerHTML = dados.map(c => `
+                <div class="flex justify-between items-center p-2 bg-slate-50 rounded border">
+                    <span>${c.nome}</span>
+                    <button onclick="editarCliente(${c.id}, '${c.nome}')" class="text-amber-600 font-bold">✏️ Editar</button>
+                </div>
+            `).join('');
+        }
+
+        async function cadastrarCliente() {
+            const nome = prompt("Nome do Cliente:");
+            if (!nome) return;
+            await fetch(`${API_URL}/api/clientes`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ nome: nome.trim() })
+            });
+            carregarClientes();
+        }
+
+        async function editarCliente(id, nomeAtual) {
+            const novoNome = prompt("Novo nome:", nomeAtual);
+            if (!novoNome || novoNome === nomeAtual) return;
+            await fetch(`${API_URL}/api/clientes/${id}`, {
+                method: 'PUT',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ nome: novoNome.trim() })
+            });
+            carregarClientes();
+        }
+
+        // TIPOS DE OS
+        async function carregarTipos() {
+            const res = await fetch(`${API_URL}/api/tipos-os`);
+            const dados = await res.json();
+            const div = document.getElementById('listaTipos');
+            div.innerHTML = dados.map(t => `
+                <div class="flex justify-between items-center p-2 bg-slate-50 rounded border">
+                    <span>${t.nome}</span>
+                    <button onclick="editarTipo(${t.id}, '${t.nome}')" class="text-amber-600 font-bold">✏️ Editar</button>
+                </div>
+            `).join('');
+        }
+
+        async function cadastrarTipoOS() {
+            const nome = prompt("Nome do Tipo de OS:");
+            if (!nome) return;
+            await fetch(`${API_URL}/api/tipos-os`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ nome: nome.trim() })
+            });
+            carregarTipos();
+        }
+
+        async function editarTipo(id, nomeAtual) {
+            const novoNome = prompt("Novo nome:", nomeAtual);
+            if (!novoNome || novoNome === nomeAtual) return;
+            await fetch(`${API_URL}/api/tipos-os/${id}`, {
+                method: 'PUT',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ nome: novoNome.trim() })
+            });
+            carregarTipos();
+        }
+
+        // TARAS / GAIOLAS
+        async function carregarTaras() {
+            const res = await fetch(`${API_URL}/api/taras-gaiolas`);
+            const dados = await res.json();
+            const div = document.getElementById('listaTaras');
+            div.innerHTML = dados.map(t => `
+                <div class="flex justify-between items-center p-2 bg-slate-50 rounded border">
+                    <span>${t.nome} (${t.peso_tara} Kg)</span>
+                    <button onclick="editarTara('${t.nome}', ${t.peso_tara})" class="text-amber-600 font-bold">✏️ Editar</button>
+                </div>
+            `).join('');
+        }
+
+        async function cadastrarTara() {
+            const nome = prompt("Nome da Gaiola:");
+            if (!nome) return;
+            const tara = prompt("Peso da Tara (Kg):");
+            if (!tara) return;
+            await fetch(`${API_URL}/api/taras-gaiolas`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ nome: nome.trim(), pesoTara: parseFloat(tara) })
+            });
+            carregarTaras();
+        }
+
+        async function editarTara(nomeAtual, taraAtual) {
+            const novoPeso = prompt(`Novo peso de tara para "${nomeAtual}" (Kg):`, taraAtual);
+            if (!novoPeso) return;
+            await fetch(`${API_URL}/api/taras-gaiolas`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ nome: nomeAtual, pesoTara: parseFloat(novoPeso) })
+            });
+            carregarTaras();
+        }
+    </script>
+</body>
+</html>

@@ -180,3 +180,129 @@ app.post('/api/clientes', async (req, res) => {
         res.status(500).json({ mensagem: 'Erro ao cadastrar cliente' });
     }
 });
+
+// ==========================================
+// ROTAS DE CLIENTES (EDIÇÃO E REMOÇÃO)
+// ==========================================
+
+// Atualizar nome do Cliente
+app.put('/api/clientes/:id', async (req, res) => {
+    const { id } = req.params;
+    const { nome } = req.body;
+    if (!nome) return res.status(400).json({ mensagem: 'Nome é obrigatório' });
+
+    try {
+        const result = await pool.query(
+            'UPDATE clientes SET nome = $1 WHERE id = $2 RETURNING *',
+            [nome.trim(), id]
+        );
+        res.json({ sucesso: true, cliente: result.rows[0] });
+    } catch (err) {
+        console.error('Erro ao editar cliente:', err);
+        res.status(500).json({ mensagem: 'Erro ao editar cliente' });
+    }
+});
+
+// Excluir Cliente
+app.delete('/api/clientes/:id', async (req, res) => {
+    const { id } = req.params;
+    try {
+        await pool.query('DELETE FROM clientes WHERE id = $1', [id]);
+        res.json({ sucesso: true, mensagem: 'Cliente excluído com sucesso' });
+    } catch (err) {
+        console.error('Erro ao excluir cliente:', err);
+        res.status(500).json({ mensagem: 'Erro ao excluir cliente' });
+    }
+});
+
+// ==========================================
+// ROTAS DE TARAS DE GAIOLAS (CADASTRO E EDIÇÃO)
+// ==========================================
+
+// Cadastrar / Atualizar Tara de Gaiola
+app.post('/api/taras-gaiolas', async (req, res) => {
+    const { nome, pesoTara } = req.body;
+    if (!nome || pesoTara === undefined) {
+        return res.status(400).json({ mensagem: 'Nome e peso da tara são obrigatórios' });
+    }
+
+    try {
+        const result = await pool.query(
+            `INSERT INTO taras_gaiolas (nome, peso_tara) 
+             VALUES ($1, $2) 
+             ON CONFLICT (nome) DO UPDATE SET peso_tara = EXCLUDED.peso_tara 
+             RETURNING *`,
+            [nome.trim(), parseFloat(pesoTara)]
+        );
+        res.status(201).json({ sucesso: true, tara: result.rows[0] });
+    } catch (err) {
+        console.error('Erro ao cadastrar tara:', err);
+        res.status(500).json({ mensagem: 'Erro ao cadastrar tara' });
+    }
+});
+
+// Listar todos os usuários
+app.get('/api/usuarios', async (req, res) => {
+    try {
+        const result = await pool.query('SELECT id, nome, usuario, nivel_acesso FROM usuarios ORDER BY nome ASC');
+        res.json(result.rows);
+    } catch (err) {
+        console.error('Erro ao buscar usuários:', err);
+        res.status(500).json({ mensagem: 'Erro ao buscar usuários' });
+    }
+});
+
+// Cadastrar novo usuário
+app.post('/api/usuarios', async (req, res) => {
+    const { nome, usuario, senha, nivelAcesso } = req.body;
+    if (!nome || !usuario || !senha || !nivelAcesso) {
+        return res.status(400).json({ mensagem: 'Todos os campos são obrigatórios' });
+    }
+
+    try {
+        const result = await pool.query(
+            'INSERT INTO usuarios (nome, usuario, senha, nivel_acesso) VALUES ($1, $2, $3, $4) RETURNING id, nome, usuario, nivel_acesso',
+            [nome.trim(), usuario.trim().toLowerCase(), senha, nivelAcesso]
+        );
+        res.status(201).json({ sucesso: true, usuario: result.rows[0] });
+    } catch (err) {
+        console.error('Erro ao cadastrar usuário:', err);
+        res.status(500).json({ mensagem: 'Erro ou usuário já existente' });
+    }
+});
+
+// Alterar nível de acesso ou senha do usuário
+app.put('/api/usuarios/:id', async (req, res) => {
+    const { id } = req.params;
+    const { nome, nivelAcesso, senha } = req.body;
+
+    try {
+        if (senha) {
+            await pool.query(
+                'UPDATE usuarios SET nome = $1, nivel_acesso = $2, senha = $3 WHERE id = $4',
+                [nome.trim(), nivelAcesso, senha, id]
+            );
+        } else {
+            await pool.query(
+                'UPDATE usuarios SET nome = $1, nivel_acesso = $2 WHERE id = $3',
+                [nome.trim(), nivelAcesso, id]
+            );
+        }
+        res.json({ sucesso: true, mensagem: 'Usuário atualizado com sucesso' });
+    } catch (err) {
+        console.error('Erro ao atualizar usuário:', err);
+        res.status(500).json({ mensagem: 'Erro ao atualizar usuário' });
+    }
+});
+
+// Excluir usuário
+app.delete('/api/usuarios/:id', async (req, res) => {
+    const { id } = req.params;
+    try {
+        await pool.query('DELETE FROM usuarios WHERE id = $1', [id]);
+        res.json({ sucesso: true, mensagem: 'Usuário removido' });
+    } catch (err) {
+        console.error('Erro ao excluir usuário:', err);
+        res.status(500).json({ mensagem: 'Erro ao excluir usuário' });
+    }
+});

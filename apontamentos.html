@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MES - Coleta com Captura de Balança</title>
+    <title>MES - Lançamento de Pesagem</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-slate-100 font-sans min-h-screen flex flex-col justify-between">
@@ -14,9 +14,14 @@
                 <h1 class="text-xl font-bold tracking-wider">MES - Lavanderia Dona Zara</h1>
                 <p class="text-xs text-slate-400">Terminal de Pesagem & Coleta Industrial</p>
             </div>
-            <button id="btnConectarBalanca" onclick="conectarBalanca()" class="bg-amber-500 hover:bg-amber-600 text-slate-900 text-xs font-bold px-3 py-1.5 rounded-full flex items-center gap-1 transition">
-                🔌 Conectar Balança Serial
-            </button>
+            <div class="flex items-center gap-2">
+                <a href="configuracoes.html" id="btnConfig" class="bg-slate-800 hover:bg-slate-700 text-xs font-bold px-3 py-1.5 rounded-full border border-slate-700 transition">
+                    ⚙️ Configurações
+                </a>
+                <button id="btnConectarBalanca" onclick="conectarBalanca()" class="bg-amber-500 hover:bg-amber-600 text-slate-900 text-xs font-bold px-3 py-1.5 rounded-full transition">
+                    🔌 Conectar Balança Serial
+                </button>
+            </div>
         </div>
     </header>
 
@@ -28,14 +33,11 @@
             <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                 
                 <div>
-                    <div class="flex justify-between items-center mb-1">
-                        <label class="block text-xs font-semibold text-slate-700">Cliente / Unidade</label>
-                        <button type="button" onclick="cadastrarNovoCliente()" class="text-xs text-blue-600 hover:underline font-bold">+ Novo</button>
-                    </div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Cliente / Unidade</label>
                     <div class="space-y-1">
-                        <input type="text" id="filtroCliente" oninput="filtrarClientes()" placeholder="🔍 Filtrar cliente..." class="w-full p-2 border rounded-lg text-xs bg-slate-50 outline-none focus:bg-white focus:ring-1 focus:ring-blue-500">
+                        <input type="text" id="filtroCliente" oninput="filtrarClientes()" placeholder="🔍 Filtrar..." class="w-full p-2 border rounded-lg text-xs bg-slate-50 outline-none focus:bg-white focus:ring-1 focus:ring-blue-500">
                         <select id="cliente" required class="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm font-medium bg-white">
-                            <option value="">A carregar clientes...</option>
+                            <option value="">Carregando clientes...</option>
                         </select>
                     </div>
                 </div>
@@ -46,12 +48,9 @@
                 </div>
 
                 <div>
-                    <div class="flex justify-between items-center mb-1">
-                        <label class="block text-xs font-semibold text-slate-700">Tipo de OS</label>
-                        <button type="button" onclick="cadastrarNovoTipoOS()" class="text-xs text-blue-600 hover:underline font-bold">+ Novo</button>
-                    </div>
-                    <select id="tipoOs" required class="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm font-medium bg-white h-[42px] mt-[21px]">
-                        <option value="">A carregar...</option>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Tipo de OS</label>
+                    <select id="tipoOs" required class="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm font-medium bg-white h-[42px] mt-[25px]">
+                        <option value="">Carregando tipos...</option>
                     </select>
                 </div>
 
@@ -67,10 +66,7 @@
 
             <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end bg-slate-50 p-4 rounded-xl border mb-6">
                 <div>
-                    <div class="flex justify-between items-center mb-1">
-                        <label class="block text-xs font-semibold text-slate-700">Tipo / Tara da Gaiola</label>
-                        <button type="button" onclick="cadastrarNovaTara()" class="text-xs text-blue-600 hover:underline font-bold">+ Nova Tara</button>
-                    </div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Tipo / Tara da Gaiola</label>
                     <select id="taraGaiola" onchange="atualizarValoresPesagem()" class="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm font-medium bg-white">
                         <option value="0">Sem Tara (0 Kg)</option>
                     </select>
@@ -137,10 +133,6 @@
         <div id="statusMessage" class="hidden p-3 rounded-lg text-sm text-center font-semibold"></div>
     </main>
 
-    <footer class="text-center p-4 text-xs text-slate-500 border-t bg-white">
-        MES Dona Zara &copy; 2026 - Conectado à Nuvem
-    </footer>
-
     <script>
         const API_URL = 'https://mes-lavanderia-api.onrender.com';
         let gaiolasAdicionadas = [];
@@ -149,7 +141,6 @@
 
         document.getElementById('dataColeta').valueAsDate = new Date();
 
-        // 1. GERENCIAMENTO DE CLIENTES
         async function carregarClientes() {
             const selectCliente = document.getElementById('cliente');
             try {
@@ -157,7 +148,6 @@
                 listaClientesGlobal = await res.json();
                 renderizarOpcoesClientes(listaClientesGlobal);
             } catch (err) {
-                console.error('Erro ao carregar clientes:', err);
                 selectCliente.innerHTML = '<option value="">Erro ao carregar clientes</option>';
             }
         }
@@ -176,115 +166,18 @@
 
         function filtrarClientes() {
             const termo = document.getElementById('filtroCliente').value.toLowerCase();
-            const clientesFiltrados = listaClientesGlobal.filter(c => 
-                c.nome.toLowerCase().includes(termo)
-            );
-            renderizarOpcoesClientes(clientesFiltrados);
+            renderizarOpcoesClientes(listaClientesGlobal.filter(c => c.nome.toLowerCase().includes(termo)));
         }
 
-        async function cadastrarNovoCliente() {
-            const novoNome = prompt("Digite o nome/razão social do novo cliente:");
-            if (!novoNome || !novoNome.trim()) return;
-
-            try {
-                const res = await fetch(`${API_URL}/api/clientes`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ nome: novoNome.trim() })
-                });
-
-                if (res.ok) {
-                    await carregarClientes();
-                    document.getElementById('cliente').value = novoNome.trim();
-                    document.getElementById('filtroCliente').value = '';
-                } else {
-                    alert("Erro ao cadastrar cliente.");
-                }
-            } catch (err) {
-                alert("Erro de conexão ao cadastrar cliente.");
-            }
-        }
-
-        // 2. CONEXÃO SERIAL COM BALANÇA
-        async function conectarBalanca() {
-            if (!("serial" in navigator)) {
-                alert("O seu navegador não suporta conexão Serial direta. Use o Chrome ou Edge.");
-                return;
-            }
-            try {
-                portSerial = await navigator.serial.requestPort();
-                await portSerial.open({ baudRate: 9600 });
-                document.getElementById('btnConectarBalanca').className = "bg-green-500 text-slate-900 text-xs font-bold px-3 py-1.5 rounded-full flex items-center gap-1";
-                document.getElementById('btnConectarBalanca').innerText = "✅ Balança Conectada";
-            } catch (err) {
-                console.error("Erro ao conectar à balança:", err);
-                alert("Não foi possível conectar à balança.");
-            }
-        }
-
-        async function capturarPesoBalanca() {
-            if (!portSerial) {
-                alert("Por favor, clique em 'Conectar Balança Serial' primeiro.");
-                return;
-            }
-
-            try {
-                const textDecoder = new TextDecoderStream();
-                const readableStreamClosed = portSerial.readable.pipeTo(textDecoder.writable);
-                const reader = textDecoder.readable.getReader();
-
-                let buffer = "";
-                while (true) {
-                    const { value, done } = await reader.read();
-                    if (done) break;
-                    buffer += value;
-                    
-                    const match = buffer.match(/\d+\.\d+/);
-                    if (match) {
-                        document.getElementById('pesoBruto').value = parseFloat(match[0]);
-                        atualizarValoresPesagem();
-                        reader.cancel();
-                        break;
-                    }
-                }
-            } catch (err) {
-                console.error("Erro ao ler da balança:", err);
-                alert("Falha na leitura da balança.");
-            }
-        }
-
-        // 3. CARREGAR TIPOS DE OS E TARAS
         async function carregarTiposOS() {
             const selectTipo = document.getElementById('tipoOs');
             try {
                 const res = await fetch(`${API_URL}/api/tipos-os`);
                 const tipos = await res.json();
                 selectTipo.innerHTML = '<option value="">Selecione...</option>';
-                tipos.forEach(t => {
-                    selectTipo.innerHTML += `<option value="${t.nome}">${t.nome}</option>`;
-                });
+                tipos.forEach(t => selectTipo.innerHTML += `<option value="${t.nome}">${t.nome}</option>`);
             } catch (err) {
                 console.error('Erro ao carregar tipos de OS:', err);
-            }
-        }
-
-        async function cadastrarNovoTipoOS() {
-            const novoTipo = prompt("Digite o nome do novo Tipo de OS:");
-            if (!novoTipo || !novoTipo.trim()) return;
-
-            try {
-                const res = await fetch(`${API_URL}/api/tipos-os`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ nome: novoTipo.trim() })
-                });
-
-                if (res.ok) {
-                    await carregarTiposOS();
-                    document.getElementById('tipoOs').value = novoTipo.trim();
-                }
-            } catch (err) {
-                alert("Erro ao cadastrar tipo de OS.");
             }
         }
 
@@ -294,66 +187,67 @@
                 const res = await fetch(`${API_URL}/api/taras-gaiolas`);
                 const taras = await res.json();
                 selectTara.innerHTML = '<option value="0" data-nome="Sem Tara">Sem Tara (0.00 Kg)</option>';
-                taras.forEach(t => {
-                    selectTara.innerHTML += `<option value="${t.peso_tara}" data-nome="${t.nome}">${t.nome} (${t.peso_tara} Kg)</option>`;
-                });
+                taras.forEach(t => selectTara.innerHTML += `<option value="${t.peso_tara}" data-nome="${t.nome}">${t.nome} (${t.peso_tara} Kg)</option>`);
             } catch (err) {
                 console.error('Erro ao carregar taras:', err);
             }
         }
 
-        async function cadastrarNovaTara() {
-            const nome = prompt("Nome/Modelo da Gaiola:");
-            if (!nome) return;
-            const pesoTara = prompt("Peso da Tara (em Kg):");
-            if (!pesoTara) return;
-
+        async function conectarBalanca() {
+            if (!("serial" in navigator)) { alert("Use o Chrome ou Edge para conexão serial."); return; }
             try {
-                const res = await fetch(`${API_URL}/api/taras-gaiolas`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ nome, pesoTara })
-                });
-                if (res.ok) {
-                    await carregarTaras();
+                portSerial = await navigator.serial.requestPort();
+                await portSerial.open({ baudRate: 9600 });
+                document.getElementById('btnConectarBalanca').className = "bg-green-500 text-slate-900 text-xs font-bold px-3 py-1.5 rounded-full";
+                document.getElementById('btnConectarBalanca').innerText = "✅ Balança Conectada";
+            } catch (err) { alert("Não foi possível conectar à balança."); }
+        }
+
+        async function capturarPesoBalanca() {
+            if (!portSerial) return alert("Conecte a balança primeiro!");
+            try {
+                const textDecoder = new TextDecoderStream();
+                portSerial.readable.pipeTo(textDecoder.writable);
+                const reader = textDecoder.readable.getReader();
+                let buffer = "";
+                while (true) {
+                    const { value, done } = await reader.read();
+                    if (done) break;
+                    buffer += value;
+                    const match = buffer.match(/\d+\.\d+/);
+                    if (match) {
+                        document.getElementById('pesoBruto').value = parseFloat(match[0]);
+                        atualizarValoresPesagem();
+                        reader.cancel();
+                        break;
+                    }
                 }
-            } catch (err) {
-                alert("Erro ao salvar nova tara.");
-            }
+            } catch (err) { alert("Falha ao ler da balança."); }
         }
 
         function atualizarValoresPesagem() {
             const bruto = parseFloat(document.getElementById('pesoBruto').value) || 0;
             const tara = parseFloat(document.getElementById('taraGaiola').value) || 0;
-            const liquido = Math.max(0, bruto - tara);
-            document.getElementById('pesoLiquidoCalculado').value = liquido.toFixed(2) + " Kg";
+            document.getElementById('pesoLiquidoCalculado').value = Math.max(0, bruto - tara).toFixed(2) + " Kg";
         }
 
-        // 4. TABELA DE GAIOLAS
         function adicionarGaiolaNaLista() {
             const bruto = parseFloat(document.getElementById('pesoBruto').value) || 0;
             const selectTara = document.getElementById('taraGaiola');
             const tara = parseFloat(selectTara.value) || 0;
             const nomeTara = selectTara.options[selectTara.selectedIndex].getAttribute('data-nome') || 'Gaiola';
 
-            if (bruto <= 0) {
-                alert("Informe um peso bruto válido!");
-                return;
-            }
+            if (bruto <= 0) return alert("Informe um peso bruto válido!");
 
-            const liquido = Math.max(0, bruto - tara);
-
-            const gaiola = {
+            gaiolasAdicionadas.push({
                 numero: gaiolasAdicionadas.length + 1,
                 tipoGaiola: nomeTara,
                 pesoBruto: bruto,
                 pesoTara: tara,
-                pesoLiquido: liquido
-            };
+                pesoLiquido: Math.max(0, bruto - tara)
+            });
 
-            gaiolasAdicionadas.push(gaiola);
             renderizarTabelaGaiolas();
-
             document.getElementById('pesoBruto').value = '';
             atualizarValoresPesagem();
         }
@@ -366,103 +260,74 @@
 
         function renderizarTabelaGaiolas() {
             const tbody = document.getElementById('tabelaGaiolas');
-            
             if (gaiolasAdicionadas.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" class="p-4 text-center text-slate-400 italic">Nenhuma gaiola adicionada ainda.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="6" class="p-4 text-center text-slate-400 italic">Nenhuma gaiola adicionada.</td></tr>';
                 document.getElementById('totalPesoBruto').innerText = '0.00 Kg';
                 document.getElementById('totalTara').innerText = '0.00 Kg';
                 document.getElementById('totalPesoLiquido').innerText = '0.00 Kg';
                 return;
             }
 
-            let html = '';
-            let totBruto = 0, totTara = 0, totLiquido = 0;
-
+            let html = '', totBruto = 0, totTara = 0, totLiquido = 0;
             gaiolasAdicionadas.forEach((g, i) => {
-                totBruto += g.pesoBruto;
-                totTara += g.pesoTara;
-                totLiquido += g.pesoLiquido;
-
+                totBruto += g.pesoBruto; totTara += g.pesoTara; totLiquido += g.pesoLiquido;
                 html += `
                     <tr class="hover:bg-slate-50">
                         <td class="p-3 border font-bold">Gaiola #${g.numero}</td>
                         <td class="p-3 border">${g.tipoGaiola}</td>
-                        <td class="p-3 border font-semibold">${g.pesoBruto.toFixed(2)} Kg</td>
+                        <td class="p-3 border">${g.pesoBruto.toFixed(2)} Kg</td>
                         <td class="p-3 border">${g.pesoTara.toFixed(2)} Kg</td>
                         <td class="p-3 border font-bold text-green-700">${g.pesoLiquido.toFixed(2)} Kg</td>
                         <td class="p-3 border text-center">
-                            <button type="button" onclick="removerGaiola(${i})" class="text-red-600 hover:text-red-800 font-bold text-xs">❌ Remover</button>
+                            <button type="button" onclick="removerGaiola(${i})" class="text-red-600 font-bold text-xs">❌ Remover</button>
                         </td>
-                    </tr>
-                `;
+                    </tr>`;
             });
-
             tbody.innerHTML = html;
             document.getElementById('totalPesoBruto').innerText = totBruto.toFixed(2) + ' Kg';
             document.getElementById('totalTara').innerText = totTara.toFixed(2) + ' Kg';
             document.getElementById('totalPesoLiquido').innerText = totLiquido.toFixed(2) + ' Kg';
         }
 
-        // 5. SUBMETER O APONTAMENTO
         async function submeterApontamentoCompleto() {
             const cliente = document.getElementById('cliente').value;
             const numeroOs = document.getElementById('numeroOs').value.trim();
             const tipoOs = document.getElementById('tipoOs').value;
 
-            if (!cliente || !numeroOs || !tipoOs) {
-                alert("Preencha todos os campos da Ordem de Serviço!");
-                return;
-            }
-
-            if (gaiolasAdicionadas.length === 0) {
-                alert("Adicione pelo menos uma gaiola pesada antes de salvar!");
-                return;
+            if (!cliente || !numeroOs || !tipoOs || gaiolasAdicionadas.length === 0) {
+                return alert("Preencha todos os dados e adicione pelo menos uma gaiola!");
             }
 
             const statusMsg = document.getElementById('statusMessage');
-            const totalLiquido = gaiolasAdicionadas.reduce((sum, g) => sum + g.pesoLiquido, 0);
-
-            const payload = {
-                cliente: cliente,
-                numeroOs: numeroOs,
-                tipoOs: tipoOs,
-                dataColeta: document.getElementById('dataColeta').value,
-                qtdGaiolas: gaiolasAdicionadas.length,
-                pesoColeta: totalLiquido,
-                gaiolas: gaiolasAdicionadas
-            };
-
             statusMsg.className = "p-3 rounded-lg text-sm text-center font-semibold bg-blue-100 text-blue-800 block";
-            statusMsg.innerText = "A guardar apontamento no banco de dados...";
+            statusMsg.innerText = "Salvando no sistema...";
 
             try {
-                const response = await fetch(`${API_URL}/api/apontamento`, {
+                const res = await fetch(`${API_URL}/api/apontamento`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
+                    body: JSON.stringify({
+                        cliente, numeroOs, tipoOs,
+                        dataColeta: document.getElementById('dataColeta').value,
+                        qtdGaiolas: gaiolasAdicionadas.length,
+                        pesoColeta: gaiolasAdicionadas.reduce((s, g) => s + g.pesoLiquido, 0),
+                        gaiolas: gaiolasAdicionadas
+                    })
                 });
 
-                const resultado = await response.json();
-
-                if (response.ok) {
+                if (res.ok) {
                     statusMsg.className = "p-3 rounded-lg text-sm text-center font-semibold bg-green-100 text-green-800 block";
-                    statusMsg.innerText = "✅ Apontamento de Coleta salvo com sucesso!";
-                    
+                    statusMsg.innerText = "✅ Apontamento salvo com sucesso!";
                     gaiolasAdicionadas = [];
                     renderizarTabelaGaiolas();
-                    document.getElementById('cliente').value = '';
                     document.getElementById('numeroOs').value = '';
-                    document.getElementById('filtroCliente').value = '';
-                } else {
-                    throw new Error(resultado.mensagem || "Erro ao salvar");
-                }
+                } else throw new Error();
             } catch (err) {
                 statusMsg.className = "p-3 rounded-lg text-sm text-center font-semibold bg-red-100 text-red-800 block";
-                statusMsg.innerText = "❌ Erro: " + err.message;
+                statusMsg.innerText = "❌ Erro ao salvar apontamento.";
             }
         }
 
-        // Inicialização
         carregarClientes();
         carregarTiposOS();
         carregarTaras();
