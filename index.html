@@ -370,7 +370,6 @@
     </main>
 
     <script>
-        // CONFIGURAÇÃO DOS MÓDULOS E SUAS CHAVES DE LOCALSTORAGE
         const MODULOS = {
             horas: {
                 titulo: "Gestão de Horas de Produção",
@@ -426,7 +425,6 @@
         let moduloAtual = null;
         let chartGeralInstance = null;
 
-        // AUXILIAR: CONVERTE VALORES PARA NÚMERO DE FORMA SEURA
         function parseNumero(valor) {
             if (valor === undefined || valor === null || valor === '') return 0;
             if (typeof valor === 'number') return valor;
@@ -435,7 +433,6 @@
             return isNaN(num) ? 0 : num;
         }
 
-        // AUXILIAR: BUSCA EM VÁRIAS CHAVES DE LOCALSTORAGE
         function obterDadosLocalStorage(chaves) {
             for (let k of chaves) {
                 const item = localStorage.getItem(k);
@@ -451,7 +448,6 @@
             return [];
         }
 
-        // EXTRAÇÃO DE VALORES ESPECÍFICOS DE HORAS
         function extrairValoresHoras(item) {
             const hn = parseNumero(item.horasNormais || item.horas_normais || item.normais || item.horasTrabalhadas || item.horas || 0);
             const he = parseNumero(item.horasExtras || item.horas_extras || item.extras || 0);
@@ -459,7 +455,18 @@
             return { hn, he, abs, ht: hn + he };
         }
 
-        // EXTRAÇÃO DE VALOR GENÉRICO (PESO / CONSUMO)
+        function extrairPesoEGaiolasRecebimento(item) {
+            const peso = parseNumero(item.pesoEntrada || item.peso_entrada || item.pesoLíquido || item.pesoLiquido || item.peso || item.quantidade || 0);
+            const gaiolas = parseNumero(item.gaiolasEntrada || item.gaiolas_entrada || item.qtdGaiolas || item.gaiolas || item.gaiola || 0);
+            return { peso, gaiolas };
+        }
+
+        function extrairPesoEGaiolasExpedicao(item) {
+            const peso = parseNumero(item.pesoSaida || item.peso_saida || item.pesoLíquido || item.pesoLiquido || item.peso || item.quantidade || 0);
+            const gaiolas = parseNumero(item.gaiolasSaida || item.gaiolas_saida || item.qtdGaiolas || item.gaiolas || item.gaiola || 0);
+            return { peso, gaiolas };
+        }
+
         function extrairValorGenerico(item) {
             return parseNumero(
                 item.totalGeral || item.totalCaptacao || item.totalGas || item.totalEnergia || 
@@ -540,7 +547,6 @@
             const headTab = document.getElementById('headTabelaDetalhe');
             const bodyTab = document.getElementById('bodyTabelaDetalhe');
 
-            // DETALHAMENTO DO MÓDULO DE HORAS
             if (moduloKey === 'horas') {
                 let totNormais = 0;
                 let totExtras = 0;
@@ -557,17 +563,45 @@
                 const pctHoraExtra = totNormais > 0 ? (totExtras / totNormais) * 100 : 0;
                 const pctAbsenteismo = horasTotais > 0 ? (totAusencias / horasTotais) * 100 : 0;
 
+                // CALCULO DA PRODUTIVIDADE COM DADOS DE EXPEDIÇÃO NO PERÍODO
+                const expedicoes = obterDadosLocalStorage(MODULOS.expedicao.storageKeys);
+                let pesoSaidaPeriodo = 0;
+                expedicoes.forEach(e => {
+                    if (!e.data) {
+                        pesoSaidaPeriodo += extrairPesoEGaiolasExpedicao(e).peso;
+                    } else {
+                        const dExp = new Date(e.data + 'T00:00:00');
+                        if (dExp >= dataLimite) {
+                            pesoSaidaPeriodo += extrairPesoEGaiolasExpedicao(e).peso;
+                        }
+                    }
+                });
+
+                const prodHoras = horasTotais > 0 ? (pesoSaidaPeriodo / horasTotais) : 0;
+
                 kpiContainer.innerHTML = `
                     <div class="bg-white p-4 rounded-xl border border-slate-200 border-l-4 border-l-blue-600 shadow-sm">
-                        <span class="text-[10px] font-bold text-slate-500 uppercase">Horas Normais (h)</span>
+                        <span class="text-[10px] font-bold text-slate-500 uppercase">Horas Normais</span>
                         <p class="text-xl font-black text-slate-800 mt-1">${totNormais.toFixed(1)} h</p>
                         <span class="text-[10px] text-slate-400">Total trabalhado regular</span>
                     </div>
 
                     <div class="bg-white p-4 rounded-xl border border-slate-200 border-l-4 border-l-amber-500 shadow-sm">
-                        <span class="text-[10px] font-bold text-slate-500 uppercase">Horas Extras (h)</span>
+                        <span class="text-[10px] font-bold text-slate-500 uppercase">Horas Extras</span>
                         <p class="text-xl font-black text-amber-600 mt-1">${totExtras.toFixed(1)} h</p>
                         <span class="text-[10px] text-slate-400">Total de suplementares</span>
+                    </div>
+
+                    <div class="bg-white p-4 rounded-xl border border-slate-200 border-l-4 border-l-purple-600 shadow-sm">
+                        <span class="text-[10px] font-bold text-slate-500 uppercase">Horas Totais de Produção</span>
+                        <p class="text-xl font-black text-purple-700 mt-1">${horasTotais.toFixed(1)} h</p>
+                        <span class="text-[10px] text-slate-400">Normais + Extras</span>
+                    </div>
+
+                    <div class="bg-white p-4 rounded-xl border border-slate-200 border-l-4 border-l-violet-600 shadow-sm">
+                        <span class="text-[10px] font-bold text-slate-500 uppercase">Produtividade no Período</span>
+                        <p class="text-xl font-black text-violet-700 mt-1">${prodHoras.toFixed(1)} Kg/h</p>
+                        <span class="text-[10px] text-slate-400">(Peso Saída / Horas Totais)</span>
                     </div>
 
                     <div class="bg-white p-4 rounded-xl border border-slate-200 border-l-4 border-l-rose-500 shadow-sm">
@@ -576,22 +610,10 @@
                         <span class="text-[10px] text-slate-400">Faltas e ausências</span>
                     </div>
 
-                    <div class="bg-white p-4 rounded-xl border border-slate-200 border-l-4 border-l-purple-600 shadow-sm">
-                        <span class="text-[10px] font-bold text-slate-500 uppercase">Horas Totais (h)</span>
-                        <p class="text-xl font-black text-slate-800 mt-1">${horasTotais.toFixed(1)} h</p>
-                        <span class="text-[10px] text-slate-400">Normais + Extras</span>
-                    </div>
-
                     <div class="bg-white p-4 rounded-xl border border-slate-200 border-l-4 border-l-indigo-500 shadow-sm">
                         <span class="text-[10px] font-bold text-slate-500 uppercase">Hora Extra (%)</span>
                         <p class="text-xl font-black text-indigo-600 mt-1">${pctHoraExtra.toFixed(1)} %</p>
                         <span class="text-[10px] text-slate-400">(Extras / Normais)</span>
-                    </div>
-
-                    <div class="bg-white p-4 rounded-xl border border-slate-200 border-l-4 border-l-red-600 shadow-sm">
-                        <span class="text-[10px] font-bold text-slate-500 uppercase">Absenteísmo (%)</span>
-                        <p class="text-xl font-black text-red-600 mt-1">${pctAbsenteismo.toFixed(1)} %</p>
-                        <span class="text-[10px] text-slate-400">(Ausências / Totais)</span>
                     </div>
                 `;
 
@@ -601,19 +623,16 @@
                         <th class="p-2.5 border">Setor / Operador</th>
                         <th class="p-2.5 border text-right">Horas Normais</th>
                         <th class="p-2.5 border text-right">Horas Extras</th>
+                        <th class="p-2.5 border text-right">Horas Totais</th>
                         <th class="p-2.5 border text-right">Absenteísmo</th>
-                        <th class="p-2.5 border text-right">HE (%)</th>
-                        <th class="p-2.5 border text-right">Abs (%)</th>
                     </tr>
                 `;
 
                 if (dadosFiltrados.length === 0) {
-                    bodyTab.innerHTML = `<tr><td colspan="7" class="p-4 text-center italic text-slate-400">Nenhum lançamento de horas nos últimos ${numDias} dias.</td></tr>`;
+                    bodyTab.innerHTML = `<tr><td colspan="6" class="p-4 text-center italic text-slate-400">Nenhum lançamento de horas nos últimos ${numDias} dias.</td></tr>`;
                 } else {
                     bodyTab.innerHTML = dadosFiltrados.slice().reverse().map(d => {
                         const h = extrairValoresHoras(d);
-                        const hePct = h.hn > 0 ? (h.he / h.hn) * 100 : 0;
-                        const absPct = h.ht > 0 ? (h.abs / h.ht) * 100 : 0;
                         const dataFmt = d.data ? new Date(d.data + 'T00:00:00').toLocaleDateString('pt-BR') : '-';
 
                         return `
@@ -622,9 +641,8 @@
                                 <td class="p-2.5 border text-slate-600">${d.setor || 'Geral'} / ${d.operador || d.funcionario || '-'}</td>
                                 <td class="p-2.5 border text-right font-bold text-slate-800">${h.hn.toFixed(1)} h</td>
                                 <td class="p-2.5 border text-right font-bold text-amber-600">${h.he.toFixed(1)} h</td>
+                                <td class="p-2.5 border text-right font-bold text-purple-700">${h.ht.toFixed(1)} h</td>
                                 <td class="p-2.5 border text-right font-bold text-rose-600">${h.abs.toFixed(1)} h</td>
-                                <td class="p-2.5 border text-right font-semibold text-indigo-600">${hePct.toFixed(1)}%</td>
-                                <td class="p-2.5 border text-right font-semibold text-red-600">${absPct.toFixed(1)}%</td>
                             </tr>
                         `;
                     }).join('');
@@ -632,7 +650,6 @@
                 return;
             }
 
-            // OUTROS MÓDULOS (ÁGUA, GÁS, ENERGIA, QUÍMICOS, RECEBIMENTO, EXPEDIÇÃO)
             let somaValor = 0;
             let maiorValor = 0;
 
@@ -721,19 +738,23 @@
             const totHorasTotais = totHN + totHE;
             document.getElementById('dashKpiHoras').innerText = `${totHorasTotais.toFixed(1)} h`;
 
-            // RECEBIMENTO & EXPEDIÇÃO
+            // RECEBIMENTO (PESO E GAIOLAS)
             let pesoEntrada = 0, gaiolasEntrada = 0;
             recebimentos.forEach(r => {
-                pesoEntrada += parseNumero(r.pesoEntrada || r.peso || 0);
-                gaiolasEntrada += parseNumero(r.gaiolasEntrada || r.gaiolas || 0);
+                const dadosR = extrairPesoEGaiolasRecebimento(r);
+                pesoEntrada += dadosR.peso;
+                gaiolasEntrada += dadosR.gaiolas;
             });
 
+            // EXPEDIÇÃO (PESO E GAIOLAS)
             let pesoSaida = 0, gaiolasSaida = 0;
             expedicoes.forEach(e => {
-                pesoSaida += parseNumero(e.pesoSaida || e.peso || 0);
-                gaiolasSaida += parseNumero(e.gaiolasSaida || e.gaiolas || 0);
+                const dadosE = extrairPesoEGaiolasExpedicao(e);
+                pesoSaida += dadosE.peso;
+                gaiolasSaida += dadosE.gaiolas;
             });
 
+            // CALCULO DO RENDIMENTO (%) E PRODUTIVIDADE (Kg/h)
             const pctRetorno = pesoEntrada > 0 ? (pesoSaida / pesoEntrada) * 100 : 0;
             const produtividade = totHorasTotais > 0 ? (pesoSaida / totHorasTotais) : 0;
 
@@ -774,14 +795,17 @@
             if (recebimentos.length === 0) {
                 qRec.innerHTML = `<tr><td colspan="4" class="p-3 text-center italic text-slate-400">Nenhum registro.</td></tr>`;
             } else {
-                qRec.innerHTML = recebimentos.slice(-4).reverse().map(r => `
-                    <tr class="hover:bg-slate-50 border-b">
-                        <td class="p-2 border font-medium">${r.data ? new Date(r.data + 'T00:00:00').toLocaleDateString('pt-BR') : '-'}</td>
-                        <td class="p-2 border text-slate-600">${r.cliente || 'Interno'}</td>
-                        <td class="p-2 border text-right font-bold text-blue-700">${parseNumero(r.pesoEntrada || r.peso).toFixed(1)} Kg</td>
-                        <td class="p-2 border text-center">${parseNumero(r.gaiolasEntrada || r.gaiolas)} und</td>
-                    </tr>
-                `).join('');
+                qRec.innerHTML = recebimentos.slice(-4).reverse().map(r => {
+                    const dR = extrairPesoEGaiolasRecebimento(r);
+                    return `
+                        <tr class="hover:bg-slate-50 border-b">
+                            <td class="p-2 border font-medium">${r.data ? new Date(r.data + 'T00:00:00').toLocaleDateString('pt-BR') : '-'}</td>
+                            <td class="p-2 border text-slate-600">${r.cliente || 'Interno'}</td>
+                            <td class="p-2 border text-right font-bold text-blue-700">${dR.peso.toFixed(1)} Kg</td>
+                            <td class="p-2 border text-center">${dR.gaiolas} und</td>
+                        </tr>
+                    `;
+                }).join('');
             }
 
             // QUADRO EXPEDIÇÃO
@@ -790,14 +814,17 @@
             if (expedicoes.length === 0) {
                 qExp.innerHTML = `<tr><td colspan="4" class="p-3 text-center italic text-slate-400">Nenhum registro.</td></tr>`;
             } else {
-                qExp.innerHTML = expedicoes.slice(-4).reverse().map(e => `
-                    <tr class="hover:bg-slate-50 border-b">
-                        <td class="p-2 border font-medium">${e.data ? new Date(e.data + 'T00:00:00').toLocaleDateString('pt-BR') : '-'}</td>
-                        <td class="p-2 border text-slate-600">${e.cliente || 'Cliente Geral'}</td>
-                        <td class="p-2 border text-right font-bold text-emerald-700">${parseNumero(e.pesoSaida || e.peso).toFixed(1)} Kg</td>
-                        <td class="p-2 border text-center">${parseNumero(e.gaiolasSaida || e.gaiolas)} und</td>
-                    </tr>
-                `).join('');
+                qExp.innerHTML = expedicoes.slice(-4).reverse().map(e => {
+                    const dE = extrairPesoEGaiolasExpedicao(e);
+                    return `
+                        <tr class="hover:bg-slate-50 border-b">
+                            <td class="p-2 border font-medium">${e.data ? new Date(e.data + 'T00:00:00').toLocaleDateString('pt-BR') : '-'}</td>
+                            <td class="p-2 border text-slate-600">${e.cliente || 'Cliente Geral'}</td>
+                            <td class="p-2 border text-right font-bold text-emerald-700">${dE.peso.toFixed(1)} Kg</td>
+                            <td class="p-2 border text-center">${dE.gaiolas} und</td>
+                        </tr>
+                    `;
+                }).join('');
             }
 
             // QUADRO HORAS
@@ -859,12 +886,12 @@
 
             const dadosEntrada = datas.map(d => {
                 const item = recebimentos.find(r => r.data === d);
-                return item ? parseNumero(item.pesoEntrada || item.peso) : 0;
+                return item ? extrairPesoEGaiolasRecebimento(item).peso : 0;
             });
 
             const dadosSaida = datas.map(d => {
                 const item = expedicoes.find(e => e.data === d);
-                return item ? parseNumero(item.pesoSaida || item.peso) : 0;
+                return item ? extrairPesoEGaiolasExpedicao(item).peso : 0;
             });
 
             chartGeralInstance = new Chart(ctx, {
