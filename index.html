@@ -30,12 +30,24 @@
                     <span>Dashboard Geral</span>
                 </button>
 
-                <div class="px-3 py-2 pt-4 text-[10px] uppercase font-bold text-slate-500 tracking-wider">Lançamentos & Utilidades</div>
+                <div class="px-3 py-2 pt-4 text-[10px] uppercase font-bold text-slate-500 tracking-wider">Lançamentos & Apontamentos</div>
 
-                <button onclick="navegarPara('pesagem')" id="btn-pesagem" class="menu-item w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition hover:bg-slate-800 hover:text-white text-slate-300">
-                    <i class="fa-solid fa-scale-balanced text-blue-400 w-5 text-center text-sm"></i>
-                    <span>Pesagem / Balança</span>
+                <button onclick="navegarPara('horas')" id="btn-horas" class="menu-item w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition hover:bg-slate-800 hover:text-white text-slate-300">
+                    <i class="fa-solid fa-clock text-rose-400 w-5 text-center text-sm"></i>
+                    <span>Gestão de Horas</span>
                 </button>
+
+                <button onclick="navegarPara('recebimento')" id="btn-recebimento" class="menu-item w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition hover:bg-slate-800 hover:text-white text-slate-300">
+                    <i class="fa-solid fa-truck-ramp-box text-blue-400 w-5 text-center text-sm"></i>
+                    <span>Pesagem Recebimento</span>
+                </button>
+
+                <button onclick="navegarPara('expedicao')" id="btn-expedicao" class="menu-item w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition hover:bg-slate-800 hover:text-white text-slate-300">
+                    <i class="fa-solid fa-truck-fast text-emerald-400 w-5 text-center text-sm"></i>
+                    <span>Pesagem Expedição</span>
+                </button>
+
+                <div class="px-3 py-2 pt-4 text-[10px] uppercase font-bold text-slate-500 tracking-wider">Utilidades & Insumos</div>
 
                 <button onclick="navegarPara('quimicos')" id="btn-quimicos" class="menu-item w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition hover:bg-slate-800 hover:text-white text-slate-300">
                     <i class="fa-solid fa-vial text-purple-400 w-5 text-center text-sm"></i>
@@ -72,7 +84,7 @@
         <header class="flex justify-between items-center pb-4 border-b border-slate-200">
             <div>
                 <h2 id="tituloPagina" class="text-xl font-bold text-slate-900">Dashboard Geral de Indicadores</h2>
-                <p id="subtituloPagina" class="text-xs text-slate-500">Resumo consolidado das operações e utilidades da planta.</p>
+                <p id="subtituloPagina" class="text-xs text-slate-500">Resumo consolidado das operações, recebimento, expedição e utilidades.</p>
             </div>
             <div id="acaoTopBar"></div>
         </header>
@@ -83,16 +95,20 @@
                 <div class="flex justify-between items-center border-b pb-2">
                     <h3 class="text-xs font-black text-slate-700 uppercase tracking-wider flex items-center gap-2">
                         <i class="fa-solid fa-boxes-packing text-blue-600"></i>
-                        Balanço Geral de Pesagem, Gaiolas e Retorno (%)
+                        Balanço Geral de Recebimento, Expedição e Rendimento (%)
                     </h3>
-                    <a href="pesagem.html" class="text-xs text-blue-600 hover:underline font-bold">Ver Módulo Completo ➔</a>
+                    <div class="flex gap-2">
+                        <a href="pesagemrecebimento.html" class="text-xs text-blue-600 hover:underline font-bold">Lançar Recebimento ➔</a>
+                        <span class="text-slate-300">|</span>
+                        <a href="pesagemexpedicao.html" class="text-xs text-emerald-600 hover:underline font-bold">Lançar Expedição ➔</a>
+                    </div>
                 </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
                     <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 border-l-4 border-l-blue-600">
                         <span class="text-[11px] font-bold text-slate-500 uppercase">Peso Entrada (Sujo)</span>
                         <p id="dashKpiPesoEntrada" class="text-xl font-black text-slate-800 mt-1">0,0 Kg</p>
-                        <span class="text-[10px] text-slate-400">Total acumulado</span>
+                        <span class="text-[10px] text-slate-400">Total recepcionado</span>
                     </div>
 
                     <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 border-l-4 border-l-indigo-600">
@@ -121,7 +137,11 @@
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+                <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 border-l-4 border-l-rose-500">
+                    <span class="text-xs font-bold text-slate-500 uppercase">Horas Produção</span>
+                    <p id="dashKpiHoras" class="text-xl font-black text-slate-800 mt-1">0,0 h</p>
+                </div>
                 <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 border-l-4 border-l-purple-600">
                     <span class="text-xs font-bold text-slate-500 uppercase">Químicos (Mês)</span>
                     <p id="dashKpiQuimicos" class="text-xl font-black text-slate-800 mt-1">R$ 0,00</p>
@@ -145,72 +165,22 @@
                 <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 space-y-3">
                     <div class="flex justify-between items-center border-b pb-2">
                         <h4 class="text-xs font-bold text-slate-800 flex items-center gap-2">
-                            <i class="fa-solid fa-list-check text-blue-600"></i>
-                            Quadro Resumo: Pesagens Recentes
+                            <i class="fa-solid fa-truck-ramp-box text-blue-600"></i>
+                            Quadro Resumo: Recebimento (Sujo)
                         </h4>
-                        <a href="pesagem.html" class="text-[10px] bg-blue-50 text-blue-700 px-2 py-1 rounded font-bold hover:bg-blue-100">Abrir Lançamento</a>
+                        <a href="pesagemrecebimento.html" class="text-[10px] bg-blue-50 text-blue-700 px-2 py-1 rounded font-bold hover:bg-blue-100">Lançar Entrada</a>
                     </div>
                     <div class="overflow-x-auto">
                         <table class="w-full text-left text-[11px] border-collapse">
                             <thead class="bg-slate-100 text-slate-700">
                                 <tr>
                                     <th class="p-2 border">Data</th>
-                                    <th class="p-2 border text-right">Entrada</th>
-                                    <th class="p-2 border text-right">Saída</th>
-                                    <th class="p-2 border text-center">Gaiolas (E/S)</th>
-                                    <th class="p-2 border text-right">Retorno %</th>
+                                    <th class="p-2 border">Cliente / Origem</th>
+                                    <th class="p-2 border text-right">Peso Entrada</th>
+                                    <th class="p-2 border text-center">Gaiolas</th>
                                 </tr>
                             </thead>
-                            <tbody id="quadroResumoPesagem">
-                                <tr><td colspan="5" class="p-3 text-center italic text-slate-400">Nenhum registro encontrado.</td></tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 space-y-3">
-                    <div class="flex justify-between items-center border-b pb-2">
-                        <h4 class="text-xs font-bold text-slate-800 flex items-center gap-2">
-                            <i class="fa-solid fa-flask text-purple-600"></i>
-                            Quadro Resumo: Químicos & Insumos
-                        </h4>
-                        <a href="consumoquimicos.html" class="text-[10px] bg-purple-50 text-purple-700 px-2 py-1 rounded font-bold hover:bg-purple-100">Abrir Lançamento</a>
-                    </div>
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left text-[11px] border-collapse">
-                            <thead class="bg-slate-100 text-slate-700">
-                                <tr>
-                                    <th class="p-2 border">Data</th>
-                                    <th class="p-2 border text-right">Total Consumo (R$)</th>
-                                    <th class="p-2 border text-center">Status</th>
-                                </tr>
-                            </thead>
-                            <tbody id="quadroResumoQuimicos">
-                                <tr><td colspan="3" class="p-3 text-center italic text-slate-400">Nenhum registro encontrado.</td></tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 space-y-3">
-                    <div class="flex justify-between items-center border-b pb-2">
-                        <h4 class="text-xs font-bold text-slate-800 flex items-center gap-2">
-                            <i class="fa-solid fa-faucet-drip text-cyan-600"></i>
-                            Quadro Resumo: Água & Balanço Hídrico
-                        </h4>
-                        <a href="consumoagua.html" class="text-[10px] bg-cyan-50 text-cyan-700 px-2 py-1 rounded font-bold hover:bg-cyan-100">Abrir Lançamento</a>
-                    </div>
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left text-[11px] border-collapse">
-                            <thead class="bg-slate-100 text-slate-700">
-                                <tr>
-                                    <th class="p-2 border">Data</th>
-                                    <th class="p-2 border text-right">Poços (L)</th>
-                                    <th class="p-2 border text-right">Consumo (L)</th>
-                                    <th class="p-2 border text-right">Balanço (L)</th>
-                                </tr>
-                            </thead>
-                            <tbody id="quadroResumoAgua">
+                            <tbody id="quadroResumoRecebimento">
                                 <tr><td colspan="4" class="p-3 text-center italic text-slate-400">Nenhum registro encontrado.</td></tr>
                             </tbody>
                         </table>
@@ -220,12 +190,63 @@
                 <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 space-y-3">
                     <div class="flex justify-between items-center border-b pb-2">
                         <h4 class="text-xs font-bold text-slate-800 flex items-center gap-2">
-                            <i class="fa-solid fa-plug text-amber-500"></i>
-                            Quadro Resumo: Gás & Energia Elétrica
+                            <i class="fa-solid fa-truck-fast text-emerald-600"></i>
+                            Quadro Resumo: Expedição (Limpo)
+                        </h4>
+                        <a href="pesagemexpedicao.html" class="text-[10px] bg-emerald-50 text-emerald-700 px-2 py-1 rounded font-bold hover:bg-emerald-100">Lançar Saída</a>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-[11px] border-collapse">
+                            <thead class="bg-slate-100 text-slate-700">
+                                <tr>
+                                    <th class="p-2 border">Data</th>
+                                    <th class="p-2 border">Cliente / Destino</th>
+                                    <th class="p-2 border text-right">Peso Saída</th>
+                                    <th class="p-2 border text-center">Gaiolas</th>
+                                </tr>
+                            </thead>
+                            <tbody id="quadroResumoExpedicao">
+                                <tr><td colspan="4" class="p-3 text-center italic text-slate-400">Nenhum registro encontrado.</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 space-y-3">
+                    <div class="flex justify-between items-center border-b pb-2">
+                        <h4 class="text-xs font-bold text-slate-800 flex items-center gap-2">
+                            <i class="fa-solid fa-user-clock text-rose-500"></i>
+                            Quadro Resumo: Gestão de Horas
+                        </h4>
+                        <a href="gestaodehoras.html" class="text-[10px] bg-rose-50 text-rose-700 px-2 py-1 rounded font-bold hover:bg-rose-100">Abrir Lançamento</a>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-[11px] border-collapse">
+                            <thead class="bg-slate-100 text-slate-700">
+                                <tr>
+                                    <th class="p-2 border">Data</th>
+                                    <th class="p-2 border">Setor / Operador</th>
+                                    <th class="p-2 border text-right">Horas Trab.</th>
+                                    <th class="p-2 border text-right">Horas Parada</th>
+                                </tr>
+                            </thead>
+                            <tbody id="quadroResumoHoras">
+                                <tr><td colspan="4" class="p-3 text-center italic text-slate-400">Nenhum registro encontrado.</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 space-y-3">
+                    <div class="flex justify-between items-center border-b pb-2">
+                        <h4 class="text-xs font-bold text-slate-800 flex items-center gap-2">
+                            <i class="fa-solid fa-faucet-drip text-cyan-600"></i>
+                            Quadro Resumo: Utilidades (Água, Gás e Energia)
                         </h4>
                         <div class="flex gap-1">
-                            <a href="consumogas.html" class="text-[10px] bg-orange-50 text-orange-700 px-2 py-1 rounded font-bold hover:bg-orange-100">Gás</a>
-                            <a href="consumoenergia.html" class="text-[10px] bg-yellow-50 text-yellow-800 px-2 py-1 rounded font-bold hover:bg-yellow-100">Energia</a>
+                            <a href="consumoagua.html" class="text-[10px] bg-cyan-50 text-cyan-700 px-1.5 py-0.5 rounded font-bold">Água</a>
+                            <a href="consumogas.html" class="text-[10px] bg-orange-50 text-orange-700 px-1.5 py-0.5 rounded font-bold">Gás</a>
+                            <a href="consumoenergia.html" class="text-[10px] bg-yellow-50 text-yellow-800 px-1.5 py-0.5 rounded font-bold">Energia</a>
                         </div>
                     </div>
                     <div class="overflow-x-auto">
@@ -233,12 +254,13 @@
                             <thead class="bg-slate-100 text-slate-700">
                                 <tr>
                                     <th class="p-2 border">Data</th>
+                                    <th class="p-2 border text-right">Água (L)</th>
                                     <th class="p-2 border text-right">Gás (m³)</th>
                                     <th class="p-2 border text-right">Energia (kWh)</th>
                                 </tr>
                             </thead>
-                            <tbody id="quadroResumoGasEnergia">
-                                <tr><td colspan="3" class="p-3 text-center italic text-slate-400">Nenhum registro encontrado.</td></tr>
+                            <tbody id="quadroResumoUtilidades">
+                                <tr><td colspan="4" class="p-3 text-center italic text-slate-400">Nenhum registro encontrado.</td></tr>
                             </tbody>
                         </table>
                     </div>
@@ -255,7 +277,24 @@
         </div>
 
         <div id="view-detalhe" class="hidden space-y-6">
-            <div id="detalheKpis" class="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-4"></div>
+
+            <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 flex flex-wrap justify-between items-center gap-4">
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-filter text-blue-600"></i>
+                    <span class="text-xs font-bold text-slate-700">Período de Análise dos Indicadores:</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <label for="selectDias" class="text-xs font-medium text-slate-500">Exibir últimos:</label>
+                    <select id="selectDias" onchange="alterarFiltroDias()" class="bg-slate-50 border border-slate-300 text-slate-800 text-xs font-bold rounded-lg px-3 py-1.5 focus:ring-2 focus:ring-blue-500 outline-none">
+                        <option value="7">7 Dias</option>
+                        <option value="15" selected>15 Dias</option>
+                        <option value="30">30 Dias</option>
+                        <option value="90">90 Dias</option>
+                    </select>
+                </div>
+            </div>
+
+            <div id="detalheKpis" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"></div>
 
             <div id="bannerLancamento" class="bg-slate-900 text-white p-5 rounded-2xl shadow-md flex justify-between items-center">
                 <div>
@@ -267,8 +306,11 @@
                 </a>
             </div>
 
-            <div class="bg-white rounded-2xl shadow-sm p-6 border border-slate-200">
-                <h3 class="text-sm font-bold text-slate-800 mb-4 border-b pb-2">Histórico Completo do Módulo</h3>
+            <div class="bg-white rounded-2xl shadow-sm p-6 border border-slate-200 space-y-4">
+                <div class="flex justify-between items-center border-b pb-3">
+                    <h3 class="text-sm font-bold text-slate-800">Últimos Lançamentos Efetuados</h3>
+                    <span id="txtInfoDias" class="text-xs font-medium text-slate-400">Exibindo registros dos últimos 15 dias</span>
+                </div>
                 <div class="overflow-x-auto">
                     <table class="w-full text-left text-xs border-collapse">
                         <thead id="headTabelaDetalhe" class="bg-slate-100 text-slate-700"></thead>
@@ -282,38 +324,65 @@
 
     <script>
         const MODULOS = {
-            pesagem: {
-                titulo: "Pesagem e Balança Industrial",
-                subtitulo: "Acompanhamento de peso de entrada, peso de saída e retenção de umidade.",
-                urlLancamento: "pesagem.html",
-                storageKey: "mes_historico_pesagem"
+            horas: {
+                titulo: "Gestão de Horas de Produção",
+                subtitulo: "Apontamento de horas trabalhadas, horas de parada e produtividade.",
+                urlLancamento: "gestaodehoras.html",
+                storageKey: "mes_historico_horas",
+                unidade: "h",
+                campoValor: "horasTrabalhadas"
+            },
+            recebimento: {
+                titulo: "Pesagem de Recebimento (Entrada)",
+                subtitulo: "Registro de entrada de roupa suja, controle de gaiolas e romaneios de entrada.",
+                urlLancamento: "pesagemrecebimento.html",
+                storageKey: "mes_historico_recebimento",
+                unidade: "Kg",
+                campoValor: "pesoEntrada"
+            },
+            expedicao: {
+                titulo: "Pesagem de Expedição (Saída)",
+                subtitulo: "Registro de saída de roupa limpa, expedição de gaiolas e conferência de romaneios.",
+                urlLancamento: "pesagemexpedicao.html",
+                storageKey: "mes_historico_expedicao",
+                unidade: "Kg",
+                campoValor: "pesoSaida"
             },
             quimicos: {
                 titulo: "Produtos Químicos",
                 subtitulo: "Resumo de consumo de dosagens, estoques e custos financeiros.",
                 urlLancamento: "consumoquimicos.html",
-                storageKey: "mes_historico_quimicos"
+                storageKey: "mes_historico_quimicos",
+                unidade: "R$",
+                campoValor: "totalGeral"
             },
             agua: {
                 titulo: "Consumo de Água",
                 subtitulo: "Acompanhamento do Balanço Hídrico (Poços vs. Equipamentos).",
                 urlLancamento: "consumoagua.html",
-                storageKey: "mes_historico_agua"
+                storageKey: "mes_historico_agua",
+                unidade: "L",
+                campoValor: "totalCaptacao"
             },
             gas: {
                 titulo: "Consumo de Gás (Caldeira)",
                 subtitulo: "Leitura dos medidores de gás e geração de vapor.",
                 urlLancamento: "consumogas.html",
-                storageKey: "mes_historico_gas"
+                storageKey: "mes_historico_gas",
+                unidade: "m³",
+                campoValor: "totalGas"
             },
             energia: {
                 titulo: "Energia Elétrica",
                 subtitulo: "Medição do consumo e demanda da planta.",
                 urlLancamento: "consumoenergia.html",
-                storageKey: "mes_historico_energia"
+                storageKey: "mes_historico_energia",
+                unidade: "kWh",
+                campoValor: "totalEnergia"
             }
         };
 
+        let moduloAtual = null;
         let chartGeralInstance = null;
 
         document.addEventListener('DOMContentLoaded', () => {
@@ -333,19 +402,21 @@
             }
 
             if (opcao === 'dashboard') {
+                moduloAtual = null;
                 document.getElementById('tituloPagina').innerText = "Dashboard Geral de Indicadores";
-                document.getElementById('subtituloPagina').innerText = "Resumo consolidado das operações e utilidades da planta.";
+                document.getElementById('subtituloPagina').innerText = "Resumo consolidado das operações, recebimento, expedição e utilidades.";
                 document.getElementById('acaoTopBar').innerHTML = '';
                 document.getElementById('view-dashboard').classList.remove('hidden');
                 document.getElementById('view-detalhe').classList.add('hidden');
                 carregarKPIsGerais();
                 carregarQuadrosResumo();
             } else {
+                moduloAtual = opcao;
                 const config = MODULOS[opcao];
                 document.getElementById('tituloPagina').innerText = config.titulo;
                 document.getElementById('subtituloPagina').innerText = config.subtitulo;
                 document.getElementById('acaoTopBar').innerHTML = `
-                    <a href="${config.urlLancamento}" class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-4 py-2 rounded-xl transition flex items-center gap-2">
+                    <a href="${config.urlLancamento}" class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-4 py-2 rounded-xl transition flex items-center gap-2 shadow">
                         <i class="fa-solid fa-plus"></i> Abrir Tela de Lançamento
                     </a>
                 `;
@@ -361,20 +432,129 @@
             }
         }
 
+        function alterarFiltroDias() {
+            if (moduloAtual) {
+                carregarDetalheModulo(moduloAtual);
+            }
+        }
+
+        function carregarDetalheModulo(moduloKey) {
+            const config = MODULOS[moduloKey];
+            const todosDados = JSON.parse(localStorage.getItem(config.storageKey) || '[]');
+            const numDias = parseInt(document.getElementById('selectDias').value) || 15;
+
+            document.getElementById('txtInfoDias').innerText = `Exibindo lançamentos dos últimos ${numDias} dias`;
+
+            // Filtrar lançamentos por intervalo de dias com base na data atual
+            const dataLimite = new Date();
+            dataLimite.setDate(dataLimite.getDate() - numDias);
+
+            const dadosFiltrados = todosDados.filter(item => {
+                if (!item.data) return true;
+                const dataItem = new Date(item.data + 'T00:00:00');
+                return dataItem >= dataLimite;
+            });
+
+            // Cálculos para os Quadros Indicadores (KPIs do Período)
+            const totalRegistros = dadosFiltrados.length;
+            let somaValor = 0;
+            let maiorValor = 0;
+
+            dadosFiltrados.forEach(d => {
+                let v = d[config.campoValor] || d.peso || d.totalGeral || d.totalCaptacao || d.totalGas || d.totalEnergia || d.horasTrabalhadas || 0;
+                somaValor += v;
+                if (v > maiorValor) maiorValor = v;
+            });
+
+            const mediaDiaria = numDias > 0 ? (somaValor / numDias) : 0;
+
+            // Formatação do indicador de soma conforme unidade
+            let strSoma = `${somaValor.toLocaleString('pt-BR', {minimumFractionDigits: 1})} ${config.unidade}`;
+            let strMedia = `${mediaDiaria.toLocaleString('pt-BR', {minimumFractionDigits: 1})} ${config.unidade}/dia`;
+            let strMaior = `${maiorValor.toLocaleString('pt-BR', {minimumFractionDigits: 1})} ${config.unidade}`;
+
+            if (config.unidade === 'R$') {
+                strSoma = `R$ ${somaValor.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
+                strMedia = `R$ ${mediaDiaria.toLocaleString('pt-BR', {minimumFractionDigits: 2})}/dia`;
+                strMaior = `R$ ${maiorValor.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
+            }
+
+            // Renderizar Quadros Indicadores (KPIs do Período)
+            const kpiContainer = document.getElementById('detalheKpis');
+            kpiContainer.innerHTML = `
+                <div class="bg-white p-4 rounded-xl border border-slate-200 border-l-4 border-l-blue-600 shadow-sm">
+                    <span class="text-[10px] font-bold text-slate-500 uppercase">Acumulado (${numDias} dias)</span>
+                    <p class="text-lg font-black text-slate-800 mt-1">${strSoma}</p>
+                    <span class="text-[10px] text-slate-400">Total acumulado no período</span>
+                </div>
+                <div class="bg-white p-4 rounded-xl border border-slate-200 border-l-4 border-l-emerald-600 shadow-sm">
+                    <span class="text-[10px] font-bold text-slate-500 uppercase">Média Diária</span>
+                    <p class="text-lg font-black text-slate-800 mt-1">${strMedia}</p>
+                    <span class="text-[10px] text-slate-400">Consumo/Produção diária</span>
+                </div>
+                <div class="bg-white p-4 rounded-xl border border-slate-200 border-l-4 border-l-amber-500 shadow-sm">
+                    <span class="text-[10px] font-bold text-slate-500 uppercase">Maior Lançamento</span>
+                    <p class="text-lg font-black text-slate-800 mt-1">${strMaior}</p>
+                    <span class="text-[10px] text-slate-400">Pico máximo registrado</span>
+                </div>
+                <div class="bg-white p-4 rounded-xl border border-slate-200 border-l-4 border-l-purple-600 shadow-sm">
+                    <span class="text-[10px] font-bold text-slate-500 uppercase">Qtd. de Lançamentos</span>
+                    <p class="text-lg font-black text-slate-800 mt-1">${totalRegistros} ops</p>
+                    <span class="text-[10px] text-slate-400">Registros no intervalo</span>
+                </div>
+            `;
+
+            // Cabeçalho e Corpo da Tabela de Lançamentos
+            const headTab = document.getElementById('headTabelaDetalhe');
+            const bodyTab = document.getElementById('bodyTabelaDetalhe');
+
+            headTab.innerHTML = `
+                <tr>
+                    <th class="p-2.5 border">Data</th>
+                    <th class="p-2.5 border">Descrição / Origem / Setor</th>
+                    <th class="p-2.5 border text-right">Valor Registrado</th>
+                    <th class="p-2.5 border text-center">Status</th>
+                </tr>
+            `;
+
+            if (dadosFiltrados.length === 0) {
+                bodyTab.innerHTML = `<tr><td colspan="4" class="p-4 text-center italic text-slate-400">Nenhum lançamento efetuado nos últimos ${numDias} dias.</td></tr>`;
+            } else {
+                bodyTab.innerHTML = dadosFiltrados.slice().reverse().map(d => {
+                    let desc = d.cliente || d.setor || d.operador || 'Registro Operacional';
+                    let v = d[config.campoValor] || d.peso || d.totalGeral || d.totalCaptacao || d.totalGas || d.totalEnergia || d.horasTrabalhadas || 0;
+                    let valFormated = config.unidade === 'R$' ? `R$ ${v.toFixed(2)}` : `${v.toLocaleString('pt-BR')} ${config.unidade}`;
+
+                    return `
+                        <tr class="hover:bg-slate-50 border-b">
+                            <td class="p-2.5 border font-medium">${new Date(d.data + 'T00:00:00').toLocaleDateString('pt-BR')}</td>
+                            <td class="p-2.5 border text-slate-600">${desc}</td>
+                            <td class="p-2.5 border text-right font-bold text-slate-800">${valFormated}</td>
+                            <td class="p-2.5 border text-center text-emerald-600 font-bold"><i class="fa-solid fa-check-circle"></i> Concluído</td>
+                        </tr>
+                    `;
+                }).join('');
+            }
+        }
+
         function carregarKPIsGerais() {
-            const pesagens = JSON.parse(localStorage.getItem('mes_historico_pesagem') || '[]');
+            const horas = JSON.parse(localStorage.getItem('mes_historico_horas') || '[]');
+            const recebimentos = JSON.parse(localStorage.getItem('mes_historico_recebimento') || '[]');
+            const expedicoes = JSON.parse(localStorage.getItem('mes_historico_expedicao') || '[]');
             const quimicos = JSON.parse(localStorage.getItem('mes_historico_quimicos') || '[]');
             const agua = JSON.parse(localStorage.getItem('mes_historico_agua') || '[]');
             const gas = JSON.parse(localStorage.getItem('mes_historico_gas') || '[]');
             const energia = JSON.parse(localStorage.getItem('mes_historico_energia') || '[]');
 
-            let pesoEntrada = 0, pesoSaida = 0, gaiolasEntrada = 0, gaiolasSaida = 0;
-            pesagens.forEach(p => {
-                pesoEntrada += (p.pesoEntrada || 0);
-                pesoSaida += (p.pesoSaida || 0);
-                gaiolasEntrada += (p.gaiolasEntrada || 0);
-                gaiolasSaida += (p.gaiolasSaida || 0);
-            });
+            const totHoras = horas.reduce((a, b) => a + (b.horasTrabalhadas || 0), 0);
+            document.getElementById('dashKpiHoras').innerText = `${totHoras.toFixed(1)} h`;
+
+            let pesoEntrada = recebimentos.reduce((a, b) => a + (b.pesoEntrada || b.peso || 0), 0);
+            let gaiolasEntrada = recebimentos.reduce((a, b) => a + (b.gaiolasEntrada || b.gaiolas || 0), 0);
+
+            let pesoSaida = expedicoes.reduce((a, b) => a + (b.pesoSaida || b.peso || 0), 0);
+            let gaiolasSaida = expedicoes.reduce((a, b) => a + (b.gaiolasSaida || b.gaiolas || 0), 0);
+
             const pctRetorno = pesoEntrada > 0 ? (pesoSaida / pesoEntrada) * 100 : 0;
 
             document.getElementById('dashKpiPesoEntrada').innerText = `${pesoEntrada.toLocaleString('pt-BR', {minimumFractionDigits: 1})} Kg`;
@@ -395,78 +575,73 @@
         }
 
         function carregarQuadrosResumo() {
-            // 1. Quadro Pesagem
-            const pesagens = JSON.parse(localStorage.getItem('mes_historico_pesagem') || '[]');
-            const qPesagem = document.getElementById('quadroResumoPesagem');
-            if (pesagens.length === 0) {
-                qPesagem.innerHTML = `<tr><td colspan="5" class="p-3 text-center italic text-slate-400">Nenhum registro.</td></tr>`;
+            // 1. Quadro Recebimento
+            const recebimentos = JSON.parse(localStorage.getItem('mes_historico_recebimento') || '[]');
+            const qRec = document.getElementById('quadroResumoRecebimento');
+            if (recebimentos.length === 0) {
+                qRec.innerHTML = `<tr><td colspan="4" class="p-3 text-center italic text-slate-400">Nenhum registro.</td></tr>`;
             } else {
-                qPesagem.innerHTML = pesagens.slice(-4).reverse().map(p => {
-                    const ret = (p.pesoEntrada || 0) > 0 ? ((p.pesoSaida / p.pesoEntrada) * 100).toFixed(1) : "0.0";
-                    return `
-                        <tr class="hover:bg-slate-50 border-b">
-                            <td class="p-2 border font-medium">${new Date(p.data + 'T00:00:00').toLocaleDateString('pt-BR')}</td>
-                            <td class="p-2 border text-right font-bold text-blue-700">${(p.pesoEntrada || 0).toFixed(1)} Kg</td>
-                            <td class="p-2 border text-right font-bold text-emerald-700">${(p.pesoSaida || 0).toFixed(1)} Kg</td>
-                            <td class="p-2 border text-center">${p.gaiolasEntrada || 0} / ${p.gaiolasSaida || 0}</td>
-                            <td class="p-2 border text-right font-black text-amber-600">${ret}%</td>
-                        </tr>
-                    `;
-                }).join('');
-            }
-
-            // 2. Quadro Químicos
-            const quimicos = JSON.parse(localStorage.getItem('mes_historico_quimicos') || '[]');
-            const qQuimicos = document.getElementById('quadroResumoQuimicos');
-            if (quimicos.length === 0) {
-                qQuimicos.innerHTML = `<tr><td colspan="3" class="p-3 text-center italic text-slate-400">Nenhum registro.</td></tr>`;
-            } else {
-                qQuimicos.innerHTML = quimicos.slice(-4).reverse().map(q => `
+                qRec.innerHTML = recebimentos.slice(-4).reverse().map(r => `
                     <tr class="hover:bg-slate-50 border-b">
-                        <td class="p-2 border font-medium">${new Date(q.data + 'T00:00:00').toLocaleDateString('pt-BR')}</td>
-                        <td class="p-2 border text-right font-bold text-purple-700">R$ ${(q.totalGeral || 0).toFixed(2)}</td>
-                        <td class="p-2 border text-center font-semibold text-emerald-600">Lançado</td>
+                        <td class="p-2 border font-medium">${new Date(r.data + 'T00:00:00').toLocaleDateString('pt-BR')}</td>
+                        <td class="p-2 border text-slate-600">${r.cliente || 'Interno'}</td>
+                        <td class="p-2 border text-right font-bold text-blue-700">${(r.pesoEntrada || r.peso || 0).toFixed(1)} Kg</td>
+                        <td class="p-2 border text-center">${r.gaiolasEntrada || r.gaiolas || 0} und</td>
                     </tr>
                 `).join('');
             }
 
-            // 3. Quadro Água
-            const agua = JSON.parse(localStorage.getItem('mes_historico_agua') || '[]');
-            const qAgua = document.getElementById('quadroResumoAgua');
-            if (agua.length === 0) {
-                qAgua.innerHTML = `<tr><td colspan="4" class="p-3 text-center italic text-slate-400">Nenhum registro.</td></tr>`;
+            // 2. Quadro Expedição
+            const expedicoes = JSON.parse(localStorage.getItem('mes_historico_expedicao') || '[]');
+            const qExp = document.getElementById('quadroResumoExpedicao');
+            if (expedicoes.length === 0) {
+                qExp.innerHTML = `<tr><td colspan="4" class="p-3 text-center italic text-slate-400">Nenhum registro.</td></tr>`;
             } else {
-                qAgua.innerHTML = agua.slice(-4).reverse().map(a => {
-                    const cap = a.totalCaptacao || 0;
-                    const cons = a.totalConsumo || 0;
-                    const bal = cap - cons;
-                    return `
-                        <tr class="hover:bg-slate-50 border-b">
-                            <td class="p-2 border font-medium">${new Date(a.data + 'T00:00:00').toLocaleDateString('pt-BR')}</td>
-                            <td class="p-2 border text-right font-semibold text-cyan-700">${cap} L</td>
-                            <td class="p-2 border text-right font-semibold text-blue-700">${cons} L</td>
-                            <td class="p-2 border text-right font-bold ${bal < 0 ? 'text-red-600' : 'text-emerald-600'}">${bal} L</td>
-                        </tr>
-                    `;
-                }).join('');
+                qExp.innerHTML = expedicoes.slice(-4).reverse().map(e => `
+                    <tr class="hover:bg-slate-50 border-b">
+                        <td class="p-2 border font-medium">${new Date(e.data + 'T00:00:00').toLocaleDateString('pt-BR')}</td>
+                        <td class="p-2 border text-slate-600">${e.cliente || 'Cliente Geral'}</td>
+                        <td class="p-2 border text-right font-bold text-emerald-700">${(e.pesoSaida || e.peso || 0).toFixed(1)} Kg</td>
+                        <td class="p-2 border text-center">${e.gaiolasSaida || e.gaiolas || 0} und</td>
+                    </tr>
+                `).join('');
             }
 
-            // 4. Quadro Gás & Energia
+            // 3. Quadro Gestão de Horas
+            const horas = JSON.parse(localStorage.getItem('mes_historico_horas') || '[]');
+            const qHoras = document.getElementById('quadroResumoHoras');
+            if (horas.length === 0) {
+                qHoras.innerHTML = `<tr><td colspan="4" class="p-3 text-center italic text-slate-400">Nenhum registro.</td></tr>`;
+            } else {
+                qHoras.innerHTML = horas.slice(-4).reverse().map(h => `
+                    <tr class="hover:bg-slate-50 border-b">
+                        <td class="p-2 border font-medium">${new Date(h.data + 'T00:00:00').toLocaleDateString('pt-BR')}</td>
+                        <td class="p-2 border">${h.setor || 'Geral'} / ${h.operador || '-'}</td>
+                        <td class="p-2 border text-right font-bold text-rose-600">${(h.horasTrabalhadas || 0).toFixed(1)} h</td>
+                        <td class="p-2 border text-right text-slate-500">${(h.horasParada || 0).toFixed(1)} h</td>
+                    </tr>
+                `).join('');
+            }
+
+            // 4. Quadro Utilidades
+            const agua = JSON.parse(localStorage.getItem('mes_historico_agua') || '[]');
             const gas = JSON.parse(localStorage.getItem('mes_historico_gas') || '[]');
             const energia = JSON.parse(localStorage.getItem('mes_historico_energia') || '[]');
-            const qGasEnergia = document.getElementById('quadroResumoGasEnergia');
+            const qUtilidades = document.getElementById('quadroResumoUtilidades');
 
-            let datas = [...new Set([...gas.map(g => g.data), ...energia.map(e => e.data)])].sort().reverse().slice(0, 4);
+            let datas = [...new Set([...agua.map(a => a.data), ...gas.map(g => g.data), ...energia.map(e => e.data)])].sort().reverse().slice(0, 4);
 
             if (datas.length === 0) {
-                qGasEnergia.innerHTML = `<tr><td colspan="3" class="p-3 text-center italic text-slate-400">Nenhum registro.</td></tr>`;
+                qUtilidades.innerHTML = `<tr><td colspan="4" class="p-3 text-center italic text-slate-400">Nenhum registro.</td></tr>`;
             } else {
-                qGasEnergia.innerHTML = datas.map(d => {
+                qUtilidades.innerHTML = datas.map(d => {
+                    const aItem = agua.find(a => a.data === d);
                     const gItem = gas.find(g => g.data === d);
                     const eItem = energia.find(e => e.data === d);
                     return `
                         <tr class="hover:bg-slate-50 border-b">
                             <td class="p-2 border font-medium">${new Date(d + 'T00:00:00').toLocaleDateString('pt-BR')}</td>
+                            <td class="p-2 border text-right font-bold text-cyan-700">${aItem ? aItem.totalCaptacao + ' L' : '-'}</td>
                             <td class="p-2 border text-right font-bold text-orange-600">${gItem ? gItem.totalGas + ' m³' : '-'}</td>
                             <td class="p-2 border text-right font-bold text-yellow-600">${eItem ? eItem.totalEnergia + ' kWh' : '-'}</td>
                         </tr>
@@ -475,69 +650,40 @@
             }
         }
 
-        function carregarDetalheModulo(moduloKey) {
-            const config = MODULOS[moduloKey];
-            const dados = JSON.parse(localStorage.getItem(config.storageKey) || '[]');
-
-            const kpiContainer = document.getElementById('detalheKpis');
-            const headTab = document.getElementById('headTabelaDetalhe');
-            const bodyTab = document.getElementById('bodyTabelaDetalhe');
-
-            kpiContainer.innerHTML = `
-                <div class="bg-white p-4 rounded-xl border border-slate-200">
-                    <span class="text-[10px] font-bold text-slate-500 uppercase">Total Lançamentos</span>
-                    <p class="text-lg font-black text-slate-800">${dados.length}</p>
-                </div>
-                <div class="bg-white p-4 rounded-xl border border-slate-200">
-                    <span class="text-[10px] font-bold text-slate-500 uppercase">Último Lançamento</span>
-                    <p class="text-sm font-bold text-slate-800">${dados.length > 0 ? new Date(dados[dados.length - 1].data + 'T00:00:00').toLocaleDateString('pt-BR') : '-'}</p>
-                </div>
-            `;
-
-            headTab.innerHTML = `
-                <tr>
-                    <th class="p-2.5 border">Data</th>
-                    <th class="p-2.5 border text-right">Valor Registrado</th>
-                    <th class="p-2.5 border text-center">Status</th>
-                </tr>
-            `;
-
-            if (dados.length === 0) {
-                bodyTab.innerHTML = `<tr><td colspan="3" class="p-4 text-center italic text-slate-400">Nenhum registro encontrado nesta categoria.</td></tr>`;
-            } else {
-                bodyTab.innerHTML = dados.slice(-5).reverse().map(d => `
-                    <tr class="hover:bg-slate-50 border-b">
-                        <td class="p-2.5 border font-medium">${new Date(d.data + 'T00:00:00').toLocaleDateString('pt-BR')}</td>
-                        <td class="p-2.5 border text-right font-bold">${d.totalGeral ? 'R$ ' + d.totalGeral.toFixed(2) : (d.pesoEntrada ? d.pesoEntrada + ' Kg' : 'Registrado')}</td>
-                        <td class="p-2.5 border text-center text-emerald-600 font-bold">Concluído</td>
-                    </tr>
-                `).join('');
-            }
-        }
-
         function renderizarGraficoGeral() {
             const ctx = document.getElementById('chartGeral').getContext('2d');
             if (chartGeralInstance) chartGeralInstance.destroy();
 
-            const pesagens = JSON.parse(localStorage.getItem('mes_historico_pesagem') || '[]');
-            const labels = pesagens.map(p => new Date(p.data + 'T00:00:00').toLocaleDateString('pt-BR', {day: '2-digit', month: '2-digit'}));
-            const dadosEntrada = pesagens.map(p => p.pesoEntrada || 0);
-            const dadosSaida = pesagens.map(p => p.pesoSaida || 0);
+            const recebimentos = JSON.parse(localStorage.getItem('mes_historico_recebimento') || '[]');
+            const expedicoes = JSON.parse(localStorage.getItem('mes_historico_expedicao') || '[]');
+
+            const datas = [...new Set([...recebimentos.map(r => r.data), ...expedicoes.map(e => e.data)])].sort();
+            const labels = datas.map(d => new Date(d + 'T00:00:00').toLocaleDateString('pt-BR', {day: '2-digit', month: '2-digit'}));
+
+            const dadosEntrada = datas.map(d => {
+                const item = recebimentos.find(r => r.data === d);
+                return item ? (item.pesoEntrada || item.peso || 0) : 0;
+            });
+
+            const dadosSaida = datas.map(d => {
+                const item = expedicoes.find(e => e.data === d);
+                return item ? (item.pesoSaida || item.peso || 0) : 0;
+            });
 
             chartGeralInstance = new Chart(ctx, {
                 type: 'bar',
                 data: {
-                    labels: labels.length > 0 ? labels : ['Semana 1', 'Semana 2', 'Semana 3', 'Semana 4'],
+                    labels: labels.length > 0 ? labels : ['Seg', 'Ter', 'Qua', 'Qui', 'Sex'],
                     datasets: [
                         {
-                            label: 'Peso Entrada (Kg)',
-                            data: dadosEntrada.length > 0 ? dadosEntrada : [1200, 1500, 1800, 2000],
+                            label: 'Peso Recebimento / Sujo (Kg)',
+                            data: dadosEntrada.length > 0 ? dadosEntrada : [1200, 1500, 1800, 2000, 1700],
                             backgroundColor: '#2563eb',
                             borderRadius: 4
                         },
                         {
-                            label: 'Peso Saída (Kg)',
-                            data: dadosSaida.length > 0 ? dadosSaida : [1000, 1300, 1550, 1750],
+                            label: 'Peso Expedição / Limpo (Kg)',
+                            data: dadosSaida.length > 0 ? dadosSaida : [1000, 1300, 1550, 1750, 1450],
                             backgroundColor: '#10b981',
                             borderRadius: 4
                         }
