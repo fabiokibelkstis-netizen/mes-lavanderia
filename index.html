@@ -84,7 +84,7 @@
         <header class="flex justify-between items-center pb-4 border-b border-slate-200">
             <div>
                 <h2 id="tituloPagina" class="text-xl font-bold text-slate-900">Dashboard Geral de Indicadores</h2>
-                <p id="subtituloPagina" class="text-xs text-slate-500">Resumo consolidado das operações, recebimento, expedição e utilidades.</p>
+                <p id="subtituloPagina" class="text-xs text-slate-500">Resumo consolidado das operações, recebimento, expedição, utilidades e proporcionalidade de consumos.</p>
             </div>
             <div id="acaoTopBar"></div>
         </header>
@@ -94,8 +94,8 @@
             <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 space-y-4">
                 <div class="flex justify-between items-center border-b pb-2">
                     <h3 class="text-xs font-black text-slate-700 uppercase tracking-wider flex items-center gap-2">
-                        <i class="fa-solid fa-boxes-packing text-blue-600"></i>
-                        Balanço Geral de Recebimento, Expedição e Rendimento (%)
+                        <i class="fa-solid fa-chart-line text-blue-600"></i>
+                        Balanço Geral, Rendimento (%) e Produtividade (Kg/h)
                     </h3>
                     <div class="flex gap-2">
                         <a href="pesagemrecebimento.html" class="text-xs text-blue-600 hover:underline font-bold">Lançar Recebimento ➔</a>
@@ -104,7 +104,7 @@
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4">
                     <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 border-l-4 border-l-blue-600">
                         <span class="text-[11px] font-bold text-slate-500 uppercase">Peso Entrada (Sujo)</span>
                         <p id="dashKpiPesoEntrada" class="text-xl font-black text-slate-800 mt-1">0,0 Kg</p>
@@ -134,29 +134,75 @@
                         <p id="dashKpiRetorno" class="text-xl font-black text-amber-600 mt-1">0,0 %</p>
                         <span class="text-[10px] text-slate-400">(Saída / Entrada)</span>
                     </div>
+
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 border-l-4 border-l-violet-600">
+                        <span class="text-[11px] font-bold text-slate-500 uppercase">Produtividade</span>
+                        <p id="dashKpiProdutividade" class="text-xl font-black text-violet-700 mt-1">0,0 Kg/h</p>
+                        <span class="text-[10px] text-slate-400">(Peso Saída / Horas)</span>
+                    </div>
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-                <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 border-l-4 border-l-rose-500">
-                    <span class="text-xs font-bold text-slate-500 uppercase">Horas Produção</span>
-                    <p id="dashKpiHoras" class="text-xl font-black text-slate-800 mt-1">0,0 h</p>
+            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 space-y-4">
+                <div class="flex justify-between items-center border-b pb-2">
+                    <h3 class="text-xs font-black text-slate-700 uppercase tracking-wider flex items-center gap-2">
+                        <i class="fa-solid fa-scale-balanced text-purple-600"></i>
+                        Consumo Totais & Indicadores de Proporcionalidade (Por Kg Limpo Processado)
+                    </h3>
                 </div>
-                <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 border-l-4 border-l-purple-600">
-                    <span class="text-xs font-bold text-slate-500 uppercase">Químicos (Mês)</span>
-                    <p id="dashKpiQuimicos" class="text-xl font-black text-slate-800 mt-1">R$ 0,00</p>
-                </div>
-                <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 border-l-4 border-l-cyan-600">
-                    <span class="text-xs font-bold text-slate-500 uppercase">Água Captada</span>
-                    <p id="dashKpiAgua" class="text-xl font-black text-slate-800 mt-1">0 L</p>
-                </div>
-                <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 border-l-4 border-l-orange-600">
-                    <span class="text-xs font-bold text-slate-500 uppercase">Gás Consumido</span>
-                    <p id="dashKpiGas" class="text-xl font-black text-slate-800 mt-1">0 m³</p>
-                </div>
-                <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 border-l-4 border-l-yellow-500">
-                    <span class="text-xs font-bold text-slate-500 uppercase">Energia Elétrica</span>
-                    <p id="dashKpiEnergia" class="text-xl font-black text-slate-800 mt-1">0 kWh</p>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 border-l-4 border-l-rose-500 flex flex-col justify-between">
+                        <div>
+                            <span class="text-xs font-bold text-slate-500 uppercase">Horas Produção</span>
+                            <p id="dashKpiHoras" class="text-xl font-black text-slate-800 mt-1">0,0 h</p>
+                        </div>
+                        <span class="text-[10px] text-slate-400 mt-2">Horas normais operadas</span>
+                    </div>
+
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 border-l-4 border-l-purple-600 flex flex-col justify-between">
+                        <div>
+                            <span class="text-xs font-bold text-slate-500 uppercase">Químicos (Mês)</span>
+                            <p id="dashKpiQuimicos" class="text-xl font-black text-purple-700 mt-1">R$ 0,00</p>
+                        </div>
+                        <div class="mt-2 pt-2 border-t border-slate-200 flex justify-between items-center">
+                            <span class="text-[10px] font-bold text-slate-500">Custo Específico:</span>
+                            <span id="dashKpiQuimicosProp" class="text-xs font-black text-purple-800">R$ 0,00 / Kg</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 border-l-4 border-l-cyan-600 flex flex-col justify-between">
+                        <div>
+                            <span class="text-xs font-bold text-slate-500 uppercase">Água Captada</span>
+                            <p id="dashKpiAgua" class="text-xl font-black text-cyan-700 mt-1">0 L</p>
+                        </div>
+                        <div class="mt-2 pt-2 border-t border-slate-200 flex justify-between items-center">
+                            <span class="text-[10px] font-bold text-slate-500">Consumo Específico:</span>
+                            <span id="dashKpiAguaProp" class="text-xs font-black text-cyan-800">0,00 L / Kg</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 border-l-4 border-l-orange-600 flex flex-col justify-between">
+                        <div>
+                            <span class="text-xs font-bold text-slate-500 uppercase">Gás Consumido</span>
+                            <p id="dashKpiGas" class="text-xl font-black text-orange-600 mt-1">0 m³</p>
+                        </div>
+                        <div class="mt-2 pt-2 border-t border-slate-200 flex justify-between items-center">
+                            <span class="text-[10px] font-bold text-slate-500">Consumo Específico:</span>
+                            <span id="dashKpiGasProp" class="text-xs font-black text-orange-800">0,00 m³ / Kg</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 border-l-4 border-l-yellow-500 flex flex-col justify-between">
+                        <div>
+                            <span class="text-xs font-bold text-slate-500 uppercase">Energia Elétrica</span>
+                            <p id="dashKpiEnergia" class="text-xl font-black text-yellow-600 mt-1">0 kWh</p>
+                        </div>
+                        <div class="mt-2 pt-2 border-t border-slate-200 flex justify-between items-center">
+                            <span class="text-[10px] font-bold text-slate-500">Consumo Específico:</span>
+                            <span id="dashKpiEnergiaProp" class="text-xs font-black text-yellow-800">0,00 kWh / Kg</span>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -226,12 +272,13 @@
                                 <tr>
                                     <th class="p-2 border">Data</th>
                                     <th class="p-2 border">Setor / Operador</th>
-                                    <th class="p-2 border text-right">Horas Trab.</th>
-                                    <th class="p-2 border text-right">Horas Parada</th>
+                                    <th class="p-2 border text-right">Horas Normais</th>
+                                    <th class="p-2 border text-right">Horas Extras</th>
+                                    <th class="p-2 border text-right">Absenteísmo</th>
                                 </tr>
                             </thead>
                             <tbody id="quadroResumoHoras">
-                                <tr><td colspan="4" class="p-3 text-center italic text-slate-400">Nenhum registro encontrado.</td></tr>
+                                <tr><td colspan="5" class="p-3 text-center italic text-slate-400">Nenhum registro encontrado.</td></tr>
                             </tbody>
                         </table>
                     </div>
@@ -294,7 +341,7 @@
                 </div>
             </div>
 
-            <div id="detalheKpis" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"></div>
+            <div id="detalheKpis" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
 
             <div id="bannerLancamento" class="bg-slate-900 text-white p-5 rounded-2xl shadow-md flex justify-between items-center">
                 <div>
@@ -326,11 +373,10 @@
         const MODULOS = {
             horas: {
                 titulo: "Gestão de Horas de Produção",
-                subtitulo: "Apontamento de horas trabalhadas, horas de parada e produtividade.",
+                subtitulo: "Apontamento de horas normais, horas extras, absenteísmo e produtividade.",
                 urlLancamento: "gestaodehoras.html",
                 storageKey: "mes_historico_horas",
-                unidade: "h",
-                campoValor: "horasTrabalhadas"
+                unidade: "h"
             },
             recebimento: {
                 titulo: "Pesagem de Recebimento (Entrada)",
@@ -445,7 +491,6 @@
 
             document.getElementById('txtInfoDias').innerText = `Exibindo lançamentos dos últimos ${numDias} dias`;
 
-            // Filtrar lançamentos por intervalo de dias com base na data atual
             const dataLimite = new Date();
             dataLimite.setDate(dataLimite.getDate() - numDias);
 
@@ -455,20 +500,114 @@
                 return dataItem >= dataLimite;
             });
 
-            // Cálculos para os Quadros Indicadores (KPIs do Período)
+            const kpiContainer = document.getElementById('detalheKpis');
+            const headTab = document.getElementById('headTabelaDetalhe');
+            const bodyTab = document.getElementById('bodyTabelaDetalhe');
+
+            if (moduloKey === 'horas') {
+                let totNormais = 0;
+                let totExtras = 0;
+                let totAusencias = 0;
+
+                dadosFiltrados.forEach(d => {
+                    totNormais += parseFloat(d.horasNormais || d.horasTrabalhadas || 0);
+                    totExtras += parseFloat(d.horasExtras || 0);
+                    totAusencias += parseFloat(d.absenteismo || d.horasParada || 0);
+                });
+
+                const horasTotais = totNormais + totExtras;
+                const pctHoraExtra = totNormais > 0 ? (totExtras / totNormais) * 100 : 0;
+                const pctAbsenteismo = horasTotais > 0 ? (totAusencias / horasTotais) * 100 : 0;
+
+                kpiContainer.innerHTML = `
+                    <div class="bg-white p-4 rounded-xl border border-slate-200 border-l-4 border-l-blue-600 shadow-sm">
+                        <span class="text-[10px] font-bold text-slate-500 uppercase">Horas Normais (h)</span>
+                        <p class="text-xl font-black text-slate-800 mt-1">${totNormais.toFixed(1)} h</p>
+                        <span class="text-[10px] text-slate-400">Total trabalhado regular</span>
+                    </div>
+
+                    <div class="bg-white p-4 rounded-xl border border-slate-200 border-l-4 border-l-amber-500 shadow-sm">
+                        <span class="text-[10px] font-bold text-slate-500 uppercase">Horas Extras (h)</span>
+                        <p class="text-xl font-black text-amber-600 mt-1">${totExtras.toFixed(1)} h</p>
+                        <span class="text-[10px] text-slate-400">Total de suplementares</span>
+                    </div>
+
+                    <div class="bg-white p-4 rounded-xl border border-slate-200 border-l-4 border-l-rose-500 shadow-sm">
+                        <span class="text-[10px] font-bold text-slate-500 uppercase">Absenteísmo (h)</span>
+                        <p class="text-xl font-black text-rose-600 mt-1">${totAusencias.toFixed(1)} h</p>
+                        <span class="text-[10px] text-slate-400">Faltas e ausências</span>
+                    </div>
+
+                    <div class="bg-white p-4 rounded-xl border border-slate-200 border-l-4 border-l-purple-600 shadow-sm">
+                        <span class="text-[10px] font-bold text-slate-500 uppercase">Horas Totais (h)</span>
+                        <p class="text-xl font-black text-slate-800 mt-1">${horasTotais.toFixed(1)} h</p>
+                        <span class="text-[10px] text-slate-400">Normais + Extras</span>
+                    </div>
+
+                    <div class="bg-white p-4 rounded-xl border border-slate-200 border-l-4 border-l-indigo-500 shadow-sm">
+                        <span class="text-[10px] font-bold text-slate-500 uppercase">Hora Extra (%)</span>
+                        <p class="text-xl font-black text-indigo-600 mt-1">${pctHoraExtra.toFixed(1)} %</p>
+                        <span class="text-[10px] text-slate-400">(Extras / Normais)</span>
+                    </div>
+
+                    <div class="bg-white p-4 rounded-xl border border-slate-200 border-l-4 border-l-red-600 shadow-sm">
+                        <span class="text-[10px] font-bold text-slate-500 uppercase">Absenteísmo (%)</span>
+                        <p class="text-xl font-black text-red-600 mt-1">${pctAbsenteismo.toFixed(1)} %</p>
+                        <span class="text-[10px] text-slate-400">(Ausências / Totais)</span>
+                    </div>
+                `;
+
+                headTab.innerHTML = `
+                    <tr>
+                        <th class="p-2.5 border">Data</th>
+                        <th class="p-2.5 border">Setor / Operador</th>
+                        <th class="p-2.5 border text-right">Horas Normais</th>
+                        <th class="p-2.5 border text-right">Horas Extras</th>
+                        <th class="p-2.5 border text-right">Absenteísmo</th>
+                        <th class="p-2.5 border text-right">HE (%)</th>
+                        <th class="p-2.5 border text-right">Abs (%)</th>
+                    </tr>
+                `;
+
+                if (dadosFiltrados.length === 0) {
+                    bodyTab.innerHTML = `<tr><td colspan="7" class="p-4 text-center italic text-slate-400">Nenhum lançamento efetuado nos últimos ${numDias} dias.</td></tr>`;
+                } else {
+                    bodyTab.innerHTML = dadosFiltrados.slice().reverse().map(d => {
+                        const hn = parseFloat(d.horasNormais || d.horasTrabalhadas || 0);
+                        const he = parseFloat(d.horasExtras || 0);
+                        const abs = parseFloat(d.absenteismo || d.horasParada || 0);
+                        const ht = hn + he;
+                        const hePct = hn > 0 ? (he / hn) * 100 : 0;
+                        const absPct = ht > 0 ? (abs / ht) * 100 : 0;
+
+                        return `
+                            <tr class="hover:bg-slate-50 border-b">
+                                <td class="p-2.5 border font-medium">${new Date(d.data + 'T00:00:00').toLocaleDateString('pt-BR')}</td>
+                                <td class="p-2.5 border text-slate-600">${d.setor || 'Geral'} / ${d.operador || '-'}</td>
+                                <td class="p-2.5 border text-right font-bold text-slate-800">${hn.toFixed(1)} h</td>
+                                <td class="p-2.5 border text-right font-bold text-amber-600">${he.toFixed(1)} h</td>
+                                <td class="p-2.5 border text-right font-bold text-rose-600">${abs.toFixed(1)} h</td>
+                                <td class="p-2.5 border text-right font-semibold text-indigo-600">${hePct.toFixed(1)}%</td>
+                                <td class="p-2.5 border text-right font-semibold text-red-600">${absPct.toFixed(1)}%</td>
+                            </tr>
+                        `;
+                    }).join('');
+                }
+                return;
+            }
+
             const totalRegistros = dadosFiltrados.length;
             let somaValor = 0;
             let maiorValor = 0;
 
             dadosFiltrados.forEach(d => {
-                let v = d[config.campoValor] || d.peso || d.totalGeral || d.totalCaptacao || d.totalGas || d.totalEnergia || d.horasTrabalhadas || 0;
+                let v = d[config.campoValor] || d.peso || d.totalGeral || d.totalCaptacao || d.totalGas || d.totalEnergia || 0;
                 somaValor += v;
                 if (v > maiorValor) maiorValor = v;
             });
 
             const mediaDiaria = numDias > 0 ? (somaValor / numDias) : 0;
 
-            // Formatação do indicador de soma conforme unidade
             let strSoma = `${somaValor.toLocaleString('pt-BR', {minimumFractionDigits: 1})} ${config.unidade}`;
             let strMedia = `${mediaDiaria.toLocaleString('pt-BR', {minimumFractionDigits: 1})} ${config.unidade}/dia`;
             let strMaior = `${maiorValor.toLocaleString('pt-BR', {minimumFractionDigits: 1})} ${config.unidade}`;
@@ -479,8 +618,6 @@
                 strMaior = `R$ ${maiorValor.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
             }
 
-            // Renderizar Quadros Indicadores (KPIs do Período)
-            const kpiContainer = document.getElementById('detalheKpis');
             kpiContainer.innerHTML = `
                 <div class="bg-white p-4 rounded-xl border border-slate-200 border-l-4 border-l-blue-600 shadow-sm">
                     <span class="text-[10px] font-bold text-slate-500 uppercase">Acumulado (${numDias} dias)</span>
@@ -497,16 +634,7 @@
                     <p class="text-lg font-black text-slate-800 mt-1">${strMaior}</p>
                     <span class="text-[10px] text-slate-400">Pico máximo registrado</span>
                 </div>
-                <div class="bg-white p-4 rounded-xl border border-slate-200 border-l-4 border-l-purple-600 shadow-sm">
-                    <span class="text-[10px] font-bold text-slate-500 uppercase">Qtd. de Lançamentos</span>
-                    <p class="text-lg font-black text-slate-800 mt-1">${totalRegistros} ops</p>
-                    <span class="text-[10px] text-slate-400">Registros no intervalo</span>
-                </div>
             `;
-
-            // Cabeçalho e Corpo da Tabela de Lançamentos
-            const headTab = document.getElementById('headTabelaDetalhe');
-            const bodyTab = document.getElementById('bodyTabelaDetalhe');
 
             headTab.innerHTML = `
                 <tr>
@@ -522,7 +650,7 @@
             } else {
                 bodyTab.innerHTML = dadosFiltrados.slice().reverse().map(d => {
                     let desc = d.cliente || d.setor || d.operador || 'Registro Operacional';
-                    let v = d[config.campoValor] || d.peso || d.totalGeral || d.totalCaptacao || d.totalGas || d.totalEnergia || d.horasTrabalhadas || 0;
+                    let v = d[config.campoValor] || d.peso || d.totalGeral || d.totalCaptacao || d.totalGas || d.totalEnergia || 0;
                     let valFormated = config.unidade === 'R$' ? `R$ ${v.toFixed(2)}` : `${v.toLocaleString('pt-BR')} ${config.unidade}`;
 
                     return `
@@ -546,8 +674,11 @@
             const gas = JSON.parse(localStorage.getItem('mes_historico_gas') || '[]');
             const energia = JSON.parse(localStorage.getItem('mes_historico_energia') || '[]');
 
-            const totHoras = horas.reduce((a, b) => a + (b.horasTrabalhadas || 0), 0);
-            document.getElementById('dashKpiHoras').innerText = `${totHoras.toFixed(1)} h`;
+            const totHorasNormais = horas.reduce((a, b) => a + parseFloat(b.horasNormais || b.horasTrabalhadas || 0), 0);
+            const totHorasExtras = horas.reduce((a, b) => a + parseFloat(b.horasExtras || 0), 0);
+            const totHorasTotais = totHorasNormais + totHorasExtras;
+
+            document.getElementById('dashKpiHoras').innerText = `${totHorasNormais.toFixed(1)} h`;
 
             let pesoEntrada = recebimentos.reduce((a, b) => a + (b.pesoEntrada || b.peso || 0), 0);
             let gaiolasEntrada = recebimentos.reduce((a, b) => a + (b.gaiolasEntrada || b.gaiolas || 0), 0);
@@ -556,13 +687,16 @@
             let gaiolasSaida = expedicoes.reduce((a, b) => a + (b.gaiolasSaida || b.gaiolas || 0), 0);
 
             const pctRetorno = pesoEntrada > 0 ? (pesoSaida / pesoEntrada) * 100 : 0;
+            const produtividade = totHorasTotais > 0 ? (pesoSaida / totHorasTotais) : 0;
 
             document.getElementById('dashKpiPesoEntrada').innerText = `${pesoEntrada.toLocaleString('pt-BR', {minimumFractionDigits: 1})} Kg`;
             document.getElementById('dashKpiGaiolasEntrada').innerText = `${gaiolasEntrada} und`;
             document.getElementById('dashKpiPesoSaida').innerText = `${pesoSaida.toLocaleString('pt-BR', {minimumFractionDigits: 1})} Kg`;
             document.getElementById('dashKpiGaiolasSaida').innerText = `${gaiolasSaida} und`;
             document.getElementById('dashKpiRetorno').innerText = `${pctRetorno.toFixed(1)} %`;
+            document.getElementById('dashKpiProdutividade').innerText = `${produtividade.toLocaleString('pt-BR', {minimumFractionDigits: 1, maximumFractionDigits: 1})} Kg/h`;
 
+            // CONSUMOS TOTAIS
             const totQuim = quimicos.reduce((a, b) => a + (b.totalGeral || 0), 0);
             const totAgua = agua.reduce((a, b) => a + (b.totalCaptacao || 0), 0);
             const totGas = gas.reduce((a, b) => a + (b.totalGas || 0), 0);
@@ -572,10 +706,20 @@
             document.getElementById('dashKpiAgua').innerText = `${totAgua.toLocaleString('pt-BR')} L`;
             document.getElementById('dashKpiGas').innerText = `${totGas.toLocaleString('pt-BR')} m³`;
             document.getElementById('dashKpiEnergia').innerText = `${totEnergia.toLocaleString('pt-BR')} kWh`;
+
+            // CÁLCULOS DE PROPORCIONALIDADE (CONSUMO / PESO SAÍDA LIMPO)
+            const quimicosProp = pesoSaida > 0 ? (totQuim / pesoSaida) : 0;
+            const aguaProp = pesoSaida > 0 ? (totAgua / pesoSaida) : 0;
+            const gasProp = pesoSaida > 0 ? (totGas / pesoSaida) : 0;
+            const energiaProp = pesoSaida > 0 ? (totEnergia / pesoSaida) : 0;
+
+            document.getElementById('dashKpiQuimicosProp').innerText = `R$ ${quimicosProp.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})} / Kg`;
+            document.getElementById('dashKpiAguaProp').innerText = `${aguaProp.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})} L / Kg`;
+            document.getElementById('dashKpiGasProp').innerText = `${gasProp.toLocaleString('pt-BR', {minimumFractionDigits: 3, maximumFractionDigits: 3})} m³ / Kg`;
+            document.getElementById('dashKpiEnergiaProp').innerText = `${energiaProp.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})} kWh / Kg`;
         }
 
         function carregarQuadrosResumo() {
-            // 1. Quadro Recebimento
             const recebimentos = JSON.parse(localStorage.getItem('mes_historico_recebimento') || '[]');
             const qRec = document.getElementById('quadroResumoRecebimento');
             if (recebimentos.length === 0) {
@@ -591,7 +735,6 @@
                 `).join('');
             }
 
-            // 2. Quadro Expedição
             const expedicoes = JSON.parse(localStorage.getItem('mes_historico_expedicao') || '[]');
             const qExp = document.getElementById('quadroResumoExpedicao');
             if (expedicoes.length === 0) {
@@ -607,23 +750,22 @@
                 `).join('');
             }
 
-            // 3. Quadro Gestão de Horas
             const horas = JSON.parse(localStorage.getItem('mes_historico_horas') || '[]');
             const qHoras = document.getElementById('quadroResumoHoras');
             if (horas.length === 0) {
-                qHoras.innerHTML = `<tr><td colspan="4" class="p-3 text-center italic text-slate-400">Nenhum registro.</td></tr>`;
+                qHoras.innerHTML = `<tr><td colspan="5" class="p-3 text-center italic text-slate-400">Nenhum registro.</td></tr>`;
             } else {
                 qHoras.innerHTML = horas.slice(-4).reverse().map(h => `
                     <tr class="hover:bg-slate-50 border-b">
                         <td class="p-2 border font-medium">${new Date(h.data + 'T00:00:00').toLocaleDateString('pt-BR')}</td>
                         <td class="p-2 border">${h.setor || 'Geral'} / ${h.operador || '-'}</td>
-                        <td class="p-2 border text-right font-bold text-rose-600">${(h.horasTrabalhadas || 0).toFixed(1)} h</td>
-                        <td class="p-2 border text-right text-slate-500">${(h.horasParada || 0).toFixed(1)} h</td>
+                        <td class="p-2 border text-right font-bold text-slate-800">${parseFloat(h.horasNormais || h.horasTrabalhadas || 0).toFixed(1)} h</td>
+                        <td class="p-2 border text-right font-bold text-amber-600">${parseFloat(h.horasExtras || 0).toFixed(1)} h</td>
+                        <td class="p-2 border text-right font-bold text-rose-600">${parseFloat(h.absenteismo || h.horasParada || 0).toFixed(1)} h</td>
                     </tr>
                 `).join('');
             }
 
-            // 4. Quadro Utilidades
             const agua = JSON.parse(localStorage.getItem('mes_historico_agua') || '[]');
             const gas = JSON.parse(localStorage.getItem('mes_historico_gas') || '[]');
             const energia = JSON.parse(localStorage.getItem('mes_historico_energia') || '[]');
