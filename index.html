@@ -154,10 +154,10 @@
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
                     <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 border-l-4 border-l-rose-500 flex flex-col justify-between">
                         <div>
-                            <span class="text-xs font-bold text-slate-500 uppercase">Horas Produção</span>
+                            <span class="text-xs font-bold text-slate-500 uppercase">Horas Totais Produção</span>
                             <p id="dashKpiHoras" class="text-xl font-black text-slate-800 mt-1">0,0 h</p>
                         </div>
-                        <span class="text-[10px] text-slate-400 mt-2">Horas normais operadas</span>
+                        <span class="text-[10px] text-slate-400 mt-2">Normais + Extras</span>
                     </div>
 
                     <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 border-l-4 border-l-purple-600 flex flex-col justify-between">
@@ -370,66 +370,102 @@
     </main>
 
     <script>
+        // CONFIGURAÇÃO DOS MÓDULOS E SUAS CHAVES DE LOCALSTORAGE
         const MODULOS = {
             horas: {
                 titulo: "Gestão de Horas de Produção",
                 subtitulo: "Apontamento de horas normais, horas extras, absenteísmo e produtividade.",
                 urlLancamento: "gestaodehoras.html",
-                storageKey: "mes_historico_horas",
+                storageKeys: ["mes_historico_horas", "historico_horas", "horas_lancamentos", "gestao_horas"],
                 unidade: "h"
             },
             recebimento: {
                 titulo: "Pesagem de Recebimento (Entrada)",
                 subtitulo: "Registro de entrada de roupa suja, controle de gaiolas e romaneios de entrada.",
                 urlLancamento: "pesagemrecebimento.html",
-                storageKey: "mes_historico_recebimento",
-                unidade: "Kg",
-                campoValor: "pesoEntrada"
+                storageKeys: ["mes_historico_recebimento", "historico_recebimento", "pesagem_recebimento"],
+                unidade: "Kg"
             },
             expedicao: {
                 titulo: "Pesagem de Expedição (Saída)",
                 subtitulo: "Registro de saída de roupa limpa, expedição de gaiolas e conferência de romaneios.",
                 urlLancamento: "pesagemexpedicao.html",
-                storageKey: "mes_historico_expedicao",
-                unidade: "Kg",
-                campoValor: "pesoSaida"
+                storageKeys: ["mes_historico_expedicao", "historico_expedicao", "pesagem_expedicao"],
+                unidade: "Kg"
             },
             quimicos: {
                 titulo: "Produtos Químicos",
                 subtitulo: "Resumo de consumo de dosagens, estoques e custos financeiros.",
                 urlLancamento: "consumoquimicos.html",
-                storageKey: "mes_historico_quimicos",
-                unidade: "R$",
-                campoValor: "totalGeral"
+                storageKeys: ["mes_historico_quimicos", "historico_quimicos", "consumo_quimicos"],
+                unidade: "R$"
             },
             agua: {
                 titulo: "Consumo de Água",
                 subtitulo: "Acompanhamento do Balanço Hídrico (Poços vs. Equipamentos).",
                 urlLancamento: "consumoagua.html",
-                storageKey: "mes_historico_agua",
-                unidade: "L",
-                campoValor: "totalCaptacao"
+                storageKeys: ["mes_historico_agua", "historico_agua", "consumo_agua"],
+                unidade: "L"
             },
             gas: {
                 titulo: "Consumo de Gás (Caldeira)",
                 subtitulo: "Leitura dos medidores de gás e geração de vapor.",
                 urlLancamento: "consumogas.html",
-                storageKey: "mes_historico_gas",
-                unidade: "m³",
-                campoValor: "totalGas"
+                storageKeys: ["mes_historico_gas", "historico_gas", "consumo_gas"],
+                unidade: "m³"
             },
             energia: {
                 titulo: "Energia Elétrica",
                 subtitulo: "Medição do consumo e demanda da planta.",
                 urlLancamento: "consumoenergia.html",
-                storageKey: "mes_historico_energia",
-                unidade: "kWh",
-                campoValor: "totalEnergia"
+                storageKeys: ["mes_historico_energia", "historico_energia", "consumo_energia"],
+                unidade: "kWh"
             }
         };
 
         let moduloAtual = null;
         let chartGeralInstance = null;
+
+        // AUXILIAR: CONVERTE VALORES PARA NÚMERO DE FORMA SEURA
+        function parseNumero(valor) {
+            if (valor === undefined || valor === null || valor === '') return 0;
+            if (typeof valor === 'number') return valor;
+            const limpo = String(valor).replace(/\./g, '').replace(',', '.').replace(/[^0-9.-]/g, '');
+            const num = parseFloat(limpo);
+            return isNaN(num) ? 0 : num;
+        }
+
+        // AUXILIAR: BUSCA EM VÁRIAS CHAVES DE LOCALSTORAGE
+        function obterDadosLocalStorage(chaves) {
+            for (let k of chaves) {
+                const item = localStorage.getItem(k);
+                if (item) {
+                    try {
+                        const parsed = JSON.parse(item);
+                        if (Array.isArray(parsed) && parsed.length > 0) {
+                            return parsed;
+                        }
+                    } catch(e) {}
+                }
+            }
+            return [];
+        }
+
+        // EXTRAÇÃO DE VALORES ESPECÍFICOS DE HORAS
+        function extrairValoresHoras(item) {
+            const hn = parseNumero(item.horasNormais || item.horas_normais || item.normais || item.horasTrabalhadas || item.horas || 0);
+            const he = parseNumero(item.horasExtras || item.horas_extras || item.extras || 0);
+            const abs = parseNumero(item.absenteismo || item.horasParada || item.ausencias || item.faltas || 0);
+            return { hn, he, abs, ht: hn + he };
+        }
+
+        // EXTRAÇÃO DE VALOR GENÉRICO (PESO / CONSUMO)
+        function extrairValorGenerico(item) {
+            return parseNumero(
+                item.totalGeral || item.totalCaptacao || item.totalGas || item.totalEnergia || 
+                item.pesoEntrada || item.pesoSaida || item.peso || item.valor || item.consumo || item.quantidade || 0
+            );
+        }
 
         document.addEventListener('DOMContentLoaded', () => {
             carregarKPIsGerais();
@@ -486,7 +522,7 @@
 
         function carregarDetalheModulo(moduloKey) {
             const config = MODULOS[moduloKey];
-            const todosDados = JSON.parse(localStorage.getItem(config.storageKey) || '[]');
+            const todosDados = obterDadosLocalStorage(config.storageKeys);
             const numDias = parseInt(document.getElementById('selectDias').value) || 15;
 
             document.getElementById('txtInfoDias').innerText = `Exibindo lançamentos dos últimos ${numDias} dias`;
@@ -504,15 +540,17 @@
             const headTab = document.getElementById('headTabelaDetalhe');
             const bodyTab = document.getElementById('bodyTabelaDetalhe');
 
+            // DETALHAMENTO DO MÓDULO DE HORAS
             if (moduloKey === 'horas') {
                 let totNormais = 0;
                 let totExtras = 0;
                 let totAusencias = 0;
 
                 dadosFiltrados.forEach(d => {
-                    totNormais += parseFloat(d.horasNormais || d.horasTrabalhadas || 0);
-                    totExtras += parseFloat(d.horasExtras || 0);
-                    totAusencias += parseFloat(d.absenteismo || d.horasParada || 0);
+                    const h = extrairValoresHoras(d);
+                    totNormais += h.hn;
+                    totExtras += h.he;
+                    totAusencias += h.abs;
                 });
 
                 const horasTotais = totNormais + totExtras;
@@ -570,23 +608,21 @@
                 `;
 
                 if (dadosFiltrados.length === 0) {
-                    bodyTab.innerHTML = `<tr><td colspan="7" class="p-4 text-center italic text-slate-400">Nenhum lançamento efetuado nos últimos ${numDias} dias.</td></tr>`;
+                    bodyTab.innerHTML = `<tr><td colspan="7" class="p-4 text-center italic text-slate-400">Nenhum lançamento de horas nos últimos ${numDias} dias.</td></tr>`;
                 } else {
                     bodyTab.innerHTML = dadosFiltrados.slice().reverse().map(d => {
-                        const hn = parseFloat(d.horasNormais || d.horasTrabalhadas || 0);
-                        const he = parseFloat(d.horasExtras || 0);
-                        const abs = parseFloat(d.absenteismo || d.horasParada || 0);
-                        const ht = hn + he;
-                        const hePct = hn > 0 ? (he / hn) * 100 : 0;
-                        const absPct = ht > 0 ? (abs / ht) * 100 : 0;
+                        const h = extrairValoresHoras(d);
+                        const hePct = h.hn > 0 ? (h.he / h.hn) * 100 : 0;
+                        const absPct = h.ht > 0 ? (h.abs / h.ht) * 100 : 0;
+                        const dataFmt = d.data ? new Date(d.data + 'T00:00:00').toLocaleDateString('pt-BR') : '-';
 
                         return `
                             <tr class="hover:bg-slate-50 border-b">
-                                <td class="p-2.5 border font-medium">${new Date(d.data + 'T00:00:00').toLocaleDateString('pt-BR')}</td>
-                                <td class="p-2.5 border text-slate-600">${d.setor || 'Geral'} / ${d.operador || '-'}</td>
-                                <td class="p-2.5 border text-right font-bold text-slate-800">${hn.toFixed(1)} h</td>
-                                <td class="p-2.5 border text-right font-bold text-amber-600">${he.toFixed(1)} h</td>
-                                <td class="p-2.5 border text-right font-bold text-rose-600">${abs.toFixed(1)} h</td>
+                                <td class="p-2.5 border font-medium">${dataFmt}</td>
+                                <td class="p-2.5 border text-slate-600">${d.setor || 'Geral'} / ${d.operador || d.funcionario || '-'}</td>
+                                <td class="p-2.5 border text-right font-bold text-slate-800">${h.hn.toFixed(1)} h</td>
+                                <td class="p-2.5 border text-right font-bold text-amber-600">${h.he.toFixed(1)} h</td>
+                                <td class="p-2.5 border text-right font-bold text-rose-600">${h.abs.toFixed(1)} h</td>
                                 <td class="p-2.5 border text-right font-semibold text-indigo-600">${hePct.toFixed(1)}%</td>
                                 <td class="p-2.5 border text-right font-semibold text-red-600">${absPct.toFixed(1)}%</td>
                             </tr>
@@ -596,12 +632,12 @@
                 return;
             }
 
-            const totalRegistros = dadosFiltrados.length;
+            // OUTROS MÓDULOS (ÁGUA, GÁS, ENERGIA, QUÍMICOS, RECEBIMENTO, EXPEDIÇÃO)
             let somaValor = 0;
             let maiorValor = 0;
 
             dadosFiltrados.forEach(d => {
-                let v = d[config.campoValor] || d.peso || d.totalGeral || d.totalCaptacao || d.totalGas || d.totalEnergia || 0;
+                let v = extrairValorGenerico(d);
                 somaValor += v;
                 if (v > maiorValor) maiorValor = v;
             });
@@ -646,16 +682,17 @@
             `;
 
             if (dadosFiltrados.length === 0) {
-                bodyTab.innerHTML = `<tr><td colspan="4" class="p-4 text-center italic text-slate-400">Nenhum lançamento efetuado nos últimos ${numDias} dias.</td></tr>`;
+                bodyTab.innerHTML = `<tr><td colspan="4" class="p-4 text-center italic text-slate-400">Nenhum lançamento nos últimos ${numDias} dias.</td></tr>`;
             } else {
                 bodyTab.innerHTML = dadosFiltrados.slice().reverse().map(d => {
                     let desc = d.cliente || d.setor || d.operador || 'Registro Operacional';
-                    let v = d[config.campoValor] || d.peso || d.totalGeral || d.totalCaptacao || d.totalGas || d.totalEnergia || 0;
+                    let v = extrairValorGenerico(d);
                     let valFormated = config.unidade === 'R$' ? `R$ ${v.toFixed(2)}` : `${v.toLocaleString('pt-BR')} ${config.unidade}`;
+                    let dataFmt = d.data ? new Date(d.data + 'T00:00:00').toLocaleDateString('pt-BR') : '-';
 
                     return `
                         <tr class="hover:bg-slate-50 border-b">
-                            <td class="p-2.5 border font-medium">${new Date(d.data + 'T00:00:00').toLocaleDateString('pt-BR')}</td>
+                            <td class="p-2.5 border font-medium">${dataFmt}</td>
                             <td class="p-2.5 border text-slate-600">${desc}</td>
                             <td class="p-2.5 border text-right font-bold text-slate-800">${valFormated}</td>
                             <td class="p-2.5 border text-center text-emerald-600 font-bold"><i class="fa-solid fa-check-circle"></i> Concluído</td>
@@ -666,25 +703,36 @@
         }
 
         function carregarKPIsGerais() {
-            const horas = JSON.parse(localStorage.getItem('mes_historico_horas') || '[]');
-            const recebimentos = JSON.parse(localStorage.getItem('mes_historico_recebimento') || '[]');
-            const expedicoes = JSON.parse(localStorage.getItem('mes_historico_expedicao') || '[]');
-            const quimicos = JSON.parse(localStorage.getItem('mes_historico_quimicos') || '[]');
-            const agua = JSON.parse(localStorage.getItem('mes_historico_agua') || '[]');
-            const gas = JSON.parse(localStorage.getItem('mes_historico_gas') || '[]');
-            const energia = JSON.parse(localStorage.getItem('mes_historico_energia') || '[]');
+            const horas = obterDadosLocalStorage(MODULOS.horas.storageKeys);
+            const recebimentos = obterDadosLocalStorage(MODULOS.recebimento.storageKeys);
+            const expedicoes = obterDadosLocalStorage(MODULOS.expedicao.storageKeys);
+            const quimicos = obterDadosLocalStorage(MODULOS.quimicos.storageKeys);
+            const agua = obterDadosLocalStorage(MODULOS.agua.storageKeys);
+            const gas = obterDadosLocalStorage(MODULOS.gas.storageKeys);
+            const energia = obterDadosLocalStorage(MODULOS.energia.storageKeys);
 
-            const totHorasNormais = horas.reduce((a, b) => a + parseFloat(b.horasNormais || b.horasTrabalhadas || 0), 0);
-            const totHorasExtras = horas.reduce((a, b) => a + parseFloat(b.horasExtras || 0), 0);
-            const totHorasTotais = totHorasNormais + totHorasExtras;
+            // HORAS
+            let totHN = 0, totHE = 0;
+            horas.forEach(h => {
+                const vals = extrairValoresHoras(h);
+                totHN += vals.hn;
+                totHE += vals.he;
+            });
+            const totHorasTotais = totHN + totHE;
+            document.getElementById('dashKpiHoras').innerText = `${totHorasTotais.toFixed(1)} h`;
 
-            document.getElementById('dashKpiHoras').innerText = `${totHorasNormais.toFixed(1)} h`;
+            // RECEBIMENTO & EXPEDIÇÃO
+            let pesoEntrada = 0, gaiolasEntrada = 0;
+            recebimentos.forEach(r => {
+                pesoEntrada += parseNumero(r.pesoEntrada || r.peso || 0);
+                gaiolasEntrada += parseNumero(r.gaiolasEntrada || r.gaiolas || 0);
+            });
 
-            let pesoEntrada = recebimentos.reduce((a, b) => a + (b.pesoEntrada || b.peso || 0), 0);
-            let gaiolasEntrada = recebimentos.reduce((a, b) => a + (b.gaiolasEntrada || b.gaiolas || 0), 0);
-
-            let pesoSaida = expedicoes.reduce((a, b) => a + (b.pesoSaida || b.peso || 0), 0);
-            let gaiolasSaida = expedicoes.reduce((a, b) => a + (b.gaiolasSaida || b.gaiolas || 0), 0);
+            let pesoSaida = 0, gaiolasSaida = 0;
+            expedicoes.forEach(e => {
+                pesoSaida += parseNumero(e.pesoSaida || e.peso || 0);
+                gaiolasSaida += parseNumero(e.gaiolasSaida || e.gaiolas || 0);
+            });
 
             const pctRetorno = pesoEntrada > 0 ? (pesoSaida / pesoEntrada) * 100 : 0;
             const produtividade = totHorasTotais > 0 ? (pesoSaida / totHorasTotais) : 0;
@@ -697,17 +745,17 @@
             document.getElementById('dashKpiProdutividade').innerText = `${produtividade.toLocaleString('pt-BR', {minimumFractionDigits: 1, maximumFractionDigits: 1})} Kg/h`;
 
             // CONSUMOS TOTAIS
-            const totQuim = quimicos.reduce((a, b) => a + (b.totalGeral || 0), 0);
-            const totAgua = agua.reduce((a, b) => a + (b.totalCaptacao || 0), 0);
-            const totGas = gas.reduce((a, b) => a + (b.totalGas || 0), 0);
-            const totEnergia = energia.reduce((a, b) => a + (b.totalEnergia || 0), 0);
+            const totQuim = quimicos.reduce((a, b) => a + extrairValorGenerico(b), 0);
+            const totAgua = agua.reduce((a, b) => a + extrairValorGenerico(b), 0);
+            const totGas = gas.reduce((a, b) => a + extrairValorGenerico(b), 0);
+            const totEnergia = energia.reduce((a, b) => a + extrairValorGenerico(b), 0);
 
             document.getElementById('dashKpiQuimicos').innerText = `R$ ${totQuim.toFixed(2).replace('.', ',')}`;
             document.getElementById('dashKpiAgua').innerText = `${totAgua.toLocaleString('pt-BR')} L`;
             document.getElementById('dashKpiGas').innerText = `${totGas.toLocaleString('pt-BR')} m³`;
             document.getElementById('dashKpiEnergia').innerText = `${totEnergia.toLocaleString('pt-BR')} kWh`;
 
-            // CÁLCULOS DE PROPORCIONALIDADE (CONSUMO / PESO SAÍDA LIMPO)
+            // PROPORCIONALIDADE (CONSUMO / PESO SAÍDA)
             const quimicosProp = pesoSaida > 0 ? (totQuim / pesoSaida) : 0;
             const aguaProp = pesoSaida > 0 ? (totAgua / pesoSaida) : 0;
             const gasProp = pesoSaida > 0 ? (totGas / pesoSaida) : 0;
@@ -720,58 +768,65 @@
         }
 
         function carregarQuadrosResumo() {
-            const recebimentos = JSON.parse(localStorage.getItem('mes_historico_recebimento') || '[]');
+            // QUADRO RECEBIMENTO
+            const recebimentos = obterDadosLocalStorage(MODULOS.recebimento.storageKeys);
             const qRec = document.getElementById('quadroResumoRecebimento');
             if (recebimentos.length === 0) {
                 qRec.innerHTML = `<tr><td colspan="4" class="p-3 text-center italic text-slate-400">Nenhum registro.</td></tr>`;
             } else {
                 qRec.innerHTML = recebimentos.slice(-4).reverse().map(r => `
                     <tr class="hover:bg-slate-50 border-b">
-                        <td class="p-2 border font-medium">${new Date(r.data + 'T00:00:00').toLocaleDateString('pt-BR')}</td>
+                        <td class="p-2 border font-medium">${r.data ? new Date(r.data + 'T00:00:00').toLocaleDateString('pt-BR') : '-'}</td>
                         <td class="p-2 border text-slate-600">${r.cliente || 'Interno'}</td>
-                        <td class="p-2 border text-right font-bold text-blue-700">${(r.pesoEntrada || r.peso || 0).toFixed(1)} Kg</td>
-                        <td class="p-2 border text-center">${r.gaiolasEntrada || r.gaiolas || 0} und</td>
+                        <td class="p-2 border text-right font-bold text-blue-700">${parseNumero(r.pesoEntrada || r.peso).toFixed(1)} Kg</td>
+                        <td class="p-2 border text-center">${parseNumero(r.gaiolasEntrada || r.gaiolas)} und</td>
                     </tr>
                 `).join('');
             }
 
-            const expedicoes = JSON.parse(localStorage.getItem('mes_historico_expedicao') || '[]');
+            // QUADRO EXPEDIÇÃO
+            const expedicoes = obterDadosLocalStorage(MODULOS.expedicao.storageKeys);
             const qExp = document.getElementById('quadroResumoExpedicao');
             if (expedicoes.length === 0) {
                 qExp.innerHTML = `<tr><td colspan="4" class="p-3 text-center italic text-slate-400">Nenhum registro.</td></tr>`;
             } else {
                 qExp.innerHTML = expedicoes.slice(-4).reverse().map(e => `
                     <tr class="hover:bg-slate-50 border-b">
-                        <td class="p-2 border font-medium">${new Date(e.data + 'T00:00:00').toLocaleDateString('pt-BR')}</td>
+                        <td class="p-2 border font-medium">${e.data ? new Date(e.data + 'T00:00:00').toLocaleDateString('pt-BR') : '-'}</td>
                         <td class="p-2 border text-slate-600">${e.cliente || 'Cliente Geral'}</td>
-                        <td class="p-2 border text-right font-bold text-emerald-700">${(e.pesoSaida || e.peso || 0).toFixed(1)} Kg</td>
-                        <td class="p-2 border text-center">${e.gaiolasSaida || e.gaiolas || 0} und</td>
+                        <td class="p-2 border text-right font-bold text-emerald-700">${parseNumero(e.pesoSaida || e.peso).toFixed(1)} Kg</td>
+                        <td class="p-2 border text-center">${parseNumero(e.gaiolasSaida || e.gaiolas)} und</td>
                     </tr>
                 `).join('');
             }
 
-            const horas = JSON.parse(localStorage.getItem('mes_historico_horas') || '[]');
+            // QUADRO HORAS
+            const horas = obterDadosLocalStorage(MODULOS.horas.storageKeys);
             const qHoras = document.getElementById('quadroResumoHoras');
             if (horas.length === 0) {
                 qHoras.innerHTML = `<tr><td colspan="5" class="p-3 text-center italic text-slate-400">Nenhum registro.</td></tr>`;
             } else {
-                qHoras.innerHTML = horas.slice(-4).reverse().map(h => `
-                    <tr class="hover:bg-slate-50 border-b">
-                        <td class="p-2 border font-medium">${new Date(h.data + 'T00:00:00').toLocaleDateString('pt-BR')}</td>
-                        <td class="p-2 border">${h.setor || 'Geral'} / ${h.operador || '-'}</td>
-                        <td class="p-2 border text-right font-bold text-slate-800">${parseFloat(h.horasNormais || h.horasTrabalhadas || 0).toFixed(1)} h</td>
-                        <td class="p-2 border text-right font-bold text-amber-600">${parseFloat(h.horasExtras || 0).toFixed(1)} h</td>
-                        <td class="p-2 border text-right font-bold text-rose-600">${parseFloat(h.absenteismo || h.horasParada || 0).toFixed(1)} h</td>
-                    </tr>
-                `).join('');
+                qHoras.innerHTML = horas.slice(-4).reverse().map(h => {
+                    const vals = extrairValoresHoras(h);
+                    return `
+                        <tr class="hover:bg-slate-50 border-b">
+                            <td class="p-2 border font-medium">${h.data ? new Date(h.data + 'T00:00:00').toLocaleDateString('pt-BR') : '-'}</td>
+                            <td class="p-2 border">${h.setor || 'Geral'} / ${h.operador || h.funcionario || '-'}</td>
+                            <td class="p-2 border text-right font-bold text-slate-800">${vals.hn.toFixed(1)} h</td>
+                            <td class="p-2 border text-right font-bold text-amber-600">${vals.he.toFixed(1)} h</td>
+                            <td class="p-2 border text-right font-bold text-rose-600">${vals.abs.toFixed(1)} h</td>
+                        </tr>
+                    `;
+                }).join('');
             }
 
-            const agua = JSON.parse(localStorage.getItem('mes_historico_agua') || '[]');
-            const gas = JSON.parse(localStorage.getItem('mes_historico_gas') || '[]');
-            const energia = JSON.parse(localStorage.getItem('mes_historico_energia') || '[]');
+            // QUADRO UTILIDADES
+            const agua = obterDadosLocalStorage(MODULOS.agua.storageKeys);
+            const gas = obterDadosLocalStorage(MODULOS.gas.storageKeys);
+            const energia = obterDadosLocalStorage(MODULOS.energia.storageKeys);
             const qUtilidades = document.getElementById('quadroResumoUtilidades');
 
-            let datas = [...new Set([...agua.map(a => a.data), ...gas.map(g => g.data), ...energia.map(e => e.data)])].sort().reverse().slice(0, 4);
+            let datas = [...new Set([...agua.map(a => a.data), ...gas.map(g => g.data), ...energia.map(e => e.data)])].filter(Boolean).sort().reverse().slice(0, 4);
 
             if (datas.length === 0) {
                 qUtilidades.innerHTML = `<tr><td colspan="4" class="p-3 text-center italic text-slate-400">Nenhum registro.</td></tr>`;
@@ -783,9 +838,9 @@
                     return `
                         <tr class="hover:bg-slate-50 border-b">
                             <td class="p-2 border font-medium">${new Date(d + 'T00:00:00').toLocaleDateString('pt-BR')}</td>
-                            <td class="p-2 border text-right font-bold text-cyan-700">${aItem ? aItem.totalCaptacao + ' L' : '-'}</td>
-                            <td class="p-2 border text-right font-bold text-orange-600">${gItem ? gItem.totalGas + ' m³' : '-'}</td>
-                            <td class="p-2 border text-right font-bold text-yellow-600">${eItem ? eItem.totalEnergia + ' kWh' : '-'}</td>
+                            <td class="p-2 border text-right font-bold text-cyan-700">${aItem ? extrairValorGenerico(aItem) + ' L' : '-'}</td>
+                            <td class="p-2 border text-right font-bold text-orange-600">${gItem ? extrairValorGenerico(gItem) + ' m³' : '-'}</td>
+                            <td class="p-2 border text-right font-bold text-yellow-600">${eItem ? extrairValorGenerico(eItem) + ' kWh' : '-'}</td>
                         </tr>
                     `;
                 }).join('');
@@ -796,20 +851,20 @@
             const ctx = document.getElementById('chartGeral').getContext('2d');
             if (chartGeralInstance) chartGeralInstance.destroy();
 
-            const recebimentos = JSON.parse(localStorage.getItem('mes_historico_recebimento') || '[]');
-            const expedicoes = JSON.parse(localStorage.getItem('mes_historico_expedicao') || '[]');
+            const recebimentos = obterDadosLocalStorage(MODULOS.recebimento.storageKeys);
+            const expedicoes = obterDadosLocalStorage(MODULOS.expedicao.storageKeys);
 
-            const datas = [...new Set([...recebimentos.map(r => r.data), ...expedicoes.map(e => e.data)])].sort();
+            const datas = [...new Set([...recebimentos.map(r => r.data), ...expedicoes.map(e => e.data)])].filter(Boolean).sort();
             const labels = datas.map(d => new Date(d + 'T00:00:00').toLocaleDateString('pt-BR', {day: '2-digit', month: '2-digit'}));
 
             const dadosEntrada = datas.map(d => {
                 const item = recebimentos.find(r => r.data === d);
-                return item ? (item.pesoEntrada || item.peso || 0) : 0;
+                return item ? parseNumero(item.pesoEntrada || item.peso) : 0;
             });
 
             const dadosSaida = datas.map(d => {
                 const item = expedicoes.find(e => e.data === d);
-                return item ? (item.pesoSaida || item.peso || 0) : 0;
+                return item ? parseNumero(item.pesoSaida || item.peso) : 0;
             });
 
             chartGeralInstance = new Chart(ctx, {
@@ -819,13 +874,13 @@
                     datasets: [
                         {
                             label: 'Peso Recebimento / Sujo (Kg)',
-                            data: dadosEntrada.length > 0 ? dadosEntrada : [1200, 1500, 1800, 2000, 1700],
+                            data: dadosEntrada.length > 0 ? dadosEntrada : [0, 0, 0, 0, 0],
                             backgroundColor: '#2563eb',
                             borderRadius: 4
                         },
                         {
                             label: 'Peso Expedição / Limpo (Kg)',
-                            data: dadosSaida.length > 0 ? dadosSaida : [1000, 1300, 1550, 1750, 1450],
+                            data: dadosSaida.length > 0 ? dadosSaida : [0, 0, 0, 0, 0],
                             backgroundColor: '#10b981',
                             borderRadius: 4
                         }
