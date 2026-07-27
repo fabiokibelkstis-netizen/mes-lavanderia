@@ -206,32 +206,54 @@
 
         // Carrega a lista cadastrada na Sessão 2 de configuracoes.html
         function carregarConfiguracoesHidrometros() {
-            const configSalva = localStorage.getItem(STORAGE_CONFIG);
-            let configuracoes = null;
+    let captacao = [];
+    let consumo = [];
 
-            if (configSalva) {
-                try { configuracoes = JSON.parse(configSalva); } catch(e) {}
+    // Tenta ler exatamente a mesma chave gravada no configuracoes.html
+    const configAguaRaw = localStorage.getItem('mes_config_agua');
+
+    if (configAguaRaw) {
+        try {
+            const config = JSON.parse(configAguaRaw);
+
+            // Mapeia os Poços
+            if (config.nomesPocos && Array.isArray(config.nomesPocos)) {
+                captacao = config.nomesPocos.map((nome, index) => ({
+                    id: `poco_${index + 1}`,
+                    nome: nome || `Poço ${index + 1}`
+                }));
             }
 
-            // Tenta buscar no padrão `hidrometros` ou utiliza os hidrômetros default
-            if (configuracoes && configuracoes.hidrometros) {
-                hidrometrosAtivos = configuracoes.hidrometros;
-            } else {
-                // Tenta chaves separadas caso salvou direto no localStorage
-                const capSalva = localStorage.getItem('mes_config_hidrometros_captacao');
-                const consSalva = localStorage.getItem('mes_config_hidrometros_consumo');
-
-                hidrometrosAtivos.captacao = capSalva ? JSON.parse(capSalva) : HIDROMETROS_PADRAO.captacao;
-                hidrometrosAtivos.consumo = consSalva ? JSON.parse(consSalva) : HIDROMETROS_PADRAO.consumo;
+            // Mapeia os Pontos de Consumo
+            if (config.nomesConsumo && Array.isArray(config.nomesConsumo)) {
+                consumo = config.nomesConsumo.map((nome, index) => ({
+                    id: `ponto_${index + 1}`,
+                    nome: nome || `Ponto ${index + 1}`
+                }));
             }
-
-            if (!hidrometrosAtivos.captacao || hidrometrosAtivos.captacao.length === 0) {
-                hidrometrosAtivos.captacao = HIDROMETROS_PADRAO.captacao;
-            }
-            if (!hidrometrosAtivos.consumo || hidrometrosAtivos.consumo.length === 0) {
-                hidrometrosAtivos.consumo = HIDROMETROS_PADRAO.consumo;
-            }
+        } catch (e) {
+            console.error("Erro ao ler mes_config_agua:", e);
         }
+    }
+
+    // Fallback/Padrão caso o usuário ainda não tenha salvo na tela de configurações
+    if (captacao.length === 0) {
+        captacao = [
+            { id: 'poco_1', nome: 'Poço 1' },
+            { id: 'poco_2', nome: 'Poço 2' }
+        ];
+    }
+
+    if (consumo.length === 0) {
+        consumo = [
+            { id: 'ponto_1', nome: 'Túnel 1' },
+            { id: 'ponto_2', nome: 'Túnel 2' },
+            { id: 'ponto_3', nome: 'Extratoras' }
+        ];
+    }
+
+    hidrometrosAtivos = { captacao, consumo };
+}
 
         function renderizarFormularioDinamico() {
             const containerCap = document.getElementById('containerFormCaptacao');
