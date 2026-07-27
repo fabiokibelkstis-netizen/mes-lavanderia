@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MES Dona Zara - PCM & Gestão de Manutenção Industrial</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body class="bg-slate-100 font-sans min-h-screen flex text-slate-800">
+
+    <aside class="w-64 bg-slate-900 text-slate-300 flex flex-col justify-between min-h-screen sticky top-0 z-50">
+        <div>
+            <div class="p-5 border-b border-slate-800 flex items-center gap-3">
+                <div class="bg-amber-600 text-white p-2.5 rounded-xl shadow">
+                    <i class="fa-solid fa-wrench text-lg"></i>
+                </div>
+                <div>
+                    <h1 class="text-sm font-black text-white tracking-wider">MES - PCM</h1>
+                    <p class="text-[10px] text-slate-400">Manutenção & Ativos</p>
+                </div>
+            </div>
+
+            <nav class="p-3 space-y-1 text-xs font-semibold">
+                <div class="px-3 py-2 text-[10px] uppercase font-bold text-slate-500 tracking-wider">Visão Geral</div>
+
+                <button onclick="navegarPara('dashboard')" id="btn-dashboard" class="menu-item w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition bg-amber-600 text-white font-bold">
+                    <i class="fa-solid fa-chart-line w-5 text-center text-sm"></i>
+                    <span>Dashboard & KPIs</span>
+                </button>
+
+                <div class="px-3 py-2 pt-4 text-[10px] uppercase font-bold text-slate-500 tracking-wider">Gestão do PCM</div>
+
+                <button onclick="navegarPara('equipamentos')" id="btn-equipamentos" class="menu-item w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition hover:bg-slate-800 hover:text-white text-slate-300">
+                    <i class="fa-solid fa-cubes text-blue-400 w-5 text-center text-sm"></i>
+                    <span>Cad. Equipamentos</span>
+                </button>
+
+                <button onclick="navegarPara('os')" id="btn-os" class="menu-item w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition hover:bg-slate-800 hover:text-white text-slate-300">
+                    <i class="fa-solid fa-file-signature text-rose-400 w-5 text-center text-sm"></i>
+                    <span>Ordens de Serviço</span>
+                </button>
+
+                <button onclick="navegarPara('lubrificacao')" id="btn-lubrificacao" class="menu-item w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition hover:bg-slate-800 hover:text-white text-slate-300">
+                    <i class="fa-solid fa-oil-can text-yellow-400 w-5 text-center text-sm"></i>
+                    <span>Plano Lubrificação</span>
+                </button>
+
+                <button onclick="navegarPara('pecas')" id="btn-pecas" class="menu-item w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition hover:bg-slate-800 hover:text-white text-slate-300">
+                    <i class="fa-solid fa-gears text-emerald-400 w-5 text-center text-sm"></i>
+                    <span>Peças de Reposição</span>
+                </button>
+            </nav>
+        </div>
+
+        <div class="p-3 border-t border-slate-800">
+            <a href="index.html" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold text-slate-400 hover:bg-slate-800 hover:text-white transition">
+                <i class="fa-solid fa-arrow-left w-5 text-center text-sm"></i>
+                <span>Voltar ao MES Geral</span>
+            </a>
+        </div>
+    </aside>
+
+    <main class="flex-1 p-6 overflow-y-auto space-y-6">
+
+        <header class="flex justify-between items-center pb-4 border-b border-slate-200">
+            <div>
+                <h2 id="tituloPagina" class="text-xl font-bold text-slate-900">Dashboard de Manutenção Industrial</h2>
+                <p id="subtituloPagina" class="text-xs text-slate-500">Indicadores operacionais de confiabilidade, disponibilidade e integração OEE.</p>
+            </div>
+        </header>
+
+        <div id="view-dashboard" class="space-y-6">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 border-l-4 border-l-emerald-500">
+                    <span class="text-xs font-bold text-slate-500 uppercase">Disponibilidade Industrial</span>
+                    <p id="kpiDisponibilidade" class="text-2xl font-black text-slate-800 mt-1">100.0%</p>
+                    <span class="text-[10px] text-slate-400">Tempo de Operação / Tempo Planejado</span>
+                </div>
+
+                <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 border-l-4 border-l-blue-500">
+                    <span class="text-xs font-bold text-slate-500 uppercase">MTBF (Tempo Média Entre Falhas)</span>
+                    <p id="kpiMTBF" class="text-2xl font-black text-blue-600 mt-1">0.0 h</p>
+                    <span class="text-[10px] text-slate-400">Confiabilidade dos Equipamentos</span>
+                </div>
+
+                <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 border-l-4 border-l-rose-500">
+                    <span class="text-xs font-bold text-slate-500 uppercase">MTTR (Tempo Médio de Reparo)</span>
+                    <p id="kpiMTTR" class="text-2xl font-black text-rose-600 mt-1">0.0 h</p>
+                    <span class="text-[10px] text-slate-400">Agilidade e Eficiência da Manutenção</span>
+                </div>
+
+                <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 border-l-4 border-l-purple-600">
+                    <span class="text-xs font-bold text-slate-500 uppercase">Estimativa OEE Integrado</span>
+                    <p id="kpiOEE" class="text-2xl font-black text-purple-700 mt-1">-- %</p>
+                    <span class="text-[10px] text-slate-400">Disp. x Perf. (90%) x Qualidade (98%)</span>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
+                    <h3 class="text-xs font-bold text-slate-800 uppercase mb-4">Horas de Manutenção por Tipo</h3>
+                    <div class="h-64">
+                        <canvas id="chartTiposOS"></canvas>
+                    </div>
+                </div>
+
+                <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 space-y-3">
+                    <h3 class="text-xs font-bold text-slate-800 uppercase border-b pb-2 flex items-center justify-between">
+                        <span><i class="fa-solid fa-oil-can text-amber-500 mr-2"></i> Próximas Lubrificações</span>
+                        <span class="text-[10px] bg-amber-100 text-amber-800 px-2 py-0.5 rounded font-bold">Preventivo</span>
+                    </h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-[11px]">
+                            <thead class="bg-slate-100 text-slate-700">
+                                <tr>
+                                    <th class="p-2 border">Máquina</th>
+                                    <th class="p-2 border">Ponto</th>
+                                    <th class="p-2 border">Lubrificante</th>
+                                    <th class="p-2 border text-center">Freq.</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tblDashLubrificacao">
+                                <tr><td colspan="4" class="p-3 text-center italic text-slate-400">Nenhum plano cadastrado.</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="view-equipamentos" class="hidden space-y-6">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="space-y-6">
+                    <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 space-y-3">
+                        <h3 class="text-xs font-bold text-slate-800 border-b pb-2 uppercase tracking-wide text-amber-600 flex justify-between items-center">
+                            <span>1. Cadastro Prévia (Máquinas Macro)</span>
+                            <i class="fa-solid fa-layer-group"></i>
+                        </h3>
+                        <form id="formMacroMaquinas" onsubmit="salvarMacroMaquina(event)" class="space-y-2 text-xs">
+                            <div>
+                                <label class="block font-bold mb-1">Nome Padrão da Máquina / Modelo Macro</label>
+                                <div class="flex gap-2">
+                                    <input type="text" id="macroNome" required placeholder="Ex: Lavadora Extratora 50kg" class="w-full p-2 border rounded-lg bg-slate-50">
+                                    <button type="submit" class="bg-amber-600 hover:bg-amber-700 text-white font-bold px-3 rounded-lg transition text-xs">Salvar</button>
+                                </div>
+                            </div>
+                        </form>
+                        <div class="pt-2">
+                            <span class="text-[10px] text-slate-400 font-bold uppercase">Máquinas Cadastradas:</span>
+                            <div id="listaMacroTags" class="flex flex-wrap gap-1 mt-1"></div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 space-y-3">
+                        <h3 class="text-xs font-bold text-slate-800 border-b pb-2 uppercase tracking-wide text-purple-600 flex justify-between items-center">
+                            <span>2. Cadastro Prévia (Tipos de Componente)</span>
+                            <i class="fa-solid fa-puzzle-piece"></i>
+                        </h3>
+                        <form id="formMacroComponentes" onsubmit="salvarMacroComponente(event)" class="space-y-2 text-xs">
+                            <div>
+                                <label class="block font-bold mb-1">Nome do Componente / Sub-item</label>
+                                <div class="flex gap-2">
+                                    <input type="text" id="compNome" required placeholder="Ex: Motor Elétrico, Redutor..." class="w-full p-2 border rounded-lg bg-slate-50">
+                                    <button type="submit" class="bg-purple-600 hover:bg-purple-700 text-white font-bold px-3 rounded-lg transition text-xs">Salvar</button>
+                                </div>
+                            </div>
+                        </form>
+                        <div class="pt-2">
+                            <span class="text-[10px] text-slate-400 font-bold uppercase">Componentes Cadastrados:</span>
+                            <div id="listaCompTags" class="flex flex-wrap gap-1 mt-1"></div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 space-y-3">
+                        <h3 class="text-xs font-bold text-slate-800 border-b pb-2 uppercase tracking-wide text-blue-600 flex justify-between items-center">
+                            <span>3. Cadastro do Ativo / Componente</span>
+                            <i class="fa-solid fa-cubes"></i>
+                        </h3>
+                        <form id="formEquipamento" onsubmit="salvarEquipamento(event)" class="space-y-3 text-xs">
+                            <div>
+                                <label class="block font-bold mb-1">Tag / Código do Ativo</label>
+                                <input type="text" id="eqTag" required placeholder="Ex: LAV-01-MOT" class="w-full p-2 border rounded-lg bg-slate-50 uppercase font-mono font-bold text-blue-600">
+                            </div>
+
+                            <div>
+                                <label class="block font-bold mb-1">Nome da Máquina (Selecione do Macro)</label>
+                                <select id="eqNomeMacro" required class="w-full p-2 border rounded-lg bg-slate-50 font-semibold"></select>
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-2">
+                                <div>
+                                    <label class="block font-bold mb-1">Componente / Sub-item</label>
+                                    <select id="eqComponente" required class="w-full p-2 border rounded-lg bg-slate-50 font-semibold text-purple-700"></select>
+                                </div>
+                                <div>
+                                    <label class="block font-bold mb-1">Setor / Linha</label>
+                                    <input type="text" id="eqSetor" required placeholder="Ex: Lavanderia" class="w-full p-2 border rounded-lg bg-slate-50">
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-3 gap-2">
+                                <div>
+                                    <label class="block font-bold mb-1">Tensão</label>
+                                    <select id="eqTensao" class="w-full p-2 border rounded-lg bg-slate-50">
+                                        <option value="220V Tri">220V Tri</option>
+                                        <option value="380V Tri">380V Tri</option>
+                                        <option value="220V Mono">220V Mono</option>
+                                        <option value="110V Mono">110V Mono</option>
+                                        <option value="24VDC">24VDC</option>
+                                        <option value="N/A">N/A</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block font-bold mb-1">Capacidade</label>
+                                    <input type="text" id="eqCapacidade" placeholder="Ex: 50 kg / 5 CV" class="w-full p-2 border rounded-lg bg-slate-50">
+                                </div>
+                                <div>
+                                    <label class="block font-bold mb-1">Horas Plan./Dia</label>
+                                    <input type="number" id="eqHorasDia" required value="16" min="1" max="24" class="w-full p-2 border rounded-lg bg-slate-50 font-bold">
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block font-bold mb-1">Observações Técnicas</label>
+                                <textarea id="eqObservacoes" placeholder="Ex: Modelo do fabricante, vazão, torque ou dados complementares..." class="w-full p-2 border rounded-lg bg-slate-50" rows="2"></textarea>
+                            </div>
+
+                            <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold p-2.5 rounded-xl transition shadow">Cadastrar Equipamento / Componente</button>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-2 bg-white p-5 rounded-2xl shadow-sm border border-slate-200 space-y-3">
+                    <h3 class="text-sm font-bold text-slate-800 border-b pb-2">Parque de Máquinas e Componentes Cadastrados</h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs">
+                            <thead class="bg-slate-100 text-slate-700">
+                                <tr>
+                                    <th class="p-2 border">Tag</th>
+                                    <th class="p-2 border">Máquina Macro</th>
+                                    <th class="p-2 border">Componente</th>
+                                    <th class="p-2 border">Setor</th>
+                                    <th class="p-2 border">Tensão / Cap.</th>
+                                    <th class="p-2 border text-center">Horas/Dia</th>
+                                    <th class="p-2 border">Obs.</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tblEquipamentos"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="view-os" class="hidden space-y-6">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 space-y-4">
+                    <h3 class="text-sm font-bold text-slate-800 border-b pb-2">Abertura / Apontamento de O/S</h3>
+                    <form id="formOS" onsubmit="salvarOS(event)" class="space-y-3 text-xs">
+                        <div>
+                            <label class="block font-bold mb-1">Equipamento / Componente</label>
+                            <select id="osEquipamento" required class="w-full p-2 border rounded-lg bg-slate-50"></select>
+                        </div>
+                        <div>
+                            <label class="block font-bold mb-1">Tipo de Manutenção</label>
+                            <select id="osTipo" required class="w-full p-2 border rounded-lg bg-slate-50">
+                                <option value="Corretiva">Corretiva (Parada Não Planejada)</option>
+                                <option value="Preventiva">Preventiva (Programada)</option>
+                                <option value="Preditiva">Preditiva / Inspeção</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block font-bold mb-1">Descrição da Falha / Serviço</label>
+                            <textarea id="osDescricao" required placeholder="Descreva o problema ou a rotina..." class="w-full p-2 border rounded-lg bg-slate-50" rows="2"></textarea>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="block font-bold mb-1">Data</label>
+                                <input type="date" id="osData" required class="w-full p-2 border rounded-lg bg-slate-50">
+                            </div>
+                            <div>
+                                <label class="block font-bold mb-1">Tempo Parada (Horas)</label>
+                                <input type="number" step="0.1" id="osHoras" required placeholder="Ex: 1.5" class="w-full p-2 border rounded-lg bg-slate-50 font-bold">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block font-bold mb-1">Técnico / Responsável</label>
+                            <input type="text" id="osTecnico" placeholder="Nome do técnico" class="w-full p-2 border rounded-lg bg-slate-50">
+                        </div>
+                        <button type="submit" class="w-full bg-rose-600 hover:bg-rose-700 text-white font-bold p-2.5 rounded-xl transition">Registrar Ordem de Serviço</button>
+                    </form>
+                </div>
+
+                <div class="lg:col-span-2 bg-white p-5 rounded-2xl shadow-sm border border-slate-200 space-y-3">
+                    <div class="flex flex-wrap justify-between items-center border-b pb-2 gap-2">
+                        <h3 class="text-sm font-bold text-slate-800">Histórico de Ordens de Serviço & Paradas</h3>
+                        <div class="flex items-center gap-2 text-xs">
+                            <span class="font-bold text-slate-600"><i class="fa-solid fa-filter text-rose-500 mr-1"></i>Filtrar por Máquina:</span>
+                            <select id="filtroOsEquipamento" onchange="renderizarTabelas()" class="p-1.5 border rounded-lg bg-slate-50 text-xs font-semibold">
+                                <option value="TODOS">-- Todos os Equipamentos --</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs">
+                            <thead class="bg-slate-100 text-slate-700">
+                                <tr>
+                                    <th class="p-2.5 border">Data</th>
+                                    <th class="p-2.5 border">Tag / Máquina</th>
+                                    <th class="p-2.5 border">Tipo</th>
+                                    <th class="p-2.5 border">Descrição</th>
+                                    <th class="p-2.5 border text-right">Parada (h)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tblOS"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="view-lubrificacao" class="hidden space-y-6">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 space-y-4">
+                    <h3 class="text-sm font-bold text-slate-800 border-b pb-2">Cadastrar Rota de Lubrificação</h3>
+                    <form id="formLubrificacao" onsubmit="salvarLubrificacao(event)" class="space-y-3 text-xs">
+                        <div>
+                            <label class="block font-bold mb-1">Equipamento / Componente</label>
+                            <select id="lubEquipamento" required class="w-full p-2 border rounded-lg bg-slate-50"></select>
+                        </div>
+                        <div>
+                            <label class="block font-bold mb-1">Ponto de Aplicação</label>
+                            <input type="text" id="lubPonto" required placeholder="Ex: Rolamento Principal Lado A" class="w-full p-2 border rounded-lg bg-slate-50">
+                        </div>
+                        <div>
+                            <label class="block font-bold mb-1">Lubrificante Utilizado</label>
+                            <input type="text" id="lubProduto" required placeholder="Ex: Graxa Mobilith SHC 220" class="w-full p-2 border rounded-lg bg-slate-50">
+                        </div>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="block font-bold mb-1">Frequência</label>
+                                <select id="lubFreq" class="w-full p-2 border rounded-lg bg-slate-50">
+                                    <option value="Diária">Diária</option>
+                                    <option value="Semanal">Semanal</option>
+                                    <option value="Mensal">Mensal</option>
+                                    <option value="Trimestral">Trimestral</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block font-bold mb-1">Qtd / Dose</label>
+                                <input type="text" id="lubQtd" placeholder="Ex: 50 gramas" class="w-full p-2 border rounded-lg bg-slate-50">
+                            </div>
+                        </div>
+                        <button type="submit" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold p-2.5 rounded-xl transition">Adicionar ao Plano</button>
+                    </form>
+                </div>
+
+                <div class="lg:col-span-2 bg-white p-5 rounded-2xl shadow-sm border border-slate-200 space-y-3">
+                    <div class="flex flex-wrap justify-between items-center border-b pb-2 gap-2">
+                        <h3 class="text-sm font-bold text-slate-800">Plano Mestre de Lubrificação Industrial</h3>
+                        <div class="flex items-center gap-2 text-xs">
+                            <span class="font-bold text-slate-600"><i class="fa-solid fa-filter text-amber-500 mr-1"></i>Filtrar por Máquina:</span>
+                            <select id="filtroLubEquipamento" onchange="renderizarTabelas()" class="p-1.5 border rounded-lg bg-slate-50 text-xs font-semibold">
+                                <option value="TODOS">-- Todos os Equipamentos --</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs">
+                            <thead class="bg-slate-100 text-slate-700">
+                                <tr>
+                                    <th class="p-2.5 border">Máquina</th>
+                                    <th class="p-2.5 border">Ponto</th>
+                                    <th class="p-2.5 border">Lubrificante</th>
+                                    <th class="p-2.5 border">Freq.</th>
+                                    <th class="p-2.5 border text-right">Dose</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tblLubrificacao"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="view-pecas" class="hidden space-y-6">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 space-y-4">
+                    <h3 class="text-sm font-bold text-slate-800 border-b pb-2">Cadastrar Peça de Reposição</h3>
+                    <form id="formPeca" onsubmit="salvarPeca(event)" class="space-y-3 text-xs">
+                        <div>
+                            <label class="block font-bold mb-1">Código / Part Number</label>
+                            <input type="text" id="pecaCod" required placeholder="Ex: ROL-6205-2RS" class="w-full p-2 border rounded-lg bg-slate-50 uppercase font-mono font-bold">
+                        </div>
+                        <div>
+                            <label class="block font-bold mb-1">Descrição do Item</label>
+                            <input type="text" id="pecaNome" required placeholder="Ex: Rolamento de Esferas 6205" class="w-full p-2 border rounded-lg bg-slate-50">
+                        </div>
+
+                        <div>
+                            <label class="block font-bold mb-1">Equipamentos Aplicáveis (Ctrl para múltiplos)</label>
+                            <select id="pecaEquipamentos" multiple class="w-full p-2 border rounded-lg bg-slate-50 h-24 font-semibold text-slate-700">
+                                <option value="TODOS" selected>-- Todos / Uso Geral --</option>
+                            </select>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="block font-bold mb-1">Condição do Item</label>
+                                <select id="pecaCondicao" onchange="alternarDataReparo()" class="w-full p-2 border rounded-lg bg-slate-50 font-bold">
+                                    <option value="Nova">Nova</option>
+                                    <option value="Recondicionada">Recondicionada</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block font-bold mb-1">Data do Reparo</label>
+                                <input type="date" id="pecaDataReparo" disabled class="w-full p-2 border rounded-lg bg-slate-200 text-slate-500 cursor-not-allowed">
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="block font-bold mb-1">Qtd em Estoque</label>
+                                <input type="number" id="pecaQtd" required min="0" placeholder="0" class="w-full p-2 border rounded-lg bg-slate-50 font-bold">
+                            </div>
+                            <div>
+                                <label class="block font-bold mb-1">Estoque Mínimo</label>
+                                <input type="number" id="pecaMin" required min="1" placeholder="1" class="w-full p-2 border rounded-lg bg-slate-50">
+                            </div>
+                        </div>
+
+                        <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold p-2.5 rounded-xl transition">Salvar no Almoxarifado</button>
+                    </form>
+                </div>
+
+                <div class="lg:col-span-2 bg-white p-5 rounded-2xl shadow-sm border border-slate-200 space-y-3">
+                    <h3 class="text-sm font-bold text-slate-800 border-b pb-2">Almoxarifado de Peças da Manutenção</h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs">
+                            <thead class="bg-slate-100 text-slate-700">
+                                <tr>
+                                    <th class="p-2 border">Código</th>
+                                    <th class="p-2 border">Descrição</th>
+                                    <th class="p-2 border">Máquinas Aplicáveis</th>
+                                    <th class="p-2 border text-center">Condição</th>
+                                    <th class="p-2 border text-right">Estoque</th>
+                                    <th class="p-2 border text-center">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tblPecas"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+    // CHAVES DE LOCALSTORAGE
+    const STORAGE_MACRO = 'pcm_macro_maquinas';
+    const STORAGE_COMP_MACRO = 'pcm_macro_componentes';
+    const STORAGE_EQUIP = 'pcm_equipamentos';
+    const STORAGE_OS = 'pcm_ordens_servico';
+    const STORAGE_LUB = 'pcm_lubrificacao';
+    const STORAGE_PECAS = 'pcm_pecas';
+
+    let chartOSInstance = null;
+
+    document.addEventListener('DOMContentLoaded', () => {
+        carregarMacroSelects();
+        carregarMacroComponentesSelects();
+        carregarEquipamentosSelects();
+        renderizarTabelas();
+        calcularKPIs();
+        
+        const elOsData = document.getElementById('osData');
+        if(elOsData) elOsData.value = new Date().toISOString().slice(0, 10);
+    });
+
+    // --- LÓGICA DE NAVEGAÇÃO ENTRE AS ABAS DO MENU ---
+    function navegarPara(opcao) {
+        document.querySelectorAll('.menu-item').forEach(btn => {
+            btn.className = "menu-item w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition hover:bg-slate-800 hover:text-white text-slate-300";
+        });
+
+        const btnAtivo = document.getElementById(`btn-${opcao}`);
+        if (btnAtivo) {
+            btnAtivo.className = "menu-item w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition bg-amber-600 text-white font-bold";
+        }
+
+        document.getElementById('view-dashboard').classList.add('hidden');
+        document.getElementById('view-equipamentos').classList.add('hidden');
+        document.getElementById('view-os').classList.add('hidden');
+        document.getElementById('view-lubrificacao').classList.add('hidden');
+        document.getElementById('view-pecas').classList.add('hidden');
+
+        if (opcao === 'dashboard') {
+            document.getElementById('tituloPagina').innerText = "Dashboard de Manutenção Industrial";
+            document.getElementById('subtituloPagina').innerText = "Indicadores operacionais de confiabilidade, disponibilidade e integração OEE.";
+            document.getElementById('view-dashboard').classList.remove('hidden');
+            calcularKPIs();
+        } else if (opcao === 'equipamentos') {
+            document.getElementById('tituloPagina').innerText = "Cadastro & Parque de Máquinas e Componentes";
+            document.getElementById('subtituloPagina').innerText = "Gerenciamento de ativos, sub-componentes, capacidades, tensões e especificações técnicas.";
+            document.getElementById('view-equipamentos').classList.remove('hidden');
+        } else if (opcao === 'os') {
+            document.getElementById('tituloPagina').innerText = "Gestão de Ordens de Serviço";
+            document.getElementById('subtituloPagina').innerText = "Apontamento de manutenções corretivas, preventivas e tempos de parada.";
+            document.getElementById('view-os').classList.remove('hidden');
+        } else if (opcao === 'lubrificacao') {
+            document.getElementById('tituloPagina').innerText = "Plano Mestre de Lubrificação";
+            document.getElementById('subtituloPagina').innerText = "Controle de rotas, pontos estratégicos e lubrificantes recomendados.";
+            document.getElementById('view-lubrificacao').classList.remove('hidden');
+        } else if (opcao === 'pecas') {
+            document.getElementById('tituloPagina').innerText = "Almoxarifado & Peças de Reposição";
+            document.getElementById('subtituloPagina').innerText = "Controle de componentes mecânicos, aplicação em máquinas, condição e estoque.";
+            document.getElementById('view-pecas').classList.remove('hidden');
+        }
+
+        renderizarTabelas();
+    }
+
+    // --- 1. CADASTRO PRÉVIO MACRO DE MÁQUINAS ---
+    function salvarMacroMaquina(e) {
+        e.preventDefault();
+        const nome = document.getElementById('macroNome').value.trim();
+        if (!nome) return;
+
+        const lista = JSON.parse(localStorage.getItem(STORAGE_MACRO)) || ["Lavadora Extratora 50kg", "Centrífuga Industrial", "Secador Industrial", "Calandra Industrial"];
+        if (!lista.includes(nome)) {
+            lista.push(nome);
+            localStorage.setItem(STORAGE_MACRO, JSON.stringify(lista));
+        }
+
+        alert("Modelo macro salvo!");
+        document.getElementById('formMacroMaquinas').reset();
+        carregarMacroSelects();
+    }
+
+    function carregarMacroSelects() {
+        let lista = JSON.parse(localStorage.getItem(STORAGE_MACRO));
+        if (!lista || lista.length === 0) {
+            lista = ["Lavadora Extratora 50kg", "Centrífuga Industrial", "Secador Industrial", "Calandra Industrial"];
+            localStorage.setItem(STORAGE_MACRO, JSON.stringify(lista));
+        }
+
+        const selMacro = document.getElementById('eqNomeMacro');
+        if (selMacro) {
+            selMacro.innerHTML = lista.map(item => `<option value="${item}">${item}</option>`).join('');
+        }
+
+        const tagsContainer = document.getElementById('listaMacroTags');
+        if (tagsContainer) {
+            tagsContainer.innerHTML = lista.map(item => `<span class="bg-slate-100 text-slate-700 px-2 py-0.5 rounded border text-[10px] font-semibold">${item}</span>`).join('');
+        }
+    }
+
+    // --- 2. CADASTRO PRÉVIO DE COMPONENTES / SUB-ITENS ---
+    function salvarMacroComponente(e) {
+        e.preventDefault();
+        const nome = document.getElementById('compNome').value.trim();
+        if (!nome) return;
+
+        const lista = JSON.parse(localStorage.getItem(STORAGE_COMP_MACRO)) || ["Estrutura Geral", "Motor Elétrico", "Redutor", "Bomba", "Válvula", "Painel Elétrico", "Inversor de Frequência", "Cilindro Pneumático", "Outro"];
+        if (!lista.includes(nome)) {
+            lista.push(nome);
+            localStorage.setItem(STORAGE_COMP_MACRO, JSON.stringify(lista));
+        }
+
+        alert("Tipo de componente salvo!");
+        document.getElementById('formMacroComponentes').reset();
+        carregarMacroComponentesSelects();
+    }
+
+    function carregarMacroComponentesSelects() {
+        let lista = JSON.parse(localStorage.getItem(STORAGE_COMP_MACRO));
+        if (!lista || lista.length === 0) {
+            lista = ["Estrutura Geral", "Motor Elétrico", "Redutor", "Bomba", "Válvula", "Painel Elétrico", "Inversor de Frequência", "Cilindro Pneumático", "Outro"];
+            localStorage.setItem(STORAGE_COMP_MACRO, JSON.stringify(lista));
+        }
+
+        const selComp = document.getElementById('eqComponente');
+        if (selComp) {
+            selComp.innerHTML = lista.map(item => `<option value="${item}">${item}</option>`).join('');
+        }
+
+        const tagsContainer = document.getElementById('listaCompTags');
+        if (tagsContainer) {
+            tagsContainer.innerHTML = lista.map(item => `<span class="bg-purple-50 text-purple-700 border border-purple-200 px-2 py-0.5 rounded text-[10px] font-semibold">${item}</span>`).join('');
+        }
+    }
+
+    // --- 3. CADASTRO DE EQUIPAMENTOS / COMPONENTES DETALHADO ---
+    function salvarEquipamento(e) {
+        e.preventDefault();
+        const tag = document.getElementById('eqTag').value.trim().toUpperCase();
+        const nome = document.getElementById('eqNomeMacro').value;
+        const componente = document.getElementById('eqComponente').value;
+        const setor = document.getElementById('eqSetor').value.trim();
+        const tensao = document.getElementById('eqTensao').value;
+        const capacidade = document.getElementById('eqCapacidade').value.trim() || 'N/A';
+        const horasDia = parseFloat(document.getElementById('eqHorasDia').value) || 16;
+        const observacoes = document.getElementById('eqObservacoes').value.trim() || '-';
+
+        const lista = JSON.parse(localStorage.getItem(STORAGE_EQUIP)) || [];
+        lista.push({ tag, nome, componente, setor, tensao, capacidade, horasDia, observacoes });
+        localStorage.setItem(STORAGE_EQUIP, JSON.stringify(lista));
+
+        alert("Equipamento / Componente cadastrado com sucesso!");
+        document.getElementById('formEquipamento').reset();
+        carregarEquipamentosSelects();
+        renderizarTabelas();
+    }
+
+    function carregarEquipamentosSelects() {
+        const lista = JSON.parse(localStorage.getItem(STORAGE_EQUIP)) || [];
+        const optionsHtml = lista.map(e => `<option value="${e.tag}">${e.tag} - ${e.nome} (${e.componente})</option>`).join('');
+        
+        const selOs = document.getElementById('osEquipamento');
+        const selLub = document.getElementById('lubEquipamento');
+        const selFiltroOs = document.getElementById('filtroOsEquipamento');
+        const selFiltroLub = document.getElementById('filtroLubEquipamento');
+        const selPecaEq = document.getElementById('pecaEquipamentos');
+        
+        if (selOs) selOs.innerHTML = optionsHtml || '<option value="">Nenhuma máquina cadastrada</option>';
+        if (selLub) selLub.innerHTML = optionsHtml || '<option value="">Nenhuma máquina cadastrada</option>';
+        
+        if (selFiltroOs) {
+            selFiltroOs.innerHTML = '<option value="TODOS">-- Todos os Equipamentos --</option>' + optionsHtml;
+        }
+        if (selFiltroLub) {
+            selFiltroLub.innerHTML = '<option value="TODOS">-- Todos os Equipamentos --</option>' + optionsHtml;
+        }
+
+        if (selPecaEq) {
+            selPecaEq.innerHTML = '<option value="TODOS" selected>-- Todos / Uso Geral --</option>' + optionsHtml;
+        }
+    }
+
+    function alternarDataReparo() {
+        const condicao = document.getElementById('pecaCondicao').value;
+        const elData = document.getElementById('pecaDataReparo');
+        if (condicao === 'Recondicionada') {
+            elData.disabled = false;
+            elData.className = "w-full p-2 border rounded-lg bg-slate-50 text-slate-800 font-bold";
+            elData.value = new Date().toISOString().slice(0, 10);
+        } else {
+            elData.disabled = true;
+            elData.className = "w-full p-2 border rounded-lg bg-slate-200 text-slate-500 cursor-not-allowed";
+            elData.value = "";
+        }
+    }
+
+    // --- SALVAR ORDENS DE SERVIÇO ---
+    function salvarOS(e) {
+        e.preventDefault();
+        const tag = document.getElementById('osEquipamento').value;
+        const tipo = document.getElementById('osTipo').value;
+        const descricao = document.getElementById('osDescricao').value.trim();
+        const data = document.getElementById('osData').value;
+        const horas = parseFloat(document.getElementById('osHoras').value) || 0;
+        const tecnico = document.getElementById('osTecnico').value.trim();
+
+        if (!tag) {
+            alert("Cadastre pelo menos um equipamento antes de abrir uma O/S.");
+            return;
+        }
+
+        const lista = JSON.parse(localStorage.getItem(STORAGE_OS)) || [];
+        lista.unshift({ id: Date.now(), tag, tipo, descricao, data, horas, tecnico });
+        localStorage.setItem(STORAGE_OS, JSON.stringify(lista));
+
+        alert("Ordem de Serviço registrada!");
+        document.getElementById('formOS').reset();
+        document.getElementById('osData').value = new Date().toISOString().slice(0, 10);
+        renderizarTabelas();
+    }
+
+    // --- SALVAR PLANO DE LUBRIFICAÇÃO ---
+    function salvarLubrificacao(e) {
+        e.preventDefault();
+        const tag = document.getElementById('lubEquipamento').value;
+        const ponto = document.getElementById('lubPonto').value.trim();
+        const produto = document.getElementById('lubProduto').value.trim();
+        const freq = document.getElementById('lubFreq').value;
+        const qtd = document.getElementById('lubQtd').value.trim();
+
+        if (!tag) {
+            alert("Selecione um equipamento válido.");
+            return;
+        }
+
+        const lista = JSON.parse(localStorage.getItem(STORAGE_LUB)) || [];
+        lista.push({ tag, ponto, produto, freq, qtd });
+        localStorage.setItem(STORAGE_LUB, JSON.stringify(lista));
+
+        alert("Rota de lubrificação cadastrada!");
+        document.getElementById('formLubrificacao').reset();
+        renderizarTabelas();
+    }
+
+    // --- SALVAR PEÇAS DE REPOSIÇÃO ---
+    function salvarPeca(e) {
+        e.preventDefault();
+        const cod = document.getElementById('pecaCod').value.trim().toUpperCase();
+        const nome = document.getElementById('pecaNome').value.trim();
+        const selEq = document.getElementById('pecaEquipamentos');
+        const equipamentos = Array.from(selEq.selectedOptions).map(opt => opt.value);
+        const condicao = document.getElementById('pecaCondicao').value;
+        const dataReparo = document.getElementById('pecaDataReparo').value || '-';
+        const qtd = parseInt(document.getElementById('pecaQtd').value) || 0;
+        const min = parseInt(document.getElementById('pecaMin').value) || 1;
+
+        const lista = JSON.parse(localStorage.getItem(STORAGE_PECAS)) || [];
+        lista.push({ cod, nome, equipamentos, condicao, dataReparo, qtd, min });
+        localStorage.setItem(STORAGE_PECAS, JSON.stringify(lista));
+
+        alert("Peça adicionada ao almoxarifado!");
+        document.getElementById('formPeca').reset();
+        alternarDataReparo();
+        renderizarTabelas();
+    }
+
+    // --- RENDERIZAÇÃO DAS TABELAS E FILTROS ---
+    function renderizarTabelas() {
+        // TABELA EQUIPAMENTOS
+        const listaEquip = JSON.parse(localStorage.getItem(STORAGE_EQUIP)) || [];
+        const tblEq = document.getElementById('tblEquipamentos');
+        if (tblEq) {
+            tblEq.innerHTML = listaEquip.length === 0 ? 
+                '<tr><td colspan="7" class="p-3 text-center italic text-slate-400">Nenhum equipamento cadastrado.</td></tr>' :
+                listaEquip.map(e => `
+                    <tr class="border-b hover:bg-slate-50">
+                        <td class="p-2 border font-bold font-mono text-blue-600">${e.tag}</td>
+                        <td class="p-2 border font-bold text-slate-800">${e.nome}</td>
+                        <td class="p-2 border font-medium text-purple-700 bg-purple-50/40">${e.componente || 'Geral'}</td>
+                        <td class="p-2 border text-slate-600">${e.setor}</td>
+                        <td class="p-2 border font-mono text-[11px]">${e.tensao || '-'} | ${e.capacidade || '-'}</td>
+                        <td class="p-2 border text-center font-bold text-slate-600">${e.horasDia}h/dia</td>
+                        <td class="p-2 border text-slate-500 text-[11px] truncate max-w-[150px]" title="${e.observacoes || ''}">${e.observacoes || '-'}</td>
+                    </tr>
+                `).join('');
+        }
+
+        // TABELA ORDENS DE SERVIÇO COM FILTRO
+        let listaOS = JSON.parse(localStorage.getItem(STORAGE_OS)) || [];
+        const filtroOsTag = document.getElementById('filtroOsEquipamento') ? document.getElementById('filtroOsEquipamento').value : 'TODOS';
+        if (filtroOsTag !== 'TODOS') {
+            listaOS = listaOS.filter(o => o.tag === filtroOsTag);
+        }
+
+        const tblOS = document.getElementById('tblOS');
+        if (tblOS) {
+            tblOS.innerHTML = listaOS.length === 0 ?
+                '<tr><td colspan="5" class="p-3 text-center italic text-slate-400">Nenhuma O/S encontrada.</td></tr>' :
+                listaOS.map(o => `
+                    <tr class="border-b hover:bg-slate-50">
+                        <td class="p-2.5 border font-mono">${new Date(o.data + 'T00:00:00').toLocaleDateString('pt-BR')}</td>
+                        <td class="p-2.5 border font-bold text-blue-700">${o.tag}</td>
+                        <td class="p-2.5 border font-semibold ${o.tipo === 'Corretiva' ? 'text-rose-600' : 'text-blue-600'}">${o.tipo}</td>
+                        <td class="p-2.5 border text-slate-600">${o.descricao}</td>
+                        <td class="p-2.5 border text-right font-black text-rose-600">${o.horas.toFixed(1)} h</td>
+                    </tr>
+                `).join('');
+        }
+
+        // TABELA LUBRIFICAÇÃO COM FILTRO
+        let listaLub = JSON.parse(localStorage.getItem(STORAGE_LUB)) || [];
+        const filtroLubTag = document.getElementById('filtroLubEquipamento') ? document.getElementById('filtroLubEquipamento').value : 'TODOS';
+        if (filtroLubTag !== 'TODOS') {
+            listaLub = listaLub.filter(l => l.tag === filtroLubTag);
+        }
+
+        const tblLub = document.getElementById('tblLubrificacao');
+        const tblDashLub = document.getElementById('tblDashLubrificacao');
+        const htmlLub = listaLub.length === 0 ?
+            '<tr><td colspan="5" class="p-3 text-center italic text-slate-400">Nenhum plano de lubrificação encontrado.</td></tr>' :
+            listaLub.map(l => `
+                <tr class="border-b hover:bg-slate-50">
+                    <td class="p-2.5 border font-bold text-slate-800">${l.tag}</td>
+                    <td class="p-2.5 border text-slate-600">${l.ponto}</td>
+                    <td class="p-2.5 border font-medium text-amber-700">${l.produto}</td>
+                    <td class="p-2.5 border font-semibold">${l.freq}</td>
+                    <td class="p-2.5 border text-right">${l.qtd}</td>
+                </tr>
+            `).join('');
+
+        if (tblLub) tblLub.innerHTML = htmlLub;
+        if (tblDashLub) tblDashLub.innerHTML = htmlLub;
+
+        // TABELA PEÇAS DE REPOSIÇÃO DETALHADA
+        const listaPecas = JSON.parse(localStorage.getItem(STORAGE_PECAS)) || [];
+        const tblPecas = document.getElementById('tblPecas');
+        if (tblPecas) {
+            tblPecas.innerHTML = listaPecas.length === 0 ?
+                '<tr><td colspan="6" class="p-3 text-center italic text-slate-400">Nenhuma peça cadastrada.</td></tr>' :
+                listaPecas.map(p => {
+                    const emAlerta = p.qtd <= p.min;
+                    const aplicacao = p.equipamentos && p.equipamentos.includes('TODOS') ? 'Todas as Máquinas' : (p.equipamentos ? p.equipamentos.join(', ') : 'Geral');
+                    const infoCondicao = p.condicao === 'Recondicionada' ? `<span class="text-amber-600 font-bold">Recondicionada</span><br><span class="text-[10px] text-slate-400">Reparo: ${p.dataReparo}</span>` : '<span class="text-emerald-600 font-bold">Nova</span>';
+
+                    return `
+                        <tr class="border-b hover:bg-slate-50">
+                            <td class="p-2 border font-mono font-bold text-blue-700">${p.cod}</td>
+                            <td class="p-2 border text-slate-800 font-medium">${p.nome}</td>
+                            <td class="p-2 border text-slate-600 font-mono text-[11px]">${aplicacao}</td>
+                            <td class="p-2 border text-center text-[11px]">${infoCondicao}</td>
+                            <td class="p-2 border text-right font-black ${emAlerta ? 'text-rose-600' : 'text-slate-800'}">${p.qtd}</td>
+                            <td class="p-2 border text-center">
+                                ${emAlerta ? 
+                                    '<span class="bg-rose-100 text-rose-800 text-[10px] font-bold px-2 py-0.5 rounded">Comprar</span>' : 
+                                    '<span class="bg-emerald-100 text-emerald-800 text-[10px] font-bold px-2 py-0.5 rounded">OK</span>'}
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+        }
+    }
+
+    // --- CÁLCULO DE KPIS DA MANUTENÇÃO & OEE ---
+    function calcularKPIs() {
+        const listaOS = JSON.parse(localStorage.getItem(STORAGE_OS)) || [];
+        const listaEquip = JSON.parse(localStorage.getItem(STORAGE_EQUIP)) || [];
+
+        const tempoOperacaoPlanejadoPorMaquina = 30 * 16;
+        const totalMaquinas = Math.max(1, listaEquip.length);
+        const tempoPlanejadoTotal = tempoOperacaoPlanejadoPorMaquina * totalMaquinas;
+
+        const corretivas = listaOS.filter(o => o.tipo === 'Corretiva');
+        const horasParadaCorretiva = corretivas.reduce((acc, cur) => acc + cur.horas, 0);
+        const falhasContagem = Math.max(1, corretivas.length);
+
+        const tempoOperacaoReal = Math.max(0, tempoPlanejadoTotal - horasParadaCorretiva);
+
+        const disponibilidade = (tempoOperacaoReal / tempoPlanejadoTotal) * 100;
+        const mtbf = tempoOperacaoReal / falhasContagem;
+        const mttr = horasParadaCorretiva / falhasContagem;
+        const oeeEstimado = (disponibilidade / 100) * 0.90 * 0.98 * 100;
+
+        document.getElementById('kpiDisponibilidade').innerText = `${disponibilidade.toFixed(1)}%`;
+        document.getElementById('kpiMTBF').innerText = `${mtbf.toFixed(1)} h`;
+        document.getElementById('kpiMTTR').innerText = `${mttr.toFixed(1)} h`;
+        document.getElementById('kpiOEE').innerText = `${oeeEstimado.toFixed(1)}%`;
+
+        renderizarGraficoPCM(listaOS);
+    }
+
+    function renderizarGraficoPCM(listaOS) {
+        const ctx = document.getElementById('chartTiposOS');
+        if (!ctx) return;
+
+        let hCorretiva = 0, hPreventiva = 0, hPreditiva = 0;
+        listaOS.forEach(o => {
+            if (o.tipo === 'Corretiva') hCorretiva += o.horas;
+            else if (o.tipo === 'Preventiva') hPreventiva += o.horas;
+            else hPreditiva += o.horas;
+        });
+
+        if (chartOSInstance) chartOSInstance.destroy();
+
+        chartOSInstance = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Corretiva (Falha)', 'Preventiva (Programada)', 'Preditiva / Inspeção'],
+                datasets: [{
+                    data: [hCorretiva, hPreventiva, hPreditiva],
+                    backgroundColor: ['#e11d48', '#2563eb', '#eab308']
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'bottom' }
+                }
+            }
+        });
+    }
+    </script>
+</body>
+</html>
