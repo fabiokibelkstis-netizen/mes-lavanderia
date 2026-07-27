@@ -3,334 +3,434 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MES - Consumo de Água | Lavanderia Dona Zara</title>
+    <title>MES Dona Zara - Consumo de Água</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
-<body class="bg-slate-100 font-sans min-h-screen flex flex-col justify-between">
+<body class="bg-slate-100 font-sans min-h-screen flex text-slate-800">
 
-    <header class="bg-slate-900 text-white p-4 shadow-lg sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto flex justify-between items-center">
-            <div class="flex items-center gap-3">
-                <div class="bg-cyan-600 p-2.5 rounded-xl text-white shadow">
-                    <i class="fa-solid fa-droplet text-xl"></i>
+    <aside class="w-64 bg-slate-900 text-slate-300 flex flex-col justify-between min-h-screen sticky top-0 z-50">
+        <div>
+            <div class="p-5 border-b border-slate-800 flex items-center gap-3">
+                <div class="bg-blue-600 text-white p-2.5 rounded-xl shadow">
+                    <i class="fa-solid fa-industry text-lg"></i>
                 </div>
                 <div>
-                    <h1 class="text-xl font-bold tracking-wider">MES - Gestão de Consumo de Água</h1>
-                    <p class="text-xs text-slate-400">Balanço Hídrico: Captação de Poços vs. Consumo Industrial</p>
+                    <h1 class="text-sm font-black text-white tracking-wider">MES DONA ZARA</h1>
+                    <p class="text-[10px] text-slate-400">Gestão Industrial & BI</p>
                 </div>
             </div>
-            <a href="index.html" class="bg-slate-700 hover:bg-slate-600 text-xs font-bold px-4 py-2 rounded-lg transition">⬅️ Menu Principal</a>
+
+            <nav class="p-3 space-y-1 text-xs font-semibold">
+                <div class="px-3 py-2 text-[10px] uppercase font-bold text-slate-500 tracking-wider">Navegação Principal</div>
+
+                <a href="index.html" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition hover:bg-slate-800 hover:text-white text-slate-300">
+                    <i class="fa-solid fa-chart-pie w-5 text-center text-sm"></i>
+                    <span>Dashboard Geral</span>
+                </a>
+
+                <div class="px-3 py-2 pt-4 text-[10px] uppercase font-bold text-slate-500 tracking-wider">Lançamentos & Apontamentos</div>
+
+                <a href="gestaodehoras.html" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition hover:bg-slate-800 hover:text-white text-slate-300">
+                    <i class="fa-solid fa-clock text-rose-400 w-5 text-center text-sm"></i>
+                    <span>Gestão de Horas</span>
+                </a>
+
+                <a href="pesagemrecebimento.html" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition hover:bg-slate-800 hover:text-white text-slate-300">
+                    <i class="fa-solid fa-truck-ramp-box text-blue-400 w-5 text-center text-sm"></i>
+                    <span>Pesagem Recebimento</span>
+                </a>
+
+                <a href="pesagemexpedicao.html" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition hover:bg-slate-800 hover:text-white text-slate-300">
+                    <i class="fa-solid fa-truck-fast text-emerald-400 w-5 text-center text-sm"></i>
+                    <span>Pesagem Expedição</span>
+                </a>
+
+                <div class="px-3 py-2 pt-4 text-[10px] uppercase font-bold text-slate-500 tracking-wider">Utilidades & Insumos</div>
+
+                <a href="consumoquimicos.html" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition hover:bg-slate-800 hover:text-white text-slate-300">
+                    <i class="fa-solid fa-vial text-purple-400 w-5 text-center text-sm"></i>
+                    <span>Produtos Químicos</span>
+                </a>
+
+                <a href="consumoagua.html" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition bg-blue-600 text-white font-bold">
+                    <i class="fa-solid fa-droplet text-cyan-300 w-5 text-center text-sm"></i>
+                    <span>Consumo de Água</span>
+                </a>
+
+                <a href="consumogas.html" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition hover:bg-slate-800 hover:text-white text-slate-300">
+                    <i class="fa-solid fa-fire-flame-simple text-orange-400 w-5 text-center text-sm"></i>
+                    <span>Consumo de Gás</span>
+                </a>
+
+                <a href="consumoenergia.html" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition hover:bg-slate-800 hover:text-white text-slate-300">
+                    <i class="fa-solid fa-bolt text-yellow-400 w-5 text-center text-sm"></i>
+                    <span>Energia Elétrica</span>
+                </a>
+            </nav>
         </div>
-    </header>
 
-    <main class="max-w-7xl mx-auto w-full p-4 my-4 space-y-6">
+        <div class="p-3 border-t border-slate-800">
+            <a href="configuracoes.html" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold text-slate-400 hover:bg-slate-800 hover:text-amber-400 transition">
+                <i class="fa-solid fa-gear w-5 text-center text-sm"></i>
+                <span>Configurações</span>
+            </a>
+        </div>
+    </aside>
 
-        <div class="bg-white rounded-2xl shadow-md p-6 border border-slate-200 space-y-4">
-            <h2 class="text-base font-bold text-slate-800 border-b pb-2 flex items-center gap-2">
-                <i class="fa-solid fa-pen-to-square text-cyan-600"></i>
-                Lançamento de Hidrômetros de Água
-            </h2>
+    <main class="flex-1 p-6 overflow-y-auto space-y-6">
 
-            <form id="formAgua" onsubmit="salvarConsumo(event)" class="space-y-4">
-                <input type="hidden" id="editIndex" value="-1">
+        <header class="flex justify-between items-center pb-4 border-b border-slate-200">
+            <div>
+                <h2 class="text-xl font-bold text-slate-900 flex items-center gap-2">
+                    <i class="fa-solid fa-droplet text-cyan-600"></i>
+                    Balanço Hídrico & Medição de Água
+                </h2>
+                <p class="text-xs text-slate-500">Campos vinculados diretamente ao cadastro em Configurações (Sessão 2 - Hidrômetros).</p>
+            </div>
+            <div>
+                <a href="index.html" class="bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs font-bold px-4 py-2 rounded-xl transition flex items-center gap-2">
+                    <i class="fa-solid fa-arrow-left"></i> Voltar ao Dashboard
+                </a>
+            </div>
+        </header>
 
-                <div class="max-w-xs">
-                    <label class="block text-xs font-semibold text-slate-700 mb-1">Data da Leitura</label>
-                    <input type="date" id="inputData" required class="w-full p-2.5 border rounded-lg text-sm bg-slate-50 outline-none focus:ring-2 focus:ring-cyan-500">
-                </div>
+        <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 space-y-4">
+            <h3 class="text-xs font-black text-slate-700 uppercase tracking-wider flex items-center gap-2 border-b pb-2">
+                <i class="fa-solid fa-plus-circle text-blue-600"></i>
+                Lançamento Diário de Hidrômetros Cadastrados
+            </h3>
 
-                <div class="bg-cyan-50/50 p-4 rounded-xl border border-cyan-100 space-y-3">
-                    <h3 class="text-xs font-bold text-cyan-900 uppercase tracking-wider flex items-center gap-2">
-                        <i class="fa-solid fa-faucet-drip"></i> 1. Captação de Poços
-                    </h3>
-                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 items-end">
-                        <div>
-                            <label class="block text-[11px] font-bold text-slate-600 mb-1">Hidrômetro Poço 1 (L)</label>
-                            <input type="number" step="1" min="0" id="poco1" oninput="calcularBalanhoHidrico()" placeholder="0" required class="w-full p-2.5 border rounded-lg text-sm bg-white outline-none focus:ring-2 focus:ring-cyan-500">
-                        </div>
-                        <div>
-                            <label class="block text-[11px] font-bold text-slate-600 mb-1">Hidrômetro Poço 2 (L)</label>
-                            <input type="number" step="1" min="0" id="poco2" oninput="calcularBalanhoHidrico()" placeholder="0" required class="w-full p-2.5 border rounded-lg text-sm bg-white outline-none focus:ring-2 focus:ring-cyan-500">
-                        </div>
-                        <div>
-                            <label class="block text-[11px] font-bold text-slate-600 mb-1">Total Captação (L)</label>
-                            <input type="text" id="calcTotalCaptacao" readonly class="w-full p-2.5 border rounded-lg text-sm font-black bg-cyan-100 text-cyan-900" value="0 L">
-                        </div>
-                    </div>
+            <form id="formAgua" onsubmit="salvarLancamentoAgua(event)" class="space-y-4">
+                <div class="w-full md:w-1/4">
+                    <label class="block text-xs font-bold text-slate-600 mb-1">Data do Lançamento</label>
+                    <input type="date" id="campoData" required class="w-full bg-slate-50 border border-slate-300 text-slate-800 text-xs rounded-xl p-2.5 outline-none focus:ring-2 focus:ring-cyan-500 font-semibold">
                 </div>
 
                 <div class="bg-blue-50/50 p-4 rounded-xl border border-blue-100 space-y-3">
-                    <h3 class="text-xs font-bold text-blue-900 uppercase tracking-wider flex items-center gap-2">
-                        <i class="fa-solid fa-industry"></i> 2. Consumo por Equipamentos
-                    </h3>
-                    <div class="grid grid-cols-1 sm:grid-cols-4 gap-4 items-end">
-                        <div>
-                            <label class="block text-[11px] font-bold text-slate-600 mb-1">Hidrômetro Túnel 1 (L)</label>
-                            <input type="number" step="1" min="0" id="tunel1" oninput="calcularBalanhoHidrico()" placeholder="0" required class="w-full p-2.5 border rounded-lg text-sm bg-white outline-none focus:ring-2 focus:ring-blue-500">
+                    <h4 class="text-xs font-bold text-blue-900 uppercase flex items-center gap-2">
+                        <i class="fa-solid fa-faucet-drip text-blue-600"></i> Hidrômetros de Captação (Poços / Entrada)
+                    </h4>
+                    <div id="containerFormCaptacao" class="grid grid-cols-1 md:grid-cols-3 gap-4">
                         </div>
-                        <div>
-                            <label class="block text-[11px] font-bold text-slate-600 mb-1">Hidrômetro Túnel 2 (L)</label>
-                            <input type="number" step="1" min="0" id="tunel2" oninput="calcularBalanhoHidrico()" placeholder="0" required class="w-full p-2.5 border rounded-lg text-sm bg-white outline-none focus:ring-2 focus:ring-blue-500">
-                        </div>
-                        <div>
-                            <label class="block text-[11px] font-bold text-slate-600 mb-1">Hidrômetro Extratoras (L)</label>
-                            <input type="number" step="1" min="0" id="extratoras" oninput="calcularBalanhoHidrico()" placeholder="0" required class="w-full p-2.5 border rounded-lg text-sm bg-white outline-none focus:ring-2 focus:ring-blue-500">
-                        </div>
-                        <div>
-                            <label class="block text-[11px] font-bold text-slate-600 mb-1">Total Consumo (L)</label>
-                            <input type="text" id="calcTotalConsumo" readonly class="w-full p-2.5 border rounded-lg text-sm font-black bg-blue-100 text-blue-900" value="0 L">
-                        </div>
-                    </div>
                 </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-1">Diferença Captação vs. Consumo (L)</label>
-                        <input type="text" id="calcDiferenca" readonly class="w-full p-2.5 border rounded-lg text-sm font-bold bg-slate-100 text-slate-800" value="0 L">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-1">Consumo vs. Captação (%)</label>
-                        <input type="text" id="calcPercentual" readonly class="w-full p-2.5 border rounded-lg text-sm font-bold bg-slate-100 text-slate-800" value="0.0 %">
-                    </div>
+                <div class="bg-cyan-50/50 p-4 rounded-xl border border-cyan-100 space-y-3">
+                    <h4 class="text-xs font-bold text-cyan-900 uppercase flex items-center gap-2">
+                        <i class="fa-solid fa-industry text-cyan-600"></i> Hidrômetros de Consumo Interno (Processos / Setores)
+                    </h4>
+                    <div id="containerFormConsumo" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        </div>
                 </div>
 
-                <div class="flex justify-end gap-3 pt-2">
-                    <button type="button" onclick="limparFormulario()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-5 py-2.5 rounded-lg text-xs font-bold transition">Limpar</button>
-                    <button type="submit" id="btnSalvar" class="bg-cyan-600 hover:bg-cyan-700 text-white font-bold px-8 py-2.5 rounded-lg text-xs transition shadow-md">
-                        💾 SALVAR LEITURA DE ÁGUA
+                <div class="flex flex-wrap items-center justify-between gap-4 pt-2 border-t">
+                    <div class="flex gap-6 text-xs">
+                        <div>
+                            <span class="text-slate-500 font-medium">Total Captação (Leitura):</span>
+                            <span id="previewTotalCaptacao" class="font-black text-blue-700 ml-1">0 L</span>
+                        </div>
+                        <div>
+                            <span class="text-slate-500 font-medium">Total Consumo Interno (Leitura):</span>
+                            <span id="previewTotalConsumo" class="font-black text-cyan-700 ml-1">0 L</span>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="bg-cyan-600 hover:bg-cyan-700 text-white font-bold text-xs py-2.5 px-6 rounded-xl shadow transition flex items-center gap-2">
+                        <i class="fa-solid fa-floppy-disk"></i> Salvar Lançamento Diário
                     </button>
                 </div>
             </form>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
-                <span class="text-xs font-bold text-slate-500 uppercase">Total Captação (Poços)</span>
-                <p id="kpiCaptacao" class="text-2xl font-black text-cyan-700 mt-2">0 L</p>
+        <div class="bg-white rounded-2xl shadow-sm p-5 border border-slate-200 space-y-4">
+            <div class="flex justify-between items-center border-b pb-3">
+                <h3 class="text-xs font-black text-slate-700 uppercase tracking-wider flex items-center gap-2">
+                    <i class="fa-solid fa-list-check text-slate-600"></i>
+                    Histórico de Lançamentos & Deltas de Consumo
+                </h3>
+                <span class="text-[10px] bg-cyan-50 text-cyan-800 font-bold px-2.5 py-1 rounded-full border border-cyan-200">
+                    Diferença = Leitura Atual − Leitura Anterior
+                </span>
             </div>
-            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
-                <span class="text-xs font-bold text-slate-500 uppercase">Total Consumo (Industrial)</span>
-                <p id="kpiConsumo" class="text-2xl font-black text-blue-700 mt-2">0 L</p>
-            </div>
-            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
-                <span class="text-xs font-bold text-slate-500 uppercase">Perda / Reserva (Diferença)</span>
-                <p id="kpiDiferenca" class="text-2xl font-black text-slate-800 mt-2">0 L</p>
-            </div>
-            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
-                <span class="text-xs font-bold text-slate-500 uppercase">Eficiência de Captação</span>
-                <p id="kpiPercentual" class="text-2xl font-black text-purple-700 mt-2">0.0 %</p>
-            </div>
-        </div>
 
-        <div class="bg-white p-6 rounded-2xl shadow-md border border-slate-200">
-            <h3 class="text-sm font-bold text-slate-800 mb-4">Balanço Hídrico: Captação vs. Consumo Diário (L)</h3>
-            <div class="h-64">
-                <canvas id="chartAgua"></canvas>
-            </div>
-        </div>
-
-        <div class="bg-white rounded-2xl shadow-md p-6 border border-slate-200">
-            <h3 class="text-sm font-bold text-slate-800 mb-4 border-b pb-2">Histórico de Lançamentos</h3>
             <div class="overflow-x-auto">
                 <table class="w-full text-left text-xs border-collapse">
-                    <thead class="bg-slate-100 text-slate-700">
+                    <thead id="headTabelaAgua" class="bg-slate-100 text-slate-700 font-bold">
+                        </thead>
+                    <tbody id="bodyTabelaAgua">
                         <tr>
-                            <th class="p-2.5 border">Data</th>
-                            <th class="p-2.5 border text-right">Poço 1 (L)</th>
-                            <th class="p-2.5 border text-right">Poço 2 (L)</th>
-                            <th class="p-2.5 border text-right bg-cyan-50/50">Total Captação (L)</th>
-                            <th class="p-2.5 border text-right">Túnel 1 (L)</th>
-                            <th class="p-2.5 border text-right">Túnel 2 (L)</th>
-                            <th class="p-2.5 border text-right">Extratoras (L)</th>
-                            <th class="p-2.5 border text-right bg-blue-50/50">Total Consumo (L)</th>
-                            <th class="p-2.5 border text-right">Diferença (L)</th>
-                            <th class="p-2.5 border text-center font-bold">% Consumo/Captação</th>
-                            <th class="p-2.5 border text-center">Ações</th>
+                            <td colspan="10" class="p-4 text-center italic text-slate-400">Carregando hidrômetros...</td>
                         </tr>
-                    </thead>
-                    <tbody id="tabelaHistorico"></tbody>
+                    </tbody>
                 </table>
             </div>
         </div>
 
     </main>
 
-    <footer class="bg-white border-t border-slate-200 p-4 text-center text-xs text-slate-500">
-        MES Dona Zara &copy; 2026 - Módulo de Gestão de Consumo de Água
-    </footer>
-
     <script>
-        let historicoAgua = JSON.parse(localStorage.getItem('mes_historico_agua') || '[]');
-        let chartInstance = null;
+        const STORAGE_HISTORICO = 'mes_historico_agua';
+        const STORAGE_CONFIG = 'mes_configuracoes'; // Chave geral de configurações
 
-        document.getElementById('inputData').valueAsDate = new Date();
+        // Hidrômetros padrão caso ainda não exista cadastro na tela de configurações
+        const HIDROMETROS_PADRAO = {
+            captacao: [
+                { id: 'poco1', nome: 'Poço 01' },
+                { id: 'poco2', nome: 'Poço 02' }
+            ],
+            consumo: [
+                { id: 'eqpLavadoras', nome: 'Lavadoras' },
+                { id: 'eqpCentrais', nome: 'Centrais / Lave-Pentes' },
+                { id: 'eqpCaldeira', nome: 'Caldeira' }
+            ]
+        };
 
-        function calcularBalanhoHidrico() {
-            const p1 = parseFloat(document.getElementById('poco1').value) || 0;
-            const p2 = parseFloat(document.getElementById('poco2').value) || 0;
-            const totalCaptacao = p1 + p2;
+        let hidrometrosAtivos = { captacao: [], consumo: [] };
 
-            const t1 = parseFloat(document.getElementById('tunel1').value) || 0;
-            const t2 = parseFloat(document.getElementById('tunel2').value) || 0;
-            const ext = parseFloat(document.getElementById('extratoras').value) || 0;
-            const totalConsumo = t1 + t2 + ext;
+        document.addEventListener('DOMContentLoaded', () => {
+            const hoje = new Date().toISOString().split('T')[0];
+            document.getElementById('campoData').value = hoje;
 
-            const diferenca = totalCaptacao - totalConsumo;
-            const percentual = totalCaptacao > 0 ? (totalConsumo / totalCaptacao) * 100 : 0;
+            carregarConfiguracoesHidrometros();
+            renderizarFormularioDinamico();
+            renderizarTabelaAgua();
+        });
 
-            document.getElementById('calcTotalCaptacao').value = `${totalCaptacao.toLocaleString('pt-BR')} L`;
-            document.getElementById('calcTotalConsumo').value = `${totalConsumo.toLocaleString('pt-BR')} L`;
-            
-            const diffEl = document.getElementById('calcDiferenca');
-            diffEl.value = `${diferenca.toLocaleString('pt-BR')} L`;
-            diffEl.className = `w-full p-2.5 border rounded-lg text-sm font-bold ${diferenca >= 0 ? 'bg-emerald-50 text-emerald-800' : 'bg-red-50 text-red-800'}`;
-
-            document.getElementById('calcPercentual').value = `${percentual.toFixed(1)} %`;
+        function parseNumero(valor) {
+            if (valor === undefined || valor === null || valor === '') return 0;
+            if (typeof valor === 'number') return isNaN(valor) ? 0 : valor;
+            const limpo = String(valor).replace(/\./g, '').replace(',', '.').replace(/[^0-9.-]/g, '');
+            const num = parseFloat(limpo);
+            return isNaN(num) ? 0 : num;
         }
 
-        function salvarConsumo(e) {
-            e.preventDefault();
-            const index = parseInt(document.getElementById('editIndex').value);
+        // Carrega a lista cadastrada na Sessão 2 de configuracoes.html
+        function carregarConfiguracoesHidrometros() {
+            const configSalva = localStorage.getItem(STORAGE_CONFIG);
+            let configuracoes = null;
 
-            const data = document.getElementById('inputData').value;
-            const poco1 = parseFloat(document.getElementById('poco1').value) || 0;
-            const poco2 = parseFloat(document.getElementById('poco2').value) || 0;
-            const totalCaptacao = poco1 + poco2;
+            if (configSalva) {
+                try { configuracoes = JSON.parse(configSalva); } catch(e) {}
+            }
 
-            const tunel1 = parseFloat(document.getElementById('tunel1').value) || 0;
-            const tunel2 = parseFloat(document.getElementById('tunel2').value) || 0;
-            const extratoras = parseFloat(document.getElementById('extratoras').value) || 0;
-            const totalConsumo = tunel1 + tunel2 + extratoras;
-
-            const diferenca = totalCaptacao - totalConsumo;
-            const percentual = totalCaptacao > 0 ? (totalConsumo / totalCaptacao) * 100 : 0;
-
-            const registro = { data, poco1, poco2, totalCaptacao, tunel1, tunel2, extratoras, totalConsumo, diferenca, percentual };
-
-            if (index >= 0) {
-                historicoAgua[index] = registro;
+            // Tenta buscar no padrão `hidrometros` ou utiliza os hidrômetros default
+            if (configuracoes && configuracoes.hidrometros) {
+                hidrometrosAtivos = configuracoes.hidrometros;
             } else {
-                // Evita duplicidade de datas no cadastro
-                const exIdx = historicoAgua.findIndex(h => h.data === data);
-                if (exIdx >= 0) {
-                    historicoAgua[exIdx] = registro;
-                } else {
-                    historicoAgua.push(registro);
-                }
+                // Tenta chaves separadas caso salvou direto no localStorage
+                const capSalva = localStorage.getItem('mes_config_hidrometros_captacao');
+                const consSalva = localStorage.getItem('mes_config_hidrometros_consumo');
+
+                hidrometrosAtivos.captacao = capSalva ? JSON.parse(capSalva) : HIDROMETROS_PADRAO.captacao;
+                hidrometrosAtivos.consumo = consSalva ? JSON.parse(consSalva) : HIDROMETROS_PADRAO.consumo;
             }
 
-            historicoAgua.sort((a, b) => new Date(a.data) - new Date(b.data));
-            localStorage.setItem('mes_historico_agua', JSON.stringify(historicoAgua));
-
-            limparFormulario();
-            atualizarTela();
-        }
-
-        function editar(i) {
-            const item = historicoAgua[i];
-            document.getElementById('editIndex').value = i;
-            document.getElementById('inputData').value = item.data;
-            document.getElementById('poco1').value = item.poco1;
-            document.getElementById('poco2').value = item.poco2;
-            document.getElementById('tunel1').value = item.tunel1;
-            document.getElementById('tunel2').value = item.tunel2;
-            document.getElementById('extratoras').value = item.extratoras;
-
-            calcularBalanhoHidrico();
-            document.getElementById('btnSalvar').innerText = "✏️ ATUALIZAR LEITURA";
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        function remover(i) {
-            if (confirm("Deseja realmente excluir este registro?")) {
-                historicoAgua.splice(i, 1);
-                localStorage.setItem('mes_historico_agua', JSON.stringify(historicoAgua));
-                atualizarTela();
+            if (!hidrometrosAtivos.captacao || hidrometrosAtivos.captacao.length === 0) {
+                hidrometrosAtivos.captacao = HIDROMETROS_PADRAO.captacao;
+            }
+            if (!hidrometrosAtivos.consumo || hidrometrosAtivos.consumo.length === 0) {
+                hidrometrosAtivos.consumo = HIDROMETROS_PADRAO.consumo;
             }
         }
 
-        function limparFormulario() {
-            document.getElementById('formAgua').reset();
-            document.getElementById('editIndex').value = -1;
-            document.getElementById('inputData').valueAsDate = new Date();
-            document.getElementById('btnSalvar').innerText = "💾 SALVAR LEITURA DE ÁGUA";
-            calcularBalanhoHidrico();
-        }
+        function renderizarFormularioDinamico() {
+            const containerCap = document.getElementById('containerFormCaptacao');
+            const containerCons = document.getElementById('containerFormConsumo');
 
-        function atualizarTela() {
-            renderizarTabela();
-            renderizarKPIs();
-            renderizarGrafico();
-        }
+            // Formulário de Captação
+            containerCap.innerHTML = hidrometrosAtivos.captacao.map(h => `
+                <div>
+                    <label class="block text-[11px] font-bold text-slate-600 mb-1">${h.nome} (L)</label>
+                    <input type="number" step="any" id="input_cap_${h.id}" placeholder="Ex: 0" oninput="calcularTotaisFormulario()" class="w-full bg-white border border-slate-300 text-slate-800 text-xs rounded-xl p-2.5 outline-none focus:ring-2 focus:ring-blue-500 font-semibold">
+                </div>
+            `).join('');
 
-        function renderizarTabela() {
-            const tbody = document.getElementById('tabelaHistorico');
-            if (historicoAgua.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="11" class="p-4 text-center italic text-slate-400">Nenhum lançamento cadastrado.</td></tr>';
-                return;
-            }
-
-            tbody.innerHTML = historicoAgua.map((item, i) => `
-                <tr class="hover:bg-slate-50 transition">
-                    <td class="p-2.5 border font-medium text-slate-800">${new Date(item.data + 'T00:00:00').toLocaleDateString('pt-BR')}</td>
-                    <td class="p-2.5 border text-right">${item.poco1.toLocaleString('pt-BR')}</td>
-                    <td class="p-2.5 border text-right">${item.poco2.toLocaleString('pt-BR')}</td>
-                    <td class="p-2.5 border text-right font-bold text-cyan-800 bg-cyan-50/30">${item.totalCaptacao.toLocaleString('pt-BR')}</td>
-                    <td class="p-2.5 border text-right">${item.tunel1.toLocaleString('pt-BR')}</td>
-                    <td class="p-2.5 border text-right">${item.tunel2.toLocaleString('pt-BR')}</td>
-                    <td class="p-2.5 border text-right">${item.extratoras.toLocaleString('pt-BR')}</td>
-                    <td class="p-2.5 border text-right font-bold text-blue-800 bg-blue-50/30">${item.totalConsumo.toLocaleString('pt-BR')}</td>
-                    <td class="p-2.5 border text-right font-bold ${item.diferenca >= 0 ? 'text-emerald-700' : 'text-red-600'}">${item.diferenca.toLocaleString('pt-BR')}</td>
-                    <td class="p-2.5 border text-center font-black text-purple-700">${item.percentual.toFixed(1)} %</td>
-                    <td class="p-2.5 border text-center">
-                        <button onclick="editar(${i})" class="text-blue-600 font-bold px-1" title="Editar">✏️</button>
-                        <button onclick="remover(${i})" class="text-red-600 font-bold px-1" title="Excluir">❌</button>
-                    </td>
-                </tr>
+            // Formulário de Consumo Interno
+            containerCons.innerHTML = hidrometrosAtivos.consumo.map(h => `
+                <div>
+                    <label class="block text-[11px] font-bold text-slate-600 mb-1">${h.nome} (L)</label>
+                    <input type="number" step="any" id="input_cons_${h.id}" placeholder="Ex: 0" oninput="calcularTotaisFormulario()" class="w-full bg-white border border-slate-300 text-slate-800 text-xs rounded-xl p-2.5 outline-none focus:ring-2 focus:ring-cyan-500 font-semibold">
+                </div>
             `).join('');
         }
 
-        function renderizarKPIs() {
-            const totCap = historicoAgua.reduce((acc, h) => acc + h.totalCaptacao, 0);
-            const totCon = historicoAgua.reduce((acc, h) => acc + h.totalConsumo, 0);
-            const diff = totCap - totCon;
-            const perc = totCap > 0 ? (totCon / totCap) * 100 : 0;
+        function calcularTotaisFormulario() {
+            let totCap = 0;
+            let totCons = 0;
 
-            document.getElementById('kpiCaptacao').innerText = `${totCap.toLocaleString('pt-BR')} L`;
-            document.getElementById('kpiConsumo').innerText = `${totCon.toLocaleString('pt-BR')} L`;
-            document.getElementById('kpiDiferenca').innerText = `${diff.toLocaleString('pt-BR')} L`;
-            document.getElementById('kpiPercentual').innerText = `${perc.toFixed(1)} %`;
-        }
-
-        function renderizarGrafico() {
-            const ctx = document.getElementById('chartAgua').getContext('2d');
-            if (chartInstance) chartInstance.destroy();
-
-            const labels = historicoAgua.map(h => new Date(h.data + 'T00:00:00').toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }));
-            const captacao = historicoAgua.map(h => h.totalCaptacao);
-            const consumo = historicoAgua.map(h => h.totalConsumo);
-
-            chartInstance = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels,
-                    datasets: [
-                        { label: 'Total Captação (Poços)', data: captacao, backgroundColor: '#0891b2', borderRadius: 4 },
-                        { label: 'Total Consumo (Processo)', data: consumo, backgroundColor: '#2563eb', borderRadius: 4 }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: { y: { beginAtZero: true } }
-                }
+            hidrometrosAtivos.captacao.forEach(h => {
+                const el = document.getElementById(`input_cap_${h.id}`);
+                if (el) totCap += parseNumero(el.value);
             });
+
+            hidrometrosAtivos.consumo.forEach(h => {
+                const el = document.getElementById(`input_cons_${h.id}`);
+                if (el) totCons += parseNumero(el.value);
+            });
+
+            document.getElementById('previewTotalCaptacao').innerText = `${totCap.toLocaleString('pt-BR')} L`;
+            document.getElementById('previewTotalConsumo').innerText = `${totCons.toLocaleString('pt-BR')} L`;
+
+            return { totCap, totCons };
         }
 
-        // Inicialização
-        atualizarTela();
+        function salvarLancamentoAgua(event) {
+            event.preventDefault();
+
+            const data = document.getElementById('campoData').value;
+            const totais = calcularTotaisFormulario();
+
+            let leiturasCaptacao = {};
+            hidrometrosAtivos.captacao.forEach(h => {
+                const el = document.getElementById(`input_cap_${h.id}`);
+                leiturasCaptacao[h.id] = el ? parseNumero(el.value) : 0;
+            });
+
+            let leiturasConsumo = {};
+            hidrometrosAtivos.consumo.forEach(h => {
+                const el = document.getElementById(`input_cons_${h.id}`);
+                leiturasConsumo[h.id] = el ? parseNumero(el.value) : 0;
+            });
+
+            let lista = JSON.parse(localStorage.getItem(STORAGE_HISTORICO) || '[]');
+            lista = lista.filter(item => item.data !== data); // Substitui se for a mesma data
+
+            lista.push({
+                id: Date.now().toString(),
+                data: data,
+                leiturasCaptacao: leiturasCaptacao,
+                leiturasConsumo: leiturasConsumo,
+                totalCaptacao: totais.totCap,
+                totalConsumo: totais.totCons
+            });
+
+            localStorage.setItem(STORAGE_HISTORICO, JSON.stringify(lista));
+
+            // Limpa os campos
+            hidrometrosAtivos.captacao.forEach(h => {
+                const el = document.getElementById(`input_cap_${h.id}`);
+                if (el) el.value = '';
+            });
+            hidrometrosAtivos.consumo.forEach(h => {
+                const el = document.getElementById(`input_cons_${h.id}`);
+                if (el) el.value = '';
+            });
+
+            calcularTotaisFormulario();
+            renderizarTabelaAgua();
+        }
+
+        function excluirRegistro(idOuData) {
+            if (!confirm("Deseja excluir este registro?")) return;
+
+            let lista = JSON.parse(localStorage.getItem(STORAGE_HISTORICO) || '[]');
+            lista = lista.filter(item => item.id !== idOuData && item.data !== idOuData);
+
+            localStorage.setItem(STORAGE_HISTORICO, JSON.stringify(lista));
+            renderizarTabelaAgua();
+        }
+
+        function renderizarTabelaAgua() {
+            let lista = JSON.parse(localStorage.getItem(STORAGE_HISTORICO) || '[]');
+            const headTabela = document.getElementById('headTabelaAgua');
+            const bodyTabela = document.getElementById('bodyTabelaAgua');
+
+            // Renderiza Cabeçalho com os Hidrômetros Ativos
+            let thCap = hidrometrosAtivos.captacao.map(h => `<th class="p-2.5 border text-right">${h.nome}</th>`).join('');
+            let thCons = hidrometrosAtivos.consumo.map(h => `<th class="p-2.5 border text-right">${h.nome}</th>`).join('');
+
+            headTabela.innerHTML = `
+                <tr>
+                    <th class="p-2.5 border min-w-[90px]">Data</th>
+                    ${thCap}
+                    <th class="p-2.5 border text-right font-bold text-blue-900 bg-blue-50/50">Total Captação (L)</th>
+                    <th class="p-2.5 border text-right font-black text-blue-900 bg-blue-100/70">Total de Consumo Captação (L)</th>
+
+                    ${thCons}
+                    <th class="p-2.5 border text-right font-bold text-cyan-900 bg-cyan-50/50">Total Leitura de Consumo (L)</th>
+                    <th class="p-2.5 border text-right font-black text-cyan-900 bg-cyan-100/70">Total de Consumo (L)</th>
+
+                    <th class="p-2.5 border text-center">Ações</th>
+                </tr>
+            `;
+
+            if (lista.length === 0) {
+                const totalColunas = 6 + hidrometrosAtivos.captacao.length + hidrometrosAtivos.consumo.length;
+                bodyTabela.innerHTML = `<tr><td colspan="${totalColunas}" class="p-4 text-center italic text-slate-400">Nenhum registro encontrado.</td></tr>`;
+                return;
+            }
+
+            // Ordena cronologicamente para calcular a diferença das leituras
+            lista.sort((a, b) => new Date(a.data) - new Date(b.data));
+
+            const listaCalculada = lista.map((item, index) => {
+                const itemAnterior = index > 0 ? lista[index - 1] : null;
+
+                const captacaoAtual = parseNumero(item.totalCaptacao);
+                const consumoAtual = parseNumero(item.totalConsumo);
+
+                const captacaoAnterior = itemAnterior ? parseNumero(itemAnterior.totalCaptacao) : captacaoAtual;
+                const consumoAnterior = itemAnterior ? parseNumero(itemAnterior.totalConsumo) : consumoAtual;
+
+                const diffCaptacao = Math.max(0, captacaoAtual - captacaoAnterior);
+                const diffConsumo = Math.max(0, consumoAtual - consumoAnterior);
+
+                return {
+                    ...item,
+                    captacaoAtual,
+                    consumoAtual,
+                    diffCaptacao,
+                    diffConsumo
+                };
+            });
+
+            // Exibe do mais recente para o mais antigo
+            bodyTabela.innerHTML = listaCalculada.slice().reverse().map(item => {
+                const dataFmt = item.data ? new Date(item.data + 'T00:00:00').toLocaleDateString('pt-BR') : '-';
+
+                // Colunas de leituras individuais de Captação
+                const tdCap = hidrometrosAtivos.captacao.map(h => {
+                    const val = item.leiturasCaptacao ? parseNumero(item.leiturasCaptacao[h.id]) : parseNumero(item[h.id]);
+                    return `<td class="p-2.5 border text-right text-slate-600">${val > 0 ? val.toLocaleString('pt-BR') : '-'}</td>`;
+                }).join('');
+
+                // Colunas de leituras individuais de Consumo Interno
+                const tdCons = hidrometrosAtivos.consumo.map(h => {
+                    const val = item.leiturasConsumo ? parseNumero(item.leiturasConsumo[h.id]) : parseNumero(item[h.id]);
+                    return `<td class="p-2.5 border text-right text-slate-600">${val > 0 ? val.toLocaleString('pt-BR') : '-'}</td>`;
+                }).join('');
+
+                return `
+                    <tr class="hover:bg-slate-50 border-b text-xs">
+                        <td class="p-2.5 border font-medium">${dataFmt}</td>
+
+                        ${tdCap}
+
+                        <td class="p-2.5 border text-right font-bold text-blue-900 bg-blue-50/30">
+                            ${item.captacaoAtual.toLocaleString('pt-BR')} L
+                        </td>
+                        <td class="p-2.5 border text-right font-black text-blue-700 bg-blue-100/50">
+                            +${item.diffCaptacao.toLocaleString('pt-BR')} L
+                        </td>
+
+                        ${tdCons}
+
+                        <td class="p-2.5 border text-right font-bold text-cyan-900 bg-cyan-50/30">
+                            ${item.consumoAtual.toLocaleString('pt-BR')} L
+                        </td>
+                        <td class="p-2.5 border text-right font-black text-cyan-700 bg-cyan-100/50">
+                            +${item.diffConsumo.toLocaleString('pt-BR')} L
+                        </td>
+
+                        <td class="p-2.5 border text-center">
+                            <button onclick="excluirRegistro('${item.id || item.data}')" class="text-rose-600 hover:text-rose-800 font-bold px-2 py-1 transition" title="Excluir Lançamento">
+                                <i class="fa-solid fa-trash-can"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
     </script>
 </body>
 </html>
