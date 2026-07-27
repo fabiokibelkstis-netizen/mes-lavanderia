@@ -397,3 +397,119 @@ app.post('/api/horas-trabalhadas', async (req, res) => {
         res.status(500).json({ erro: err.message });
     }
 });
+
+const express = require('express');
+const app = express();
+app.use(express.json());
+app.use(express.static('public')); // Serve os arquivos estáticos (HTML/JS)
+
+// Banco de dados em memória para simulação
+let produtos = [
+  { id: 1, nome: 'Cloro Líquido 12%', tanque_nome: 'Tanque 01', unidade_medida: 'L', ultimo_custo_unitario: 5.50 },
+  { id: 2, nome: 'Sulfato de Alumínio', tanque_nome: 'Tanque 02', unidade_medida: 'kg', ultimo_custo_unitario: 3.20 }
+];
+let recebimentos = [];
+let leiturasTanque = [
+  { id: 1, produto_id: 1, data_leitura: '2026-07-26T18:00', nivel_medido: 1000.00 }
+];
+let consumosDiarios = [];
+
+// GET: Buscar Produtos Cadastrados nas Configurações
+app.get('/api/configuracoes/produtos', (req, res) => {
+  res.json(produtos);
+});
+
+// GET: Buscar Última Leitura de um Produto Específico
+app.get('/api/leituras/ultima/:produto_id', (req, res) => {
+  const produtoId = parseInt(req.params.produto_id);
+  const leituras = leiturasTanque
+    .filter(l => l.produto_id === produtoId)
+    .sort((a, b) => new Date(b.data_leitura) - new Date(a.data_leitura));
+  
+  const produto = produtos.find(p => p.id === produtoId);
+
+  res.json({
+    ultima_leitura: leituras[0] || null,
+    ultimo_custo_unitario: produto ? produto.ultimo_custo_unitario : 0.00
+  });
+});
+
+// POST: Registrar Recebimento (NF) e Atualizar Custo
+app.post('/api/recebimentos', (req, res) => {
+  const { produto_id, data_recebimento, numero_nf, quantidade, valor_unitario } = req.body;
+  const pId = parseInt(produto_id);
+
+  const produto = produtos.find(p => p.id === pId);
+  if (!produto) return res.status(404).json({ error: 'Produto não encontrado nas configurações.' });
+
+  const qtd = parseFloat(quantidade);
+  const vUnit = parseFloat(valor_unitario);
+  const vTotal = qtd * vUnit;
+
+  const novoRecebimento = {
+    id: recebimentos.length + 1,
+    produto_id: pId,
+    data_recebimento,
+    numero_nf,
+    quantidade: qtd,
+    valor_unitario: vUnit,
+    valor_total: vTotal
+  };
+  recebimentos.push(novoRecebimento);
+
+  // Atualiza custo no cadastro de configurações
+  produto.ultimo_custo_unitario = vUnit;
+
+  res.status(201).json({ message: 'Recebimento registrado!', recebimento: novoRecebimento });
+});
+
+// POST: Registrar Leitura do Tanque e Calcular Consumo Automático
+app.post('/api/leituras', (req, res) => {
+  const { produto_id, data_leitura, nivel_medido } = req.body;
+  const pId = parseInt(produto_id);
+  const nivelAtual = parseFloat(nivel_medido);
+
+  const produto = produtos.find(p => p.id === pId);
+  if (!produto) return res.status(404).json({ error: 'Produto não encontrado.' });
+
+  const leituras = leiturasTanque
+    .filter(l => l.produto_id === pId)
+    .sort((a, b) => new Date(b.data_leitura) - new Date(a.data_leitura));
+  
+  const ultimaLeitura = leituras[0];
+
+  if (!ultimaLeitura) {
+    leiturasTanque.push({ id: leiturasTanque.length + 1, produto_id: pId, data_leitura, nivel_medido: nivelAtual });
+    return res.status(201).json({ message: 'Primeira leitura (nível inicial) salva com sucesso.' });
+  }
+
+  // Soma de entradas entre a última leitura e a atual
+  const entradas = recebimentos
+    .filter(r => r.produto_id === pId && new Date(r.data_recebimento) >= new Date(ultimaLeitura.data_leitura))
+    .reduce((total, r) => total + r.quantidade, 0);
+
+  const consumoQtd = (ultimaLeitura.nivel_medido + entradas) - nivelAtual;
+
+  if (consumoQtd < 0) {
+    return res.status(400).json({ error: 'Nível atual é superior ao estoque disponível no período.' });
+  }
+
+  const custoUnit = produto.ultimo_custo_unitario;
+  const custoTotal = consumoQtd * custoUnit;
+
+  leiturasTanque.push({ id: leiturasTanque.length + 1, produto_id: pId, data_leitura, nivel_medido: nivelAtual });
+
+  const novoConsumo = {
+    id: consumosDiarios.length + 1,
+    produto_id: pId,
+    data_consumo: data_leitura,
+    quantidade_consumida: consumoQtd,
+    custo_unitario_aplicado: custoUnit,
+    custo_total_consumo: custoTotal
+  };
+  consumosDiarios.push(novoConsumo);
+
+  res.status(201).json({ message: 'Consumo calculado e registrado!', consumo: novoConsumo });
+});
+
+app.listen(3000, () => console.log('Servidor rodando em http://localhost:3000'));

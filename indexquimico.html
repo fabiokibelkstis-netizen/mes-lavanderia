@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MES - Lançamentos & Operação | Lavanderia Dona Zara</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body class="bg-slate-100 font-sans min-h-screen flex flex-col justify-between">
+
+    <header class="bg-slate-900 text-white p-4 shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto flex flex-wrap justify-between items-center gap-4">
+            <div class="flex items-center gap-3">
+                <div class="bg-slate-800 border border-slate-700 p-2.5 rounded-xl text-amber-400 shadow">
+                    <i class="fa-solid fa-industry text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold tracking-wider">MES - Painel de Lançamentos</h1>
+                    <p class="text-xs text-slate-400">Lavanderia Dona Zara</p>
+                </div>
+            </div>
+            <a href="configuracoes.html" class="bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-xs px-4 py-2 rounded-lg transition flex items-center gap-2">
+                <i class="fa-solid fa-gear"></i> Configurações Gerais
+            </a>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto w-full p-4 my-4 space-y-6">
+
+        <div class="flex flex-wrap gap-2 border-b border-slate-300 pb-2">
+            <button id="btnAbaConsumo" onclick="mudarAba('consumo')" class="px-4 py-2 rounded-lg text-xs font-bold transition bg-purple-600 text-white shadow">
+                <i class="fa-solid fa-vial mr-1.5"></i> Consumo de Químicos
+            </button>
+            <button id="btnAbaEstoque" onclick="mudarAba('estoque')" class="px-4 py-2 rounded-lg text-xs font-bold transition bg-slate-200 text-slate-700 hover:bg-slate-300">
+                <i class="fa-solid fa-boxes-stacked mr-1.5"></i> Recebimento & Estoque Químico
+            </button>
+        </div>
+
+        <section id="secaoConsumo" class="space-y-4">
+            <div class="bg-white p-6 rounded-2xl shadow-md border border-slate-200 space-y-4">
+                <div class="flex justify-between items-center border-b pb-3">
+                    <div>
+                        <h3 class="text-sm font-bold text-slate-800 flex items-center gap-2">
+                            <i class="fa-solid fa-flask text-purple-600"></i>
+                            Acompanhamento de Consumo de Produtos Químicos
+                        </h3>
+                        <p class="text-xs text-slate-500">Registre dosagens e consumos de químicos por lavagem ou lote.</p>
+                    </div>
+                    <button onclick="abrirModalConsumo()" class="bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold px-3 py-2 rounded-lg transition shadow">
+                        ➕ Registrar Consumo
+                    </button>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs border-collapse">
+                        <thead class="bg-slate-100 text-slate-700">
+                            <tr>
+                                <th class="p-2.5 border">Data / Hora</th>
+                                <th class="p-2.5 border">Produto Químico</th>
+                                <th class="p-2.5 border text-center">Quantidade Usada</th>
+                                <th class="p-2.5 border">Lote / Equipamento</th>
+                                <th class="p-2.5 border text-center">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabelaConsumoQuimicos">
+                            </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <section id="secaoEstoque" class="space-y-4 hidden">
+
+            <div class="bg-white p-6 rounded-2xl shadow-md border border-slate-200 space-y-4">
+                <h3 class="text-sm font-bold text-slate-800 border-b pb-2 flex items-center gap-2">
+                    <i class="fa-solid fa-warehouse text-emerald-600"></i>
+                    Saldo Atual de Estoque
+                </h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs border-collapse">
+                        <thead class="bg-slate-100 text-slate-700">
+                            <tr>
+                                <th class="p-2.5 border">Código</th>
+                                <th class="p-2.5 border">Produto</th>
+                                <th class="p-2.5 border text-center">Unidade</th>
+                                <th class="p-2.5 border text-right">Total Recebido</th>
+                                <th class="p-2.5 border text-right">Total Consumido</th>
+                                <th class="p-2.5 border text-right">Saldo em Estoque</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabelaSaldoEstoque">
+                            </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="bg-white p-6 rounded-2xl shadow-md border border-slate-200 space-y-4">
+                <div class="flex justify-between items-center border-b pb-3">
+                    <div>
+                        <h3 class="text-sm font-bold text-slate-800 flex items-center gap-2">
+                            <i class="fa-solid fa-truck-ramp-box text-blue-600"></i>
+                            Histórico de Recebimentos / Entradas
+                        </h3>
+                        <p class="text-xs text-slate-500">Registre a entrada de insumos vindos de fornecedores.</p>
+                    </div>
+                    <button onclick="abrirModalRecebimento()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3 py-2 rounded-lg transition shadow">
+                        ➕ Novo Recebimento
+                    </button>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs border-collapse">
+                        <thead class="bg-slate-100 text-slate-700">
+                            <tr>
+                                <th class="p-2.5 border">Data Recebimento</th>
+                                <th class="p-2.5 border">Produto</th>
+                                <th class="p-2.5 border text-center">Qtd. Entrou</th>
+                                <th class="p-2.5 border">Nº Nota / Lote</th>
+                                <th class="p-2.5 border text-right">Custo Total (R$)</th>
+                                <th class="p-2.5 border text-center">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabelaRecebimentos">
+                            </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <div id="modalConsumo" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-2xl p-6 w-full max-w-md shadow-xl space-y-4">
+            <h3 class="text-sm font-bold text-slate-800 border-b pb-2 flex items-center gap-2">
+                <i class="fa-solid fa-vial text-purple-600"></i> Registrar Consumo Químico
+            </h3>
+            <form onsubmit="salvarConsumo(event)" class="space-y-3">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Produto Químico</label>
+                    <select id="consumoProdId" required class="w-full p-2 border rounded-lg text-xs bg-slate-50 outline-none focus:ring-1 focus:ring-purple-500">
+                        </select>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Quantidade</label>
+                        <input type="number" step="0.01" id="consumoQtd" required placeholder="0.00" class="w-full p-2 border rounded-lg text-xs bg-slate-50 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Data / Hora</label>
+                        <input type="datetime-local" id="consumoData" required class="w-full p-2 border rounded-lg text-xs bg-slate-50 outline-none">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Equipamento / Lote de Lavagem</label>
+                    <input type="text" id="consumoObs" placeholder="Ex: Túnel 1 / Lote #104" class="w-full p-2 border rounded-lg text-xs bg-slate-50 outline-none">
+                </div>
+                <div class="flex justify-end gap-2 pt-3">
+                    <button type="button" onclick="fecharModalConsumo()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-4 py-2 rounded-lg text-xs font-bold">Cancelar</button>
+                    <button type="submit" class="bg-purple-600 hover:bg-purple-700 text-white font-bold px-5 py-2 rounded-lg text-xs shadow">Salvar Consumo</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="modalRecebimento" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-2xl p-6 w-full max-w-md shadow-xl space-y-4">
+            <h3 class="text-sm font-bold text-slate-800 border-b pb-2 flex items-center gap-2">
+                <i class="fa-solid fa-truck-ramp-box text-emerald-600"></i> Registrar Recebimento
+            </h3>
+            <form onsubmit="salvarRecebimento(event)" class="space-y-3">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Produto Químico</label>
+                    <select id="recProdId" required class="w-full p-2 border rounded-lg text-xs bg-slate-50 outline-none focus:ring-1 focus:ring-emerald-500">
+                        </select>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Qtd. Entrada</label>
+                        <input type="number" step="0.01" id="recQtd" required placeholder="0.00" class="w-full p-2 border rounded-lg text-xs bg-slate-50 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Data Entrada</label>
+                        <input type="date" id="recData" required class="w-full p-2 border rounded-lg text-xs bg-slate-50 outline-none">
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Nº Nota Fiscal / Lote</label>
+                        <input type="text" id="recNota" placeholder="NF-12345" class="w-full p-2 border rounded-lg text-xs bg-slate-50 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Custo Total (R$)</label>
+                        <input type="number" step="0.01" id="recCustoTotal" placeholder="0.00" class="w-full p-2 border rounded-lg text-xs bg-slate-50 outline-none">
+                    </div>
+                </div>
+                <div class="flex justify-end gap-2 pt-3">
+                    <button type="button" onclick="fecharModalRecebimento()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-4 py-2 rounded-lg text-xs font-bold">Cancelar</button>
+                    <button type="submit" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-5 py-2 rounded-lg text-xs shadow">Salvar Entrada</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <footer class="bg-white border-t border-slate-200 p-4 text-center text-xs text-slate-500">
+        MES Dona Zara &copy; 2026 - Módulo Operacional e Estoque
+    </footer>
+
+    <script>
+        // Lista padrão mantida para fallback
+        const PRODUTOS_PADRAO = [
+            { id: "beiclean_cwt", nome: "BEICLEAN CWT", desc: "Detergente concentrado", un: "L", custoPadrao: 0 },
+            { id: "beipur_msc", nome: "BEIPUR MSC", desc: "Alcalino concentrado - soda", un: "L", custoPadrao: 0 },
+            { id: "beibleach_pe", nome: "BEIBLEACH PE", desc: "Ácido Peracético", un: "L", custoPadrao: 0 },
+            { id: "beibleach_hc_liq", nome: "BEIBLEACH HC LIQ", desc: "Hipoclorito de Sódio", un: "L", custoPadrao: 0 },
+            { id: "beibleach_net", nome: "BEIBLEACH NET", desc: "Bissulfito", un: "L", custoPadrao: 0 },
+            { id: "beiplex_cab", nome: "BEIPLEX CAB", desc: "Complexante", un: "L", custoPadrao: 0 },
+            { id: "beiblanc_had", nome: "BEIBLANC HAD", desc: "Branqueador óptico", un: "L", custoPadrao: 0 },
+            { id: "beibleach_blue", nome: "BEIBLEACH BLUE ACTIVE", desc: "Ativador Peróxido", un: "L", custoPadrao: 0 },
+            { id: "beiacid_wsd", nome: "BEIACID WSD", desc: "Ácido fórmico", un: "L", custoPadrao: 0 },
+            { id: "wp35", nome: "WP35", desc: "Peróxido de Hidrogênio", un: "L", custoPadrao: 0 },
+            { id: "beisoft_avra", nome: "BEISOFT AVRA", desc: "Amaciante", un: "L", custoPadrao: 0 },
+            { id: "sal_grosso", nome: "SAL GROSSO", desc: "Pacote c/ 25kg", un: "Kg", custoPadrao: 0 }
+        ];
+
+        let listaProdutos = [];
+        let listaConsumos = [];
+        let listaRecebimentos = [];
+
+        document.addEventListener('DOMContentLoaded', () => {
+            carregarDados();
+        });
+
+        function carregarDados() {
+            // Leitura da chave mes_config_quimicos vinda de configuracoes.html
+            listaProdutos = JSON.parse(localStorage.getItem('mes_config_quimicos')) || PRODUTOS_PADRAO;
+            listaConsumos = JSON.parse(localStorage.getItem('mes_lancamentos_consumo')) || [];
+            listaRecebimentos = JSON.parse(localStorage.getItem('mes_lancamentos_recebimento')) || [];
+
+            renderizarConsumo();
+            renderizarRecebimentos();
+            renderizarSaldoEstoque();
+            preencherSelectsProdutos();
+        }
+
+        // --- SISTEMA DE ABAS ---
+        function mudarAba(aba) {
+            const secaoConsumo = document.getElementById('secaoConsumo');
+            const secaoEstoque = document.getElementById('secaoEstoque');
+            const btnConsumo = document.getElementById('btnAbaConsumo');
+            const btnEstoque = document.getElementById('btnAbaEstoque');
+
+            if (aba === 'consumo') {
+                secaoConsumo.classList.remove('hidden');
+                secaoEstoque.classList.add('hidden');
+                btnConsumo.className = "px-4 py-2 rounded-lg text-xs font-bold transition bg-purple-600 text-white shadow";
+                btnEstoque.className = "px-4 py-2 rounded-lg text-xs font-bold transition bg-slate-200 text-slate-700 hover:bg-slate-300";
+            } else {
+                secaoConsumo.classList.add('hidden');
+                secaoEstoque.classList.remove('hidden');
+                btnConsumo.className = "px-4 py-2 rounded-lg text-xs font-bold transition bg-slate-200 text-slate-700 hover:bg-slate-300";
+                btnEstoque.className = "px-4 py-2 rounded-lg text-xs font-bold transition bg-emerald-600 text-white shadow";
+            }
+        }
+
+        // --- PREENCHER SELECTS COM PRODUTOS CADASTRADOS ---
+        function preencherSelectsProdutos() {
+            const optionsHtml = listaProdutos.map(p => 
+                `<option value="${p.id}">${p.nome} (${p.un})</option>`
+            ).join('');
+
+            document.getElementById('consumoProdId').innerHTML = optionsHtml || '<option value="">Nenhum produto cadastrado</option>';
+            document.getElementById('recProdId').innerHTML = optionsHtml || '<option value="">Nenhum produto cadastrado</option>';
+        }
+
+        // --- ABA CONSUMO DE QUÍMICOS ---
+        function renderizarConsumo() {
+            const tbody = document.getElementById('tabelaConsumoQuimicos');
+            if (listaConsumos.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="p-4 text-center italic text-slate-400">Nenhum consumo registrado.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = listaConsumos.map((c, idx) => {
+                const prod = listaProdutos.find(p => p.id === c.prodId) || { nome: c.prodId, un: 'L' };
+                const dataFmt = new Date(c.data).toLocaleString('pt-BR');
+                return `
+                    <tr class="hover:bg-slate-50 transition">
+                        <td class="p-2.5 border font-mono text-[11px]">${dataFmt}</td>
+                        <td class="p-2.5 border font-bold text-slate-800">${prod.nome}</td>
+                        <td class="p-2.5 border text-center font-semibold text-purple-700">${c.qtd} ${prod.un}</td>
+                        <td class="p-2.5 border text-slate-600">${c.obs || '-'}</td>
+                        <td class="p-2.5 border text-center">
+                            <button onclick="excluirConsumo(${idx})" class="text-red-600 hover:text-red-800 font-bold px-1" title="Excluir">❌</button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function abrirModalConsumo() {
+            document.getElementById('consumoQtd').value = "";
+            document.getElementById('consumoObs').value = "";
+            const now = new Date();
+            now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+            document.getElementById('consumoData').value = now.toISOString().slice(0, 16);
+            document.getElementById('modalConsumo').classList.remove('hidden');
+        }
+
+        function fecharModalConsumo() {
+            document.getElementById('modalConsumo').classList.add('hidden');
+        }
+
+        function salvarConsumo(e) {
+            e.preventDefault();
+            const prodId = document.getElementById('consumoProdId').value;
+            const qtd = parseFloat(document.getElementById('consumoQtd').value) || 0;
+            const data = document.getElementById('consumoData').value;
+            const obs = document.getElementById('consumoObs').value.trim();
+
+            listaConsumos.push({ prodId, qtd, data, obs });
+            localStorage.setItem('mes_lancamentos_consumo', JSON.stringify(listaConsumos));
+
+            fecharModalConsumo();
+            renderizarConsumo();
+            renderizarSaldoEstoque();
+        }
+
+        function excluirConsumo(idx) {
+            if (confirm("Deseja realmente remover este registro de consumo?")) {
+                listaConsumos.splice(idx, 1);
+                localStorage.setItem('mes_lancamentos_consumo', JSON.stringify(listaConsumos));
+                renderizarConsumo();
+                renderizarSaldoEstoque();
+            }
+        }
+
+        // --- ABA RECEBIMENTO E ESTOQUE ---
+        function renderizarRecebimentos() {
+            const tbody = document.getElementById('tabelaRecebimentos');
+            if (listaRecebimentos.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-center italic text-slate-400">Nenhum recebimento registrado.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = listaRecebimentos.map((r, idx) => {
+                const prod = listaProdutos.find(p => p.id === r.prodId) || { nome: r.prodId, un: 'L' };
+                const dataFmt = new Date(r.data + 'T00:00:00').toLocaleDateString('pt-BR');
+                return `
+                    <tr class="hover:bg-slate-50 transition">
+                        <td class="p-2.5 border font-mono text-[11px]">${dataFmt}</td>
+                        <td class="p-2.5 border font-bold text-slate-800">${prod.nome}</td>
+                        <td class="p-2.5 border text-center font-semibold text-emerald-700">+${r.qtd} ${prod.un}</td>
+                        <td class="p-2.5 border text-slate-600">${r.nota || '-'}</td>
+                        <td class="p-2.5 border text-right font-bold text-slate-800">R$ ${(r.custoTotal || 0).toFixed(2)}</td>
+                        <td class="p-2.5 border text-center">
+                            <button onclick="excluirRecebimento(${idx})" class="text-red-600 hover:text-red-800 font-bold px-1" title="Excluir">❌</button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function abrirModalRecebimento() {
+            document.getElementById('recQtd').value = "";
+            document.getElementById('recNota').value = "";
+            document.getElementById('recCustoTotal').value = "";
+            document.getElementById('recData').value = new Date().toISOString().split('T')[0];
+            document.getElementById('modalRecebimento').classList.remove('hidden');
+        }
+
+        function fecharModalRecebimento() {
+            document.getElementById('modalRecebimento').classList.add('hidden');
+        }
+
+        function salvarRecebimento(e) {
+            e.preventDefault();
+            const prodId = document.getElementById('recProdId').value;
+            const qtd = parseFloat(document.getElementById('recQtd').value) || 0;
+            const data = document.getElementById('recData').value;
+            const nota = document.getElementById('recNota').value.trim();
+            const custoTotal = parseFloat(document.getElementById('recCustoTotal').value) || 0;
+
+            listaRecebimentos.push({ prodId, qtd, data, nota, custoTotal });
+            localStorage.setItem('mes_lancamentos_recebimento', JSON.stringify(listaRecebimentos));
+
+            fecharModalRecebimento();
+            renderizarRecebimentos();
+            renderizarSaldoEstoque();
+        }
+
+        function excluirRecebimento(idx) {
+            if (confirm("Deseja realmente excluir este registro de recebimento?")) {
+                listaRecebimentos.splice(idx, 1);
+                localStorage.setItem('mes_lancamentos_recebimento', JSON.stringify(listaRecebimentos));
+                renderizarRecebimentos();
+                renderizarSaldoEstoque();
+            }
+        }
+
+        // --- SALDO DE ESTOQUE (CÁLCULO DINÂMICO) ---
+        function renderizarSaldoEstoque() {
+            const tbody = document.getElementById('tabelaSaldoEstoque');
+
+            if (listaProdutos.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-center italic text-slate-400">Nenhum produto cadastrado para calcular estoque.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = listaProdutos.map(p => {
+                const totalRecebido = listaRecebimentos
+                    .filter(r => r.prodId === p.id)
+                    .reduce((acc, cur) => acc + (parseFloat(cur.qtd) || 0), 0);
+
+                const totalConsumido = listaConsumos
+                    .filter(c => c.prodId === p.id)
+                    .reduce((acc, cur) => acc + (parseFloat(cur.qtd) || 0), 0);
+
+                const saldo = totalRecebido - totalConsumido;
+                const classeSaldo = saldo < 0 ? 'text-red-600' : 'text-slate-800';
+
+                return `
+                    <tr class="hover:bg-slate-50 transition">
+                        <td class="p-2.5 border font-mono text-[11px] text-slate-500">${p.id}</td>
+                        <td class="p-2.5 border font-bold text-slate-800">${p.nome}</td>
+                        <td class="p-2.5 border text-center font-semibold text-purple-700">${p.un}</td>
+                        <td class="p-2.5 border text-right text-emerald-700 font-semibold">+${totalRecebido.toFixed(2)}</td>
+                        <td class="p-2.5 border text-right text-purple-700 font-semibold">-${totalConsumido.toFixed(2)}</td>
+                        <td class="p-2.5 border text-right font-extrabold ${classeSaldo}">${saldo.toFixed(2)} ${p.un}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+    </script>
+</body>
+</html>
