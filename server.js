@@ -341,3 +341,103 @@ app.post('/api/apontamento', async (req, res) => {
 app.listen(port, () => {
     console.log(`🚀 Servidor MES & PCM rodando na porta ${port}`);
 });
+
+// =================================================================
+// ROTAS DE CADASTRO DE TÉCNICOS / RESPONSÁVEIS
+// =================================================================
+
+// Listar Técnicos
+app.get('/api/pcm/tecnicos', async (req, res) => {
+    try {
+        const { rows } = await pool.query('SELECT * FROM tecnicos WHERE ativo = TRUE ORDER BY nome ASC');
+        res.json(rows);
+    } catch (err) {
+        res.status(500).json({ erro: err.message });
+    }
+});
+
+// Cadastrar Novo Técnico
+app.post('/api/pcm/tecnicos', async (req, res) => {
+    const { nome, especialidade } = req.body;
+    try {
+        const query = `
+            INSERT INTO tecnicos (nome, especialidade)
+            VALUES ($1, $2)
+            ON CONFLICT (nome) DO UPDATE SET ativo = TRUE
+            RETURNING *;
+        `;
+        const { rows } = await pool.query(query, [nome, especialidade || 'Geral']);
+        res.status(201).json(rows[0]);
+    } catch (err) {
+        res.status(500).json({ erro: err.message });
+    }
+});
+
+// Desativar / Remover Técnico
+app.delete('/api/pcm/tecnicos/:id', async (req, res) => {
+    const { id } = req.params;
+    try {
+        await pool.query('UPDATE tecnicos SET ativo = FALSE WHERE id = $1', [id]);
+        res.json({ mensagem: 'Técnico desativado com sucesso' });
+    } catch (err) {
+        res.status(500).json({ erro: err.message });
+    }
+});
+
+// =================================================================
+// ATUALIZAÇÃO NAS ROTAS DE ORDENS DE SERVIÇO
+// =================================================================
+
+// Listar OS incluindo os dados do Técnico
+app.get('/api/pcm/ordens-servico', async (req, res) => {
+    try {
+        const { equipamento_id } = req.query;
+        let sql = `
+            SELECT 
+                os.*, 
+                e.tag, 
+                e.setor,
+                COALESCE(t.nome, os.tecnico) AS tecnico_nome
+            FROM ordens_servico os
+            JOIN equipamentos e ON os.equipamento_id = e.id
+            LEFT JOIN tecnicos t ON os.tecnico_id = t.id
+        `;
+        let params = [];
+
+        if (equipamento_id && equipamento_id !== 'TODOS') {
+            sql += ' WHERE os.equipamento_id = $1';
+            params.push(equipamento_id);
+        }
+
+        sql += ' ORDER BY os.data_os DESC, os.created_at DESC';
+
+        const { rows } = await pool.query(sql, params);
+        res.json(rows);
+    } catch (err) {
+        res.status(500).json({ erro: err.message });
+    }
+});
+
+// Salvar OS vinculando o tecnico_id
+app.post('/api/pcm/ordens-servico', async (req, res) => {
+    const { equipamento_id, tipo, descricao, data_os, horas_parada, tecnico_id, tecnico } = req.body;
+    try {
+        const query = `
+            INSERT INTO ordens_servico (equipamento_id, tipo, descricao, data_os, horas_parada, tecnico_id, tecnico)
+            VALUES ($1, $2, $3, $4, $5, $6, $7)
+            RETURNING *;
+        `;
+        const { rows } = await pool.query(query, [
+            equipamento_id, 
+            tipo, 
+            descricao, 
+            data_os, 
+            horas_parada || 0, 
+            tecnico_id || null, 
+            tecnico || null
+        ]);
+        res.status(201).json(rows[0]);
+    } catch (err) {
+        res.status(500).json({ erro: err.message });
+    }
+});

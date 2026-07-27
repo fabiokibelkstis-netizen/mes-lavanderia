@@ -37,6 +37,11 @@
                     <span>Cad. Equipamentos</span>
                 </button>
 
+                <button onclick="navegarPara('tecnicos')" id="btn-tecnicos" class="menu-item w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition hover:bg-slate-800 hover:text-white text-slate-300">
+                    <i class="fa-solid fa-user-gear text-indigo-400 w-5 text-center text-sm"></i>
+                    <span>Cad. Técnicos</span>
+                </button>
+
                 <button onclick="navegarPara('os')" id="btn-os" class="menu-item w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition hover:bg-slate-800 hover:text-white text-slate-300">
                     <i class="fa-solid fa-file-signature text-rose-400 w-5 text-center text-sm"></i>
                     <span>Ordens de Serviço</span>
@@ -80,7 +85,7 @@
                 </div>
 
                 <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 border-l-4 border-l-blue-500">
-                    <span class="text-xs font-bold text-slate-500 uppercase">MTBF (Tempo Média Entre Falhas)</span>
+                    <span class="text-xs font-bold text-slate-500 uppercase">MTBF (Tempo Médio Entre Falhas)</span>
                     <p id="kpiMTBF" class="text-2xl font-black text-blue-600 mt-1">0.0 h</p>
                     <span class="text-[10px] text-slate-400">Confiabilidade dos Equipamentos</span>
                 </div>
@@ -174,11 +179,16 @@
                     </div>
 
                     <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 space-y-3">
-                        <h3 class="text-xs font-bold text-slate-800 border-b pb-2 uppercase tracking-wide text-blue-600 flex justify-between items-center">
-                            <span>3. Cadastro do Ativo / Componente</span>
-                            <i class="fa-solid fa-cubes"></i>
-                        </h3>
+                        <div class="border-b pb-2 flex justify-between items-center">
+                            <h3 id="eqFormTitulo" class="text-xs font-bold text-slate-800 uppercase tracking-wide text-blue-600 flex items-center gap-2">
+                                <i class="fa-solid fa-cubes"></i> <span>3. Cadastro do Ativo / Componente</span>
+                            </h3>
+                            <button id="btnCancelarEq" onclick="cancelarEdicaoEquipamento()" class="hidden text-[11px] text-rose-600 font-bold hover:underline">
+                                <i class="fa-solid fa-xmark"></i> Cancelar
+                            </button>
+                        </div>
                         <form id="formEquipamento" onsubmit="salvarEquipamento(event)" class="space-y-3 text-xs">
+                            <input type="hidden" id="eqId">
                             <div>
                                 <label class="block font-bold mb-1">Tag / Código do Ativo</label>
                                 <input type="text" id="eqTag" required placeholder="Ex: LAV-01-MOT" class="w-full p-2 border rounded-lg bg-slate-50 uppercase font-mono font-bold text-blue-600">
@@ -227,7 +237,7 @@
                                 <textarea id="eqObservacoes" placeholder="Ex: Modelo do fabricante, vazão, torque ou dados complementares..." class="w-full p-2 border rounded-lg bg-slate-50" rows="2"></textarea>
                             </div>
 
-                            <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold p-2.5 rounded-xl transition shadow">Cadastrar Equipamento / Componente</button>
+                            <button type="submit" id="btnSalvarEq" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold p-2.5 rounded-xl transition shadow">Cadastrar Equipamento / Componente</button>
                         </form>
                     </div>
                 </div>
@@ -245,6 +255,7 @@
                                     <th class="p-2 border">Tensão / Cap.</th>
                                     <th class="p-2 border text-center">Horas/Dia</th>
                                     <th class="p-2 border">Obs.</th>
+                                    <th class="p-2 border text-center w-20">Ações</th>
                                 </tr>
                             </thead>
                             <tbody id="tblEquipamentos"></tbody>
@@ -254,11 +265,73 @@
             </div>
         </div>
 
+        <div id="view-tecnicos" class="hidden space-y-6">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 space-y-4">
+                    <div class="border-b pb-2 flex justify-between items-center text-indigo-600">
+                        <h3 id="tecFormTitulo" class="text-sm font-bold flex items-center gap-2">
+                            <span>Cadastro de Técnico / Mantenedor</span>
+                        </h3>
+                        <i class="fa-solid fa-user-gear text-indigo-600"></i>
+                        <button id="btnCancelarTec" onclick="cancelarEdicaoTecnico()" class="hidden text-[11px] text-rose-600 font-bold hover:underline">
+                            <i class="fa-solid fa-xmark"></i> Cancelar
+                        </button>
+                    </div>
+                    <form id="formTecnico" onsubmit="salvarTecnico(event)" class="space-y-3 text-xs">
+                        <input type="hidden" id="tecId">
+                        <div>
+                            <label class="block font-bold mb-1">Nome Completo</label>
+                            <input type="text" id="tecNome" required placeholder="Ex: Carlos Eduardo Silveira" class="w-full p-2 border rounded-lg bg-slate-50">
+                        </div>
+                        <div>
+                            <label class="block font-bold mb-1">Especialidade / Função</label>
+                            <select id="tecEspecialidade" required class="w-full p-2 border rounded-lg bg-slate-50">
+                                <option value="Mecânico">Mecânico</option>
+                                <option value="Eletricista">Eletricista</option>
+                                <option value="Mecatrônico">Mecatrônico / Automação</option>
+                                <option value="Lubrificador">Lubrificador</option>
+                                <option value="Preditiva / Refrigeração">Preditiva / Refrigeração</option>
+                                <option value="Líder / Supervisor">Líder / Supervisor</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block font-bold mb-1">Telefone / Ramal / Contato</label>
+                            <input type="text" id="tecContato" placeholder="Ex: (11) 98888-7777 / Ramal 402" class="w-full p-2 border rounded-lg bg-slate-50">
+                        </div>
+                        <button type="submit" id="btnSalvarTec" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold p-2.5 rounded-xl transition shadow">Cadastrar Técnico</button>
+                    </form>
+                </div>
+
+                <div class="lg:col-span-2 bg-white p-5 rounded-2xl shadow-sm border border-slate-200 space-y-3">
+                    <h3 class="text-sm font-bold text-slate-800 border-b pb-2">Equipe Técnica Cadastrada</h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs">
+                            <thead class="bg-slate-100 text-slate-700">
+                                <tr>
+                                    <th class="p-2.5 border">Nome</th>
+                                    <th class="p-2.5 border">Especialidade</th>
+                                    <th class="p-2.5 border">Contato</th>
+                                    <th class="p-2.5 border text-center w-20">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tblTecnicos"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div id="view-os" class="hidden space-y-6">
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 space-y-4">
-                    <h3 class="text-sm font-bold text-slate-800 border-b pb-2">Abertura / Apontamento de O/S</h3>
+                    <div class="border-b pb-2 flex justify-between items-center">
+                        <h3 id="osFormTitulo" class="text-sm font-bold text-slate-800">Abertura / Apontamento de O/S</h3>
+                        <button id="btnCancelarOS" onclick="cancelarEdicaoOS()" class="hidden text-[11px] text-rose-600 font-bold hover:underline">
+                            <i class="fa-solid fa-xmark"></i> Cancelar
+                        </button>
+                    </div>
                     <form id="formOS" onsubmit="salvarOS(event)" class="space-y-3 text-xs">
+                        <input type="hidden" id="osId">
                         <div>
                             <label class="block font-bold mb-1">Equipamento / Componente</label>
                             <select id="osEquipamento" required class="w-full p-2 border rounded-lg bg-slate-50"></select>
@@ -287,9 +360,9 @@
                         </div>
                         <div>
                             <label class="block font-bold mb-1">Técnico / Responsável</label>
-                            <input type="text" id="osTecnico" placeholder="Nome do técnico" class="w-full p-2 border rounded-lg bg-slate-50">
+                            <select id="osTecnico" required class="w-full p-2 border rounded-lg bg-slate-50 font-semibold"></select>
                         </div>
-                        <button type="submit" class="w-full bg-rose-600 hover:bg-rose-700 text-white font-bold p-2.5 rounded-xl transition">Registrar Ordem de Serviço</button>
+                        <button type="submit" id="btnSalvarOS" class="w-full bg-rose-600 hover:bg-rose-700 text-white font-bold p-2.5 rounded-xl transition">Registrar Ordem de Serviço</button>
                     </form>
                 </div>
 
@@ -312,7 +385,9 @@
                                     <th class="p-2.5 border">Tag / Máquina</th>
                                     <th class="p-2.5 border">Tipo</th>
                                     <th class="p-2.5 border">Descrição</th>
+                                    <th class="p-2.5 border">Técnico</th>
                                     <th class="p-2.5 border text-right">Parada (h)</th>
+                                    <th class="p-2.5 border text-center w-20">Ações</th>
                                 </tr>
                             </thead>
                             <tbody id="tblOS"></tbody>
@@ -325,8 +400,14 @@
         <div id="view-lubrificacao" class="hidden space-y-6">
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 space-y-4">
-                    <h3 class="text-sm font-bold text-slate-800 border-b pb-2">Cadastrar Rota de Lubrificação</h3>
+                    <div class="border-b pb-2 flex justify-between items-center">
+                        <h3 id="lubFormTitulo" class="text-sm font-bold text-slate-800">Cadastrar Rota de Lubrificação</h3>
+                        <button id="btnCancelarLub" onclick="cancelarEdicaoLubrificacao()" class="hidden text-[11px] text-rose-600 font-bold hover:underline">
+                            <i class="fa-solid fa-xmark"></i> Cancelar
+                        </button>
+                    </div>
                     <form id="formLubrificacao" onsubmit="salvarLubrificacao(event)" class="space-y-3 text-xs">
+                        <input type="hidden" id="lubId">
                         <div>
                             <label class="block font-bold mb-1">Equipamento / Componente</label>
                             <select id="lubEquipamento" required class="w-full p-2 border rounded-lg bg-slate-50"></select>
@@ -354,7 +435,7 @@
                                 <input type="text" id="lubQtd" placeholder="Ex: 50 gramas" class="w-full p-2 border rounded-lg bg-slate-50">
                             </div>
                         </div>
-                        <button type="submit" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold p-2.5 rounded-xl transition">Adicionar ao Plano</button>
+                        <button type="submit" id="btnSalvarLub" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold p-2.5 rounded-xl transition">Adicionar ao Plano</button>
                     </form>
                 </div>
 
@@ -378,6 +459,7 @@
                                     <th class="p-2.5 border">Lubrificante</th>
                                     <th class="p-2.5 border">Freq.</th>
                                     <th class="p-2.5 border text-right">Dose</th>
+                                    <th class="p-2.5 border text-center w-20">Ações</th>
                                 </tr>
                             </thead>
                             <tbody id="tblLubrificacao"></tbody>
@@ -390,8 +472,14 @@
         <div id="view-pecas" class="hidden space-y-6">
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 space-y-4">
-                    <h3 class="text-sm font-bold text-slate-800 border-b pb-2">Cadastrar Peça de Reposição</h3>
+                    <div class="border-b pb-2 flex justify-between items-center">
+                        <h3 id="pecaFormTitulo" class="text-sm font-bold text-slate-800">Cadastrar Peça de Reposição</h3>
+                        <button id="btnCancelarPeca" onclick="cancelarEdicaoPeca()" class="hidden text-[11px] text-rose-600 font-bold hover:underline">
+                            <i class="fa-solid fa-xmark"></i> Cancelar
+                        </button>
+                    </div>
                     <form id="formPeca" onsubmit="salvarPeca(event)" class="space-y-3 text-xs">
+                        <input type="hidden" id="pecaId">
                         <div>
                             <label class="block font-bold mb-1">Código / Part Number</label>
                             <input type="text" id="pecaCod" required placeholder="Ex: ROL-6205-2RS" class="w-full p-2 border rounded-lg bg-slate-50 uppercase font-mono font-bold">
@@ -424,31 +512,37 @@
 
                         <div class="grid grid-cols-2 gap-2">
                             <div>
-                                <label class="block font-bold mb-1">Qtd em Estoque</label>
+                                <label class="block font-bold mb-1">Estoque Atual</label>
                                 <input type="number" id="pecaQtd" required min="0" placeholder="0" class="w-full p-2 border rounded-lg bg-slate-50 font-bold">
                             </div>
                             <div>
                                 <label class="block font-bold mb-1">Estoque Mínimo</label>
-                                <input type="number" id="pecaMin" required min="1" placeholder="1" class="w-full p-2 border rounded-lg bg-slate-50">
+                                <input type="number" id="pecaMin" required min="0" placeholder="1" class="w-full p-2 border rounded-lg bg-slate-50 font-bold">
                             </div>
                         </div>
 
-                        <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold p-2.5 rounded-xl transition">Salvar no Almoxarifado</button>
+                        <div>
+                            <label class="block font-bold mb-1">Localização Almoxarifado</label>
+                            <input type="text" id="pecaLocal" placeholder="Ex: Prateleira A-02" class="w-full p-2 border rounded-lg bg-slate-50">
+                        </div>
+
+                        <button type="submit" id="btnSalvarPeca" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold p-2.5 rounded-xl transition shadow">Cadastrar Peça</button>
                     </form>
                 </div>
 
                 <div class="lg:col-span-2 bg-white p-5 rounded-2xl shadow-sm border border-slate-200 space-y-3">
-                    <h3 class="text-sm font-bold text-slate-800 border-b pb-2">Almoxarifado de Peças da Manutenção</h3>
+                    <h3 class="text-sm font-bold text-slate-800 border-b pb-2">Almoxarifado de Peças & Componentes</h3>
                     <div class="overflow-x-auto">
                         <table class="w-full text-left text-xs">
                             <thead class="bg-slate-100 text-slate-700">
                                 <tr>
-                                    <th class="p-2 border">Código</th>
-                                    <th class="p-2 border">Descrição</th>
-                                    <th class="p-2 border">Máquinas Aplicáveis</th>
-                                    <th class="p-2 border text-center">Condição</th>
-                                    <th class="p-2 border text-right">Estoque</th>
-                                    <th class="p-2 border text-center">Status</th>
+                                    <th class="p-2.5 border">Código</th>
+                                    <th class="p-2.5 border">Descrição</th>
+                                    <th class="p-2.5 border">Aplicação</th>
+                                    <th class="p-2.5 border">Condição</th>
+                                    <th class="p-2.5 border text-center">Estoque</th>
+                                    <th class="p-2.5 border">Local</th>
+                                    <th class="p-2.5 border text-center w-20">Ações</th>
                                 </tr>
                             </thead>
                             <tbody id="tblPecas"></tbody>
@@ -461,426 +555,700 @@
     </main>
 
     <script>
-    // CHAVES DE LOCALSTORAGE
-    const STORAGE_MACRO = 'pcm_macro_maquinas';
-    const STORAGE_COMP_MACRO = 'pcm_macro_componentes';
-    const STORAGE_EQUIP = 'pcm_equipamentos';
-    const STORAGE_OS = 'pcm_ordens_servico';
-    const STORAGE_LUB = 'pcm_lubrificacao';
-    const STORAGE_PECAS = 'pcm_pecas';
+        const CHAVES = {
+            MACRO_MAQUINAS: "mes_pcm_macro_maquinas",
+            MACRO_COMPONENTES: "mes_pcm_macro_componentes",
+            EQUIPAMENTOS: "mes_pcm_equipamentos",
+            TECNICOS: "mes_pcm_tecnicos",
+            OS: "mes_pcm_os",
+            LUBRIFICACAO: "mes_pcm_lubrificacao",
+            PECAS: "mes_pcm_pecas"
+        };
 
-    let chartOSInstance = null;
+        let chartTiposOSInstance = null;
 
-    document.addEventListener('DOMContentLoaded', () => {
-        carregarMacroSelects();
-        carregarMacroComponentesSelects();
-        carregarEquipamentosSelects();
-        renderizarTabelas();
-        calcularKPIs();
-        
-        const elOsData = document.getElementById('osData');
-        if(elOsData) elOsData.value = new Date().toISOString().slice(0, 10);
-    });
-
-    // --- LÓGICA DE NAVEGAÇÃO ENTRE AS ABAS DO MENU ---
-    function navegarPara(opcao) {
-        document.querySelectorAll('.menu-item').forEach(btn => {
-            btn.className = "menu-item w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition hover:bg-slate-800 hover:text-white text-slate-300";
+        document.addEventListener("DOMContentLoaded", () => {
+            inicializarDadosIniciais();
+            carregarSelectsEPrévias();
+            renderizarTabelas();
+            atualizarDashboard();
+            inicializarGraficos();
         });
 
-        const btnAtivo = document.getElementById(`btn-${opcao}`);
-        if (btnAtivo) {
-            btnAtivo.className = "menu-item w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition bg-amber-600 text-white font-bold";
+        function inicializarDadosIniciais() {
+            if (!localStorage.getItem(CHAVES.MACRO_MAQUINAS)) {
+                localStorage.setItem(CHAVES.MACRO_MAQUINAS, JSON.stringify(["Lavadora Extratora 50kg", "Centrífuga Industrial", "Secadora a Gás", "Calandra Industrial"]));
+            }
+            if (!localStorage.getItem(CHAVES.MACRO_COMPONENTES)) {
+                localStorage.setItem(CHAVES.MACRO_COMPONENTES, JSON.stringify(["Motor Elétrico", "Redutor", "Válvula Pneumática", "Painel elétrico", "Bomba de Água"]));
+            }
         }
 
-        document.getElementById('view-dashboard').classList.add('hidden');
-        document.getElementById('view-equipamentos').classList.add('hidden');
-        document.getElementById('view-os').classList.add('hidden');
-        document.getElementById('view-lubrificacao').classList.add('hidden');
-        document.getElementById('view-pecas').classList.add('hidden');
+        function navegarPara(view) {
+            const views = ['dashboard', 'equipamentos', 'tecnicos', 'os', 'lubrificacao', 'pecas'];
+            views.forEach(v => {
+                const el = document.getElementById(`view-${v}`);
+                const btn = document.getElementById(`btn-${v}`);
+                if (v === view) {
+                    el.classList.remove('hidden');
+                    btn.className = "menu-item w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition bg-amber-600 text-white font-bold";
+                } else {
+                    el.classList.add('hidden');
+                    btn.className = "menu-item w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition hover:bg-slate-800 hover:text-white text-slate-300";
+                }
+            });
 
-        if (opcao === 'dashboard') {
-            document.getElementById('tituloPagina').innerText = "Dashboard de Manutenção Industrial";
-            document.getElementById('subtituloPagina').innerText = "Indicadores operacionais de confiabilidade, disponibilidade e integração OEE.";
-            document.getElementById('view-dashboard').classList.remove('hidden');
-            calcularKPIs();
-        } else if (opcao === 'equipamentos') {
-            document.getElementById('tituloPagina').innerText = "Cadastro & Parque de Máquinas e Componentes";
-            document.getElementById('subtituloPagina').innerText = "Gerenciamento de ativos, sub-componentes, capacidades, tensões e especificações técnicas.";
-            document.getElementById('view-equipamentos').classList.remove('hidden');
-        } else if (opcao === 'os') {
-            document.getElementById('tituloPagina').innerText = "Gestão de Ordens de Serviço";
-            document.getElementById('subtituloPagina').innerText = "Apontamento de manutenções corretivas, preventivas e tempos de parada.";
-            document.getElementById('view-os').classList.remove('hidden');
-        } else if (opcao === 'lubrificacao') {
-            document.getElementById('tituloPagina').innerText = "Plano Mestre de Lubrificação";
-            document.getElementById('subtituloPagina').innerText = "Controle de rotas, pontos estratégicos e lubrificantes recomendados.";
-            document.getElementById('view-lubrificacao').classList.remove('hidden');
-        } else if (opcao === 'pecas') {
-            document.getElementById('tituloPagina').innerText = "Almoxarifado & Peças de Reposição";
-            document.getElementById('subtituloPagina').innerText = "Controle de componentes mecânicos, aplicação em máquinas, condição e estoque.";
-            document.getElementById('view-pecas').classList.remove('hidden');
+            const titulos = {
+                dashboard: ["Dashboard de Manutenção Industrial", "Indicadores operacionais de confiabilidade, disponibilidade e integração OEE."],
+                equipamentos: ["Parque de Máquinas & Ativos", "Gerenciamento e cadastro do inventário técnico de equipamentos."],
+                tecnicos: ["Equipe Técnica & Mantenedores", "Cadastro e controle do time de manutenção."],
+                os: ["Ordens de Serviço & Apontamentos", "Abertura e registro histórico de paradas e intervenções."],
+                lubrificacao: ["Plano Mestre de Lubrificação", "Roteiro e freqüência de lubrificação de componentes."],
+                pecas: ["Almoxarifado de Peças de Reposição", "Controle de estoque crítico, sobressalentes e peças recondicionadas."]
+            };
+
+            document.getElementById("tituloPagina").innerText = titulos[view][0];
+            document.getElementById("subtituloPagina").innerText = titulos[view][1];
+
+            if (view === 'dashboard') {
+                atualizarDashboard();
+            }
         }
 
-        renderizarTabelas();
-    }
+        /* --- CONTROLE DE MÁQUINAS MACRO E COMPONENTES --- */
+        function salvarMacroMaquina(e) {
+            e.preventDefault();
+            const input = document.getElementById("macroNome");
+            const nome = input.value.trim();
+            if (!nome) return;
 
-    // --- 1. CADASTRO PRÉVIO MACRO DE MÁQUINAS ---
-    function salvarMacroMaquina(e) {
-        e.preventDefault();
-        const nome = document.getElementById('macroNome').value.trim();
-        if (!nome) return;
-
-        const lista = JSON.parse(localStorage.getItem(STORAGE_MACRO)) || ["Lavadora Extratora 50kg", "Centrífuga Industrial", "Secador Industrial", "Calandra Industrial"];
-        if (!lista.includes(nome)) {
-            lista.push(nome);
-            localStorage.setItem(STORAGE_MACRO, JSON.stringify(lista));
+            let lista = JSON.parse(localStorage.getItem(CHAVES.MACRO_MAQUINAS) || "[]");
+            if (!lista.includes(nome)) {
+                lista.push(nome);
+                localStorage.setItem(CHAVES.MACRO_MAQUINAS, JSON.stringify(lista));
+                input.value = "";
+                carregarSelectsEPrévias();
+            }
         }
 
-        alert("Modelo macro salvo!");
-        document.getElementById('formMacroMaquinas').reset();
-        carregarMacroSelects();
-    }
+        function salvarMacroComponente(e) {
+            e.preventDefault();
+            const input = document.getElementById("compNome");
+            const nome = input.value.trim();
+            if (!nome) return;
 
-    function carregarMacroSelects() {
-        let lista = JSON.parse(localStorage.getItem(STORAGE_MACRO));
-        if (!lista || lista.length === 0) {
-            lista = ["Lavadora Extratora 50kg", "Centrífuga Industrial", "Secador Industrial", "Calandra Industrial"];
-            localStorage.setItem(STORAGE_MACRO, JSON.stringify(lista));
+            let lista = JSON.parse(localStorage.getItem(CHAVES.MACRO_COMPONENTES) || "[]");
+            if (!lista.includes(nome)) {
+                lista.push(nome);
+                localStorage.setItem(CHAVES.MACRO_COMPONENTES, JSON.stringify(lista));
+                input.value = "";
+                carregarSelectsEPrévias();
+            }
         }
 
-        const selMacro = document.getElementById('eqNomeMacro');
-        if (selMacro) {
-            selMacro.innerHTML = lista.map(item => `<option value="${item}">${item}</option>`).join('');
+        function carregarSelectsEPrévias() {
+            const macros = JSON.parse(localStorage.getItem(CHAVES.MACRO_MAQUINAS) || "[]");
+            const comps = JSON.parse(localStorage.getItem(CHAVES.MACRO_COMPONENTES) || "[]");
+
+            document.getElementById("listaMacroTags").innerHTML = macros.map(m => `<span class="bg-amber-100 text-amber-800 text-[10px] px-2 py-0.5 rounded font-bold">${m}</span>`).join('');
+            document.getElementById("listaCompTags").innerHTML = comps.map(c => `<span class="bg-purple-100 text-purple-800 text-[10px] px-2 py-0.5 rounded font-bold">${c}</span>`).join('');
+
+            const selectMacro = document.getElementById("eqNomeMacro");
+            selectMacro.innerHTML = `<option value="">Selecione...</option>` + macros.map(m => `<option value="${m}">${m}</option>`).join('');
+
+            const selectComp = document.getElementById("eqComponente");
+            selectComp.innerHTML = `<option value="">Selecione...</option>` + comps.map(c => `<option value="${c}">${c}</option>`).join('');
+
+            carregarDropdownsEquipamentos();
+            carregarDropdownsTecnicos();
         }
 
-        const tagsContainer = document.getElementById('listaMacroTags');
-        if (tagsContainer) {
-            tagsContainer.innerHTML = lista.map(item => `<span class="bg-slate-100 text-slate-700 px-2 py-0.5 rounded border text-[10px] font-semibold">${item}</span>`).join('');
-        }
-    }
+        function carregarDropdownsEquipamentos() {
+            const eqs = JSON.parse(localStorage.getItem(CHAVES.EQUIPAMENTOS) || "[]");
+            
+            const options = `<option value="">Selecione o Equipamento...</option>` + eqs.map(e => `<option value="${e.tag}">${e.tag} - ${e.nomeMacro} (${e.componente})</option>`).join('');
+            
+            document.getElementById("osEquipamento").innerHTML = options;
+            document.getElementById("lubEquipamento").innerHTML = options;
 
-    // --- 2. CADASTRO PRÉVIO DE COMPONENTES / SUB-ITENS ---
-    function salvarMacroComponente(e) {
-        e.preventDefault();
-        const nome = document.getElementById('compNome').value.trim();
-        if (!nome) return;
+            const filtroOS = document.getElementById("filtroOsEquipamento");
+            const filtroLub = document.getElementById("filtroLubEquipamento");
+            const valOS = filtroOS.value;
+            const valLub = filtroLub.value;
 
-        const lista = JSON.parse(localStorage.getItem(STORAGE_COMP_MACRO)) || ["Estrutura Geral", "Motor Elétrico", "Redutor", "Bomba", "Válvula", "Painel Elétrico", "Inversor de Frequência", "Cilindro Pneumático", "Outro"];
-        if (!lista.includes(nome)) {
-            lista.push(nome);
-            localStorage.setItem(STORAGE_COMP_MACRO, JSON.stringify(lista));
-        }
+            const optionsFiltro = `<option value="TODOS">-- Todos os Equipamentos --</option>` + eqs.map(e => `<option value="${e.tag}">${e.tag} - ${e.nomeMacro}</option>`).join('');
+            filtroOS.innerHTML = optionsFiltro;
+            filtroLub.innerHTML = optionsFiltro;
 
-        alert("Tipo de componente salvo!");
-        document.getElementById('formMacroComponentes').reset();
-        carregarMacroComponentesSelects();
-    }
+            filtroOS.value = valOS || "TODOS";
+            filtroLub.value = valLub || "TODOS";
 
-    function carregarMacroComponentesSelects() {
-        let lista = JSON.parse(localStorage.getItem(STORAGE_COMP_MACRO));
-        if (!lista || lista.length === 0) {
-            lista = ["Estrutura Geral", "Motor Elétrico", "Redutor", "Bomba", "Válvula", "Painel Elétrico", "Inversor de Frequência", "Cilindro Pneumático", "Outro"];
-            localStorage.setItem(STORAGE_COMP_MACRO, JSON.stringify(lista));
+            const selectPecaEq = document.getElementById("pecaEquipamentos");
+            selectPecaEq.innerHTML = `<option value="TODOS" selected>-- Todos / Uso Geral --</option>` + eqs.map(e => `<option value="${e.tag}">${e.tag} - ${e.nomeMacro}</option>`).join('');
         }
 
-        const selComp = document.getElementById('eqComponente');
-        if (selComp) {
-            selComp.innerHTML = lista.map(item => `<option value="${item}">${item}</option>`).join('');
+        function carregarDropdownsTecnicos() {
+            const tecs = JSON.parse(localStorage.getItem(CHAVES.TECNICOS) || "[]");
+            document.getElementById("osTecnico").innerHTML = `<option value="">Selecione o Técnico...</option>` + tecs.map(t => `<option value="${t.nome}">${t.nome} (${t.especialidade})</option>`).join('');
         }
 
-        const tagsContainer = document.getElementById('listaCompTags');
-        if (tagsContainer) {
-            tagsContainer.innerHTML = lista.map(item => `<span class="bg-purple-50 text-purple-700 border border-purple-200 px-2 py-0.5 rounded text-[10px] font-semibold">${item}</span>`).join('');
-        }
-    }
+        /* --- CRUD EQUIPAMENTOS --- */
+        function salvarEquipamento(e) {
+            e.preventDefault();
+            const id = document.getElementById("eqId").value;
+            const tag = document.getElementById("eqTag").value.toUpperCase().trim();
+            const nomeMacro = document.getElementById("eqNomeMacro").value;
+            const componente = document.getElementById("eqComponente").value;
+            const setor = document.getElementById("eqSetor").value;
+            const tensao = document.getElementById("eqTensao").value;
+            const capacidade = document.getElementById("eqCapacidade").value;
+            const horasDia = parseFloat(document.getElementById("eqHorasDia").value) || 16;
+            const observacoes = document.getElementById("eqObservacoes").value;
 
-    // --- 3. CADASTRO DE EQUIPAMENTOS / COMPONENTES DETALHADO ---
-    function salvarEquipamento(e) {
-        e.preventDefault();
-        const tag = document.getElementById('eqTag').value.trim().toUpperCase();
-        const nome = document.getElementById('eqNomeMacro').value;
-        const componente = document.getElementById('eqComponente').value;
-        const setor = document.getElementById('eqSetor').value.trim();
-        const tensao = document.getElementById('eqTensao').value;
-        const capacidade = document.getElementById('eqCapacidade').value.trim() || 'N/A';
-        const horasDia = parseFloat(document.getElementById('eqHorasDia').value) || 16;
-        const observacoes = document.getElementById('eqObservacoes').value.trim() || '-';
+            let lista = JSON.parse(localStorage.getItem(CHAVES.EQUIPAMENTOS) || "[]");
 
-        const lista = JSON.parse(localStorage.getItem(STORAGE_EQUIP)) || [];
-        lista.push({ tag, nome, componente, setor, tensao, capacidade, horasDia, observacoes });
-        localStorage.setItem(STORAGE_EQUIP, JSON.stringify(lista));
+            if (id) {
+                const idx = lista.findIndex(i => String(i.id) === String(id));
+                if (idx !== -1) {
+                    lista[idx] = { ...lista[idx], tag, nomeMacro, componente, setor, tensao, capacidade, horasDia, observacoes };
+                }
+            } else {
+                if (lista.some(item => item.tag === tag)) {
+                    alert("A TAG informada já está cadastrada para outro equipamento!");
+                    return;
+                }
+                lista.unshift({ id: Date.now().toString(), tag, nomeMacro, componente, setor, tensao, capacidade, horasDia, observacoes });
+            }
 
-        alert("Equipamento / Componente cadastrado com sucesso!");
-        document.getElementById('formEquipamento').reset();
-        carregarEquipamentosSelects();
-        renderizarTabelas();
-    }
-
-    function carregarEquipamentosSelects() {
-        const lista = JSON.parse(localStorage.getItem(STORAGE_EQUIP)) || [];
-        const optionsHtml = lista.map(e => `<option value="${e.tag}">${e.tag} - ${e.nome} (${e.componente})</option>`).join('');
-        
-        const selOs = document.getElementById('osEquipamento');
-        const selLub = document.getElementById('lubEquipamento');
-        const selFiltroOs = document.getElementById('filtroOsEquipamento');
-        const selFiltroLub = document.getElementById('filtroLubEquipamento');
-        const selPecaEq = document.getElementById('pecaEquipamentos');
-        
-        if (selOs) selOs.innerHTML = optionsHtml || '<option value="">Nenhuma máquina cadastrada</option>';
-        if (selLub) selLub.innerHTML = optionsHtml || '<option value="">Nenhuma máquina cadastrada</option>';
-        
-        if (selFiltroOs) {
-            selFiltroOs.innerHTML = '<option value="TODOS">-- Todos os Equipamentos --</option>' + optionsHtml;
-        }
-        if (selFiltroLub) {
-            selFiltroLub.innerHTML = '<option value="TODOS">-- Todos os Equipamentos --</option>' + optionsHtml;
+            localStorage.setItem(CHAVES.EQUIPAMENTOS, JSON.stringify(lista));
+            cancelarEdicaoEquipamento();
+            carregarSelectsEPrévias();
+            renderizarTabelas();
         }
 
-        if (selPecaEq) {
-            selPecaEq.innerHTML = '<option value="TODOS" selected>-- Todos / Uso Geral --</option>' + optionsHtml;
-        }
-    }
+        function editarEquipamento(id) {
+            const lista = JSON.parse(localStorage.getItem(CHAVES.EQUIPAMENTOS) || "[]");
+            const item = lista.find(i => String(i.id) === String(id));
+            if (!item) return;
 
-    function alternarDataReparo() {
-        const condicao = document.getElementById('pecaCondicao').value;
-        const elData = document.getElementById('pecaDataReparo');
-        if (condicao === 'Recondicionada') {
-            elData.disabled = false;
-            elData.className = "w-full p-2 border rounded-lg bg-slate-50 text-slate-800 font-bold";
-            elData.value = new Date().toISOString().slice(0, 10);
-        } else {
-            elData.disabled = true;
-            elData.className = "w-full p-2 border rounded-lg bg-slate-200 text-slate-500 cursor-not-allowed";
-            elData.value = "";
-        }
-    }
+            document.getElementById("eqId").value = item.id;
+            document.getElementById("eqTag").value = item.tag || "";
+            document.getElementById("eqNomeMacro").value = item.nomeMacro || "";
+            document.getElementById("eqComponente").value = item.componente || "";
+            document.getElementById("eqSetor").value = item.setor || "";
+            document.getElementById("eqTensao").value = item.tensao || "220V Tri";
+            document.getElementById("eqCapacidade").value = item.capacidade || "";
+            document.getElementById("eqHorasDia").value = item.horasDia || 16;
+            document.getElementById("eqObservacoes").value = item.observacoes || "";
 
-    // --- SALVAR ORDENS DE SERVIÇO ---
-    function salvarOS(e) {
-        e.preventDefault();
-        const tag = document.getElementById('osEquipamento').value;
-        const tipo = document.getElementById('osTipo').value;
-        const descricao = document.getElementById('osDescricao').value.trim();
-        const data = document.getElementById('osData').value;
-        const horas = parseFloat(document.getElementById('osHoras').value) || 0;
-        const tecnico = document.getElementById('osTecnico').value.trim();
-
-        if (!tag) {
-            alert("Cadastre pelo menos um equipamento antes de abrir uma O/S.");
-            return;
+            document.getElementById("eqFormTitulo").innerText = "Editar Equipamento / Componente";
+            document.getElementById("btnSalvarEq").innerText = "Atualizar Equipamento";
+            document.getElementById("btnCancelarEq").classList.remove("hidden");
         }
 
-        const lista = JSON.parse(localStorage.getItem(STORAGE_OS)) || [];
-        lista.unshift({ id: Date.now(), tag, tipo, descricao, data, horas, tecnico });
-        localStorage.setItem(STORAGE_OS, JSON.stringify(lista));
-
-        alert("Ordem de Serviço registrada!");
-        document.getElementById('formOS').reset();
-        document.getElementById('osData').value = new Date().toISOString().slice(0, 10);
-        renderizarTabelas();
-    }
-
-    // --- SALVAR PLANO DE LUBRIFICAÇÃO ---
-    function salvarLubrificacao(e) {
-        e.preventDefault();
-        const tag = document.getElementById('lubEquipamento').value;
-        const ponto = document.getElementById('lubPonto').value.trim();
-        const produto = document.getElementById('lubProduto').value.trim();
-        const freq = document.getElementById('lubFreq').value;
-        const qtd = document.getElementById('lubQtd').value.trim();
-
-        if (!tag) {
-            alert("Selecione um equipamento válido.");
-            return;
+        function excluirEquipamento(id) {
+            if (confirm("Tem certeza que deseja excluir este equipamento?")) {
+                let lista = JSON.parse(localStorage.getItem(CHAVES.EQUIPAMENTOS) || "[]");
+                lista = lista.filter(i => String(i.id) !== String(id));
+                localStorage.setItem(CHAVES.EQUIPAMENTOS, JSON.stringify(lista));
+                carregarSelectsEPrévias();
+                renderizarTabelas();
+            }
         }
 
-        const lista = JSON.parse(localStorage.getItem(STORAGE_LUB)) || [];
-        lista.push({ tag, ponto, produto, freq, qtd });
-        localStorage.setItem(STORAGE_LUB, JSON.stringify(lista));
+        function cancelarEdicaoEquipamento() {
+            document.getElementById("eqId").value = "";
+            document.getElementById("formEquipamento").reset();
+            document.getElementById("eqFormTitulo").innerText = "3. Cadastro do Ativo / Componente";
+            document.getElementById("btnSalvarEq").innerText = "Cadastrar Equipamento / Componente";
+            document.getElementById("btnCancelarEq").classList.add("hidden");
+        }
 
-        alert("Rota de lubrificação cadastrada!");
-        document.getElementById('formLubrificacao').reset();
-        renderizarTabelas();
-    }
+        /* --- CRUD TÉCNICOS --- */
+        function salvarTecnico(e) {
+            e.preventDefault();
+            const id = document.getElementById("tecId").value;
+            const nome = document.getElementById("tecNome").value.trim();
+            const especialidade = document.getElementById("tecEspecialidade").value;
+            const contato = document.getElementById("tecContato").value.trim();
 
-    // --- SALVAR PEÇAS DE REPOSIÇÃO ---
-    function salvarPeca(e) {
-        e.preventDefault();
-        const cod = document.getElementById('pecaCod').value.trim().toUpperCase();
-        const nome = document.getElementById('pecaNome').value.trim();
-        const selEq = document.getElementById('pecaEquipamentos');
-        const equipamentos = Array.from(selEq.selectedOptions).map(opt => opt.value);
-        const condicao = document.getElementById('pecaCondicao').value;
-        const dataReparo = document.getElementById('pecaDataReparo').value || '-';
-        const qtd = parseInt(document.getElementById('pecaQtd').value) || 0;
-        const min = parseInt(document.getElementById('pecaMin').value) || 1;
+            let lista = JSON.parse(localStorage.getItem(CHAVES.TECNICOS) || "[]");
 
-        const lista = JSON.parse(localStorage.getItem(STORAGE_PECAS)) || [];
-        lista.push({ cod, nome, equipamentos, condicao, dataReparo, qtd, min });
-        localStorage.setItem(STORAGE_PECAS, JSON.stringify(lista));
+            if (id) {
+                const idx = lista.findIndex(i => String(i.id) === String(id));
+                if (idx !== -1) {
+                    lista[idx] = { ...lista[idx], nome, especialidade, contato };
+                }
+            } else {
+                lista.unshift({ id: Date.now().toString(), nome, especialidade, contato });
+            }
 
-        alert("Peça adicionada ao almoxarifado!");
-        document.getElementById('formPeca').reset();
-        alternarDataReparo();
-        renderizarTabelas();
-    }
+            localStorage.setItem(CHAVES.TECNICOS, JSON.stringify(lista));
+            cancelarEdicaoTecnico();
+            carregarDropdownsTecnicos();
+            renderizarTabelas();
+        }
 
-    // --- RENDERIZAÇÃO DAS TABELAS E FILTROS ---
-    function renderizarTabelas() {
-        // TABELA EQUIPAMENTOS
-        const listaEquip = JSON.parse(localStorage.getItem(STORAGE_EQUIP)) || [];
-        const tblEq = document.getElementById('tblEquipamentos');
-        if (tblEq) {
-            tblEq.innerHTML = listaEquip.length === 0 ? 
-                '<tr><td colspan="7" class="p-3 text-center italic text-slate-400">Nenhum equipamento cadastrado.</td></tr>' :
-                listaEquip.map(e => `
-                    <tr class="border-b hover:bg-slate-50">
-                        <td class="p-2 border font-bold font-mono text-blue-600">${e.tag}</td>
-                        <td class="p-2 border font-bold text-slate-800">${e.nome}</td>
-                        <td class="p-2 border font-medium text-purple-700 bg-purple-50/40">${e.componente || 'Geral'}</td>
-                        <td class="p-2 border text-slate-600">${e.setor}</td>
-                        <td class="p-2 border font-mono text-[11px]">${e.tensao || '-'} | ${e.capacidade || '-'}</td>
-                        <td class="p-2 border text-center font-bold text-slate-600">${e.horasDia}h/dia</td>
-                        <td class="p-2 border text-slate-500 text-[11px] truncate max-w-[150px]" title="${e.observacoes || ''}">${e.observacoes || '-'}</td>
+        function editarTecnico(id) {
+            const lista = JSON.parse(localStorage.getItem(CHAVES.TECNICOS) || "[]");
+            const item = lista.find(i => String(i.id) === String(id));
+            if (!item) return;
+
+            document.getElementById("tecId").value = item.id;
+            document.getElementById("tecNome").value = item.nome || "";
+            document.getElementById("tecEspecialidade").value = item.especialidade || "Mecânico";
+            document.getElementById("tecContato").value = item.contato || "";
+
+            document.getElementById("tecFormTitulo").innerText = "Editar Técnico";
+            document.getElementById("btnSalvarTec").innerText = "Atualizar Técnico";
+            document.getElementById("btnCancelarTec").classList.remove("hidden");
+        }
+
+        function excluirTecnico(id) {
+            if (confirm("Deseja excluir este técnico?")) {
+                let lista = JSON.parse(localStorage.getItem(CHAVES.TECNICOS) || "[]");
+                lista = lista.filter(i => String(i.id) !== String(id));
+                localStorage.setItem(CHAVES.TECNICOS, JSON.stringify(lista));
+                carregarDropdownsTecnicos();
+                renderizarTabelas();
+            }
+        }
+
+        function cancelarEdicaoTecnico() {
+            document.getElementById("tecId").value = "";
+            document.getElementById("formTecnico").reset();
+            document.getElementById("tecFormTitulo").innerText = "Cadastro de Técnico / Mantenedor";
+            document.getElementById("btnSalvarTec").innerText = "Cadastrar Técnico";
+            document.getElementById("btnCancelarTec").classList.add("hidden");
+        }
+
+        /* --- CRUD ORDENS DE SERVIÇO --- */
+        function salvarOS(e) {
+            e.preventDefault();
+            const id = document.getElementById("osId").value;
+            const tagEquipamento = document.getElementById("osEquipamento").value;
+            const tipo = document.getElementById("osTipo").value;
+            const descricao = document.getElementById("osDescricao").value;
+            const data = document.getElementById("osData").value;
+            const horas = parseFloat(document.getElementById("osHoras").value) || 0;
+            const tecnico = document.getElementById("osTecnico").value;
+
+            let lista = JSON.parse(localStorage.getItem(CHAVES.OS) || "[]");
+
+            if (id) {
+                const idx = lista.findIndex(i => String(i.id) === String(id));
+                if (idx !== -1) {
+                    lista[idx] = { ...lista[idx], tagEquipamento, tipo, descricao, data, horas, tecnico };
+                }
+            } else {
+                lista.unshift({ id: Date.now().toString(), tagEquipamento, tipo, descricao, data, horas, tecnico });
+            }
+
+            localStorage.setItem(CHAVES.OS, JSON.stringify(lista));
+            cancelarEdicaoOS();
+            renderizarTabelas();
+            atualizarDashboard();
+        }
+
+        function editarOS(id) {
+            const lista = JSON.parse(localStorage.getItem(CHAVES.OS) || "[]");
+            const item = lista.find(i => String(i.id) === String(id));
+            if (!item) return;
+
+            document.getElementById("osId").value = item.id;
+            document.getElementById("osEquipamento").value = item.tagEquipamento || "";
+            document.getElementById("osTipo").value = item.tipo || "Corretiva";
+            document.getElementById("osDescricao").value = item.descricao || "";
+            document.getElementById("osData").value = item.data || "";
+            document.getElementById("osHoras").value = item.horas || 0;
+            document.getElementById("osTecnico").value = item.tecnico || "";
+
+            document.getElementById("osFormTitulo").innerText = "Editar Ordem de Serviço";
+            document.getElementById("btnSalvarOS").innerText = "Atualizar Ordem de Serviço";
+            document.getElementById("btnCancelarOS").classList.remove("hidden");
+        }
+
+        function excluirOS(id) {
+            if (confirm("Deseja remover esta Ordem de Serviço?")) {
+                let lista = JSON.parse(localStorage.getItem(CHAVES.OS) || "[]");
+                lista = lista.filter(i => String(i.id) !== String(id));
+                localStorage.setItem(CHAVES.OS, JSON.stringify(lista));
+                renderizarTabelas();
+                atualizarDashboard();
+            }
+        }
+
+        function cancelarEdicaoOS() {
+            document.getElementById("osId").value = "";
+            document.getElementById("formOS").reset();
+            document.getElementById("osFormTitulo").innerText = "Abertura / Apontamento de O/S";
+            document.getElementById("btnSalvarOS").innerText = "Registrar Ordem de Serviço";
+            document.getElementById("btnCancelarOS").classList.add("hidden");
+        }
+
+        /* --- CRUD LUBRIFICAÇÃO --- */
+        function salvarLubrificacao(e) {
+            e.preventDefault();
+            const id = document.getElementById("lubId").value;
+            const tagEquipamento = document.getElementById("lubEquipamento").value;
+            const ponto = document.getElementById("lubPonto").value;
+            const produto = document.getElementById("lubProduto").value;
+            const freq = document.getElementById("lubFreq").value;
+            const qtd = document.getElementById("lubQtd").value;
+
+            let lista = JSON.parse(localStorage.getItem(CHAVES.LUBRIFICACAO) || "[]");
+
+            if (id) {
+                const idx = lista.findIndex(i => String(i.id) === String(id));
+                if (idx !== -1) {
+                    lista[idx] = { ...lista[idx], tagEquipamento, ponto, produto, freq, qtd };
+                }
+            } else {
+                lista.unshift({ id: Date.now().toString(), tagEquipamento, ponto, produto, freq, qtd });
+            }
+
+            localStorage.setItem(CHAVES.LUBRIFICACAO, JSON.stringify(lista));
+            cancelarEdicaoLubrificacao();
+            renderizarTabelas();
+            atualizarDashboard();
+        }
+
+        function editarLubrificacao(id) {
+            const lista = JSON.parse(localStorage.getItem(CHAVES.LUBRIFICACAO) || "[]");
+            const item = lista.find(i => String(i.id) === String(id));
+            if (!item) return;
+
+            document.getElementById("lubId").value = item.id;
+            document.getElementById("lubEquipamento").value = item.tagEquipamento || "";
+            document.getElementById("lubPonto").value = item.ponto || "";
+            document.getElementById("lubProduto").value = item.produto || "";
+            document.getElementById("lubFreq").value = item.freq || "Diária";
+            document.getElementById("lubQtd").value = item.qtd || "";
+
+            document.getElementById("lubFormTitulo").innerText = "Editar Rota de Lubrificação";
+            document.getElementById("btnSalvarLub").innerText = "Atualizar Rota";
+            document.getElementById("btnCancelarLub").classList.remove("hidden");
+        }
+
+        function excluirLubrificacao(id) {
+            if (confirm("Remover este plano de lubrificação?")) {
+                let lista = JSON.parse(localStorage.getItem(CHAVES.LUBRIFICACAO) || "[]");
+                lista = lista.filter(i => String(i.id) !== String(id));
+                localStorage.setItem(CHAVES.LUBRIFICACAO, JSON.stringify(lista));
+                renderizarTabelas();
+                atualizarDashboard();
+            }
+        }
+
+        function cancelarEdicaoLubrificacao() {
+            document.getElementById("lubId").value = "";
+            document.getElementById("formLubrificacao").reset();
+            document.getElementById("lubFormTitulo").innerText = "Cadastrar Rota de Lubrificação";
+            document.getElementById("btnSalvarLub").innerText = "Adicionar ao Plano";
+            document.getElementById("btnCancelarLub").classList.add("hidden");
+        }
+
+        /* --- CRUD PEÇAS --- */
+        function alternarDataReparo() {
+            const cond = document.getElementById("pecaCondicao").value;
+            const inputData = document.getElementById("pecaDataReparo");
+            if (cond === "Recondicionada") {
+                inputData.disabled = false;
+                inputData.classList.remove("bg-slate-200", "text-slate-500", "cursor-not-allowed");
+                inputData.classList.add("bg-slate-50");
+            } else {
+                inputData.disabled = true;
+                inputData.value = "";
+                inputData.classList.add("bg-slate-200", "text-slate-500", "cursor-not-allowed");
+                inputData.classList.remove("bg-slate-50");
+            }
+        }
+
+        function salvarPeca(e) {
+            e.preventDefault();
+            const id = document.getElementById("pecaId").value;
+            const cod = document.getElementById("pecaCod").value.toUpperCase().trim();
+            const nome = document.getElementById("pecaNome").value.trim();
+            
+            const selectEqs = document.getElementById("pecaEquipamentos");
+            const eqsAplicaveis = Array.from(selectEqs.selectedOptions).map(opt => opt.value);
+
+            const condicao = document.getElementById("pecaCondicao").value;
+            const dataReparo = document.getElementById("pecaDataReparo").value;
+            const qtd = parseInt(document.getElementById("pecaQtd").value) || 0;
+            const min = parseInt(document.getElementById("pecaMin").value) || 0;
+            const local = document.getElementById("pecaLocal").value;
+
+            let lista = JSON.parse(localStorage.getItem(CHAVES.PECAS) || "[]");
+
+            if (id) {
+                const idx = lista.findIndex(i => String(i.id) === String(id));
+                if (idx !== -1) {
+                    lista[idx] = { ...lista[idx], cod, nome, eqsAplicaveis, condicao, dataReparo, qtd, min, local };
+                }
+            } else {
+                lista.unshift({ id: Date.now().toString(), cod, nome, eqsAplicaveis, condicao, dataReparo, qtd, min, local });
+            }
+
+            localStorage.setItem(CHAVES.PECAS, JSON.stringify(lista));
+            cancelarEdicaoPeca();
+            renderizarTabelas();
+        }
+
+        function editarPeca(id) {
+            const lista = JSON.parse(localStorage.getItem(CHAVES.PECAS) || "[]");
+            const item = lista.find(i => String(i.id) === String(id));
+            if (!item) return;
+
+            document.getElementById("pecaId").value = item.id;
+            document.getElementById("pecaCod").value = item.cod || "";
+            document.getElementById("pecaNome").value = item.nome || "";
+            
+            const selectEqs = document.getElementById("pecaEquipamentos");
+            const aplicacoes = item.eqsAplicaveis || ["TODOS"];
+            Array.from(selectEqs.options).forEach(opt => {
+                opt.selected = aplicacoes.includes(opt.value);
+            });
+
+            document.getElementById("pecaCondicao").value = item.condicao || "Nova";
+            alternarDataReparo();
+            document.getElementById("pecaDataReparo").value = item.dataReparo || "";
+            document.getElementById("pecaQtd").value = item.qtd || 0;
+            document.getElementById("pecaMin").value = item.min || 0;
+            document.getElementById("pecaLocal").value = item.local || "";
+
+            document.getElementById("pecaFormTitulo").innerText = "Editar Peça de Reposição";
+            document.getElementById("btnSalvarPeca").innerText = "Atualizar Peça";
+            document.getElementById("btnCancelarPeca").classList.remove("hidden");
+        }
+
+        function excluirPeca(id) {
+            if (confirm("Remover esta peça do almoxarifado?")) {
+                let lista = JSON.parse(localStorage.getItem(CHAVES.PECAS) || "[]");
+                lista = lista.filter(i => String(i.id) !== String(id));
+                localStorage.setItem(CHAVES.PECAS, JSON.stringify(lista));
+                renderizarTabelas();
+            }
+        }
+
+        function cancelarEdicaoPeca() {
+            document.getElementById("pecaId").value = "";
+            document.getElementById("formPeca").reset();
+            alternarDataReparo();
+            document.getElementById("pecaFormTitulo").innerText = "Cadastrar Peça de Reposição";
+            document.getElementById("btnSalvarPeca").innerText = "Cadastrar Peça";
+            document.getElementById("btnCancelarPeca").classList.add("hidden");
+        }
+
+        /* --- RENDERIZAÇÃO DAS TABELAS COM BOTOES DE EDICAO E EXCLUSAO --- */
+        function renderizarTabelas() {
+            // EQUIPAMENTOS
+            const eqs = JSON.parse(localStorage.getItem(CHAVES.EQUIPAMENTOS) || "[]");
+            const tbodyEq = document.getElementById("tblEquipamentos");
+            if (eqs.length === 0) {
+                tbodyEq.innerHTML = `<tr><td colspan="8" class="p-3 text-center italic text-slate-400">Nenhum equipamento cadastrado.</td></tr>`;
+            } else {
+                tbodyEq.innerHTML = eqs.map(item => `
+                    <tr class="hover:bg-slate-50 border-b">
+                        <td class="p-2 border font-mono font-bold text-blue-600">${item.tag}</td>
+                        <td class="p-2 border font-bold text-slate-800">${item.nomeMacro}</td>
+                        <td class="p-2 border text-purple-700 font-semibold">${item.componente}</td>
+                        <td class="p-2 border">${item.setor}</td>
+                        <td class="p-2 border">${item.tensao} / ${item.capacidade || '-'}</td>
+                        <td class="p-2 border text-center font-bold">${item.horasDia}h</td>
+                        <td class="p-2 border text-slate-500">${item.observacoes || '-'}</td>
+                        <td class="p-2 border text-center">
+                            <div class="flex justify-center gap-1">
+                                <button onclick="editarEquipamento('${item.id}')" title="Editar" class="p-1 text-blue-600 hover:bg-blue-50 rounded"><i class="fa-solid fa-pen-to-square"></i></button>
+                                <button onclick="excluirEquipamento('${item.id}')" title="Excluir" class="p-1 text-rose-600 hover:bg-rose-50 rounded"><i class="fa-solid fa-trash-can"></i></button>
+                            </div>
+                        </td>
                     </tr>
                 `).join('');
-        }
+            }
 
-        // TABELA ORDENS DE SERVIÇO COM FILTRO
-        let listaOS = JSON.parse(localStorage.getItem(STORAGE_OS)) || [];
-        const filtroOsTag = document.getElementById('filtroOsEquipamento') ? document.getElementById('filtroOsEquipamento').value : 'TODOS';
-        if (filtroOsTag !== 'TODOS') {
-            listaOS = listaOS.filter(o => o.tag === filtroOsTag);
-        }
-
-        const tblOS = document.getElementById('tblOS');
-        if (tblOS) {
-            tblOS.innerHTML = listaOS.length === 0 ?
-                '<tr><td colspan="5" class="p-3 text-center italic text-slate-400">Nenhuma O/S encontrada.</td></tr>' :
-                listaOS.map(o => `
-                    <tr class="border-b hover:bg-slate-50">
-                        <td class="p-2.5 border font-mono">${new Date(o.data + 'T00:00:00').toLocaleDateString('pt-BR')}</td>
-                        <td class="p-2.5 border font-bold text-blue-700">${o.tag}</td>
-                        <td class="p-2.5 border font-semibold ${o.tipo === 'Corretiva' ? 'text-rose-600' : 'text-blue-600'}">${o.tipo}</td>
-                        <td class="p-2.5 border text-slate-600">${o.descricao}</td>
-                        <td class="p-2.5 border text-right font-black text-rose-600">${o.horas.toFixed(1)} h</td>
+            // TÉCNICOS
+            const tecs = JSON.parse(localStorage.getItem(CHAVES.TECNICOS) || "[]");
+            const tbodyTec = document.getElementById("tblTecnicos");
+            if (tecs.length === 0) {
+                tbodyTec.innerHTML = `<tr><td colspan="4" class="p-3 text-center italic text-slate-400">Nenhum técnico cadastrado.</td></tr>`;
+            } else {
+                tbodyTec.innerHTML = tecs.map(item => `
+                    <tr class="hover:bg-slate-50 border-b">
+                        <td class="p-2.5 border font-bold text-slate-800">${item.nome}</td>
+                        <td class="p-2.5 border font-semibold text-indigo-700">${item.especialidade}</td>
+                        <td class="p-2.5 border text-slate-600">${item.contato || '-'}</td>
+                        <td class="p-2.5 border text-center">
+                            <div class="flex justify-center gap-1">
+                                <button onclick="editarTecnico('${item.id}')" title="Editar" class="p-1 text-blue-600 hover:bg-blue-50 rounded"><i class="fa-solid fa-pen-to-square"></i></button>
+                                <button onclick="excluirTecnico('${item.id}')" title="Excluir" class="p-1 text-rose-600 hover:bg-rose-50 rounded"><i class="fa-solid fa-trash-can"></i></button>
+                            </div>
+                        </td>
                     </tr>
                 `).join('');
-        }
+            }
 
-        // TABELA LUBRIFICAÇÃO COM FILTRO
-        let listaLub = JSON.parse(localStorage.getItem(STORAGE_LUB)) || [];
-        const filtroLubTag = document.getElementById('filtroLubEquipamento') ? document.getElementById('filtroLubEquipamento').value : 'TODOS';
-        if (filtroLubTag !== 'TODOS') {
-            listaLub = listaLub.filter(l => l.tag === filtroLubTag);
-        }
+            // ORDENS DE SERVIÇO
+            const osList = JSON.parse(localStorage.getItem(CHAVES.OS) || "[]");
+            const filtroOsVal = document.getElementById("filtroOsEquipamento").value;
+            const osFiltradas = filtroOsVal === "TODOS" ? osList : osList.filter(o => o.tagEquipamento === filtroOsVal);
+            const tbodyOS = document.getElementById("tblOS");
 
-        const tblLub = document.getElementById('tblLubrificacao');
-        const tblDashLub = document.getElementById('tblDashLubrificacao');
-        const htmlLub = listaLub.length === 0 ?
-            '<tr><td colspan="5" class="p-3 text-center italic text-slate-400">Nenhum plano de lubrificação encontrado.</td></tr>' :
-            listaLub.map(l => `
-                <tr class="border-b hover:bg-slate-50">
-                    <td class="p-2.5 border font-bold text-slate-800">${l.tag}</td>
-                    <td class="p-2.5 border text-slate-600">${l.ponto}</td>
-                    <td class="p-2.5 border font-medium text-amber-700">${l.produto}</td>
-                    <td class="p-2.5 border font-semibold">${l.freq}</td>
-                    <td class="p-2.5 border text-right">${l.qtd}</td>
-                </tr>
-            `).join('');
-
-        if (tblLub) tblLub.innerHTML = htmlLub;
-        if (tblDashLub) tblDashLub.innerHTML = htmlLub;
-
-        // TABELA PEÇAS DE REPOSIÇÃO DETALHADA
-        const listaPecas = JSON.parse(localStorage.getItem(STORAGE_PECAS)) || [];
-        const tblPecas = document.getElementById('tblPecas');
-        if (tblPecas) {
-            tblPecas.innerHTML = listaPecas.length === 0 ?
-                '<tr><td colspan="6" class="p-3 text-center italic text-slate-400">Nenhuma peça cadastrada.</td></tr>' :
-                listaPecas.map(p => {
-                    const emAlerta = p.qtd <= p.min;
-                    const aplicacao = p.equipamentos && p.equipamentos.includes('TODOS') ? 'Todas as Máquinas' : (p.equipamentos ? p.equipamentos.join(', ') : 'Geral');
-                    const infoCondicao = p.condicao === 'Recondicionada' ? `<span class="text-amber-600 font-bold">Recondicionada</span><br><span class="text-[10px] text-slate-400">Reparo: ${p.dataReparo}</span>` : '<span class="text-emerald-600 font-bold">Nova</span>';
-
+            if (osFiltradas.length === 0) {
+                tbodyOS.innerHTML = `<tr><td colspan="7" class="p-3 text-center italic text-slate-400">Nenhuma Ordem de Serviço registrada.</td></tr>`;
+            } else {
+                tbodyOS.innerHTML = osFiltradas.map(item => {
+                    const dt = item.data ? new Date(item.data + 'T00:00:00').toLocaleDateString('pt-BR') : '-';
+                    const corTipo = item.tipo === 'Corretiva' ? 'bg-rose-100 text-rose-800' : (item.tipo === 'Preventiva' ? 'bg-emerald-100 text-emerald-800' : 'bg-blue-100 text-blue-800');
                     return `
-                        <tr class="border-b hover:bg-slate-50">
-                            <td class="p-2 border font-mono font-bold text-blue-700">${p.cod}</td>
-                            <td class="p-2 border text-slate-800 font-medium">${p.nome}</td>
-                            <td class="p-2 border text-slate-600 font-mono text-[11px]">${aplicacao}</td>
-                            <td class="p-2 border text-center text-[11px]">${infoCondicao}</td>
-                            <td class="p-2 border text-right font-black ${emAlerta ? 'text-rose-600' : 'text-slate-800'}">${p.qtd}</td>
-                            <td class="p-2 border text-center">
-                                ${emAlerta ? 
-                                    '<span class="bg-rose-100 text-rose-800 text-[10px] font-bold px-2 py-0.5 rounded">Comprar</span>' : 
-                                    '<span class="bg-emerald-100 text-emerald-800 text-[10px] font-bold px-2 py-0.5 rounded">OK</span>'}
+                        <tr class="hover:bg-slate-50 border-b">
+                            <td class="p-2.5 border font-mono font-medium">${dt}</td>
+                            <td class="p-2.5 border font-bold font-mono text-blue-600">${item.tagEquipamento}</td>
+                            <td class="p-2.5 border"><span class="px-2 py-0.5 rounded text-[10px] font-bold ${corTipo}">${item.tipo}</span></td>
+                            <td class="p-2.5 border text-slate-800 font-medium">${item.descricao}</td>
+                            <td class="p-2.5 border text-slate-600">${item.tecnico}</td>
+                            <td class="p-2.5 border text-right font-bold text-slate-800">${item.horas.toFixed(1)} h</td>
+                            <td class="p-2.5 border text-center">
+                                <div class="flex justify-center gap-1">
+                                    <button onclick="editarOS('${item.id}')" title="Editar" class="p-1 text-blue-600 hover:bg-blue-50 rounded"><i class="fa-solid fa-pen-to-square"></i></button>
+                                    <button onclick="excluirOS('${item.id}')" title="Excluir" class="p-1 text-rose-600 hover:bg-rose-50 rounded"><i class="fa-solid fa-trash-can"></i></button>
+                                </div>
                             </td>
                         </tr>
                     `;
                 }).join('');
-        }
-    }
-
-    // --- CÁLCULO DE KPIS DA MANUTENÇÃO & OEE ---
-    function calcularKPIs() {
-        const listaOS = JSON.parse(localStorage.getItem(STORAGE_OS)) || [];
-        const listaEquip = JSON.parse(localStorage.getItem(STORAGE_EQUIP)) || [];
-
-        const tempoOperacaoPlanejadoPorMaquina = 30 * 16;
-        const totalMaquinas = Math.max(1, listaEquip.length);
-        const tempoPlanejadoTotal = tempoOperacaoPlanejadoPorMaquina * totalMaquinas;
-
-        const corretivas = listaOS.filter(o => o.tipo === 'Corretiva');
-        const horasParadaCorretiva = corretivas.reduce((acc, cur) => acc + cur.horas, 0);
-        const falhasContagem = Math.max(1, corretivas.length);
-
-        const tempoOperacaoReal = Math.max(0, tempoPlanejadoTotal - horasParadaCorretiva);
-
-        const disponibilidade = (tempoOperacaoReal / tempoPlanejadoTotal) * 100;
-        const mtbf = tempoOperacaoReal / falhasContagem;
-        const mttr = horasParadaCorretiva / falhasContagem;
-        const oeeEstimado = (disponibilidade / 100) * 0.90 * 0.98 * 100;
-
-        document.getElementById('kpiDisponibilidade').innerText = `${disponibilidade.toFixed(1)}%`;
-        document.getElementById('kpiMTBF').innerText = `${mtbf.toFixed(1)} h`;
-        document.getElementById('kpiMTTR').innerText = `${mttr.toFixed(1)} h`;
-        document.getElementById('kpiOEE').innerText = `${oeeEstimado.toFixed(1)}%`;
-
-        renderizarGraficoPCM(listaOS);
-    }
-
-    function renderizarGraficoPCM(listaOS) {
-        const ctx = document.getElementById('chartTiposOS');
-        if (!ctx) return;
-
-        let hCorretiva = 0, hPreventiva = 0, hPreditiva = 0;
-        listaOS.forEach(o => {
-            if (o.tipo === 'Corretiva') hCorretiva += o.horas;
-            else if (o.tipo === 'Preventiva') hPreventiva += o.horas;
-            else hPreditiva += o.horas;
-        });
-
-        if (chartOSInstance) chartOSInstance.destroy();
-
-        chartOSInstance = new Chart(ctx, {
-            type: 'doughnut',
-            data: {
-                labels: ['Corretiva (Falha)', 'Preventiva (Programada)', 'Preditiva / Inspeção'],
-                datasets: [{
-                    data: [hCorretiva, hPreventiva, hPreditiva],
-                    backgroundColor: ['#e11d48', '#2563eb', '#eab308']
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: { position: 'bottom' }
-                }
             }
-        });
-    }
+
+            // LUBRIFICAÇÃO
+            const lubList = JSON.parse(localStorage.getItem(CHAVES.LUBRIFICACAO) || "[]");
+            const filtroLubVal = document.getElementById("filtroLubEquipamento").value;
+            const lubFiltradas = filtroLubVal === "TODOS" ? lubList : lubList.filter(l => l.tagEquipamento === filtroLubVal);
+            const tbodyLub = document.getElementById("tblLubrificacao");
+
+            if (lubFiltradas.length === 0) {
+                tbodyLub.innerHTML = `<tr><td colspan="6" class="p-3 text-center italic text-slate-400">Nenhum plano de lubrificação cadastrado.</td></tr>`;
+            } else {
+                tbodyLub.innerHTML = lubFiltradas.map(item => `
+                    <tr class="hover:bg-slate-50 border-b">
+                        <td class="p-2.5 border font-mono font-bold text-blue-600">${item.tagEquipamento}</td>
+                        <td class="p-2.5 border font-semibold text-slate-800">${item.ponto}</td>
+                        <td class="p-2.5 border text-amber-700 font-bold">${item.produto}</td>
+                        <td class="p-2.5 border"><span class="bg-amber-100 text-amber-800 font-bold px-2 py-0.5 rounded text-[10px]">${item.freq}</span></td>
+                        <td class="p-2.5 border text-right font-medium">${item.qtd || '-'}</td>
+                        <td class="p-2.5 border text-center">
+                            <div class="flex justify-center gap-1">
+                                <button onclick="editarLubrificacao('${item.id}')" title="Editar" class="p-1 text-blue-600 hover:bg-blue-50 rounded"><i class="fa-solid fa-pen-to-square"></i></button>
+                                <button onclick="excluirLubrificacao('${item.id}')" title="Excluir" class="p-1 text-rose-600 hover:bg-rose-50 rounded"><i class="fa-solid fa-trash-can"></i></button>
+                            </div>
+                        </td>
+                    </tr>
+                `).join('');
+            }
+
+            // PEÇAS DE REPOSIÇÃO
+            const pecasList = JSON.parse(localStorage.getItem(CHAVES.PECAS) || "[]");
+            const tbodyPeca = document.getElementById("tblPecas");
+
+            if (pecasList.length === 0) {
+                tbodyPeca.innerHTML = `<tr><td colspan="7" class="p-3 text-center italic text-slate-400">Nenhuma peça cadastrada no almoxarifado.</td></tr>`;
+            } else {
+                tbodyPeca.innerHTML = pecasList.map(item => {
+                    const alertaEstoque = item.qtd <= item.min ? 'bg-rose-100 text-rose-800 font-bold' : 'bg-emerald-100 text-emerald-800 font-bold';
+                    const apl = item.eqsAplicaveis && item.eqsAplicaveis.length > 0 ? item.eqsAplicaveis.join(', ') : 'TODOS';
+                    const dtReparo = item.condicao === 'Recondicionada' && item.dataReparo ? ` (${new Date(item.dataReparo + 'T00:00:00').toLocaleDateString('pt-BR')})` : '';
+                    return `
+                        <tr class="hover:bg-slate-50 border-b">
+                            <td class="p-2.5 border font-mono font-bold text-slate-800">${item.cod}</td>
+                            <td class="p-2.5 border font-bold text-slate-800">${item.nome}</td>
+                            <td class="p-2.5 border text-slate-600 font-mono text-[10px]">${apl}</td>
+                            <td class="p-2.5 border"><span class="px-2 py-0.5 rounded text-[10px] font-bold ${item.condicao === 'Recondicionada' ? 'bg-purple-100 text-purple-800' : 'bg-blue-100 text-blue-800'}">${item.condicao}${dtReparo}</span></td>
+                            <td class="p-2.5 border text-center"><span class="px-2 py-0.5 rounded text-[10px] ${alertaEstoque}">${item.qtd} / min ${item.min}</span></td>
+                            <td class="p-2.5 border font-medium text-slate-600">${item.local || '-'}</td>
+                            <td class="p-2.5 border text-center">
+                                <div class="flex justify-center gap-1">
+                                    <button onclick="editarPeca('${item.id}')" title="Editar" class="p-1 text-blue-600 hover:bg-blue-50 rounded"><i class="fa-solid fa-pen-to-square"></i></button>
+                                    <button onclick="excluirPeca('${item.id}')" title="Excluir" class="p-1 text-rose-600 hover:bg-rose-50 rounded"><i class="fa-solid fa-trash-can"></i></button>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            }
+        }
+
+        /* --- DASHBOARD E MÉTRICAS --- */
+        function atualizarDashboard() {
+            const osList = JSON.parse(localStorage.getItem(CHAVES.OS) || "[]");
+            const eqs = JSON.parse(localStorage.getItem(CHAVES.EQUIPAMENTOS) || "[]");
+            const lubList = JSON.parse(localStorage.getItem(CHAVES.LUBRIFICACAO) || "[]");
+
+            const horasPlanejadasTotal = eqs.reduce((acc, cur) => acc + (parseFloat(cur.horasDia) || 16), 0) * 30; // considerando 30 dias
+            const horasParadaCorretivas = osList.filter(o => o.tipo === 'Corretiva').reduce((acc, cur) => acc + (parseFloat(cur.horas) || 0), 0);
+            const totalFalhas = osList.filter(o => o.tipo === 'Corretiva').length;
+
+            const disp = horasPlanejadasTotal > 0 ? Math.max(0, ((horasPlanejadasTotal - horasParadaCorretivas) / horasPlanejadasTotal) * 100) : 100;
+            document.getElementById("kpiDisponibilidade").innerText = `${disp.toFixed(1)}%`;
+
+            const mtbf = totalFalhas > 0 ? (horasPlanejadasTotal - horasParadaCorretivas) / totalFalhas : horasPlanejadasTotal;
+            document.getElementById("kpiMTBF").innerText = `${mtbf.toFixed(1)} h`;
+
+            const mttr = totalFalhas > 0 ? horasParadaCorretivas / totalFalhas : 0;
+            document.getElementById("kpiMTTR").innerText = `${mttr.toFixed(1)} h`;
+
+            const oeeEstimado = (disp / 100) * 0.90 * 0.98 * 100;
+            document.getElementById("kpiOEE").innerText = `${oeeEstimado.toFixed(1)}%`;
+
+            // Tabela Dash Lubrificação
+            const tbodyLubDash = document.getElementById("tblDashLubrificacao");
+            if (lubList.length === 0) {
+                tbodyLubDash.innerHTML = `<tr><td colspan="4" class="p-3 text-center italic text-slate-400">Nenhum plano cadastrado.</td></tr>`;
+            } else {
+                tbodyLubDash.innerHTML = lubList.slice(0, 5).map(l => `
+                    <tr class="hover:bg-slate-50 border-b">
+                        <td class="p-2 border font-bold text-slate-800">${l.tagEquipamento}</td>
+                        <td class="p-2 border">${l.ponto}</td>
+                        <td class="p-2 border text-amber-700 font-bold">${l.produto}</td>
+                        <td class="p-2 border text-center font-semibold">${l.freq}</td>
+                    </tr>
+                `).join('');
+            }
+
+            atualizarGrafico();
+        }
+
+        function inicializarGraficos() {
+            const ctx = document.getElementById("chartTiposOS").getContext("2d");
+            chartTiposOSInstance = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Corretiva', 'Preventiva', 'Preditiva'],
+                    datasets: [{
+                        data: [0, 0, 0],
+                        backgroundColor: ['#f43f5e', '#10b981', '#3b82f6']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom' }
+                    }
+                }
+            });
+            atualizarGrafico();
+        }
+
+        function atualizarGrafico() {
+            if (!chartTiposOSInstance) return;
+
+            const osList = JSON.parse(localStorage.getItem(CHAVES.OS) || "[]");
+            const c = osList.filter(o => o.tipo === 'Corretiva').reduce((a, b) => a + (b.horas || 0), 0);
+            const p = osList.filter(o => o.tipo === 'Preventiva').reduce((a, b) => a + (b.horas || 0), 0);
+            const pd = osList.filter(o => o.tipo === 'Preditiva').reduce((a, b) => a + (b.horas || 0), 0);
+
+            chartTiposOSInstance.data.datasets[0].data = [c, p, pd];
+            chartTiposOSInstance.update();
+        }
     </script>
 </body>
 </html>
