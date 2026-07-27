@@ -370,556 +370,546 @@
     </main>
 
     <script>
-        const MODULOS = {
-            horas: {
-                titulo: "Gestão de Horas de Produção",
-                subtitulo: "Apontamento de horas normais, horas extras, absenteísmo e produtividade.",
-                urlLancamento: "gestaodehoras.html",
-                storageKeys: ["mes_historico_horas", "historico_horas", "horas_lancamentos", "gestao_horas"],
-                unidade: "h"
-            },
-            recebimento: {
-                titulo: "Pesagem de Recebimento (Entrada)",
-                subtitulo: "Registro de entrada de roupa suja, controle de gaiolas e romaneios de entrada.",
-                urlLancamento: "pesagemrecebimento.html",
-                storageKeys: ["mes_historico_recebimento", "historico_recebimento", "pesagem_recebimento"],
-                unidade: "Kg"
-            },
-            expedicao: {
-                titulo: "Pesagem de Expedição (Saída)",
-                subtitulo: "Registro de saída de roupa limpa, expedição de gaiolas e conferência de romaneios.",
-                urlLancamento: "pesagemexpedicao.html",
-                storageKeys: ["mes_historico_expedicao", "historico_expedicao", "pesagem_expedicao"],
-                unidade: "Kg"
-            },
-            quimicos: {
-                titulo: "Produtos Químicos",
-                subtitulo: "Resumo de consumo de dosagens, estoques e custos financeiros.",
-                urlLancamento: "consumoquimicos.html",
-                storageKeys: ["mes_historico_quimicos", "historico_quimicos", "consumo_quimicos"],
-                unidade: "R$"
-            },
-            agua: {
-                titulo: "Consumo de Água",
-                subtitulo: "Acompanhamento do Balanço Hídrico (Poços vs. Equipamentos).",
-                urlLancamento: "consumoagua.html",
-                storageKeys: ["mes_historico_agua", "historico_agua", "consumo_agua"],
-                unidade: "L"
-            },
-            gas: {
-                titulo: "Consumo de Gás (Caldeira)",
-                subtitulo: "Leitura dos medidores de gás e geração de vapor.",
-                urlLancamento: "consumogas.html",
-                storageKeys: ["mes_historico_gas", "historico_gas", "consumo_gas"],
-                unidade: "m³"
-            },
-            energia: {
-                titulo: "Energia Elétrica",
-                subtitulo: "Medição do consumo e demanda da planta.",
-                urlLancamento: "consumoenergia.html",
-                storageKeys: ["mes_historico_energia", "historico_energia", "consumo_energia"],
-                unidade: "kWh"
+        
+    const MODULOS = {
+        horas: {
+            titulo: "Gestão de Horas de Produção",
+            subtitulo: "Apontamento de horas normais, horas extras, absenteísmo e produtividade.",
+            urlLancamento: "gestaodehoras.html",
+            storageKeys: ["mes_historico_horas", "historico_horas", "horas_lancamentos", "gestao_horas", "horas"],
+            unidade: "h"
+        },
+        recebimento: {
+            titulo: "Pesagem de Recebimento (Entrada)",
+            subtitulo: "Registro de entrada de roupa suja, controle de gaiolas e romaneios de entrada.",
+            urlLancamento: "pesagemrecebimento.html",
+            storageKeys: ["mes_historico_recebimento", "historico_recebimento", "pesagem_recebimento", "recebimento"],
+            unidade: "Kg"
+        },
+        expedicao: {
+            titulo: "Pesagem de Expedição (Saída)",
+            subtitulo: "Registro de saída de roupa limpa, expedição de gaiolas e conferência de romaneios.",
+            urlLancamento: "pesagemexpedicao.html",
+            storageKeys: ["mes_historico_expedicao", "historico_expedicao", "pesagem_expedicao", "expedicao"],
+            unidade: "Kg"
+        },
+        quimicos: {
+            titulo: "Produtos Químicos",
+            subtitulo: "Resumo de consumo de dosagens, estoques e custos financeiros.",
+            urlLancamento: "consumoquimicos.html",
+            storageKeys: ["mes_historico_quimicos", "historico_quimicos", "consumo_quimicos"],
+            unidade: "R$"
+        },
+        agua: {
+            titulo: "Consumo de Água",
+            subtitulo: "Acompanhamento do Balanço Hídrico (Poços vs. Equipamentos).",
+            urlLancamento: "consumoagua.html",
+            storageKeys: ["mes_historico_agua", "historico_agua", "consumo_agua"],
+            unidade: "L"
+        },
+        gas: {
+            titulo: "Consumo de Gás (Caldeira)",
+            subtitulo: "Leitura dos medidores de gás e geração de vapor.",
+            urlLancamento: "consumogas.html",
+            storageKeys: ["mes_historico_gas", "historico_gas", "consumo_gas"],
+            unidade: "m³"
+        },
+        energia: {
+            titulo: "Energia Elétrica",
+            subtitulo: "Medição do consumo e demanda da planta.",
+            urlLancamento: "consumoenergia.html",
+            storageKeys: ["mes_historico_energia", "historico_energia", "consumo_energia"],
+            unidade: "kWh"
+        }
+    };
+
+    let moduloAtual = null;
+    let chartGeralInstance = null;
+
+    function parseNumero(valor) {
+        if (valor === undefined || valor === null || valor === '') return 0;
+        if (typeof valor === 'number') return isNaN(valor) ? 0 : valor;
+        const limpo = String(valor).replace(/\./g, '').replace(',', '.').replace(/[^0-9.-]/g, '');
+        const num = parseFloat(limpo);
+        return isNaN(num) ? 0 : num;
+    }
+
+    function obterDadosLocalStorage(chaves) {
+        for (let k of chaves) {
+            const item = localStorage.getItem(k);
+            if (item) {
+                try {
+                    const parsed = JSON.parse(item);
+                    if (Array.isArray(parsed) && parsed.length > 0) {
+                        return parsed;
+                    }
+                } catch(e) {}
             }
-        };
-
-        let moduloAtual = null;
-        let chartGeralInstance = null;
-
-        function parseNumero(valor) {
-            if (valor === undefined || valor === null || valor === '') return 0;
-            if (typeof valor === 'number') return valor;
-            const limpo = String(valor).replace(/\./g, '').replace(',', '.').replace(/[^0-9.-]/g, '');
-            const num = parseFloat(limpo);
-            return isNaN(num) ? 0 : num;
         }
+        return [];
+    }
 
-        function obterDadosLocalStorage(chaves) {
-            for (let k of chaves) {
-                const item = localStorage.getItem(k);
-                if (item) {
-                    try {
-                        const parsed = JSON.parse(item);
-                        if (Array.isArray(parsed) && parsed.length > 0) {
-                            return parsed;
-                        }
-                    } catch(e) {}
-                }
-            }
-            return [];
-        }
+    function extrairValoresHoras(item) {
+        const hn = parseNumero(item.horasNormais ?? item.horas_normais ?? item.normais ?? item.horasTrabalhadas ?? item.horas ?? 0);
+        const he = parseNumero(item.horasExtras ?? item.horas_extras ?? item.extras ?? 0);
+        const abs = parseNumero(item.absenteismo ?? item.horasParada ?? item.ausencias ?? item.faltas ?? 0);
+        return { hn, he, abs, ht: hn + he };
+    }
 
-        function extrairValoresHoras(item) {
-            const hn = parseNumero(item.horasNormais || item.horas_normais || item.normais || item.horasTrabalhadas || item.horas || 0);
-            const he = parseNumero(item.horasExtras || item.horas_extras || item.extras || 0);
-            const abs = parseNumero(item.absenteismo || item.horasParada || item.ausencias || item.faltas || 0);
-            return { hn, he, abs, ht: hn + he };
-        }
+    function extrairPesoEGaiolasRecebimento(item) {
+        const peso = parseNumero(item.pesoEntrada ?? item.peso_entrada ?? item.pesoLíquido ?? item.pesoLiquido ?? item.peso ?? item.quantidade ?? 0);
+        const gaiolas = parseNumero(item.gaiolasEntrada ?? item.gaiolas_entrada ?? item.qtdGaiolas ?? item.gaiolas ?? item.gaiola ?? 0);
+        return { peso, gaiolas };
+    }
 
-        function extrairPesoEGaiolasRecebimento(item) {
-            const peso = parseNumero(item.pesoEntrada || item.peso_entrada || item.pesoLíquido || item.pesoLiquido || item.peso || item.quantidade || 0);
-            const gaiolas = parseNumero(item.gaiolasEntrada || item.gaiolas_entrada || item.qtdGaiolas || item.gaiolas || item.gaiola || 0);
-            return { peso, gaiolas };
-        }
+    function extrairPesoEGaiolasExpedicao(item) {
+        const peso = parseNumero(item.pesoSaida ?? item.peso_saida ?? item.pesoLíquido ?? item.pesoLiquido ?? item.peso ?? item.quantidade ?? 0);
+        const gaiolas = parseNumero(item.gaiolasSaida ?? item.gaiolas_saida ?? item.qtdGaiolas ?? item.gaiolas ?? item.gaiola ?? 0);
+        return { peso, gaiolas };
+    }
 
-        function extrairPesoEGaiolasExpedicao(item) {
-            const peso = parseNumero(item.pesoSaida || item.peso_saida || item.pesoLíquido || item.pesoLiquido || item.peso || item.quantidade || 0);
-            const gaiolas = parseNumero(item.gaiolasSaida || item.gaiolas_saida || item.qtdGaiolas || item.gaiolas || item.gaiola || 0);
-            return { peso, gaiolas };
-        }
+    function extrairValorGenerico(item) {
+        return parseNumero(
+            item.totalGeral ?? item.totalCaptacao ?? item.totalGas ?? item.totalEnergia ?? 
+            item.pesoEntrada ?? item.pesoSaida ?? item.peso ?? item.valor ?? item.consumo ?? item.quantidade ?? 0
+        );
+    }
 
-        function extrairValorGenerico(item) {
-            return parseNumero(
-                item.totalGeral || item.totalCaptacao || item.totalGas || item.totalEnergia || 
-                item.pesoEntrada || item.pesoSaida || item.peso || item.valor || item.consumo || item.quantidade || 0
-            );
-        }
+    document.addEventListener('DOMContentLoaded', () => {
+        carregarKPIsGerais();
+        carregarQuadrosResumo();
+        renderizarGraficoGeral();
+    });
 
-        document.addEventListener('DOMContentLoaded', () => {
-            carregarKPIsGerais();
-            carregarQuadrosResumo();
-            renderizarGraficoGeral();
+    function navegarPara(opcao) {
+        document.querySelectorAll('.menu-item').forEach(btn => {
+            btn.className = "menu-item w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition hover:bg-slate-800 hover:text-white text-slate-300";
         });
 
-        function navegarPara(opcao) {
-            document.querySelectorAll('.menu-item').forEach(btn => {
-                btn.className = "menu-item w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition hover:bg-slate-800 hover:text-white text-slate-300";
-            });
-
-            const btnAtivo = document.getElementById(`btn-${opcao}`);
-            if (btnAtivo) {
-                btnAtivo.className = "menu-item w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition bg-blue-600 text-white font-bold";
-            }
-
-            if (opcao === 'dashboard') {
-                moduloAtual = null;
-                document.getElementById('tituloPagina').innerText = "Dashboard Geral de Indicadores";
-                document.getElementById('subtituloPagina').innerText = "Resumo consolidado das operações, recebimento, expedição e utilidades.";
-                document.getElementById('acaoTopBar').innerHTML = '';
-                document.getElementById('view-dashboard').classList.remove('hidden');
-                document.getElementById('view-detalhe').classList.add('hidden');
-                carregarKPIsGerais();
-                carregarQuadrosResumo();
-            } else {
-                moduloAtual = opcao;
-                const config = MODULOS[opcao];
-                document.getElementById('tituloPagina').innerText = config.titulo;
-                document.getElementById('subtituloPagina').innerText = config.subtitulo;
-                document.getElementById('acaoTopBar').innerHTML = `
-                    <a href="${config.urlLancamento}" class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-4 py-2 rounded-xl transition flex items-center gap-2 shadow">
-                        <i class="fa-solid fa-plus"></i> Abrir Tela de Lançamento
-                    </a>
-                `;
-
-                document.getElementById('bannerTitulo').innerText = `Ir para tela de ${config.titulo}`;
-                document.getElementById('bannerDesc').innerText = `Acesse o formulário exclusivo para registrar novos lançamentos em ${config.titulo}.`;
-                document.getElementById('btnAbrirForm').href = config.urlLancamento;
-
-                carregarDetalheModulo(opcao);
-
-                document.getElementById('view-dashboard').classList.add('hidden');
-                document.getElementById('view-detalhe').classList.remove('hidden');
-            }
+        const btnAtivo = document.getElementById(`btn-${opcao}`);
+        if (btnAtivo) {
+            btnAtivo.className = "menu-item w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition bg-blue-600 text-white font-bold";
         }
 
-        function alterarFiltroDias() {
-            if (moduloAtual) {
-                carregarDetalheModulo(moduloAtual);
-            }
+        if (opcao === 'dashboard') {
+            moduloAtual = null;
+            document.getElementById('tituloPagina').innerText = "Dashboard Geral de Indicadores";
+            document.getElementById('subtituloPagina').innerText = "Resumo consolidado das operações, recebimento, expedição e utilidades.";
+            document.getElementById('acaoTopBar').innerHTML = '';
+            document.getElementById('view-dashboard').classList.remove('hidden');
+            document.getElementById('view-detalhe').classList.add('hidden');
+            carregarKPIsGerais();
+            carregarQuadrosResumo();
+        } else {
+            moduloAtual = opcao;
+            const config = MODULOS[opcao];
+            document.getElementById('tituloPagina').innerText = config.titulo;
+            document.getElementById('subtituloPagina').innerText = config.subtitulo;
+            document.getElementById('acaoTopBar').innerHTML = `
+                <a href="${config.urlLancamento}" class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-4 py-2 rounded-xl transition flex items-center gap-2 shadow">
+                    <i class="fa-solid fa-plus"></i> Abrir Tela de Lançamento
+                </a>
+            `;
+
+            document.getElementById('bannerTitulo').innerText = `Ir para tela de ${config.titulo}`;
+            document.getElementById('bannerDesc').innerText = `Acesse o formulário exclusivo para registrar novos lançamentos em ${config.titulo}.`;
+            document.getElementById('btnAbrirForm').href = config.urlLancamento;
+
+            carregarDetalheModulo(opcao);
+
+            document.getElementById('view-dashboard').classList.add('hidden');
+            document.getElementById('view-detalhe').classList.remove('hidden');
         }
+    }
 
-        function carregarDetalheModulo(moduloKey) {
-            const config = MODULOS[moduloKey];
-            const todosDados = obterDadosLocalStorage(config.storageKeys);
-            const numDias = parseInt(document.getElementById('selectDias').value) || 15;
+    function alterarFiltroDias() {
+        if (moduloAtual) {
+            carregarDetalheModulo(moduloAtual);
+        }
+    }
 
-            document.getElementById('txtInfoDias').innerText = `Exibindo lançamentos dos últimos ${numDias} dias`;
+    function carregarDetalheModulo(moduloKey) {
+        const config = MODULOS[moduloKey];
+        const todosDados = obterDadosLocalStorage(config.storageKeys);
+        const numDias = parseInt(document.getElementById('selectDias').value) || 15;
 
-            const dataLimite = new Date();
-            dataLimite.setDate(dataLimite.getDate() - numDias);
+        document.getElementById('txtInfoDias').innerText = `Exibindo lançamentos dos últimos ${numDias} dias`;
 
-            const dadosFiltrados = todosDados.filter(item => {
-                if (!item.data) return true;
-                const dataItem = new Date(item.data + 'T00:00:00');
-                return dataItem >= dataLimite;
-            });
+        const dataLimite = new Date();
+        dataLimite.setDate(dataLimite.getDate() - numDias);
 
-            const kpiContainer = document.getElementById('detalheKpis');
-            const headTab = document.getElementById('headTabelaDetalhe');
-            const bodyTab = document.getElementById('bodyTabelaDetalhe');
+        const dadosFiltrados = todosDados.filter(item => {
+            if (!item.data) return true;
+            const dataItem = new Date(item.data + 'T00:00:00');
+            return dataItem >= dataLimite;
+        });
 
-            if (moduloKey === 'horas') {
-                let totNormais = 0;
-                let totExtras = 0;
-                let totAusencias = 0;
+        const kpiContainer = document.getElementById('detalheKpis');
+        const headTab = document.getElementById('headTabelaDetalhe');
+        const bodyTab = document.getElementById('bodyTabelaDetalhe');
 
-                dadosFiltrados.forEach(d => {
-                    const h = extrairValoresHoras(d);
-                    totNormais += h.hn;
-                    totExtras += h.he;
-                    totAusencias += h.abs;
-                });
-
-                const horasTotais = totNormais + totExtras;
-                const pctHoraExtra = totNormais > 0 ? (totExtras / totNormais) * 100 : 0;
-                const pctAbsenteismo = horasTotais > 0 ? (totAusencias / horasTotais) * 100 : 0;
-
-                // CALCULO DA PRODUTIVIDADE COM DADOS DE EXPEDIÇÃO NO PERÍODO
-                const expedicoes = obterDadosLocalStorage(MODULOS.expedicao.storageKeys);
-                let pesoSaidaPeriodo = 0;
-                expedicoes.forEach(e => {
-                    if (!e.data) {
-                        pesoSaidaPeriodo += extrairPesoEGaiolasExpedicao(e).peso;
-                    } else {
-                        const dExp = new Date(e.data + 'T00:00:00');
-                        if (dExp >= dataLimite) {
-                            pesoSaidaPeriodo += extrairPesoEGaiolasExpedicao(e).peso;
-                        }
-                    }
-                });
-
-                const prodHoras = horasTotais > 0 ? (pesoSaidaPeriodo / horasTotais) : 0;
-
-                kpiContainer.innerHTML = `
-                    <div class="bg-white p-4 rounded-xl border border-slate-200 border-l-4 border-l-blue-600 shadow-sm">
-                        <span class="text-[10px] font-bold text-slate-500 uppercase">Horas Normais</span>
-                        <p class="text-xl font-black text-slate-800 mt-1">${totNormais.toFixed(1)} h</p>
-                        <span class="text-[10px] text-slate-400">Total trabalhado regular</span>
-                    </div>
-
-                    <div class="bg-white p-4 rounded-xl border border-slate-200 border-l-4 border-l-amber-500 shadow-sm">
-                        <span class="text-[10px] font-bold text-slate-500 uppercase">Horas Extras</span>
-                        <p class="text-xl font-black text-amber-600 mt-1">${totExtras.toFixed(1)} h</p>
-                        <span class="text-[10px] text-slate-400">Total de suplementares</span>
-                    </div>
-
-                    <div class="bg-white p-4 rounded-xl border border-slate-200 border-l-4 border-l-purple-600 shadow-sm">
-                        <span class="text-[10px] font-bold text-slate-500 uppercase">Horas Totais de Produção</span>
-                        <p class="text-xl font-black text-purple-700 mt-1">${horasTotais.toFixed(1)} h</p>
-                        <span class="text-[10px] text-slate-400">Normais + Extras</span>
-                    </div>
-
-                    <div class="bg-white p-4 rounded-xl border border-slate-200 border-l-4 border-l-violet-600 shadow-sm">
-                        <span class="text-[10px] font-bold text-slate-500 uppercase">Produtividade no Período</span>
-                        <p class="text-xl font-black text-violet-700 mt-1">${prodHoras.toFixed(1)} Kg/h</p>
-                        <span class="text-[10px] text-slate-400">(Peso Saída / Horas Totais)</span>
-                    </div>
-
-                    <div class="bg-white p-4 rounded-xl border border-slate-200 border-l-4 border-l-rose-500 shadow-sm">
-                        <span class="text-[10px] font-bold text-slate-500 uppercase">Absenteísmo (h)</span>
-                        <p class="text-xl font-black text-rose-600 mt-1">${totAusencias.toFixed(1)} h</p>
-                        <span class="text-[10px] text-slate-400">Faltas e ausências</span>
-                    </div>
-
-                    <div class="bg-white p-4 rounded-xl border border-slate-200 border-l-4 border-l-indigo-500 shadow-sm">
-                        <span class="text-[10px] font-bold text-slate-500 uppercase">Hora Extra (%)</span>
-                        <p class="text-xl font-black text-indigo-600 mt-1">${pctHoraExtra.toFixed(1)} %</p>
-                        <span class="text-[10px] text-slate-400">(Extras / Normais)</span>
-                    </div>
-                `;
-
-                headTab.innerHTML = `
-                    <tr>
-                        <th class="p-2.5 border">Data</th>
-                        <th class="p-2.5 border">Setor / Operador</th>
-                        <th class="p-2.5 border text-right">Horas Normais</th>
-                        <th class="p-2.5 border text-right">Horas Extras</th>
-                        <th class="p-2.5 border text-right">Horas Totais</th>
-                        <th class="p-2.5 border text-right">Absenteísmo</th>
-                    </tr>
-                `;
-
-                if (dadosFiltrados.length === 0) {
-                    bodyTab.innerHTML = `<tr><td colspan="6" class="p-4 text-center italic text-slate-400">Nenhum lançamento de horas nos últimos ${numDias} dias.</td></tr>`;
-                } else {
-                    bodyTab.innerHTML = dadosFiltrados.slice().reverse().map(d => {
-                        const h = extrairValoresHoras(d);
-                        const dataFmt = d.data ? new Date(d.data + 'T00:00:00').toLocaleDateString('pt-BR') : '-';
-
-                        return `
-                            <tr class="hover:bg-slate-50 border-b">
-                                <td class="p-2.5 border font-medium">${dataFmt}</td>
-                                <td class="p-2.5 border text-slate-600">${d.setor || 'Geral'} / ${d.operador || d.funcionario || '-'}</td>
-                                <td class="p-2.5 border text-right font-bold text-slate-800">${h.hn.toFixed(1)} h</td>
-                                <td class="p-2.5 border text-right font-bold text-amber-600">${h.he.toFixed(1)} h</td>
-                                <td class="p-2.5 border text-right font-bold text-purple-700">${h.ht.toFixed(1)} h</td>
-                                <td class="p-2.5 border text-right font-bold text-rose-600">${h.abs.toFixed(1)} h</td>
-                            </tr>
-                        `;
-                    }).join('');
-                }
-                return;
-            }
-
-            let somaValor = 0;
-            let maiorValor = 0;
+        if (moduloKey === 'horas') {
+            let totNormais = 0;
+            let totExtras = 0;
+            let totAusencias = 0;
 
             dadosFiltrados.forEach(d => {
-                let v = extrairValorGenerico(d);
-                somaValor += v;
-                if (v > maiorValor) maiorValor = v;
+                const h = extrairValoresHoras(d);
+                totNormais += h.hn;
+                totExtras += h.he;
+                totAusencias += h.abs;
             });
 
-            const mediaDiaria = numDias > 0 ? (somaValor / numDias) : 0;
+            const horasTotais = totNormais + totExtras;
+            const pctHoraExtra = totNormais > 0 ? (totExtras / totNormais) * 100 : 0;
 
-            let strSoma = `${somaValor.toLocaleString('pt-BR', {minimumFractionDigits: 1})} ${config.unidade}`;
-            let strMedia = `${mediaDiaria.toLocaleString('pt-BR', {minimumFractionDigits: 1})} ${config.unidade}/dia`;
-            let strMaior = `${maiorValor.toLocaleString('pt-BR', {minimumFractionDigits: 1})} ${config.unidade}`;
+            const expedicoes = obterDadosLocalStorage(MODULOS.expedicao.storageKeys);
+            let pesoSaidaPeriodo = 0;
+            expedicoes.forEach(e => {
+                if (!e.data) {
+                    pesoSaidaPeriodo += extrairPesoEGaiolasExpedicao(e).peso;
+                } else {
+                    const dExp = new Date(e.data + 'T00:00:00');
+                    if (dExp >= dataLimite) {
+                        pesoSaidaPeriodo += extrairPesoEGaiolasExpedicao(e).peso;
+                    }
+                }
+            });
 
-            if (config.unidade === 'R$') {
-                strSoma = `R$ ${somaValor.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
-                strMedia = `R$ ${mediaDiaria.toLocaleString('pt-BR', {minimumFractionDigits: 2})}/dia`;
-                strMaior = `R$ ${maiorValor.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
-            }
+            const prodHoras = horasTotais > 0 ? (pesoSaidaPeriodo / horasTotais) : 0;
 
             kpiContainer.innerHTML = `
                 <div class="bg-white p-4 rounded-xl border border-slate-200 border-l-4 border-l-blue-600 shadow-sm">
-                    <span class="text-[10px] font-bold text-slate-500 uppercase">Acumulado (${numDias} dias)</span>
-                    <p class="text-lg font-black text-slate-800 mt-1">${strSoma}</p>
-                    <span class="text-[10px] text-slate-400">Total acumulado no período</span>
+                    <span class="text-[10px] font-bold text-slate-500 uppercase">Horas Normais</span>
+                    <p class="text-xl font-black text-slate-800 mt-1">${totNormais.toFixed(1)} h</p>
+                    <span class="text-[10px] text-slate-400">Total trabalhado regular</span>
                 </div>
-                <div class="bg-white p-4 rounded-xl border border-slate-200 border-l-4 border-l-emerald-600 shadow-sm">
-                    <span class="text-[10px] font-bold text-slate-500 uppercase">Média Diária</span>
-                    <p class="text-lg font-black text-slate-800 mt-1">${strMedia}</p>
-                    <span class="text-[10px] text-slate-400">Consumo/Produção diária</span>
-                </div>
+
                 <div class="bg-white p-4 rounded-xl border border-slate-200 border-l-4 border-l-amber-500 shadow-sm">
-                    <span class="text-[10px] font-bold text-slate-500 uppercase">Maior Lançamento</span>
-                    <p class="text-lg font-black text-slate-800 mt-1">${strMaior}</p>
-                    <span class="text-[10px] text-slate-400">Pico máximo registrado</span>
+                    <span class="text-[10px] font-bold text-slate-500 uppercase">Horas Extras</span>
+                    <p class="text-xl font-black text-amber-600 mt-1">${totExtras.toFixed(1)} h</p>
+                    <span class="text-[10px] text-slate-400">Total de suplementares</span>
+                </div>
+
+                <div class="bg-white p-4 rounded-xl border border-slate-200 border-l-4 border-l-purple-600 shadow-sm">
+                    <span class="text-[10px] font-bold text-slate-500 uppercase">Horas Totais de Produção</span>
+                    <p class="text-xl font-black text-purple-700 mt-1">${horasTotais.toFixed(1)} h</p>
+                    <span class="text-[10px] text-slate-400">Normais + Extras</span>
+                </div>
+
+                <div class="bg-white p-4 rounded-xl border border-slate-200 border-l-4 border-l-violet-600 shadow-sm">
+                    <span class="text-[10px] font-bold text-slate-500 uppercase">Produtividade no Período</span>
+                    <p class="text-xl font-black text-violet-700 mt-1">${prodHoras.toFixed(1)} Kg/h</p>
+                    <span class="text-[10px] text-slate-400">(Peso Saída / Horas Totais)</span>
+                </div>
+
+                <div class="bg-white p-4 rounded-xl border border-slate-200 border-l-4 border-l-rose-500 shadow-sm">
+                    <span class="text-[10px] font-bold text-slate-500 uppercase">Absenteísmo (h)</span>
+                    <p class="text-xl font-black text-rose-600 mt-1">${totAusencias.toFixed(1)} h</p>
+                    <span class="text-[10px] text-slate-400">Faltas e ausências</span>
+                </div>
+
+                <div class="bg-white p-4 rounded-xl border border-slate-200 border-l-4 border-l-indigo-500 shadow-sm">
+                    <span class="text-[10px] font-bold text-slate-500 uppercase">Hora Extra (%)</span>
+                    <p class="text-xl font-black text-indigo-600 mt-1">${pctHoraExtra.toFixed(1)} %</p>
+                    <span class="text-[10px] text-slate-400">(Extras / Normais)</span>
                 </div>
             `;
 
             headTab.innerHTML = `
                 <tr>
                     <th class="p-2.5 border">Data</th>
-                    <th class="p-2.5 border">Descrição / Origem / Setor</th>
-                    <th class="p-2.5 border text-right">Valor Registrado</th>
-                    <th class="p-2.5 border text-center">Status</th>
+                    <th class="p-2.5 border">Setor / Operador</th>
+                    <th class="p-2.5 border text-right">Horas Normais</th>
+                    <th class="p-2.5 border text-right">Horas Extras</th>
+                    <th class="p-2.5 border text-right">Horas Totais</th>
+                    <th class="p-2.5 border text-right">Absenteísmo</th>
                 </tr>
             `;
 
             if (dadosFiltrados.length === 0) {
-                bodyTab.innerHTML = `<tr><td colspan="4" class="p-4 text-center italic text-slate-400">Nenhum lançamento nos últimos ${numDias} dias.</td></tr>`;
+                bodyTab.innerHTML = `<tr><td colspan="6" class="p-4 text-center italic text-slate-400">Nenhum lançamento de horas nos últimos ${numDias} dias.</td></tr>`;
             } else {
                 bodyTab.innerHTML = dadosFiltrados.slice().reverse().map(d => {
-                    let desc = d.cliente || d.setor || d.operador || 'Registro Operacional';
-                    let v = extrairValorGenerico(d);
-                    let valFormated = config.unidade === 'R$' ? `R$ ${v.toFixed(2)}` : `${v.toLocaleString('pt-BR')} ${config.unidade}`;
-                    let dataFmt = d.data ? new Date(d.data + 'T00:00:00').toLocaleDateString('pt-BR') : '-';
+                    const h = extrairValoresHoras(d);
+                    const dataFmt = d.data ? new Date(d.data + 'T00:00:00').toLocaleDateString('pt-BR') : '-';
 
                     return `
                         <tr class="hover:bg-slate-50 border-b">
                             <td class="p-2.5 border font-medium">${dataFmt}</td>
-                            <td class="p-2.5 border text-slate-600">${desc}</td>
-                            <td class="p-2.5 border text-right font-bold text-slate-800">${valFormated}</td>
-                            <td class="p-2.5 border text-center text-emerald-600 font-bold"><i class="fa-solid fa-check-circle"></i> Concluído</td>
+                            <td class="p-2.5 border text-slate-600">${d.setor || 'Geral'} / ${d.operador || d.funcionario || '-'}</td>
+                            <td class="p-2.5 border text-right font-bold text-slate-800">${h.hn.toFixed(1)} h</td>
+                            <td class="p-2.5 border text-right font-bold text-amber-600">${h.he.toFixed(1)} h</td>
+                            <td class="p-2.5 border text-right font-bold text-purple-700">${h.ht.toFixed(1)} h</td>
+                            <td class="p-2.5 border text-right font-bold text-rose-600">${h.abs.toFixed(1)} h</td>
                         </tr>
                     `;
                 }).join('');
             }
+            return;
         }
 
-        function carregarKPIsGerais() {
-            const horas = obterDadosLocalStorage(MODULOS.horas.storageKeys);
-            const recebimentos = obterDadosLocalStorage(MODULOS.recebimento.storageKeys);
-            const expedicoes = obterDadosLocalStorage(MODULOS.expedicao.storageKeys);
-            const quimicos = obterDadosLocalStorage(MODULOS.quimicos.storageKeys);
-            const agua = obterDadosLocalStorage(MODULOS.agua.storageKeys);
-            const gas = obterDadosLocalStorage(MODULOS.gas.storageKeys);
-            const energia = obterDadosLocalStorage(MODULOS.energia.storageKeys);
+        let somaValor = 0;
+        let maiorValor = 0;
 
-            // HORAS
-            let totHN = 0, totHE = 0;
-            horas.forEach(h => {
+        dadosFiltrados.forEach(d => {
+            let v = extrairValorGenerico(d);
+            somaValor += v;
+            if (v > maiorValor) maiorValor = v;
+        });
+
+        const mediaDiaria = numDias > 0 ? (somaValor / numDias) : 0;
+
+        let strSoma = `${somaValor.toLocaleString('pt-BR', {minimumFractionDigits: 1})} ${config.unidade}`;
+        let strMedia = `${mediaDiaria.toLocaleString('pt-BR', {minimumFractionDigits: 1})} ${config.unidade}/dia`;
+        let strMaior = `${maiorValor.toLocaleString('pt-BR', {minimumFractionDigits: 1})} ${config.unidade}`;
+
+        if (config.unidade === 'R$') {
+            strSoma = `R$ ${somaValor.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
+            strMedia = `R$ ${mediaDiaria.toLocaleString('pt-BR', {minimumFractionDigits: 2})}/dia`;
+            strMaior = `R$ ${maiorValor.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
+        }
+
+        kpiContainer.innerHTML = `
+            <div class="bg-white p-4 rounded-xl border border-slate-200 border-l-4 border-l-blue-600 shadow-sm">
+                <span class="text-[10px] font-bold text-slate-500 uppercase">Acumulado (${numDias} dias)</span>
+                <p class="text-lg font-black text-slate-800 mt-1">${strSoma}</p>
+                <span class="text-[10px] text-slate-400">Total acumulado no período</span>
+            </div>
+            <div class="bg-white p-4 rounded-xl border border-slate-200 border-l-4 border-l-emerald-600 shadow-sm">
+                <span class="text-[10px] font-bold text-slate-500 uppercase">Média Diária</span>
+                <p class="text-lg font-black text-slate-800 mt-1">${strMedia}</p>
+                <span class="text-[10px] text-slate-400">Consumo/Produção diária</span>
+            </div>
+            <div class="bg-white p-4 rounded-xl border border-slate-200 border-l-4 border-l-amber-500 shadow-sm">
+                <span class="text-[10px] font-bold text-slate-500 uppercase">Maior Lançamento</span>
+                <p class="text-lg font-black text-slate-800 mt-1">${strMaior}</p>
+                <span class="text-[10px] text-slate-400">Pico máximo registrado</span>
+            </div>
+        `;
+
+        headTab.innerHTML = `
+            <tr>
+                <th class="p-2.5 border">Data</th>
+                <th class="p-2.5 border">Descrição / Origem / Setor</th>
+                <th class="p-2.5 border text-right">Valor Registrado</th>
+                <th class="p-2.5 border text-center">Status</th>
+            </tr>
+        `;
+
+        if (dadosFiltrados.length === 0) {
+            bodyTab.innerHTML = `<tr><td colspan="4" class="p-4 text-center italic text-slate-400">Nenhum lançamento nos últimos ${numDias} dias.</td></tr>`;
+        } else {
+            bodyTab.innerHTML = dadosFiltrados.slice().reverse().map(d => {
+                let desc = d.cliente || d.setor || d.operador || 'Registro Operacional';
+                let v = extrairValorGenerico(d);
+                let valFormated = config.unidade === 'R$' ? `R$ ${v.toFixed(2)}` : `${v.toLocaleString('pt-BR')} ${config.unidade}`;
+                let dataFmt = d.data ? new Date(d.data + 'T00:00:00').toLocaleDateString('pt-BR') : '-';
+
+                return `
+                    <tr class="hover:bg-slate-50 border-b">
+                        <td class="p-2.5 border font-medium">${dataFmt}</td>
+                        <td class="p-2.5 border text-slate-600">${desc}</td>
+                        <td class="p-2.5 border text-right font-bold text-slate-800">${valFormated}</td>
+                        <td class="p-2.5 border text-center text-emerald-600 font-bold"><i class="fa-solid fa-check-circle"></i> Concluído</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+    }
+
+    function carregarKPIsGerais() {
+        const horas = obterDadosLocalStorage(MODULOS.horas.storageKeys);
+        const recebimentos = obterDadosLocalStorage(MODULOS.recebimento.storageKeys);
+        const expedicoes = obterDadosLocalStorage(MODULOS.expedicao.storageKeys);
+        const quimicos = obterDadosLocalStorage(MODULOS.quimicos.storageKeys);
+        const agua = obterDadosLocalStorage(MODULOS.agua.storageKeys);
+        const gas = obterDadosLocalStorage(MODULOS.gas.storageKeys);
+        const energia = obterDadosLocalStorage(MODULOS.energia.storageKeys);
+
+        let totHN = 0, totHE = 0;
+        horas.forEach(h => {
+            const vals = extrairValoresHoras(h);
+            totHN += vals.hn;
+            totHE += vals.he;
+        });
+        const totHorasTotais = totHN + totHE;
+        document.getElementById('dashKpiHoras').innerText = `${totHorasTotais.toFixed(1)} h`;
+
+        let pesoEntrada = 0, gaiolasEntrada = 0;
+        recebimentos.forEach(r => {
+            const dadosR = extrairPesoEGaiolasRecebimento(r);
+            pesoEntrada += dadosR.peso;
+            gaiolasEntrada += dadosR.gaiolas;
+        });
+
+        let pesoSaida = 0, gaiolasSaida = 0;
+        expedicoes.forEach(e => {
+            const dadosE = extrairPesoEGaiolasExpedicao(e);
+            pesoSaida += dadosE.peso;
+            gaiolasSaida += dadosE.gaiolas;
+        });
+
+        const pctRetorno = pesoEntrada > 0 ? (pesoSaida / pesoEntrada) * 100 : 0;
+        const produtividade = totHorasTotais > 0 ? (pesoSaida / totHorasTotais) : 0;
+
+        document.getElementById('dashKpiPesoEntrada').innerText = `${pesoEntrada.toLocaleString('pt-BR', {minimumFractionDigits: 1})} Kg`;
+        document.getElementById('dashKpiGaiolasEntrada').innerText = `${gaiolasEntrada} und`;
+        document.getElementById('dashKpiPesoSaida').innerText = `${pesoSaida.toLocaleString('pt-BR', {minimumFractionDigits: 1})} Kg`;
+        document.getElementById('dashKpiGaiolasSaida').innerText = `${gaiolasSaida} und`;
+        document.getElementById('dashKpiRetorno').innerText = `${pctRetorno.toFixed(1)} %`;
+        document.getElementById('dashKpiProdutividade').innerText = `${produtividade.toLocaleString('pt-BR', {minimumFractionDigits: 1, maximumFractionDigits: 1})} Kg/h`;
+
+        const totQuim = quimicos.reduce((a, b) => a + extrairValorGenerico(b), 0);
+        const totAgua = agua.reduce((a, b) => a + extrairValorGenerico(b), 0);
+        const totGas = gas.reduce((a, b) => a + extrairValorGenerico(b), 0);
+        const totEnergia = energia.reduce((a, b) => a + extrairValorGenerico(b), 0);
+
+        document.getElementById('dashKpiQuimicos').innerText = `R$ ${totQuim.toFixed(2).replace('.', ',')}`;
+        document.getElementById('dashKpiAgua').innerText = `${totAgua.toLocaleString('pt-BR')} L`;
+        document.getElementById('dashKpiGas').innerText = `${totGas.toLocaleString('pt-BR')} m³`;
+        document.getElementById('dashKpiEnergia').innerText = `${totEnergia.toLocaleString('pt-BR')} kWh`;
+
+        const quimicosProp = pesoSaida > 0 ? (totQuim / pesoSaida) : 0;
+        const aguaProp = pesoSaida > 0 ? (totAgua / pesoSaida) : 0;
+        const gasProp = pesoSaida > 0 ? (totGas / pesoSaida) : 0;
+        const energiaProp = pesoSaida > 0 ? (totEnergia / pesoSaida) : 0;
+
+        document.getElementById('dashKpiQuimicosProp').innerText = `R$ ${quimicosProp.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})} / Kg`;
+        document.getElementById('dashKpiAguaProp').innerText = `${aguaProp.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})} L / Kg`;
+        document.getElementById('dashKpiGasProp').innerText = `${gasProp.toLocaleString('pt-BR', {minimumFractionDigits: 3, maximumFractionDigits: 3})} m³ / Kg`;
+        document.getElementById('dashKpiEnergiaProp').innerText = `${energiaProp.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})} kWh / Kg`;
+    }
+
+    function carregarQuadrosResumo() {
+        const recebimentos = obterDadosLocalStorage(MODULOS.recebimento.storageKeys);
+        const qRec = document.getElementById('quadroResumoRecebimento');
+        if (recebimentos.length === 0) {
+            qRec.innerHTML = `<tr><td colspan="4" class="p-3 text-center italic text-slate-400">Nenhum registro.</td></tr>`;
+        } else {
+            qRec.innerHTML = recebimentos.slice(-4).reverse().map(r => {
+                const dR = extrairPesoEGaiolasRecebimento(r);
+                return `
+                    <tr class="hover:bg-slate-50 border-b">
+                        <td class="p-2 border font-medium">${r.data ? new Date(r.data + 'T00:00:00').toLocaleDateString('pt-BR') : '-'}</td>
+                        <td class="p-2 border text-slate-600">${r.cliente || 'Interno'}</td>
+                        <td class="p-2 border text-right font-bold text-blue-700">${dR.peso.toFixed(1)} Kg</td>
+                        <td class="p-2 border text-center">${dR.gaiolas} und</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        const expedicoes = obterDadosLocalStorage(MODULOS.expedicao.storageKeys);
+        const qExp = document.getElementById('quadroResumoExpedicao');
+        if (expedicoes.length === 0) {
+            qExp.innerHTML = `<tr><td colspan="4" class="p-3 text-center italic text-slate-400">Nenhum registro.</td></tr>`;
+        } else {
+            qExp.innerHTML = expedicoes.slice(-4).reverse().map(e => {
+                const dE = extrairPesoEGaiolasExpedicao(e);
+                return `
+                    <tr class="hover:bg-slate-50 border-b">
+                        <td class="p-2 border font-medium">${e.data ? new Date(e.data + 'T00:00:00').toLocaleDateString('pt-BR') : '-'}</td>
+                        <td class="p-2 border text-slate-600">${e.cliente || 'Cliente Geral'}</td>
+                        <td class="p-2 border text-right font-bold text-emerald-700">${dE.peso.toFixed(1)} Kg</td>
+                        <td class="p-2 border text-center">${dE.gaiolas} und</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        const horas = obterDadosLocalStorage(MODULOS.horas.storageKeys);
+        const qHoras = document.getElementById('quadroResumoHoras');
+        if (horas.length === 0) {
+            qHoras.innerHTML = `<tr><td colspan="5" class="p-3 text-center italic text-slate-400">Nenhum registro.</td></tr>`;
+        } else {
+            qHoras.innerHTML = horas.slice(-4).reverse().map(h => {
                 const vals = extrairValoresHoras(h);
-                totHN += vals.hn;
-                totHE += vals.he;
-            });
-            const totHorasTotais = totHN + totHE;
-            document.getElementById('dashKpiHoras').innerText = `${totHorasTotais.toFixed(1)} h`;
-
-            // RECEBIMENTO (PESO E GAIOLAS)
-            let pesoEntrada = 0, gaiolasEntrada = 0;
-            recebimentos.forEach(r => {
-                const dadosR = extrairPesoEGaiolasRecebimento(r);
-                pesoEntrada += dadosR.peso;
-                gaiolasEntrada += dadosR.gaiolas;
-            });
-
-            // EXPEDIÇÃO (PESO E GAIOLAS)
-            let pesoSaida = 0, gaiolasSaida = 0;
-            expedicoes.forEach(e => {
-                const dadosE = extrairPesoEGaiolasExpedicao(e);
-                pesoSaida += dadosE.peso;
-                gaiolasSaida += dadosE.gaiolas;
-            });
-
-            // CALCULO DO RENDIMENTO (%) E PRODUTIVIDADE (Kg/h)
-            const pctRetorno = pesoEntrada > 0 ? (pesoSaida / pesoEntrada) * 100 : 0;
-            const produtividade = totHorasTotais > 0 ? (pesoSaida / totHorasTotais) : 0;
-
-            document.getElementById('dashKpiPesoEntrada').innerText = `${pesoEntrada.toLocaleString('pt-BR', {minimumFractionDigits: 1})} Kg`;
-            document.getElementById('dashKpiGaiolasEntrada').innerText = `${gaiolasEntrada} und`;
-            document.getElementById('dashKpiPesoSaida').innerText = `${pesoSaida.toLocaleString('pt-BR', {minimumFractionDigits: 1})} Kg`;
-            document.getElementById('dashKpiGaiolasSaida').innerText = `${gaiolasSaida} und`;
-            document.getElementById('dashKpiRetorno').innerText = `${pctRetorno.toFixed(1)} %`;
-            document.getElementById('dashKpiProdutividade').innerText = `${produtividade.toLocaleString('pt-BR', {minimumFractionDigits: 1, maximumFractionDigits: 1})} Kg/h`;
-
-            // CONSUMOS TOTAIS
-            const totQuim = quimicos.reduce((a, b) => a + extrairValorGenerico(b), 0);
-            const totAgua = agua.reduce((a, b) => a + extrairValorGenerico(b), 0);
-            const totGas = gas.reduce((a, b) => a + extrairValorGenerico(b), 0);
-            const totEnergia = energia.reduce((a, b) => a + extrairValorGenerico(b), 0);
-
-            document.getElementById('dashKpiQuimicos').innerText = `R$ ${totQuim.toFixed(2).replace('.', ',')}`;
-            document.getElementById('dashKpiAgua').innerText = `${totAgua.toLocaleString('pt-BR')} L`;
-            document.getElementById('dashKpiGas').innerText = `${totGas.toLocaleString('pt-BR')} m³`;
-            document.getElementById('dashKpiEnergia').innerText = `${totEnergia.toLocaleString('pt-BR')} kWh`;
-
-            // PROPORCIONALIDADE (CONSUMO / PESO SAÍDA)
-            const quimicosProp = pesoSaida > 0 ? (totQuim / pesoSaida) : 0;
-            const aguaProp = pesoSaida > 0 ? (totAgua / pesoSaida) : 0;
-            const gasProp = pesoSaida > 0 ? (totGas / pesoSaida) : 0;
-            const energiaProp = pesoSaida > 0 ? (totEnergia / pesoSaida) : 0;
-
-            document.getElementById('dashKpiQuimicosProp').innerText = `R$ ${quimicosProp.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})} / Kg`;
-            document.getElementById('dashKpiAguaProp').innerText = `${aguaProp.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})} L / Kg`;
-            document.getElementById('dashKpiGasProp').innerText = `${gasProp.toLocaleString('pt-BR', {minimumFractionDigits: 3, maximumFractionDigits: 3})} m³ / Kg`;
-            document.getElementById('dashKpiEnergiaProp').innerText = `${energiaProp.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})} kWh / Kg`;
+                return `
+                    <tr class="hover:bg-slate-50 border-b">
+                        <td class="p-2 border font-medium">${h.data ? new Date(h.data + 'T00:00:00').toLocaleDateString('pt-BR') : '-'}</td>
+                        <td class="p-2 border">${h.setor || 'Geral'} / ${h.operador || h.funcionario || '-'}</td>
+                        <td class="p-2 border text-right font-bold text-slate-800">${vals.hn.toFixed(1)} h</td>
+                        <td class="p-2 border text-right font-bold text-amber-600">${vals.he.toFixed(1)} h</td>
+                        <td class="p-2 border text-right font-bold text-rose-600">${vals.abs.toFixed(1)} h</td>
+                    </tr>
+                `;
+            }).join('');
         }
 
-        function carregarQuadrosResumo() {
-            // QUADRO RECEBIMENTO
-            const recebimentos = obterDadosLocalStorage(MODULOS.recebimento.storageKeys);
-            const qRec = document.getElementById('quadroResumoRecebimento');
-            if (recebimentos.length === 0) {
-                qRec.innerHTML = `<tr><td colspan="4" class="p-3 text-center italic text-slate-400">Nenhum registro.</td></tr>`;
-            } else {
-                qRec.innerHTML = recebimentos.slice(-4).reverse().map(r => {
-                    const dR = extrairPesoEGaiolasRecebimento(r);
-                    return `
-                        <tr class="hover:bg-slate-50 border-b">
-                            <td class="p-2 border font-medium">${r.data ? new Date(r.data + 'T00:00:00').toLocaleDateString('pt-BR') : '-'}</td>
-                            <td class="p-2 border text-slate-600">${r.cliente || 'Interno'}</td>
-                            <td class="p-2 border text-right font-bold text-blue-700">${dR.peso.toFixed(1)} Kg</td>
-                            <td class="p-2 border text-center">${dR.gaiolas} und</td>
-                        </tr>
-                    `;
-                }).join('');
-            }
+        const agua = obterDadosLocalStorage(MODULOS.agua.storageKeys);
+        const gas = obterDadosLocalStorage(MODULOS.gas.storageKeys);
+        const energia = obterDadosLocalStorage(MODULOS.energia.storageKeys);
+        const qUtilidades = document.getElementById('quadroResumoUtilidades');
 
-            // QUADRO EXPEDIÇÃO
-            const expedicoes = obterDadosLocalStorage(MODULOS.expedicao.storageKeys);
-            const qExp = document.getElementById('quadroResumoExpedicao');
-            if (expedicoes.length === 0) {
-                qExp.innerHTML = `<tr><td colspan="4" class="p-3 text-center italic text-slate-400">Nenhum registro.</td></tr>`;
-            } else {
-                qExp.innerHTML = expedicoes.slice(-4).reverse().map(e => {
-                    const dE = extrairPesoEGaiolasExpedicao(e);
-                    return `
-                        <tr class="hover:bg-slate-50 border-b">
-                            <td class="p-2 border font-medium">${e.data ? new Date(e.data + 'T00:00:00').toLocaleDateString('pt-BR') : '-'}</td>
-                            <td class="p-2 border text-slate-600">${e.cliente || 'Cliente Geral'}</td>
-                            <td class="p-2 border text-right font-bold text-emerald-700">${dE.peso.toFixed(1)} Kg</td>
-                            <td class="p-2 border text-center">${dE.gaiolas} und</td>
-                        </tr>
-                    `;
-                }).join('');
-            }
+        let datas = [...new Set([...agua.map(a => a.data), ...gas.map(g => g.data), ...energia.map(e => e.data)])].filter(Boolean).sort().reverse().slice(0, 4);
 
-            // QUADRO HORAS
-            const horas = obterDadosLocalStorage(MODULOS.horas.storageKeys);
-            const qHoras = document.getElementById('quadroResumoHoras');
-            if (horas.length === 0) {
-                qHoras.innerHTML = `<tr><td colspan="5" class="p-3 text-center italic text-slate-400">Nenhum registro.</td></tr>`;
-            } else {
-                qHoras.innerHTML = horas.slice(-4).reverse().map(h => {
-                    const vals = extrairValoresHoras(h);
-                    return `
-                        <tr class="hover:bg-slate-50 border-b">
-                            <td class="p-2 border font-medium">${h.data ? new Date(h.data + 'T00:00:00').toLocaleDateString('pt-BR') : '-'}</td>
-                            <td class="p-2 border">${h.setor || 'Geral'} / ${h.operador || h.funcionario || '-'}</td>
-                            <td class="p-2 border text-right font-bold text-slate-800">${vals.hn.toFixed(1)} h</td>
-                            <td class="p-2 border text-right font-bold text-amber-600">${vals.he.toFixed(1)} h</td>
-                            <td class="p-2 border text-right font-bold text-rose-600">${vals.abs.toFixed(1)} h</td>
-                        </tr>
-                    `;
-                }).join('');
-            }
-
-            // QUADRO UTILIDADES
-            const agua = obterDadosLocalStorage(MODULOS.agua.storageKeys);
-            const gas = obterDadosLocalStorage(MODULOS.gas.storageKeys);
-            const energia = obterDadosLocalStorage(MODULOS.energia.storageKeys);
-            const qUtilidades = document.getElementById('quadroResumoUtilidades');
-
-            let datas = [...new Set([...agua.map(a => a.data), ...gas.map(g => g.data), ...energia.map(e => e.data)])].filter(Boolean).sort().reverse().slice(0, 4);
-
-            if (datas.length === 0) {
-                qUtilidades.innerHTML = `<tr><td colspan="4" class="p-3 text-center italic text-slate-400">Nenhum registro.</td></tr>`;
-            } else {
-                qUtilidades.innerHTML = datas.map(d => {
-                    const aItem = agua.find(a => a.data === d);
-                    const gItem = gas.find(g => g.data === d);
-                    const eItem = energia.find(e => e.data === d);
-                    return `
-                        <tr class="hover:bg-slate-50 border-b">
-                            <td class="p-2 border font-medium">${new Date(d + 'T00:00:00').toLocaleDateString('pt-BR')}</td>
-                            <td class="p-2 border text-right font-bold text-cyan-700">${aItem ? extrairValorGenerico(aItem) + ' L' : '-'}</td>
-                            <td class="p-2 border text-right font-bold text-orange-600">${gItem ? extrairValorGenerico(gItem) + ' m³' : '-'}</td>
-                            <td class="p-2 border text-right font-bold text-yellow-600">${eItem ? extrairValorGenerico(eItem) + ' kWh' : '-'}</td>
-                        </tr>
-                    `;
-                }).join('');
-            }
+        if (datas.length === 0) {
+            qUtilidades.innerHTML = `<tr><td colspan="4" class="p-3 text-center italic text-slate-400">Nenhum registro.</td></tr>`;
+        } else {
+            qUtilidades.innerHTML = datas.map(d => {
+                const aItem = agua.find(a => a.data === d);
+                const gItem = gas.find(g => g.data === d);
+                const eItem = energia.find(e => e.data === d);
+                return `
+                    <tr class="hover:bg-slate-50 border-b">
+                        <td class="p-2 border font-medium">${new Date(d + 'T00:00:00').toLocaleDateString('pt-BR')}</td>
+                        <td class="p-2 border text-right font-bold text-cyan-700">${aItem ? extrairValorGenerico(aItem) + ' L' : '-'}</td>
+                        <td class="p-2 border text-right font-bold text-orange-600">${gItem ? extrairValorGenerico(gItem) + ' m³' : '-'}</td>
+                        <td class="p-2 border text-right font-bold text-yellow-600">${eItem ? extrairValorGenerico(eItem) + ' kWh' : '-'}</td>
+                    </tr>
+                `;
+            }).join('');
         }
+    }
 
-        function renderizarGraficoGeral() {
-            const ctx = document.getElementById('chartGeral').getContext('2d');
-            if (chartGeralInstance) chartGeralInstance.destroy();
+    function renderizarGraficoGeral() {
+        const ctx = document.getElementById('chartGeral').getContext('2d');
+        if (chartGeralInstance) chartGeralInstance.destroy();
 
-            const recebimentos = obterDadosLocalStorage(MODULOS.recebimento.storageKeys);
-            const expedicoes = obterDadosLocalStorage(MODULOS.expedicao.storageKeys);
+        const recebimentos = obterDadosLocalStorage(MODULOS.recebimento.storageKeys);
+        const expedicoes = obterDadosLocalStorage(MODULOS.expedicao.storageKeys);
 
-            const datas = [...new Set([...recebimentos.map(r => r.data), ...expedicoes.map(e => e.data)])].filter(Boolean).sort();
-            const labels = datas.map(d => new Date(d + 'T00:00:00').toLocaleDateString('pt-BR', {day: '2-digit', month: '2-digit'}));
+        const datas = [...new Set([...recebimentos.map(r => r.data), ...expedicoes.map(e => e.data)])].filter(Boolean).sort();
+        const labels = datas.map(d => new Date(d + 'T00:00:00').toLocaleDateString('pt-BR', {day: '2-digit', month: '2-digit'}));
 
-            const dadosEntrada = datas.map(d => {
-                const item = recebimentos.find(r => r.data === d);
-                return item ? extrairPesoEGaiolasRecebimento(item).peso : 0;
-            });
+        const dadosEntrada = datas.map(d => {
+            const item = recebimentos.find(r => r.data === d);
+            return item ? extrairPesoEGaiolasRecebimento(item).peso : 0;
+        });
 
-            const dadosSaida = datas.map(d => {
-                const item = expedicoes.find(e => e.data === d);
-                return item ? extrairPesoEGaiolasExpedicao(item).peso : 0;
-            });
+        const dadosSaida = datas.map(d => {
+            const item = expedicoes.find(e => e.data === d);
+            return item ? extrairPesoEGaiolasExpedicao(item).peso : 0;
+        });
 
-            chartGeralInstance = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: labels.length > 0 ? labels : ['Seg', 'Ter', 'Qua', 'Qui', 'Sex'],
-                    datasets: [
-                        {
-                            label: 'Peso Recebimento / Sujo (Kg)',
-                            data: dadosEntrada.length > 0 ? dadosEntrada : [0, 0, 0, 0, 0],
-                            backgroundColor: '#2563eb',
-                            borderRadius: 4
-                        },
-                        {
-                            label: 'Peso Expedição / Limpo (Kg)',
-                            data: dadosSaida.length > 0 ? dadosSaida : [0, 0, 0, 0, 0],
-                            backgroundColor: '#10b981',
-                            borderRadius: 4
-                        }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: { y: { beginAtZero: true } }
-                }
-            });
-        }
-    </script>
+        chartGeralInstance = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels.length > 0 ? labels : ['Seg', 'Ter', 'Qua', 'Qui', 'Sex'],
+                datasets: [
+                    {
+                        label: 'Peso Recebimento / Sujo (Kg)',
+                        data: dadosEntrada.length > 0 ? dadosEntrada : [0, 0, 0, 0, 0],
+                        backgroundColor: '#2563eb',
+                        borderRadius: 4
+                    },
+                    {
+                        label: 'Peso Expedição / Limpo (Kg)',
+                        data: dadosSaida.length > 0 ? dadosSaida : [0, 0, 0, 0, 0],
+                        backgroundColor: '#10b981',
+                        borderRadius: 4
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: { y: { beginAtZero: true } }
+            }
+        });
+    }
+</script>
+    
 </body>
 </html>
