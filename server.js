@@ -441,3 +441,37 @@ app.post('/api/pcm/ordens-servico', async (req, res) => {
         res.status(500).json({ erro: err.message });
     }
 });
+
+const express = require('express');
+const path = require('path');
+const planoRoutes = require('./src/routes/planoRoutes');
+require('dotenv').config();
+
+const app = express();
+const PORT = process.env.PORT || 3000;
+
+// Middleware para processar JSON
+app.use(express.json());
+
+// Serve os ficheiros estáticos da pasta 'public' (HTML, CSS, JS)
+app.use(express.static(path.join(__dirname, 'public')));
+
+// Rotas da API
+app.use('/api', planoRoutes);
+
+// --- ROTAS DE NAVEGAÇÃO (HTML) ---
+
+// Rota principal (Abre o PCM Painel por padrão)
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'pcm_manutencao.html'));
+});
+
+// Rota para a tela de Cadastro de PMP
+app.get('/cadastro-pmp', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+// Inicialização do Servidor
+app.listen(PORT, () => {
+  console.log(`Servidor PCM a correr em: http://localhost:${PORT}`);
+});
