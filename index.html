@@ -336,11 +336,11 @@
                 </button>
                 <button onclick="alternarAbaQuimicos('consumo')" id="tab-quimicos-consumo" class="px-4 py-2.5 rounded-lg text-xs font-bold transition flex items-center gap-2 text-slate-600 hover:bg-slate-100">
                     <i class="fa-solid fa-vial-circle-check"></i>
-                    <span>Posição de Estoque de Químicos</span>
+                    <span>Registro de Estoque de Químicos</span>
                 </button>
                 <button onclick="alternarAbaQuimicos('estoque')" id="tab-quimicos-estoque" class="px-4 py-2.5 rounded-lg text-xs font-bold transition flex items-center gap-2 text-slate-600 hover:bg-slate-100">
                     <i class="fa-solid fa-boxes-stacked"></i>
-                    <span>Recebimento de Produtos Químico</span>
+                    <span>Registo de Recebimento de Produtos Químicos</span>
                 </button>
             </div>
 
@@ -352,7 +352,7 @@
                     <i class="fa-solid fa-flask text-lg"></i>
                 </div>
                 <div>
-                    <h3 class="text-base font-bold text-slate-800" id="tituloFormConsumo">Registo do Estoque Diário</h3>
+                    <h3 class="text-base font-bold text-slate-800" id="tituloFormConsumo">Registo do Estoque de Produtos Químicos</h3>
                     <p class="text-xs text-slate-500">Apontamento das quantidades de estoque de químicos.</p>
                 </div>
             </div>
@@ -363,7 +363,7 @@
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1">Data e Hora do Consumo *</label>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Data e Hora do Lançamento *</label>
                     <input type="datetime-local" id="consumoData" required class="w-full p-2.5 border rounded-xl text-xs bg-slate-50 focus:ring-2 focus:ring-purple-500 outline-none font-semibold">
                 </div>
                 <div>
@@ -391,7 +391,7 @@
 
             <div class="pt-3 border-t flex justify-end gap-3">
                 <button type="button" onclick="limparFormConsumo()" class="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl text-xs font-bold transition">Cancelar / Limpar</button>
-                <button type="submit" id="btnSalvarConsumo" class="px-6 py-2.5 bg-purple-600 hover:bg-purple-700 text-white rounded-xl text-xs font-bold transition shadow">Salvar Consumo</button>
+                <button type="submit" id="btnSalvarConsumo" class="px-6 py-2.5 bg-purple-600 hover:bg-purple-700 text-white rounded-xl text-xs font-bold transition shadow">Salvar Posição do Estoque</button>
             </div>
         </form>
     </div>
@@ -400,7 +400,7 @@
         <div class="flex justify-between items-center border-b pb-3">
             <h3 class="text-sm font-bold text-slate-800 flex items-center gap-2">
                 <i class="fa-solid fa-clock-rotate-left text-purple-600"></i>
-                Últimos Lançamentos Efetuados
+                Últimos Lançamentos de Posição de Estoque Efetuados
             </h3>
             <span id="totalCustoConsumoSpan" class="text-xs font-extrabold bg-purple-50 text-purple-700 px-3 py-1.5 rounded-lg border border-purple-200">
                 Total do Período: R$ 0,00
@@ -410,12 +410,12 @@
         <div class="overflow-x-auto">
             <table class="w-full text-left text-xs text-slate-600 border-collapse">
                 <thead>
-                    <tr class="bg-slate-100 text-slate-700 uppercase font-extrabold border-b border-slate-200">
+                    <tr class="bg-slate-100 text-slate-700 font-extrabold border-b border-slate-200">
                         <th class="p-3 border">Data / Hora</th>
                         <th class="p-3 border">Produto Químico</th>
-                        <th class="p-3 border text-right">Estoque Atual</th>
+                        <th class="p-3 border text-right">Quantidade em Estoque (Kg ou L)</th>
                         <!--<th class="p-3 border text-right">Custo Proporcional</th>-->
-                        <th class="p-3 border">Setor / Obs</th>
+                        <th class="p-3 border">Setor</th>
 			<th class="p-3 border">Notas</th>
                         <th class="p-3 border text-center">Ações</th>
                     </tr>
@@ -433,19 +433,19 @@
                             <i class="fa-solid fa-truck-droplet text-lg"></i>
                         </div>
                         <div>
-                            <h3 class="text-base font-bold text-slate-800">Registo de Recebimento de Produtos</h3>
+                            <h3 class="text-base font-bold text-slate-800">Registo de Recebimento de Produtos Químicos</h3>
                             <p class="text-xs text-slate-500">Lançamento de novos recebimentos de insumos químicos para entrada em estoque.</p>
                         </div>
                     </div>
 
                     <form id="formRecebimentoQuimico" onsubmit="salvarRecebimentoQuimico(event)" class="space-y-4">
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                	    <div>
+                    	   	<label class="block text-xs font-bold text-slate-700 mb-1">Data e Hora do Recebimento *</label>
+                    		<input type="datetime-local" id="recData" required class="w-full p-2.5 border rounded-xl text-xs bg-slate-50 focus:ring-2 focus:ring-purple-500 outline-				none font-semibold">
+                	    </div>
                             <div>
-                                <label class="block text-xs font-bold text-slate-700 mb-1">Data do Recebimento</label>
-                                <input type="date" id="recData" required class="w-full p-2.5 border rounded-xl text-xs bg-slate-50 focus:ring-2 focus:ring-emerald-500 outline-none">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-bold text-slate-700 mb-1">Produto Químico</label>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">Produto Químico *</label>
 				<select id="recProdId" name="produto" required class="w-full p-2.5 border rounded-xl text-xs bg-slate-50 font-semibold focus:ring-2 focus:ring-emerald-500 				outline-none">
 				</select>
 
@@ -455,33 +455,34 @@
 
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
-                                <label class="block text-xs font-bold text-slate-700 mb-1">Quantidade Recebida (Kg ou L)</label>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">Quantidade Recebida (Kg ou L) *</label>
                                 <input type="number" step="0.01" id="recQtd" required placeholder="0.00" class="w-full p-2.5 border rounded-xl text-xs bg-slate-50 focus:ring-2 focus:ring-emerald-500 outline-none font-bold text-slate-800">
                             </div>
                             <div>
-                                <label class="block text-xs font-bold text-slate-700 mb-1">Nº Nota Fiscal / Lote</label>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">Nº Nota Fiscal / Lote *</label>
                                 <input type="text" id="recNf" placeholder="Ex: NF 10452 / Lote B2026" class="w-full p-2.5 border rounded-xl text-xs bg-slate-50 focus:ring-2 focus:ring-emerald-500 outline-none">
                             </div>
                         </div>
 
                         <div>
-                            <label class="block text-xs font-bold text-slate-700 mb-1">Fornecedor / Observações</label>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">Fornecedor / Observações *</label>
                             <input type="text" id="recObs" placeholder="Ex: Diversey / Spartan / Beiclean" class="w-full p-2.5 border rounded-xl text-xs bg-slate-50 focus:ring-2 focus:ring-emerald-500 outline-none">
                         </div>
 
                         <div class="pt-3 border-t flex justify-end gap-3">
-                            <button type="reset" class="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl text-xs font-bold transition">Limpar</button>
-                            <button type="submit" class="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition shadow">Registar Entrada no Estoque</button>
+                            <button type="reset" class="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl text-xs font-bold transition">Cancelar / Limpar</button>
+                            <button type="submit" class="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition shadow">Salvar Entrada no Estoque</button>
                         </div>
                     </form>
                 </div>
 
                 <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 space-y-4">
                     <div class="flex justify-between items-center border-b pb-3">
-                        <h3 class="text-sm font-bold text-slate-800 flex items-center gap-2">
-                            <i class="fa-solid fa-boxes-stacked text-purple-600"></i>
-                            Balanço Atual de Insumos e Saldo em Stock
-                        </h3>
+            <h3 class="text-sm font-bold text-slate-800 flex items-center gap-2">
+                <i class="fa-solid fa-clock-rotate-left text-purple-600"></i>
+                Últimos Lançamentos de Recebimentos Efetuados
+            </h3>
+
                         <span class="text-xs font-semibold text-slate-400">Total Recebido - Total Consumido</span>
                     </div>
 
@@ -489,12 +490,12 @@
                         <table class="w-full text-left text-xs border-collapse">
                             <thead class="bg-slate-100 text-slate-700">
                                 <tr>
-                                    <th class="p-2.5 border">Cód. ID</th>
-                                    <th class="p-2.5 border">Nome do Produto Químico</th>
-                                    <th class="p-2.5 border text-center">Unidade</th>
-                                    <th class="p-2.5 border text-right">Total Recebido (+)</th>
-                                    <th class="p-2.5 border text-right">Total Consumido (-)</th>
-                                    <th class="p-2.5 border text-right">Saldo em Stock</th>
+                                    <th class="p-2.5 border">Data</th>
+                                    <th class="p-2.5 border">Produto Químico</th>
+                                    <th class="p-2.5 border text-center">Quantidade Recebida (Kg ou L)</th>
+                                    <th class="p-2.5 border text-right">Nº Nota Fiscal / Lote</th>
+                                    <th class="p-2.5 border text-right">Fornecedor / Observações</th>
+                                    <!--<th class="p-2.5 border text-right">Saldo em Stock</th>-->
                                 </tr>
                             </thead>
                             <tbody id="tabelaEstoqueQuimicos">
@@ -538,7 +539,7 @@
 
             <div class="bg-white rounded-2xl shadow-sm p-6 border border-slate-200 space-y-4">
                 <div class="flex justify-between items-center border-b pb-3">
-                    <h3 class="text-sm font-bold text-slate-800">Últimos Lançamentos Efetuados</h3>
+                    <h3 class="text-sm font-bold text-slate-800">Últimos Lançamentos de Estoque20Efetuados</h3>
                     <span id="txtInfoDiasGeral" class="text-xs font-medium text-slate-400">Exibindo registos dos últimos 15 dias</span>
                 </div>
                 <div class="overflow-x-auto">
@@ -1810,7 +1811,7 @@ function limparFormConsumo() {
     document.getElementById('formConsumoQuimico').reset();
     document.getElementById('consumoEditIndex').value = "";
     document.getElementById('tituloFormConsumo').innerText = "Registo de Consumo Diário";
-    document.getElementById('btnSalvarConsumo').innerText = "Salvar Consumo";
+    document.getElementById('btnSalvarConsumo').innerText = "Salvar Estoque";
 }
     </script>
 </body>
