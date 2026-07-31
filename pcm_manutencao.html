@@ -10,19 +10,19 @@
     <style>
         @media print {
             body * {
-                visibility: hidden !important;
+                visibility: hidden;
             }
             #areaImpressao, #areaImpressao * {
-                visibility: visible !important;
+                visibility: visible;
             }
             #areaImpressao {
-                position: absolute !important;
-                left: 0 !important;
-                top: 0 !important;
-                width: 100% !important;
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
                 background: #fff !important;
                 color: #000 !important;
-                padding: 15px !important;
+                padding: 10px;
             }
             .no-print {
                 display: none !important;
@@ -35,9 +35,7 @@
 </head>
 <body class="bg-slate-100 font-sans min-h-screen flex text-slate-800">
 
-    <div id="areaImpressao" class="hidden"></div>
-
-    <aside class="w-64 bg-slate-900 text-slate-300 flex flex-col justify-between min-h-screen sticky top-0 z-50 no-print">
+    <aside class="w-64 bg-slate-900 text-slate-300 flex flex-col justify-between min-h-screen sticky top-0 z-50">
         <div>
             <div class="p-5 border-b border-slate-800 flex items-center gap-3">
                 <div class="bg-amber-600 text-white p-2.5 rounded-xl shadow">
@@ -101,7 +99,7 @@
 
     <main class="flex-1 p-6 overflow-y-auto space-y-6">
 
-        <header class="flex justify-between items-center pb-4 border-b border-slate-200 no-print">
+        <header class="flex justify-between items-center pb-4 border-b border-slate-200">
             <div>
                 <h2 id="tituloPagina" class="text-xl font-bold text-slate-900">Dashboard de Manutenção Industrial</h2>
                 <p id="subtituloPagina" class="text-xs text-slate-500">Indicadores operacionais de confiabilidade, disponibilidade e integração OEE.</p>
@@ -298,7 +296,7 @@
         </div>
 
         <div id="view-pmp" class="hidden space-y-6">
-            <form id="formPMP" onsubmit="salvarPlanoPMP(event)" class="space-y-6 no-print">
+            <form id="formPMP" onsubmit="salvarPlanoPMP(event)" class="space-y-6">
                 <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 space-y-4">
                     <div class="border-b pb-2 flex items-center gap-2 text-teal-600">
                         <i class="fa-solid fa-cubes text-base"></i>
@@ -399,7 +397,6 @@
                         <i class="fa-solid fa-print"></i> Imprimir Selecionados (<span id="countPMPSelecionados">0</span>)
                     </button>
                 </div>
-
                 <div class="overflow-x-auto">
                     <table class="w-full text-left text-xs">
                         <thead class="bg-slate-100 text-slate-700">
@@ -426,9 +423,9 @@
                 <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 space-y-4">
                     <div class="border-b pb-2 flex justify-between items-center text-indigo-600">
                         <h3 id="tecFormTitulo" class="text-sm font-bold flex items-center gap-2">
+                            <i class="fa-solid fa-user-gear"></i>
                             <span>Cadastro de Técnico / Mantenedor</span>
                         </h3>
-                        <i class="fa-solid fa-user-gear text-indigo-600"></i>
                         <button id="btnCancelarTec" onclick="cancelarEdicaoTecnico()" class="hidden text-[11px] text-rose-600 font-bold hover:underline">
                             <i class="fa-solid fa-xmark"></i> Cancelar
                         </button>
@@ -436,52 +433,88 @@
 
                     <form id="formTecnico" onsubmit="salvarTecnico(event)" class="space-y-3 text-xs">
                         <input type="hidden" id="tecId">
+
                         <div>
-                            <label class="block font-bold mb-1">Nome Completo *</label>
-                            <input type="text" id="tecNome" required placeholder="Ex: João da Silva" class="w-full p-2.5 border rounded-xl bg-slate-50 font-medium">
+                            <label class="block font-bold mb-1 text-slate-700">Nome Completo *</label>
+                            <input type="text" id="tecNome" required placeholder="Ex: Carlos Eduardo Silveira" class="w-full p-2 border rounded-lg bg-slate-50 focus:ring-2 focus:ring-indigo-500 outline-none">
                         </div>
 
                         <div>
-                            <label class="block font-bold mb-1">Especialidade Principal *</label>
-                            <select id="tecEspecialidade" required class="w-full p-2.5 border rounded-xl bg-slate-50 font-semibold text-indigo-700">
-                                <option value="Mecânica">Mecânica</option>
-                                <option value="Eletrotécnica">Eletrotécnica</option>
-                                <option value="Automação">Automação</option>
-                                <option value="Lubrificação">Lubrificação</option>
-                                <option value="Geral">Geral</option>
+                            <label class="block font-bold mb-1 text-slate-700">Especialidade / Função *</label>
+                            <select id="tecEspecialidade" required class="w-full p-2 border rounded-lg bg-slate-50 focus:ring-2 focus:ring-indigo-500 outline-none">
+                                <option value="Mecânico">Mecânico</option>
+                                <option value="Eletricista">Eletricista</option>
+                                <option value="Mecatrônico">Mecatrônico / Automação</option>
+                                <option value="Lubrificador">Lubrificador</option>
+                                <option value="Preditiva / Refrigeração">Preditiva / Refrigeração</option>
+                                <option value="Líder / Supervisor">Líder / Supervisor</option>
                             </select>
                         </div>
 
-                        <div>
-                            <label class="block font-bold mb-1">Turno de Trabalho *</label>
-                            <select id="tecTurno" required class="w-full p-2.5 border rounded-xl bg-slate-50 font-medium">
-                                <option value="1º Turno (06:00 - 14:20)">1º Turno (06:00 - 14:20)</option>
-                                <option value="2º Turno (14:20 - 22:40)">2º Turno (14:20 - 22:40)</option>
-                                <option value="3º Turno (22:40 - 06:00)">3º Turno (22:40 - 06:00)</option>
-                                <option value="Comercial (08:00 - 17:48)">Comercial (08:00 - 17:48)</option>
-                            </select>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="block font-bold mb-1 text-slate-700">Turno de Trabalho</label>
+                                <select id="tecTurno" class="w-full p-2 border rounded-lg bg-slate-50 focus:ring-2 focus:ring-indigo-500 outline-none">
+                                    <option value="1º Turno">1º Turno</option>
+                                    <option value="2º Turno">2º Turno</option>
+                                    <option value="3º Turno">3º Turno</option>
+                                    <option value="Geral">Comercial / Geral</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label class="block font-bold mb-1 text-slate-700">Status</label>
+                                <select id="tecStatus" class="w-full p-2 border rounded-lg bg-slate-50 focus:ring-2 focus:ring-indigo-500 outline-none">
+                                    <option value="Ativo">Ativo</option>
+                                    <option value="Inativo">Inativo</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
+                            <span class="block text-[11px] font-bold text-slate-600 uppercase tracking-wider border-b pb-1">
+                                <i class="fa-regular fa-clock text-amber-600 mr-1"></i> Horário de Trabalho
+                            </span>
+
+                            <div class="grid grid-cols-2 gap-2">
+                                <div>
+                                    <label class="block font-semibold text-[11px] text-slate-600 mb-1">Entrada</label>
+                                    <input type="time" id="tecHoraInicio" value="07:00" required class="w-full p-1.5 border rounded-lg bg-white text-xs font-semibold focus:ring-2 focus:ring-amber-500 outline-none">
+                                </div>
+                                <div>
+                                    <label class="block font-semibold text-[11px] text-slate-600 mb-1">Saída</label>
+                                    <input type="time" id="tecHoraFim" value="16:48" required class="w-full p-1.5 border rounded-lg bg-white text-xs font-semibold focus:ring-2 focus:ring-amber-500 outline-none">
+                                </div>
+                            </div>
                         </div>
 
                         <div>
-                            <label class="block font-bold mb-1">Custo/Hora (R$)</label>
-                            <input type="number" step="0.01" id="tecCustoHora" placeholder="Ex: 35.00" class="w-full p-2.5 border rounded-xl bg-slate-50 font-bold text-emerald-700">
+                            <label class="block font-bold mb-1 text-slate-700">Telefone / Ramal / Contato</label>
+                            <input type="text" id="tecContato" placeholder="Ex: (11) 98888-7777 / Ramal 402" class="w-full p-2 border rounded-lg bg-slate-50 focus:ring-2 focus:ring-indigo-500 outline-none">
                         </div>
 
-                        <button type="submit" id="btnSalvarTec" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold p-2.5 rounded-xl transition shadow">Cadastrar Técnico</button>
+                        <button type="submit" id="btnSalvarTec" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold p-2.5 rounded-xl transition shadow">
+                            Cadastrar Mantenedor
+                        </button>
                     </form>
                 </div>
 
                 <div class="lg:col-span-2 bg-white p-5 rounded-2xl shadow-sm border border-slate-200 space-y-3">
-                    <h3 class="text-sm font-bold text-slate-800 border-b pb-2">Corpo Técnico Cadastrado</h3>
+                    <h3 class="text-sm font-bold text-slate-800 border-b pb-2 flex justify-between items-center">
+                        <span>Equipe Técnica e Horários de Trabalho</span>
+                        <span id="badgeTotalTecnicos" class="text-xs bg-indigo-100 text-indigo-800 font-bold px-2 py-0.5 rounded-full">0 cadastrados</span>
+                    </h3>
                     <div class="overflow-x-auto">
                         <table class="w-full text-left text-xs">
                             <thead class="bg-slate-100 text-slate-700">
                                 <tr>
-                                    <th class="p-2 border">Nome</th>
-                                    <th class="p-2 border">Especialidade</th>
-                                    <th class="p-2 border">Turno</th>
-                                    <th class="p-2 border text-right">R$/Hora</th>
-                                    <th class="p-2 border text-center w-20">Ações</th>
+                                    <th class="p-2.5 border">Nome</th>
+                                    <th class="p-2.5 border">Especialidade</th>
+                                    <th class="p-2.5 border text-center">Turno</th>
+                                    <th class="p-2.5 border text-center">Horário de Trabalho</th>
+                                    <th class="p-2.5 border">Contato</th>
+                                    <th class="p-2.5 border text-center">Status</th>
+                                    <th class="p-2.5 border text-center w-20">Ações</th>
                                 </tr>
                             </thead>
                             <tbody id="tblTecnicos"></tbody>
@@ -492,123 +525,104 @@
         </div>
 
         <div id="view-os" class="hidden space-y-6">
-            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 space-y-4 no-print">
-                <div class="border-b pb-2 flex justify-between items-center text-rose-600">
-                    <h3 id="osFormTitulo" class="text-sm font-bold flex items-center gap-2">
-                        <i class="fa-solid fa-file-signature"></i> <span>Abertura / Lançamento de Ordem de Serviço</span>
-                    </h3>
-                </div>
-
-                <form id="formOS" onsubmit="salvarOS(event)" class="space-y-4 text-xs">
-                    <input type="hidden" id="osId">
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 space-y-4">
+                    <div class="border-b pb-2 flex justify-between items-center">
+                        <h3 id="osFormTitulo" class="text-sm font-bold text-slate-800">Abertura / Apontamento de O/S</h3>
+                        <button id="btnCancelarOS" onclick="cancelarEdicaoOS()" class="hidden text-[11px] text-rose-600 font-bold hover:underline">
+                            <i class="fa-solid fa-xmark"></i> Cancelar
+                        </button>
+                    </div>
+                    <form id="formOS" onsubmit="salvarOS(event)" class="space-y-3 text-xs">
+                        <input type="hidden" id="osId">
                         <div>
-                            <label class="block font-bold mb-1">Equipamento Alvo *</label>
-                            <select id="osEquipamento" required class="w-full p-2.5 border rounded-xl bg-slate-50 font-semibold"></select>
+                            <label class="block font-bold mb-1">Equipamento / Componente</label>
+                            <select id="osEquipamento" required class="w-full p-2 border rounded-lg bg-slate-50"></select>
                         </div>
                         <div>
-                            <label class="block font-bold mb-1">Tipo de Manutenção *</label>
-                            <select id="osTipo" required class="w-full p-2.5 border rounded-xl bg-slate-50 font-bold text-rose-600">
-                                <option value="Corretiva">Corretiva (Inesperada)</option>
+                            <label class="block font-bold mb-1">Tipo de Manutenção</label>
+                            <select id="osTipo" required class="w-full p-2 border rounded-lg bg-slate-50">
+                                <option value="Corretiva">Corretiva (Parada Não Planejada)</option>
                                 <option value="Preventiva">Preventiva (Programada)</option>
-                                <option value="Preditiva">Preditiva</option>
+                                <option value="Preditiva">Preditiva / Inspeção</option>
                             </select>
                         </div>
                         <div>
-                            <label class="block font-bold mb-1">Técnico Responsável *</label>
-                            <select id="osTecnico" required class="w-full p-2.5 border rounded-xl bg-slate-50 font-semibold"></select>
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div>
-                            <label class="block font-bold mb-1">Horas Paradas (Máquina)</label>
-                            <input type="number" step="0.1" id="osHoras" required min="0" placeholder="Ex: 1.5" class="w-full p-2.5 border rounded-xl bg-slate-50 font-bold">
+                            <label class="block font-bold mb-1">Data da O/S</label>
+                            <input type="date" id="osData" required class="w-full p-2 border rounded-lg bg-slate-50">
                         </div>
                         <div>
-                            <label class="block font-bold mb-1">Custo de Peças (R$)</label>
-                            <input type="number" step="0.01" id="osCustoPecas" value="0.00" class="w-full p-2.5 border rounded-xl bg-slate-50 font-bold text-emerald-700">
+                            <label class="block font-bold mb-1">Técnico Responsável</label>
+                            <select id="osTecnico" required class="w-full p-2 border rounded-lg bg-slate-50"></select>
                         </div>
                         <div>
-                            <label class="block font-bold mb-1">Status da O/S *</label>
-                            <select id="osStatus" required class="w-full p-2.5 border rounded-xl bg-slate-50 font-bold">
-                                <option value="Aberta">Aberta / Em Andamento</option>
-                                <option value="Concluída">Concluída</option>
-                            </select>
+                            <label class="block font-bold mb-1">Horas de Parada de Máquina (Intervenção)</label>
+                            <input type="number" id="osHoras" step="0.1" required placeholder="Ex: 1.5" class="w-full p-2 border rounded-lg bg-slate-50 font-bold">
                         </div>
-                    </div>
-
-                    <div>
-                        <label class="block font-bold mb-1">Descrição do Problema / Serviço Realizado *</label>
-                        <textarea id="osDescricao" required placeholder="Descreva os detalhes da ocorrência e a solução adotada..." class="w-full p-2.5 border rounded-xl bg-slate-50" rows="2"></textarea>
-                    </div>
-
-                    <button type="submit" id="btnSalvarOS" class="w-full bg-rose-600 hover:bg-rose-700 text-white font-bold p-3 rounded-xl transition shadow">Gerar / Atualizar Ordem de Serviço</button>
-                </form>
-            </div>
-
-            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 space-y-3">
-                <div class="border-b pb-2 flex flex-wrap items-center justify-between gap-2">
-                    <h3 class="text-sm font-bold text-slate-800">Histórico e Gestão de Ordens de Serviço</h3>
-                    <button onclick="imprimirOSSelecionadas()" class="bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition flex items-center gap-2 shadow">
-                        <i class="fa-solid fa-print"></i> Imprimir Selecionadas (<span id="countOSSelecionadas">0</span>)
-                    </button>
+                        <div>
+                            <label class="block font-bold mb-1">Descrição do Serviço / Ocasião</label>
+                            <textarea id="osDescricao" required placeholder="Relate o problema, causa e ação corretiva realizada..." class="w-full p-2 border rounded-lg bg-slate-50" rows="3"></textarea>
+                        </div>
+                        <button type="submit" id="btnSalvarOS" class="w-full bg-rose-600 hover:bg-rose-700 text-white font-bold p-2.5 rounded-xl transition shadow">Salvar Ordem de Serviço</button>
+                    </form>
                 </div>
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left text-xs">
-                        <thead class="bg-slate-100 text-slate-700">
-                            <tr>
-                                <th class="p-2.5 border text-center w-10">
-                                    <input type="checkbox" id="chkTodasOS" onchange="selecionarTodasOS(this)" class="rounded text-rose-600 focus:ring-rose-500">
-                                </th>
-                                <th class="p-2.5 border">Nº O/S</th>
-                                <th class="p-2.5 border">Equipamento</th>
-                                <th class="p-2.5 border">Tipo</th>
-                                <th class="p-2.5 border">Técnico</th>
-                                <th class="p-2.5 border text-center">Horas Par.</th>
-                                <th class="p-2.5 border text-right">Custo Peças</th>
-                                <th class="p-2.5 border text-center">Status</th>
-                                <th class="p-2.5 border text-center w-24">Ações</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tblOS"></tbody>
-                    </table>
+
+                <div class="lg:col-span-2 bg-white p-5 rounded-2xl shadow-sm border border-slate-200 space-y-3">
+                    <div class="border-b pb-2 flex flex-wrap items-center justify-between gap-2">
+                        <h3 class="text-sm font-bold text-slate-800">Histórico de Ordens de Serviço (O/S)</h3>
+                        <div class="flex items-center gap-2">
+                            <span class="font-bold text-slate-600 text-xs"><i class="fa-solid fa-filter text-rose-500 mr-1"></i>Filtrar:</span>
+                            <select id="filtroOsEquipamento" onchange="renderizarTabelas()" class="p-1.5 border rounded-lg bg-slate-50 text-xs font-semibold">
+                                <option value="TODOS">-- Todos os Equipamentos --</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs">
+                            <thead class="bg-slate-100 text-slate-700">
+                                <tr>
+                                    <th class="p-2 border">Data</th>
+                                    <th class="p-2 border">Equipamento</th>
+                                    <th class="p-2 border">Tipo</th>
+                                    <th class="p-2 border">Técnico</th>
+                                    <th class="p-2 border text-center">Horas</th>
+                                    <th class="p-2 border">Descrição</th>
+                                    <th class="p-2 border text-center w-20">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tblOS"></tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
 
         <div id="view-lubrificacao" class="hidden space-y-6">
-            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 space-y-4 no-print">
-                <div class="border-b pb-2 flex justify-between items-center text-yellow-600">
-                    <h3 class="text-sm font-bold flex items-center gap-2">
-                        <i class="fa-solid fa-oil-can"></i> <span>Novo Plano de Lubrificação Industrial</span>
-                    </h3>
-                </div>
-
-                <form id="formLubrificacao" onsubmit="salvarLubrificacao(event)" class="space-y-4 text-xs">
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div>
-                            <label class="block font-bold mb-1">Equipamento / Ativo *</label>
-                            <select id="lubEquipamento" required class="w-full p-2.5 border rounded-xl bg-slate-50 font-semibold"></select>
-                        </div>
-                        <div>
-                            <label class="block font-bold mb-1">Ponto de Lubrificação *</label>
-                            <input type="text" id="lubPonto" required placeholder="Ex: Mancal Superior / Engrenagem" class="w-full p-2.5 border rounded-xl bg-slate-50 font-medium">
-                        </div>
-                        <div>
-                            <label class="block font-bold mb-1">Lubrificante Especificado *</label>
-                            <input type="text" id="lubLubrificante" required placeholder="Ex: Graxa Mobilith SHC 220" class="w-full p-2.5 border rounded-xl bg-slate-50 font-medium">
-                        </div>
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 space-y-4">
+                    <div class="border-b pb-2 flex justify-between items-center">
+                        <h3 id="lubFormTitulo" class="text-sm font-bold text-slate-800">Plano de Lubrificação</h3>
+                        <button id="btnCancelarLub" onclick="cancelarEdicaoLubrificacao()" class="hidden text-[11px] text-rose-600 font-bold hover:underline">
+                            <i class="fa-solid fa-xmark"></i> Cancelar
+                        </button>
                     </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <form id="formLubrificacao" onsubmit="salvarLubrificacao(event)" class="space-y-3 text-xs">
+                        <input type="hidden" id="lubId">
                         <div>
-                            <label class="block font-bold mb-1">Quantidade / Volume *</label>
-                            <input type="text" id="lubQuantidade" required placeholder="Ex: 50g / 2 Litros" class="w-full p-2.5 border rounded-xl bg-slate-50 font-medium">
+                            <label class="block font-bold mb-1">Equipamento</label>
+                            <select id="lubEquipamento" required class="w-full p-2 border rounded-lg bg-slate-50"></select>
                         </div>
                         <div>
-                            <label class="block font-bold mb-1">Frequência *</label>
-                            <select id="lubFrequencia" required class="w-full p-2.5 border rounded-xl bg-slate-50 font-semibold">
+                            <label class="block font-bold mb-1">Ponto de Lubrificação</label>
+                            <input type="text" id="lubPonto" required placeholder="Ex: Rolamento Dianteiro / Caixa Redutora" class="w-full p-2 border rounded-lg bg-slate-50">
+                        </div>
+                        <div>
+                            <label class="block font-bold mb-1">Lubrificante Utilizado</label>
+                            <input type="text" id="lubLubrificante" required placeholder="Ex: Graxa Mobilith SHC 220 / Óleo ISO VG 220" class="w-full p-2 border rounded-lg bg-slate-50">
+                        </div>
+                        <div>
+                            <label class="block font-bold mb-1">Frequência</label>
+                            <select id="lubFrequencia" required class="w-full p-2 border rounded-lg bg-slate-50">
                                 <option value="Semanal">Semanal</option>
                                 <option value="Quinzenal">Quinzenal</option>
                                 <option value="Mensal">Mensal</option>
@@ -616,41 +630,26 @@
                                 <option value="Semestral">Semestral</option>
                             </select>
                         </div>
-                        <div>
-                            <label class="block font-bold mb-1">Método de Aplicação *</label>
-                            <input type="text" id="lubMetodo" required placeholder="Ex: Pistoletagem / Banho de Óleo" class="w-full p-2.5 border rounded-xl bg-slate-50 font-medium">
-                        </div>
-                    </div>
-
-                    <button type="submit" class="w-full bg-yellow-500 hover:bg-yellow-600 text-slate-900 font-bold p-3 rounded-xl transition shadow">Cadastrar Plano de Lubrificação</button>
-                </form>
-            </div>
-
-            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 space-y-3">
-                <div class="border-b pb-2 flex flex-wrap items-center justify-between gap-2">
-                    <h3 class="text-sm font-bold text-slate-800">Planos de Lubrificação Cadastrados</h3>
-                    <button onclick="imprimirLubrificacoesSelecionadas()" class="bg-yellow-500 hover:bg-yellow-600 text-slate-900 text-xs font-bold px-3 py-1.5 rounded-lg transition flex items-center gap-2 shadow">
-                        <i class="fa-solid fa-print"></i> Imprimir Selecionados (<span id="countLubSelecionadas">0</span>)
-                    </button>
+                        <button type="submit" id="btnSalvarLub" class="w-full bg-yellow-600 hover:bg-yellow-700 text-white font-bold p-2.5 rounded-xl transition shadow">Salvar Plano Lubrificação</button>
+                    </form>
                 </div>
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left text-xs">
-                        <thead class="bg-slate-100 text-slate-700">
-                            <tr>
-                                <th class="p-2.5 border text-center w-10">
-                                    <input type="checkbox" id="chkTodasLub" onchange="selecionarTodasLub(this)" class="rounded text-yellow-600 focus:ring-yellow-500">
-                                </th>
-                                <th class="p-2.5 border">Equipamento</th>
-                                <th class="p-2.5 border">Ponto</th>
-                                <th class="p-2.5 border">Lubrificante</th>
-                                <th class="p-2.5 border">Qtd.</th>
-                                <th class="p-2.5 border text-center">Frequência</th>
-                                <th class="p-2.5 border">Método</th>
-                                <th class="p-2.5 border text-center w-20">Ações</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tblLubrificacao"></tbody>
-                    </table>
+
+                <div class="lg:col-span-2 bg-white p-5 rounded-2xl shadow-sm border border-slate-200 space-y-3">
+                    <h3 class="text-sm font-bold text-slate-800 border-b pb-2">Planos de Lubrificação Cadastrados</h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs">
+                            <thead class="bg-slate-100 text-slate-700">
+                                <tr>
+                                    <th class="p-2 border">Equipamento</th>
+                                    <th class="p-2 border">Ponto</th>
+                                    <th class="p-2 border">Lubrificante</th>
+                                    <th class="p-2 border text-center">Frequência</th>
+                                    <th class="p-2 border text-center w-20">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tblLubrificacao"></tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
@@ -658,51 +657,47 @@
         <div id="view-pecas" class="hidden space-y-6">
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 space-y-4">
-                    <h3 class="text-sm font-bold text-emerald-600 border-b pb-2 flex items-center gap-2">
-                        <i class="fa-solid fa-gears"></i> <span>Cadastro de Peça / Sobressalente</span>
-                    </h3>
+                    <div class="border-b pb-2 flex justify-between items-center">
+                        <h3 id="pecaFormTitulo" class="text-sm font-bold text-slate-800">Cadastro de Peça de Reposição</h3>
+                        <button id="btnCancelarPeca" onclick="cancelarEdicaoPeca()" class="hidden text-[11px] text-rose-600 font-bold hover:underline">
+                            <i class="fa-solid fa-xmark"></i> Cancelar
+                        </button>
+                    </div>
                     <form id="formPeca" onsubmit="salvarPeca(event)" class="space-y-3 text-xs">
+                        <input type="hidden" id="pecaId">
                         <div>
-                            <label class="block font-bold mb-1">Código / Part Number *</label>
-                            <input type="text" id="pecaCodigo" required placeholder="Ex: ROL-6205-2RS" class="w-full p-2.5 border rounded-xl bg-slate-50 font-mono font-bold uppercase text-emerald-700">
+                            <label class="block font-bold mb-1">Código / Part Number</label>
+                            <input type="text" id="pecaCodigo" required placeholder="Ex: ROL-6205-2RS" class="w-full p-2 border rounded-lg bg-slate-50 uppercase font-mono font-bold">
                         </div>
-
                         <div>
-                            <label class="block font-bold mb-1">Descrição da Peça *</label>
-                            <input type="text" id="pecaDescricao" required placeholder="Ex: Rolamento de Esferas 6205" class="w-full p-2.5 border rounded-xl bg-slate-50 font-medium">
+                            <label class="block font-bold mb-1">Descrição do Item</label>
+                            <input type="text" id="pecaDescricao" required placeholder="Ex: Rolamento de Esfera 6205 DDU C3" class="w-full p-2 border rounded-lg bg-slate-50">
                         </div>
-
                         <div class="grid grid-cols-2 gap-2">
                             <div>
-                                <label class="block font-bold mb-1">Estoque Atual *</label>
-                                <input type="number" id="pecaEstoque" required min="0" placeholder="Ex: 10" class="w-full p-2.5 border rounded-xl bg-slate-50 font-bold">
+                                <label class="block font-bold mb-1">Estoque Atual</label>
+                                <input type="number" id="pecaQtd" min="0" required placeholder="Ex: 10" class="w-full p-2 border rounded-lg bg-slate-50 font-bold">
                             </div>
                             <div>
-                                <label class="block font-bold mb-1">Estoque Mínimo *</label>
-                                <input type="number" id="pecaMinimo" required min="0" placeholder="Ex: 2" class="w-full p-2.5 border rounded-xl bg-slate-50 font-bold text-rose-600">
+                                <label class="block font-bold mb-1">Estoque Mínimo</label>
+                                <input type="number" id="pecaQtdMin" min="0" required placeholder="Ex: 2" class="w-full p-2 border rounded-lg bg-slate-50 font-bold text-rose-600">
                             </div>
                         </div>
-
-                        <div>
-                            <label class="block font-bold mb-1">Custo Unitário (R$)</label>
-                            <input type="number" step="0.01" id="pecaCusto" placeholder="Ex: 45.50" class="w-full p-2.5 border rounded-xl bg-slate-50 font-bold text-emerald-700">
-                        </div>
-
-                        <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold p-2.5 rounded-xl transition shadow">Cadastrar Peça</button>
+                        <button type="submit" id="btnSalvarPeca" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold p-2.5 rounded-xl transition shadow">Cadastrar Peça</button>
                     </form>
                 </div>
 
                 <div class="lg:col-span-2 bg-white p-5 rounded-2xl shadow-sm border border-slate-200 space-y-3">
-                    <h3 class="text-sm font-bold text-slate-800 border-b pb-2">Almoxarifado & Peças em Estoque</h3>
+                    <h3 class="text-sm font-bold text-slate-800 border-b pb-2">Almoxarifado de Peças de Manutenção</h3>
                     <div class="overflow-x-auto">
                         <table class="w-full text-left text-xs">
                             <thead class="bg-slate-100 text-slate-700">
                                 <tr>
                                     <th class="p-2 border">Código</th>
                                     <th class="p-2 border">Descrição</th>
-                                    <th class="p-2 border text-center">Estoque Atual</th>
-                                    <th class="p-2 border text-center">Est. Mínimo</th>
-                                    <th class="p-2 border text-right">Custo Un.</th>
+                                    <th class="p-2 border text-center">Qtd. Estoque</th>
+                                    <th class="p-2 border text-center">Qtd. Mínima</th>
+                                    <th class="p-2 border text-center">Status</th>
                                     <th class="p-2 border text-center w-20">Ações</th>
                                 </tr>
                             </thead>
@@ -715,162 +710,308 @@
 
     </main>
 
+    <div id="areaImpressao" class="hidden"></div>
+
     <script>
         const CHAVES = {
-            MACRO_MAQUINAS: 'mes_pcm_macro_maquinas_v1',
-            MACRO_COMPONENTES: 'mes_pcm_macro_componentes_v1',
-            EQUIPAMENTOS: 'mes_pcm_equipamentos_v1',
-            TECNICOS: 'mes_pcm_tecnicos_v1',
-            PMP: 'mes_pcm_pmp_v1',
-            OS: 'mes_pcm_os_v1',
-            LUBRIFICACAO: 'mes_pcm_lubrificacao_v1',
-            PECAS: 'mes_pcm_pecas_v1'
+            MACRO_MAQUINAS: "mes_macro_maquinas",
+            MACRO_COMPONENTES: "mes_macro_componentes",
+            EQUIPAMENTOS: "mes_equipamentos",
+            TECNICOS: "mes_tecnicos",
+            OS: "mes_os",
+            LUBRIFICACAO: "mes_lubrificacao",
+            PECAS: "mes_pecas",
+            PMP: "mes_pmp_planos"
         };
 
         let chartTiposOSInstance = null;
 
         document.addEventListener("DOMContentLoaded", () => {
             inicializarDadosPadrao();
-            carregarMacros();
-            carregarEquipamentos();
-            carregarTecnicos();
-            carregarSelectsAuxiliares();
-            carregarPlanosPMP();
-            carregarOS();
-            carregarLubrificacoes();
-            carregarPecas();
+            carregarCombosMacro();
+            carregarCombosGlobais();
+            renderizarTabelas();
             inicializarGraficos();
-            atualizarContadoresSelecao();
+            adicionarLinhaChecklistPMP();
         });
 
-        function navegarPara(view) {
-            document.querySelectorAll("main > div").forEach(d => d.classList.add("hidden"));
-            document.querySelectorAll(".menu-item").forEach(b => {
-                b.classList.remove("bg-amber-600", "text-white", "font-bold");
-                b.classList.add("text-slate-300");
+        function navegarPara(viewId) {
+            const views = ["dashboard", "equipamentos", "pmp", "tecnicos", "os", "lubrificacao", "pecas"];
+            views.forEach(v => {
+                const el = document.getElementById(`view-${v}`);
+                const btn = document.getElementById(`btn-${v}`);
+                if (el) el.classList.add("hidden");
+                if (btn) {
+                    btn.classList.remove("bg-amber-600", "text-white", "font-bold");
+                    btn.classList.add("text-slate-300", "hover:bg-slate-800", "hover:text-white");
+                }
             });
 
-            const targetView = document.getElementById(`view-${view}`);
+            const targetView = document.getElementById(`view-${viewId}`);
+            const targetBtn = document.getElementById(`btn-${viewId}`);
             if (targetView) targetView.classList.remove("hidden");
-
-            const btn = document.getElementById(`btn-${view}`);
-            if (btn) {
-                btn.classList.add("bg-amber-600", "text-white", "font-bold");
-                btn.classList.remove("text-slate-300");
+            if (targetBtn) {
+                targetBtn.classList.add("bg-amber-600", "text-white", "font-bold");
+                targetBtn.classList.remove("text-slate-300", "hover:bg-slate-800");
             }
 
             const titulos = {
-                'dashboard': ['Dashboard de Manutenção Industrial', 'Indicadores operacionais de confiabilidade, disponibilidade e integração OEE.'],
-                'equipamentos': ['Cadastro de Ativos & Componentes', 'Mapeamento hierárquico da planta industrial Dona Zara.'],
-                'pmp': ['Plano de Manutenção Preventiva (PMP)', 'Programação periódica e rotinas técnicas de inspeção.'],
-                'tecnicos': ['Cadastro de Mantenedores', 'Gestão da equipe técnica de manutenção industrial.'],
-                'os': ['Ordens de Serviço (O/S)', 'Emissão, apontamento e acompanhamento de intervenções.'],
-                'lubrificacao': ['Plano de Lubrificação Industrial', 'Mapeamento de pontos críticos e rotinas de lubrificação.'],
-                'pecas': ['Gestão de Peças de Reposição', 'Controle de estoque do almoxarifado técnico.']
+                dashboard: ["Dashboard de Manutenção Industrial", "Indicadores operacionais de confiabilidade, disponibilidade e integração OEE."],
+                equipamentos: ["Cadastro do Parque de Máquinas e Ativos", "Hierarquia Macro de Máquinas e Componentes."],
+                pmp: ["Plano de Manutenção Preventiva (PMP)", "Sistemática de planos preventivos por tempo ou horímetro."],
+                tecnicos: ["Cadastro de Mantenedores e Horários", "Gestão da equipe técnica, especialidades e escalas de trabalho."],
+                os: ["Gestão e Apontamento de Ordens de Serviço", "Registro de corretivas, preventivas e preditivas."],
+                lubrificacao: ["Plano Geral de Lubrificação", "Mapeamento de pontos e especificações de lubrificantes."],
+                pecas: ["Almoxarifado e Peças de Reposição", "Controle de estoque crítico para manutenção."]
             };
 
-            if (titulos[view]) {
-                document.getElementById("tituloPagina").textContent = titulos[view][0];
-                document.getElementById("subtituloPagina").textContent = titulos[view][1];
+            if (titulos[viewId]) {
+                document.getElementById("tituloPagina").textContent = titulos[viewId][0];
+                document.getElementById("subtituloPagina").textContent = titulos[viewId][1];
+            }
+
+            if (viewId === 'dashboard') {
+                atualizarKpisDashboard();
+                atualizarGrafico();
             }
         }
 
         function inicializarDadosPadrao() {
             if (!localStorage.getItem(CHAVES.MACRO_MAQUINAS)) {
-                localStorage.setItem(CHAVES.MACRO_MAQUINAS, JSON.stringify(['Lavadora Extratora 50kg', 'Secador Industrial', 'Calandra Horizontal']));
+                localStorage.setItem(CHAVES.MACRO_MAQUINAS, JSON.stringify([
+                    "Lavadora Extratora", "Secador Industrial", "Calandra", "Dobradora de Lençóis", "Compressor de Ar"
+                ]));
             }
             if (!localStorage.getItem(CHAVES.MACRO_COMPONENTES)) {
-                localStorage.setItem(CHAVES.MACRO_COMPONENTES, JSON.stringify(['Motor Elétrico', 'Redutor', 'Válvula Pneumática', 'Bomba d\'Água', 'Painel Elétrico']));
+                localStorage.setItem(CHAVES.MACRO_COMPONENTES, JSON.stringify([
+                    "Geral / Conjunto", "Motor Elétrico", "Redutor de Velocidade", "Bomba de Água", "Inversor de Freqüência", "Valvula Solenóide"
+                ]));
+            }
+            if (!localStorage.getItem(CHAVES.TECNICOS)) {
+                localStorage.setItem(CHAVES.TECNICOS, JSON.stringify([
+                    { id: "TEC-1", nome: "Carlos Eduardo Silveira", especialidade: "Mecânico", turno: "1º Turno", horario_inicio: "07:00", horario_fim: "16:48", contato: "(11) 98888-1111", status: "Ativo" },
+                    { id: "TEC-2", nome: "Marcos Vinicius Ribeiro", especialidade: "Eletricista", turno: "2º Turno", horario_inicio: "16:48", horario_fim: "01:30", contato: "(11) 98888-2222", status: "Ativo" }
+                ]));
             }
         }
 
-        function carregarMacros() {
-            const m = JSON.parse(localStorage.getItem(CHAVES.MACRO_MAQUINAS) || "[]");
-            const c = JSON.parse(localStorage.getItem(CHAVES.MACRO_COMPONENTES) || "[]");
+        // ================= TÉCNICOS E HORÁRIOS DE TRABALHO =================
+        function salvarTecnico(e) {
+            e.preventDefault();
+            const id = document.getElementById("tecId").value || "TEC-" + Date.now();
+            const nome = document.getElementById("tecNome").value.trim();
+            const especialidade = document.getElementById("tecEspecialidade").value;
+            const turno = document.getElementById("tecTurno").value;
+            const status = document.getElementById("tecStatus").value;
+            const horario_inicio = document.getElementById("tecHoraInicio").value;
+            const horario_fim = document.getElementById("tecHoraFim").value;
+            const contato = document.getElementById("tecContato").value.trim();
 
-            document.getElementById("listaMacroTags").innerHTML = m.map(i => `<span class="bg-amber-100 text-amber-800 text-[10px] font-bold px-2 py-0.5 rounded">${i}</span>`).join('');
-            document.getElementById("listaCompTags").innerHTML = c.map(i => `<span class="bg-purple-100 text-purple-800 text-[10px] font-bold px-2 py-0.5 rounded">${i}</span>`).join('');
+            if (!nome) {
+                alert("Por favor, preencha o nome do mantenedor.");
+                return;
+            }
 
-            const selectM = document.getElementById("eqNomeMacro");
-            selectM.innerHTML = m.map(i => `<option value="${i}">${i}</option>`).join('');
+            let lista = JSON.parse(localStorage.getItem(CHAVES.TECNICOS) || "[]");
+            const index = lista.findIndex(t => String(t.id) === String(id));
 
-            const selectC = document.getElementById("eqComponente");
-            selectC.innerHTML = c.map(i => `<option value="${i}">${i}</option>`).join('');
+            const objetoTecnico = {
+                id,
+                nome,
+                especialidade,
+                turno,
+                status,
+                horario_inicio: horario_inicio || "07:00",
+                horario_fim: horario_fim || "16:48",
+                contato,
+                atualizado_em: new Date().toISOString()
+            };
+
+            if (index >= 0) {
+                lista[index] = objetoTecnico;
+            } else {
+                lista.push(objetoTecnico);
+            }
+
+            localStorage.setItem(CHAVES.TECNICOS, JSON.stringify(lista));
+            cancelarEdicaoTecnico();
+            renderizarTabelas();
+            carregarCombosGlobais();
+            alert("Mantenedor e horários salvos com sucesso!");
+        }
+
+        function editarTecnico(id) {
+            const lista = JSON.parse(localStorage.getItem(CHAVES.TECNICOS) || "[]");
+            const tec = lista.find(t => String(t.id) === String(id));
+            if (!tec) return;
+
+            document.getElementById("tecId").value = tec.id;
+            document.getElementById("tecNome").value = tec.nome;
+            document.getElementById("tecEspecialidade").value = tec.especialidade || "Mecânico";
+            document.getElementById("tecTurno").value = tec.turno || "1º Turno";
+            document.getElementById("tecStatus").value = tec.status || "Ativo";
+            document.getElementById("tecHoraInicio").value = tec.horario_inicio || "07:00";
+            document.getElementById("tecHoraFim").value = tec.horario_fim || "16:48";
+            document.getElementById("tecContato").value = tec.contato || "";
+
+            document.getElementById("tecFormTitulo").innerHTML = `<i class="fa-solid fa-pen-to-square"></i> <span>Editar Mantenedor</span>`;
+            document.getElementById("btnSalvarTec").textContent = "Atualizar Cadastro";
+            document.getElementById("btnCancelarTec").classList.remove("hidden");
+            document.getElementById("tecNome").focus();
+        }
+
+        function cancelarEdicaoTecnico() {
+            document.getElementById("formTecnico").reset();
+            document.getElementById("tecId").value = "";
+            document.getElementById("tecHoraInicio").value = "07:00";
+            document.getElementById("tecHoraFim").value = "16:48";
+            document.getElementById("tecFormTitulo").innerHTML = `<i class="fa-solid fa-user-gear"></i> <span>Cadastro de Técnico / Mantenedor</span>`;
+            document.getElementById("btnSalvarTec").textContent = "Cadastrar Mantenedor";
+            document.getElementById("btnCancelarTec").classList.add("hidden");
+        }
+
+        function excluirTecnico(id) {
+            if (!confirm("Deseja realmente remover este mantenedor?")) return;
+            let lista = JSON.parse(localStorage.getItem(CHAVES.TECNICOS) || "[]");
+            lista = lista.filter(t => String(t.id) !== String(id));
+            localStorage.setItem(CHAVES.TECNICOS, JSON.stringify(lista));
+            renderizarTabelas();
+            carregarCombosGlobais();
+        }
+
+        function renderizarTabelaTecnicos() {
+            const lista = JSON.parse(localStorage.getItem(CHAVES.TECNICOS) || "[]");
+            const tbody = document.getElementById("tblTecnicos");
+            const badge = document.getElementById("badgeTotalTecnicos");
+
+            if (badge) badge.textContent = `${lista.length} cadastrados`;
+            if (!tbody) return;
+
+            if (lista.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" class="p-4 text-center text-slate-400 font-medium">Nenhum técnico cadastrado.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = lista.map(tec => `
+                <tr class="border-b hover:bg-slate-50 transition">
+                    <td class="p-2.5 font-semibold text-slate-800">${tec.nome}</td>
+                    <td class="p-2.5 text-slate-600">${tec.especialidade}</td>
+                    <td class="p-2.5 text-center">
+                        <span class="bg-slate-200 text-slate-800 text-[11px] px-2 py-0.5 rounded-full font-bold">
+                            ${tec.turno || 'Geral'}
+                        </span>
+                    </td>
+                    <td class="p-2.5 text-center font-mono text-[11px] font-bold text-slate-700">
+                        <i class="fa-regular fa-clock text-amber-600 mr-1"></i>
+                        ${tec.horario_inicio || '07:00'} - ${tec.horario_fim || '16:48'}
+                    </td>
+                    <td class="p-2.5 text-slate-500">${tec.contato || '-'}</td>
+                    <td class="p-2.5 text-center">
+                        <span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${tec.status === 'Inativo' ? 'bg-rose-100 text-rose-700' : 'bg-emerald-100 text-emerald-700'}">
+                            ${tec.status || 'Ativo'}
+                        </span>
+                    </td>
+                    <td class="p-2.5 text-center space-x-1">
+                        <button onclick="editarTecnico('${tec.id}')" class="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg transition" title="Editar Cadastro & Horário">
+                            <i class="fa-solid fa-pen-to-square"></i>
+                        </button>
+                        <button onclick="excluirTecnico('${tec.id}')" class="p-1.5 text-rose-600 hover:bg-rose-50 rounded-lg transition" title="Excluir Técnico">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // ================= AUXILIARES & OUTROS CADASTROS =================
+        function carregarCombosMacro() {
+            const macros = JSON.parse(localStorage.getItem(CHAVES.MACRO_MAQUINAS) || "[]");
+            const comps = JSON.parse(localStorage.getItem(CHAVES.MACRO_COMPONENTES) || "[]");
+
+            const selMacro = document.getElementById("eqNomeMacro");
+            const selComp = document.getElementById("eqComponente");
+
+            if (selMacro) selMacro.innerHTML = macros.map(m => `<option value="${m}">${m}</option>`).join('');
+            if (selComp) selComp.innerHTML = comps.map(c => `<option value="${c}">${c}</option>`).join('');
+
+            const tagMacro = document.getElementById("listaMacroTags");
+            const tagComp = document.getElementById("listaCompTags");
+
+            if (tagMacro) tagMacro.innerHTML = macros.map(m => `<span class="bg-amber-100 text-amber-800 text-[10px] px-2 py-0.5 rounded font-bold">${m}</span>`).join('');
+            if (tagComp) tagComp.innerHTML = comps.map(c => `<span class="bg-purple-100 text-purple-800 text-[10px] px-2 py-0.5 rounded font-bold">${c}</span>`).join('');
         }
 
         function salvarMacroMaquina(e) {
             e.preventDefault();
             const val = document.getElementById("macroNome").value.trim();
             if (!val) return;
-            const m = JSON.parse(localStorage.getItem(CHAVES.MACRO_MAQUINAS) || "[]");
-            if (!m.includes(val)) m.push(val);
-            localStorage.setItem(CHAVES.MACRO_MAQUINAS, JSON.stringify(m));
+            let list = JSON.parse(localStorage.getItem(CHAVES.MACRO_MAQUINAS) || "[]");
+            if (!list.includes(val)) list.push(val);
+            localStorage.setItem(CHAVES.MACRO_MAQUINAS, JSON.stringify(list));
             document.getElementById("macroNome").value = '';
-            carregarMacros();
+            carregarCombosMacro();
         }
 
         function salvarMacroComponente(e) {
             e.preventDefault();
             const val = document.getElementById("compNome").value.trim();
             if (!val) return;
-            const c = JSON.parse(localStorage.getItem(CHAVES.MACRO_COMPONENTES) || "[]");
-            if (!c.includes(val)) c.push(val);
-            localStorage.setItem(CHAVES.MACRO_COMPONENTES, JSON.stringify(c));
+            let list = JSON.parse(localStorage.getItem(CHAVES.MACRO_COMPONENTES) || "[]");
+            if (!list.includes(val)) list.push(val);
+            localStorage.setItem(CHAVES.MACRO_COMPONENTES, JSON.stringify(list));
             document.getElementById("compNome").value = '';
-            carregarMacros();
+            carregarCombosMacro();
         }
 
-        function carregarEquipamentos() {
-            const list = JSON.parse(localStorage.getItem(CHAVES.EQUIPAMENTOS) || "[]");
-            const tbody = document.getElementById("tblEquipamentos");
-            if (list.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="8" class="p-4 text-center italic text-slate-400">Nenhum equipamento cadastrado.</td></tr>`;
-                return;
+        function carregarCombosGlobais() {
+            const eqList = JSON.parse(localStorage.getItem(CHAVES.EQUIPAMENTOS) || "[]");
+            const tecList = JSON.parse(localStorage.getItem(CHAVES.TECNICOS) || "[]");
+
+            const osEq = document.getElementById("osEquipamento");
+            const pmpEq = document.getElementById("pmp_equipamento_id");
+            const lubEq = document.getElementById("lubEquipamento");
+            const fltEq = document.getElementById("filtroOsEquipamento");
+
+            const eqOptions = `<option value="">-- Selecione o Ativo --</option>` + eqList.map(e => `<option value="${e.id}">${e.tag} - ${e.nome_macro} (${e.componente})</option>`).join('');
+
+            if (osEq) osEq.innerHTML = eqOptions;
+            if (pmpEq) pmpEq.innerHTML = eqOptions;
+            if (lubEq) lubEq.innerHTML = eqOptions;
+            if (fltEq) fltEq.innerHTML = `<option value="TODOS">-- Todos os Equipamentos --</option>` + eqList.map(e => `<option value="${e.id}">${e.tag} - ${e.nome_macro}</option>`).join('');
+
+            const osTec = document.getElementById("osTecnico");
+            if (osTec) {
+                osTec.innerHTML = `<option value="">-- Selecione o Técnico --</option>` + tecList.map(t => `<option value="${t.nome}">${t.nome} (${t.especialidade})</option>`).join('');
             }
-            tbody.innerHTML = list.map(item => `
-                <tr class="hover:bg-slate-50 border-b">
-                    <td class="p-2 font-mono font-bold text-blue-600">${item.tag}</td>
-                    <td class="p-2 font-medium">${item.nomeMacro}</td>
-                    <td class="p-2 font-medium text-purple-700">${item.componente}</td>
-                    <td class="p-2">${item.setor}</td>
-                    <td class="p-2">${item.tensao} / ${item.capacidade || '-'}</td>
-                    <td class="p-2 text-center font-bold">${item.horasDia}h</td>
-                    <td class="p-2 text-slate-500">${item.obs || '-'}</td>
-                    <td class="p-2 text-center">
-                        <button onclick="editarEquipamento('${item.id}')" class="p-1 text-blue-600 hover:bg-blue-50 rounded" title="Editar"><i class="fa-solid fa-pen"></i></button>
-                        <button onclick="excluirEquipamento('${item.id}')" class="p-1 text-rose-600 hover:bg-rose-50 rounded" title="Excluir"><i class="fa-solid fa-trash"></i></button>
-                    </td>
-                </tr>
-            `).join('');
         }
 
         function salvarEquipamento(e) {
             e.preventDefault();
-            const id = document.getElementById("eqId").value || Date.now().toString();
-            const item = {
-                id,
-                tag: document.getElementById("eqTag").value.trim().toUpperCase(),
-                nomeMacro: document.getElementById("eqNomeMacro").value,
-                componente: document.getElementById("eqComponente").value,
-                setor: document.getElementById("eqSetor").value.trim(),
-                tensao: document.getElementById("eqTensao").value,
-                capacidade: document.getElementById("eqCapacidade").value.trim(),
-                horasDia: Number(document.getElementById("eqHorasDia").value),
-                obs: document.getElementById("eqObservacoes").value.trim()
-            };
+            const id = document.getElementById("eqId").value || "EQ-" + Date.now();
+            const tag = document.getElementById("eqTag").value.trim().toUpperCase();
+            const nome_macro = document.getElementById("eqNomeMacro").value;
+            const componente = document.getElementById("eqComponente").value;
+            const setor = document.getElementById("eqSetor").value.trim();
+            const tensao = document.getElementById("eqTensao").value;
+            const capacidade = document.getElementById("eqCapacidade").value.trim();
+            const horas_dia = Number(document.getElementById("eqHorasDia").value) || 16;
+            const observacoes = document.getElementById("eqObservacoes").value.trim();
 
             let list = JSON.parse(localStorage.getItem(CHAVES.EQUIPAMENTOS) || "[]");
-            const idx = list.findIndex(i => i.id === id);
-            if (idx >= 0) list[idx] = item;
-            else list.push(item);
+            const idx = list.findIndex(item => String(item.id) === String(id));
+
+            const eqData = { id, tag, nome_macro, componente, setor, tensao, capacidade, horas_dia, observacoes };
+
+            if (idx >= 0) list[idx] = eqData;
+            else list.push(eqData);
 
             localStorage.setItem(CHAVES.EQUIPAMENTOS, JSON.stringify(list));
             cancelarEdicaoEquipamento();
-            carregarEquipamentos();
-            carregarSelectsAuxiliares();
+            renderizarTabelas();
+            carregarCombosGlobais();
         }
 
-        function editarEquipamento(id) {
+	function editarEquipamento(id) {
             const list = JSON.parse(localStorage.getItem(CHAVES.EQUIPAMENTOS) || "[]");
             const item = list.find(i => i.id === id);
             if (!item) return;
@@ -881,475 +1022,391 @@
             document.getElementById("eqComponente").value = item.componente;
             document.getElementById("eqSetor").value = item.setor;
             document.getElementById("eqTensao").value = item.tensao;
-            document.getElementById("eqCapacidade").value = item.capacidade || '';
+            document.getElementById("eqCapacidade").value = item.capacidade;
             document.getElementById("eqHorasDia").value = item.horasDia;
-            document.getElementById("eqObservacoes").value = item.obs || '';
+            document.getElementById("eqObservacoes").value = item.observacoes;
 
-            document.getElementById("eqFormTitulo").querySelector("span").textContent = "3. Editar Ativo / Componente";
-            document.getElementById("btnSalvarEq").textContent = "Atualizar Equipamento";
+            document.getElementById("eqFormTitulo").innerText = "Editar Equipamento / Ativo";
+            document.getElementById("btnSalvarEq").innerText = "Atualizar Equipamento";
             document.getElementById("btnCancelarEq").classList.remove("hidden");
         }
+
 
         function cancelarEdicaoEquipamento() {
             document.getElementById("formEquipamento").reset();
             document.getElementById("eqId").value = '';
-            document.getElementById("eqFormTitulo").querySelector("span").textContent = "3. Cadastro do Ativo / Componente";
+            document.getElementById("eqFormTitulo").innerHTML = `<i class="fa-solid fa-cubes"></i> <span>3. Cadastro do Ativo / Componente</span>`;
             document.getElementById("btnSalvarEq").textContent = "Cadastrar Equipamento / Componente";
             document.getElementById("btnCancelarEq").classList.add("hidden");
         }
 
-        function excluirEquipamento(id) {
-            if (confirm("Deseja realmente excluir este equipamento?")) {
-                let list = JSON.parse(localStorage.getItem(CHAVES.EQUIPAMENTOS) || "[]");
-                list = list.filter(i => i.id !== id);
-                localStorage.setItem(CHAVES.EQUIPAMENTOS, JSON.stringify(list));
-                carregarEquipamentos();
-                carregarSelectsAuxiliares();
-            }
-        }
-
-        function carregarTecnicos() {
-            const list = JSON.parse(localStorage.getItem(CHAVES.TECNICOS) || "[]");
-            const tbody = document.getElementById("tblTecnicos");
-            if (list.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="5" class="p-4 text-center italic text-slate-400">Nenhum técnico cadastrado.</td></tr>`;
-                return;
-            }
-            tbody.innerHTML = list.map(item => `
-                <tr class="hover:bg-slate-50 border-b">
-                    <td class="p-2 font-bold">${item.nome}</td>
-                    <td class="p-2 text-indigo-700 font-medium">${item.especialidade}</td>
-                    <td class="p-2">${item.turno}</td>
-                    <td class="p-2 text-right font-bold text-emerald-700">R$ ${(item.custoHora || 0).toFixed(2)}</td>
-                    <td class="p-2 text-center">
-                        <button onclick="editarTecnico('${item.id}')" class="p-1 text-blue-600 hover:bg-blue-50 rounded" title="Editar"><i class="fa-solid fa-pen"></i></button>
-                        <button onclick="excluirTecnico('${item.id}')" class="p-1 text-rose-600 hover:bg-rose-50 rounded" title="Excluir"><i class="fa-solid fa-trash"></i></button>
-                    </td>
-                </tr>
-            `).join('');
-        }
-
-        function salvarTecnico(e) {
-            e.preventDefault();
-            const id = document.getElementById("tecId").value || Date.now().toString();
-            const item = {
-                id,
-                nome: document.getElementById("tecNome").value.trim(),
-                especialidade: document.getElementById("tecEspecialidade").value,
-                turno: document.getElementById("tecTurno").value,
-                custoHora: Number(document.getElementById("tecCustoHora").value) || 0
-            };
-
-            let list = JSON.parse(localStorage.getItem(CHAVES.TECNICOS) || "[]");
-            const idx = list.findIndex(i => i.id === id);
-            if (idx >= 0) list[idx] = item;
-            else list.push(item);
-
-            localStorage.setItem(CHAVES.TECNICOS, JSON.stringify(list));
-            cancelarEdicaoTecnico();
-            carregarTecnicos();
-            carregarSelectsAuxiliares();
-        }
-
-        function editarTecnico(id) {
-            const list = JSON.parse(localStorage.getItem(CHAVES.TECNICOS) || "[]");
-            const item = list.find(i => i.id === id);
-            if (!item) return;
-
-            document.getElementById("tecId").value = item.id;
-            document.getElementById("tecNome").value = item.nome;
-            document.getElementById("tecEspecialidade").value = item.especialidade;
-            document.getElementById("tecTurno").value = item.turno;
-            document.getElementById("tecCustoHora").value = item.custoHora || '';
-
-            document.getElementById("tecFormTitulo").querySelector("span").textContent = "Editar Técnico";
-            document.getElementById("btnSalvarTec").textContent = "Atualizar Técnico";
-            document.getElementById("btnCancelarTec").classList.remove("hidden");
-        }
-
-        function cancelarEdicaoTecnico() {
-            document.getElementById("formTecnico").reset();
-            document.getElementById("tecId").value = '';
-            document.getElementById("tecFormTitulo").querySelector("span").textContent = "Cadastro de Técnico / Mantenedor";
-            document.getElementById("btnSalvarTec").textContent = "Cadastrar Técnico";
-            document.getElementById("btnCancelarTec").classList.add("hidden");
-        }
-
-        function excluirTecnico(id) {
-            if (confirm("Deseja realmente excluir este técnico?")) {
-                let list = JSON.parse(localStorage.getItem(CHAVES.TECNICOS) || "[]");
-                list = list.filter(i => i.id !== id);
-                localStorage.setItem(CHAVES.TECNICOS, JSON.stringify(list));
-                carregarTecnicos();
-                carregarSelectsAuxiliares();
-            }
-        }
-
-        function carregarSelectsAuxiliares() {
+        function renderizarTabelas() {
+            // Renderizar Equipamentos
             const eqList = JSON.parse(localStorage.getItem(CHAVES.EQUIPAMENTOS) || "[]");
-            const tecList = JSON.parse(localStorage.getItem(CHAVES.TECNICOS) || "[]");
+            const tblEq = document.getElementById("tblEquipamentos");
+            if (tblEq) {
+                tblEq.innerHTML = eqList.length === 0 ? `<tr><td colspan="8" class="p-3 text-center text-slate-400">Nenhum equipamento cadastrado.</td></tr>` :
+                eqList.map(e => `
+                    <tr class="border-b hover:bg-slate-50">
+                        <td class="p-2 font-mono font-bold text-blue-600">${e.tag}</td>
+                        <td class="p-2 font-semibold">${e.nome_macro}</td>
+                        <td class="p-2 text-purple-700 font-semibold">${e.componente}</td>
+                        <td class="p-2">${e.setor}</td>
+                        <td class="p-2">${e.tensao} / ${e.capacidade || '-'}</td>
+                        <td class="p-2 text-center font-bold">${e.horas_dia}h</td>
+                        <td class="p-2 text-slate-500 max-w-[150px] truncate">${e.observacoes || '-'}</td>
+                        <td class="p-2 text-center">
 
-            const optsEq = `<option value="">-- Selecione o Equipamento --</option>` + eqList.map(e => `<option value="${e.id}">${e.tag} - ${e.nomeMacro} (${e.componente})</option>`).join('');
-            const optsTec = `<option value="">-- Selecione o Técnico --</option>` + tecList.map(t => `<option value="${t.id}">${t.nome} (${t.especialidade})</option>`).join('');
+			    <button onclick="editarEquipamento('${item.id}')" class="p-1 text-blue-600 hover:bg-blue-50 rounded"><i class="fa-solid fa-pen"></i></button>
+                            <button onclick="excluirEquipamento('${item.id}')" class="p-1 text-rose-600 hover:bg-rose-50 rounded"><i class="fa-solid fa-trash"></i></button>
+                            
+			    <button onclick="editarItem('${CHAVES.EQUIPAMENTOS}', '${e.id}')" class="text-rose-600 hover:text-rose-800"><i class="fa-solid fa-pen"></i></button>
+                            <button onclick="excluirItem('${CHAVES.EQUIPAMENTOS}', '${e.id}')" class="text-rose-600 hover:text-rose-800"><i class="fa-solid fa-trash"></i></button>
+                        </td>
+                    </tr>
+                `).join('');
+            }
 
-            document.getElementById("pmp_equipamento_id").innerHTML = optsEq;
-            document.getElementById("osEquipamento").innerHTML = optsEq;
-            document.getElementById("lubEquipamento").innerHTML = optsEq;
-            document.getElementById("osTecnico").innerHTML = optsTec;
+            // Renderizar Mantenedores
+            renderizarTabelaTecnicos();
+
+            // Renderizar Lubrificação
+            const lubList = JSON.parse(localStorage.getItem(CHAVES.LUBRIFICACAO) || "[]");
+            const tblLub = document.getElementById("tblLubrificacao");
+            if (tblLub) {
+                tblLub.innerHTML = lubList.length === 0 ? `<tr><td colspan="5" class="p-3 text-center text-slate-400">Nenhum plano cadastrado.</td></tr>` :
+                lubList.map(l => {
+                    const eq = eqList.find(e => String(e.id) === String(l.equipamento_id));
+                    return `
+                        <tr class="border-b hover:bg-slate-50">
+                            <td class="p-2 font-bold">${eq ? eq.tag + ' - ' + eq.nome_macro : 'Ativo Excluído'}</td>
+                            <td class="p-2">${l.ponto}</td>
+                            <td class="p-2 text-amber-700 font-semibold">${l.lubrificante}</td>
+                            <td class="p-2 text-center font-bold">${l.frequencia}</td>
+                            <td class="p-2 text-center">
+                                <button onclick="excluirItem('${CHAVES.LUBRIFICACAO}', '${l.id}')" class="text-rose-600 hover:text-rose-800"><i class="fa-solid fa-trash"></i></button>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            }
+
+            // Renderizar Peças
+            const pecaList = JSON.parse(localStorage.getItem(CHAVES.PECAS) || "[]");
+            const tblPecas = document.getElementById("tblPecas");
+            if (tblPecas) {
+                tblPecas.innerHTML = pecaList.length === 0 ? `<tr><td colspan="6" class="p-3 text-center text-slate-400">Nenhuma peça cadastrada.</td></tr>` :
+                pecaList.map(p => {
+                    const emAlerta = Number(p.quantidade) <= Number(p.quantidade_minima);
+                    return `
+                        <tr class="border-b hover:bg-slate-50">
+                            <td class="p-2 font-mono font-bold">${p.codigo}</td>
+                            <td class="p-2 font-semibold">${p.descricao}</td>
+                            <td class="p-2 text-center font-bold text-sm">${p.quantidade}</td>
+                            <td class="p-2 text-center font-bold text-rose-600">${p.quantidade_minima}</td>
+                            <td class="p-2 text-center">
+                                <span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${emAlerta ? 'bg-rose-100 text-rose-700' : 'bg-emerald-100 text-emerald-700'}">
+                                    ${emAlerta ? 'Estoque Crítico' : 'OK'}
+                                </span>
+                            </td>
+                            <td class="p-2 text-center">
+                                <button onclick="excluirItem('${CHAVES.PECAS}', '${p.id}')" class="text-rose-600 hover:text-rose-800"><i class="fa-solid fa-trash"></i></button>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            }
+
+            // Renderizar OS
+            const osList = JSON.parse(localStorage.getItem(CHAVES.OS) || "[]");
+            const filtro = document.getElementById("filtroOsEquipamento")?.value || "TODOS";
+            const tblOS = document.getElementById("tblOS");
+            if (tblOS) {
+                const filtradas = filtro === "TODOS" ? osList : osList.filter(o => String(o.equipamento_id) === String(filtro));
+                tblOS.innerHTML = filtradas.length === 0 ? `<tr><td colspan="7" class="p-3 text-center text-slate-400">Nenhuma Ordem de Serviço registrada.</td></tr>` :
+                filtradas.map(o => {
+                    const eq = eqList.find(e => String(e.id) === String(o.equipamento_id));
+                    return `
+                        <tr class="border-b hover:bg-slate-50">
+                            <td class="p-2 font-medium">${o.data}</td>
+                            <td class="p-2 font-bold text-blue-600">${eq ? eq.tag + ' - ' + eq.nome_macro : 'Excluído'}</td>
+                            <td class="p-2 font-semibold">${o.tipo}</td>
+                            <td class="p-2">${o.tecnico}</td>
+                            <td class="p-2 text-center font-bold text-rose-600">${o.horas}h</td>
+                            <td class="p-2 text-slate-500">${o.descricao}</td>
+                            <td class="p-2 text-center">
+                                <button onclick="excluirItem('${CHAVES.OS}', '${o.id}')" class="text-rose-600 hover:text-rose-800"><i class="fa-solid fa-trash"></i></button>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            }
+
+            renderizarTabelaPMP();
         }
 
-        function atualizarSetorPMP() {
-            const id = document.getElementById("pmp_equipamento_id").value;
-            const eqList = JSON.parse(localStorage.getItem(CHAVES.EQUIPAMENTOS) || "[]");
-            const eq = eqList.find(i => i.id === id);
-            document.getElementById("pmp_setor_display").value = eq ? eq.setor : '';
+        function excluirItem(chave, id) {
+            if (!confirm("Tem certeza que deseja excluir este registro?")) return;
+            let list = JSON.parse(localStorage.getItem(chave) || "[]");
+            list = list.filter(item => String(item.id) !== String(id));
+            localStorage.setItem(chave, JSON.stringify(list));
+            renderizarTabelas();
+            carregarCombosGlobais();
         }
 
-        function adicionarLinhaChecklistPMP(desc = '', esp = 'Mecânica') {
+        // ================= PMP CHECKLIST =================
+        function adicionarLinhaChecklistPMP(descricao = '', especialidade = 'Mecânico') {
             const container = document.getElementById("pmp_containerChecklist");
+            if (!container) return;
             const num = container.children.length + 1;
             const tr = document.createElement("tr");
             tr.className = "border-b hover:bg-slate-50";
             tr.innerHTML = `
-                <td class="p-2 text-center font-bold text-slate-500">${num}</td>
+                <td class="p-2 text-center font-bold text-slate-500 num-item">${num}</td>
                 <td class="p-2">
-                    <input type="text" value="${desc}" required placeholder="Descreva a tarefa..." class="w-full p-2 border rounded-lg bg-slate-50 text-xs">
+                    <input type="text" required placeholder="Ex: Verificar tensão das correias e alinhamento" value="${descricao}" class="w-full p-1.5 border rounded-lg bg-slate-50 focus:ring-2 focus:ring-teal-500 outline-none pmp-desc">
                 </td>
                 <td class="p-2">
-                    <select class="w-full p-2 border rounded-lg bg-slate-50 text-xs font-semibold">
-                        <option value="Mecânica" ${esp === 'Mecânica' ? 'selected' : ''}>Mecânica</option>
-                        <option value="Eletrotécnica" ${esp === 'Eletrotécnica' ? 'selected' : ''}>Eletrotécnica</option>
-                        <option value="Automação" ${esp === 'Automação' ? 'selected' : ''}>Automação</option>
-                        <option value="Lubrificação" ${esp === 'Lubrificação' ? 'selected' : ''}>Lubrificação</option>
-                        <option value="Geral" ${esp === 'Geral' ? 'selected' : ''}>Geral</option>
+                    <select class="w-full p-1.5 border rounded-lg bg-slate-50 font-medium pmp-esp">
+                        <option value="Mecânico" ${especialidade === 'Mecânico' ? 'selected' : ''}>Mecânico</option>
+                        <option value="Eletricista" ${especialidade === 'Eletricista' ? 'selected' : ''}>Eletricista</option>
+                        <option value="Mecatrônico" ${especialidade === 'Mecatrônico' ? 'selected' : ''}>Mecatrônico</option>
+                        <option value="Lubrificador" ${especialidade === 'Lubrificador' ? 'selected' : ''}>Lubrificador</option>
+                        <option value="Operador" ${especialidade === 'Operador' ? 'selected' : ''}>Operador</option>
                     </select>
                 </td>
                 <td class="p-2 text-center">
-                    <button type="button" onclick="this.closest('tr').remove(); renumerarChecklistPMP();" class="p-1 text-rose-600 hover:bg-rose-50 rounded" title="Remover"><i class="fa-solid fa-trash"></i></button>
+                    <button type="button" onclick="removerLinhaChecklistPMP(this)" class="p-1 text-rose-600 hover:bg-rose-50 rounded"><i class="fa-solid fa-trash-can"></i></button>
                 </td>
             `;
             container.appendChild(tr);
+            atualizarNumeracaoChecklistPMP();
         }
 
-        function renumerarChecklistPMP() {
+        function removerLinhaChecklistPMP(btn) {
+            btn.closest("tr").remove();
+            atualizarNumeracaoChecklistPMP();
+        }
+
+        function atualizarNumeracaoChecklistPMP() {
             const container = document.getElementById("pmp_containerChecklist");
+            if (!container) return;
             Array.from(container.children).forEach((tr, i) => {
-                tr.children[0].textContent = i + 1;
+                const td = tr.querySelector(".num-item");
+                if (td) td.textContent = i + 1;
             });
         }
 
-        function limparFormularioPMP() {
-            document.getElementById("formPMP").reset();
-            document.getElementById("pmp_containerChecklist").innerHTML = '';
-            document.getElementById("pmp_setor_display").value = '';
-            adicionarLinhaChecklistPMP();
+        function atualizarSetorPMP() {
+            const eqId = document.getElementById("pmp_equipamento_id").value;
+            const eqList = JSON.parse(localStorage.getItem(CHAVES.EQUIPAMENTOS) || "[]");
+            const eq = eqList.find(e => String(e.id) === String(eqId));
+            document.getElementById("pmp_setor_display").value = eq ? eq.setor : '';
         }
 
         function salvarPlanoPMP(e) {
             e.preventDefault();
             const eqId = document.getElementById("pmp_equipamento_id").value;
-            const rows = document.querySelectorAll("#pmp_containerChecklist tr");
-            
-            if (rows.length === 0) {
-                alert("Adicione pelo menos uma tarefa ao checklist!");
+            const titulo = document.getElementById("pmp_titulo").value.trim();
+            const frequencia_tipo = document.getElementById("pmp_frequencia_tipo").value;
+            const intervalo = Number(document.getElementById("pmp_intervalo").value);
+            const tempo_estimado_minutos = Number(document.getElementById("pmp_tempo_estimado_minutos").value);
+            const data_inicio = document.getElementById("pmp_data_inicio").value;
+
+            const checklistRows = document.querySelectorAll("#pmp_containerChecklist tr");
+            const checklist = Array.from(checklistRows).map((tr, i) => ({
+                ordem: i + 1,
+                descricao: tr.querySelector(".pmp-desc").value.trim(),
+                especialidade: tr.querySelector(".pmp-esp").value
+            })).filter(c => c.descricao !== '');
+
+            if (checklist.length === 0) {
+                alert("Adicione pelo menos uma tarefa ao checklist do PMP.");
                 return;
             }
 
-            const checklist = Array.from(rows).map(tr => ({
-                descricao: tr.querySelector("input").value.trim(),
-                especialidade: tr.querySelector("select").value
-            }));
-
-            const plano = {
-                id: Date.now().toString(),
-                equipamentoId: eqId,
-                titulo: document.getElementById("pmp_titulo").value.trim(),
-                frequencia_tipo: document.getElementById("pmp_frequencia_tipo").value,
-                intervalo: Number(document.getElementById("pmp_intervalo").value),
-                tempo_estimado_minutos: Number(document.getElementById("pmp_tempo_estimado_minutos").value),
-                data_inicio: document.getElementById("pmp_data_inicio").value,
-                checklist
+            const pmpData = {
+                id: "PMP-" + Date.now(),
+                equipamento_id: eqId,
+                titulo,
+                frequencia_tipo,
+                intervalo,
+                tempo_estimado_minutos,
+                data_inicio,
+                checklist,
+                criado_em: new Date().toISOString()
             };
 
             let list = JSON.parse(localStorage.getItem(CHAVES.PMP) || "[]");
-            list.push(plano);
+            list.push(pmpData);
             localStorage.setItem(CHAVES.PMP, JSON.stringify(list));
 
             limparFormularioPMP();
-            carregarPlanosPMP();
+            renderizarTabelaPMP();
+            alert("Plano de Manutenção Preventiva cadastrado com sucesso!");
         }
 
-        function carregarPlanosPMP() {
-            const list = JSON.parse(localStorage.getItem(CHAVES.PMP) || "[]");
+        function limparFormularioPMP() {
+            document.getElementById("formPMP").reset();
+            document.getElementById("pmp_setor_display").value = '';
+            document.getElementById("pmp_containerChecklist").innerHTML = '';
+            adicionarLinhaChecklistPMP();
+        }
+
+        function renderizarTabelaPMP() {
+            const pmpList = JSON.parse(localStorage.getItem(CHAVES.PMP) || "[]");
             const eqList = JSON.parse(localStorage.getItem(CHAVES.EQUIPAMENTOS) || "[]");
             const tbody = document.getElementById("pmp_tblPlanos");
+            const badge = document.getElementById("pmp_totalPlanosBadge");
 
-            document.getElementById("pmp_totalPlanosBadge").textContent = `${list.length} planos`;
+            if (badge) badge.textContent = `${pmpList.length} planos`;
+            if (!tbody) return;
 
-            if (list.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="7" class="p-4 text-center italic text-slate-400">Nenhum plano PMP cadastrado.</td></tr>`;
+            if (pmpList.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" class="p-4 text-center text-slate-400">Nenhum plano PMP cadastrado.</td></tr>`;
                 return;
             }
 
-            tbody.innerHTML = list.map(item => {
-                const eq = eqList.find(e => e.id === item.equipamentoId);
-                const tagEq = eq ? `${eq.tag} - ${eq.nomeMacro}` : 'N/A';
+            tbody.innerHTML = pmpList.map(p => {
+                const eq = eqList.find(e => String(e.id) === String(p.equipamento_id));
+                const gatilhoTxt = p.frequencia_tipo === 'HORIMETRO' ? `A cada ${p.intervalo}h` : `A cada ${p.intervalo} dias`;
                 return `
-                    <tr class="hover:bg-slate-50 border-b">
-                        <td class="p-2.5 text-center border">
-                            <input type="checkbox" class="chk-pmp rounded text-teal-600 focus:ring-teal-500" value="${item.id}" onchange="atualizarContadoresSelecao()">
+                    <tr class="border-b hover:bg-slate-50">
+                        <td class="p-2.5 text-center">
+                            <input type="checkbox" value="${p.id}" class="chk-pmp rounded text-teal-600 focus:ring-teal-500" onchange="atualizarContadorImpressaoPMP()">
                         </td>
-                        <td class="p-2.5 border font-semibold text-slate-800">${tagEq}</td>
-                        <td class="p-2.5 border font-medium">${item.titulo}</td>
-                        <td class="p-2.5 border text-center">
-                            <span class="bg-teal-100 text-teal-800 text-[10px] font-bold px-2 py-0.5 rounded">
-                                ${item.intervalo} ${item.frequencia_tipo === 'TEMPO' ? 'Dias' : 'Horas'}
-                            </span>
-                        </td>
-                        <td class="p-2.5 border text-center font-bold">${item.tempo_estimado_minutos} min</td>
-                        <td class="p-2.5 border text-center">
-                            <span class="bg-slate-200 text-slate-800 text-[10px] font-bold px-2 py-0.5 rounded-full">
-                                ${item.checklist ? item.checklist.length : 0} tarefas
-                            </span>
-                        </td>
-                        <td class="p-2.5 border text-center">
-                            <button onclick="imprimirPMPUnico('${item.id}')" class="p-1 text-teal-600 hover:bg-teal-50 rounded mr-1" title="Imprimir Plano"><i class="fa-solid fa-print"></i></button>
-                            <button onclick="excluirPlanoPMP('${item.id}')" class="p-1 text-rose-600 hover:bg-rose-50 rounded" title="Excluir Plano"><i class="fa-solid fa-trash"></i></button>
+                        <td class="p-2.5 font-bold text-teal-700">${eq ? eq.tag + ' - ' + eq.nome_macro : 'Ativo Removido'}</td>
+                        <td class="p-2.5 font-semibold text-slate-800">${p.titulo}</td>
+                        <td class="p-2.5 text-center font-bold text-slate-600">${gatilhoTxt}</td>
+                        <td class="p-2.5 text-center font-bold">${p.tempo_estimado_minutos} min</td>
+                        <td class="p-2.5 text-center font-bold text-teal-600">${p.checklist.length} itens</td>
+                        <td class="p-2.5 text-center">
+                            <button onclick="excluirItem('${CHAVES.PMP}', '${p.id}')" class="p-1 text-rose-600 hover:bg-rose-50 rounded"><i class="fa-solid fa-trash-can"></i></button>
                         </td>
                     </tr>
                 `;
             }).join('');
         }
 
-        function excluirPlanoPMP(id) {
-            if (confirm("Tem certeza que deseja excluir este Plano PMP?")) {
-                let list = JSON.parse(localStorage.getItem(CHAVES.PMP) || "[]");
-                list = list.filter(i => i.id !== id);
-                localStorage.setItem(CHAVES.PMP, JSON.stringify(list));
-                carregarPlanosPMP();
-                atualizarContadoresSelecao();
-            }
-        }
-
-        function seleccionarTodosPMP(chkMaster) {
+        function selecionarTodosPMP(chkMaster) {
             document.querySelectorAll(".chk-pmp").forEach(chk => chk.checked = chkMaster.checked);
-            atualizarContadoresSelecao();
+            atualizarContadorImpressaoPMP();
         }
 
-        function carregarOS() {
-            const list = JSON.parse(localStorage.getItem(CHAVES.OS) || "[]");
+        function atualizarContadorImpressaoPMP() {
+            const qtd = document.querySelectorAll(".chk-pmp:checked").length;
+            const span = document.getElementById("countPMPSelecionados");
+            if (span) span.textContent = qtd;
+        }
+
+        function imprimirPMPSelecionados() {
+            const selecionados = Array.from(document.querySelectorAll(".chk-pmp:checked")).map(c => c.value);
+            if (selecionados.length === 0) {
+                alert("Selecione ao menos um plano PMP para imprimir.");
+                return;
+            }
+
+            const pmpList = JSON.parse(localStorage.getItem(CHAVES.PMP) || "[]");
             const eqList = JSON.parse(localStorage.getItem(CHAVES.EQUIPAMENTOS) || "[]");
-            const tecList = JSON.parse(localStorage.getItem(CHAVES.TECNICOS) || "[]");
-            const tbody = document.getElementById("tblOS");
+            const area = document.getElementById("areaImpressao");
 
-            if (list.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="9" class="p-4 text-center italic text-slate-400">Nenhuma Ordem de Serviço lançada.</td></tr>`;
-                return;
-            }
-
-            tbody.innerHTML = list.map(item => {
-                const eq = eqList.find(e => e.id === item.equipamentoId);
-                const tec = tecList.find(t => t.id === item.tecnicoId);
-                const isConcluida = item.status === 'Concluída';
-
+            area.innerHTML = pmpList.filter(p => selecionados.includes(p.id)).map(p => {
+                const eq = eqList.find(e => String(e.id) === String(p.equipamento_id)) || {};
                 return `
-                    <tr class="hover:bg-slate-50 border-b">
-                        <td class="p-2.5 text-center border">
-                            <input type="checkbox" class="chk-os rounded text-rose-600 focus:ring-rose-500" value="${item.id}" onchange="atualizarContadoresSelecao()">
-                        </td>
-                        <td class="p-2.5 border font-mono font-bold text-slate-800">#OS-${item.id.slice(-4)}</td>
-                        <td class="p-2.5 border font-medium">${eq ? eq.tag + ' - ' + eq.nomeMacro : 'N/A'}</td>
-                        <td class="p-2.5 border font-semibold ${item.tipo === 'Corretiva' ? 'text-rose-600' : 'text-emerald-600'}">${item.tipo}</td>
-                        <td class="p-2.5 border">${tec ? tec.nome : 'N/A'}</td>
-                        <td class="p-2.5 border text-center font-bold">${item.horas}h</td>
-                        <td class="p-2.5 border text-right font-bold text-emerald-700">R$ ${(item.custoPecas || 0).toFixed(2)}</td>
-                        <td class="p-2.5 border text-center">
-                            <span class="text-[10px] font-bold px-2 py-0.5 rounded ${isConcluida ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}">
-                                ${item.status}
-                            </span>
-                        </td>
-                        <td class="p-2.5 border text-center">
-                            <button onclick="imprimirOSUnica('${item.id}')" class="p-1 text-rose-600 hover:bg-rose-50 rounded mr-1" title="Imprimir O/S"><i class="fa-solid fa-print"></i></button>
-                            <button onclick="excluirOS('${item.id}')" class="p-1 text-rose-600 hover:bg-rose-50 rounded" title="Excluir"><i class="fa-solid fa-trash"></i></button>
-                        </td>
-                    </tr>
+                    <div class="page-break space-y-4 mb-8">
+                        <div class="border-b-2 border-black pb-2 flex justify-between items-center">
+                            <div>
+                                <h1 class="text-xl font-bold uppercase">Ordem de Manutenção Preventiva (PMP)</h1>
+                                <p class="text-xs">MES Dona Zara - Gestão de Manutenção Industrial</p>
+                            </div>
+                            <div class="text-right text-xs">
+                                <p><b>Data Emissão:</b> ${new Date().toLocaleDateString('pt-BR')}</p>
+                                <p><b>Código PMP:</b> ${p.id}</p>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-2 text-xs border p-3 rounded">
+                            <p><b>Equipamento / Tag:</b> ${eq.tag || '-'} - ${eq.nome_macro || '-'}</p>
+                            <p><b>Setor:</b> ${eq.setor || '-'}</p>
+                            <p><b>Título do Plano:</b> ${p.titulo}</p>
+                            <p><b>Gatilho:</b> ${p.frequencia_tipo === 'HORIMETRO' ? p.intervalo + ' horas' : p.intervalo + ' dias'}</p>
+                            <p><b>Tempo Estimado:</b> ${p.tempo_estimado_minutos} minutos</p>
+                            <p><b>Data de Início:</b> ${p.data_inicio}</p>
+                        </div>
+
+                        <h3 class="font-bold text-xs uppercase border-b pt-2">Checklist de Tarefas</h3>
+                        <table class="w-full text-left text-xs border-collapse border border-black">
+                            <thead>
+                                <tr class="bg-gray-200">
+                                    <th class="border border-black p-1 w-10 text-center">Item</th>
+                                    <th class="border border-black p-1">Descrição da Tarefa</th>
+                                    <th class="border border-black p-1 w-32">Especialidade</th>
+                                    <th class="border border-black p-1 w-20 text-center">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${p.checklist.map((c, idx) => `
+                                    <tr>
+                                        <td class="border border-black p-1 text-center font-bold">${idx + 1}</td>
+                                        <td class="border border-black p-1">${c.descricao}</td>
+                                        <td class="border border-black p-1">${c.especialidade}</td>
+                                        <td class="border border-black p-1 text-center">[  ] OK</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+
+                        <div class="pt-8 grid grid-cols-2 gap-8 text-xs text-center">
+                            <div class="border-t border-black pt-1">Assinatura Técnico Responsável</div>
+                            <div class="border-t border-black pt-1">Visto PCM / Supervisão</div>
+                        </div>
+                    </div>
                 `;
             }).join('');
+
+            window.print();
         }
 
-        function salvarOS(e) {
-            e.preventDefault();
-            const item = {
-                id: document.getElementById("osId").value || Date.now().toString(),
-                equipamentoId: document.getElementById("osEquipamento").value,
-                tipo: document.getElementById("osTipo").value,
-                tecnicoId: document.getElementById("osTecnico").value,
-                horas: Number(document.getElementById("osHoras").value),
-                custoPecas: Number(document.getElementById("osCustoPecas").value) || 0,
-                status: document.getElementById("osStatus").value,
-                descricao: document.getElementById("osDescricao").value.trim(),
-                data: new Date().toLocaleDateString('pt-BR')
-            };
-
-            let list = JSON.parse(localStorage.getItem(CHAVES.OS) || "[]");
-            const idx = list.findIndex(i => i.id === item.id);
-            if (idx >= 0) list[idx] = item;
-            else list.push(item);
-
-            localStorage.setItem(CHAVES.OS, JSON.stringify(list));
-            document.getElementById("formOS").reset();
-            document.getElementById("osId").value = '';
-            carregarOS();
-            atualizarGrafico();
-        }
-
-        function excluirOS(id) {
-            if (confirm("Deseja realmente excluir esta Ordem de Serviço?")) {
-                let list = JSON.parse(localStorage.getItem(CHAVES.OS) || "[]");
-                list = list.filter(i => i.id !== id);
-                localStorage.setItem(CHAVES.OS, JSON.stringify(list));
-                carregarOS();
-                atualizarGrafico();
-                atualizarContadoresSelecao();
-            }
-        }
-
-        function selecionarTodasOS(chkMaster) {
-            document.querySelectorAll(".chk-os").forEach(chk => chk.checked = chkMaster.checked);
-            atualizarContadoresSelecao();
-        }
-
-        function carregarLubrificacoes() {
-            const list = JSON.parse(localStorage.getItem(CHAVES.LUBRIFICACAO) || "[]");
+        // ================= DASHBOARD & CHART.JS =================
+        function atualizarKpisDashboard() {
+            const osList = JSON.parse(localStorage.getItem(CHAVES.OS) || "[]");
             const eqList = JSON.parse(localStorage.getItem(CHAVES.EQUIPAMENTOS) || "[]");
-            const tbody = document.getElementById("tblLubrificacao");
-            const tbodyDash = document.getElementById("tblDashLubrificacao");
 
-            if (list.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="8" class="p-4 text-center italic text-slate-400">Nenhum plano de lubrificação cadastrado.</td></tr>`;
-                tbodyDash.innerHTML = `<tr><td colspan="4" class="p-3 text-center italic text-slate-400">Nenhum plano cadastrado.</td></tr>`;
-                return;
-            }
+            const horasDiaTotal = eqList.reduce((acc, item) => acc + (Number(item.horas_dia) || 16), 0);
+            const totalHorasParada = osList.filter(o => o.tipo === 'Corretiva').reduce((acc, item) => acc + (Number(item.horas) || 0), 0);
 
-            tbody.innerHTML = list.map(item => {
-                const eq = eqList.find(e => e.id === item.equipamentoId);
-                return `
-                    <tr class="hover:bg-slate-50 border-b">
-                        <td class="p-2.5 text-center border">
-                            <input type="checkbox" class="chk-lub rounded text-yellow-600 focus:ring-yellow-500" value="${item.id}" onchange="atualizarContadoresSelecao()">
-                        </td>
-                        <td class="p-2.5 border font-semibold">${eq ? eq.tag + ' - ' + eq.nomeMacro : 'N/A'}</td>
-                        <td class="p-2.5 border">${item.ponto}</td>
-                        <td class="p-2.5 border font-medium text-amber-700">${item.lubrificante}</td>
-                        <td class="p-2.5 border">${item.quantidade}</td>
-                        <td class="p-2.5 border text-center font-bold">${item.frequencia}</td>
-                        <td class="p-2.5 border">${item.metodo}</td>
-                        <td class="p-2.5 border text-center">
-                            <button onclick="excluirLubrificacao('${item.id}')" class="p-1 text-rose-600 hover:bg-rose-50 rounded" title="Excluir"><i class="fa-solid fa-trash"></i></button>
-                        </td>
-                    </tr>
-                `;
-            }).join('');
+            const tempoPlanejado = horasDiaTotal * 30 || 720;
+            const tempoOperacao = Math.max(0, tempoPlanejado - totalHorasParada);
+            const disp = tempoPlanejado > 0 ? (tempoOperacao / tempoPlanejado) * 100 : 100;
 
-            tbodyDash.innerHTML = list.slice(0, 5).map(item => {
-                const eq = eqList.find(e => e.id === item.equipamentoId);
-                return `
-                    <tr class="border-b">
-                        <td class="p-2 font-bold">${eq ? eq.tag : 'N/A'}</td>
-                        <td class="p-2">${item.ponto}</td>
-                        <td class="p-2 font-medium text-amber-700">${item.lubrificante}</td>
-                        <td class="p-2 text-center font-bold">${item.frequencia}</td>
-                    </tr>
-                `;
-            }).join('');
-        }
+            document.getElementById("kpiDisponibilidade").textContent = `${disp.toFixed(1)}%`;
 
-        function salvarLubrificacao(e) {
-            e.preventDefault();
-            const item = {
-                id: Date.now().toString(),
-                equipamentoId: document.getElementById("lubEquipamento").value,
-                ponto: document.getElementById("lubPonto").value.trim(),
-                lubrificante: document.getElementById("lubLubrificante").value.trim(),
-                quantidade: document.getElementById("lubQuantidade").value.trim(),
-                frequencia: document.getElementById("lubFrequencia").value,
-                metodo: document.getElementById("lubMetodo").value.trim()
-            };
+            const numFalhas = osList.filter(o => o.tipo === 'Corretiva').length;
+            const mtbf = numFalhas > 0 ? (tempoOperacao / numFalhas) : tempoOperacao;
+            const mttr = numFalhas > 0 ? (totalHorasParada / numFalhas) : 0;
 
-            let list = JSON.parse(localStorage.getItem(CHAVES.LUBRIFICACAO) || "[]");
-            list.push(item);
-            localStorage.setItem(CHAVES.LUBRIFICACAO, JSON.stringify(list));
+            document.getElementById("kpiMTBF").textContent = `${mtbf.toFixed(1)} h`;
+            document.getElementById("kpiMTTR").textContent = `${mttr.toFixed(1)} h`;
 
-            document.getElementById("formLubrificacao").reset();
-            carregarLubrificacoes();
-        }
+            const oee = (disp / 100) * 0.90 * 0.98 * 100;
+            document.getElementById("kpiOEE").textContent = `${oee.toFixed(1)} %`;
 
-        function excluirLubrificacao(id) {
-            if (confirm("Deseja realmente excluir este plano de lubrificação?")) {
-                let list = JSON.parse(localStorage.getItem(CHAVES.LUBRIFICACAO) || "[]");
-                list = list.filter(i => i.id !== id);
-                localStorage.setItem(CHAVES.LUBRIFICACAO, JSON.stringify(list));
-                carregarLubrificacoes();
-                atualizarContadoresSelecao();
-            }
-        }
-
-        function selecionarTodasLub(chkMaster) {
-            document.querySelectorAll(".chk-lub").forEach(chk => chk.checked = chkMaster.checked);
-            atualizarContadoresSelecao();
-        }
-
-        function carregarPecas() {
-            const list = JSON.parse(localStorage.getItem(CHAVES.PECAS) || "[]");
-            const tbody = document.getElementById("tblPecas");
-
-            if (list.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-center italic text-slate-400">Nenhuma peça cadastrada.</td></tr>`;
-                return;
-            }
-
-            tbody.innerHTML = list.map(item => {
-                const alertaEstoque = item.estoque <= item.minimo;
-                return `
-                    <tr class="hover:bg-slate-50 border-b">
-                        <td class="p-2 border font-mono font-bold text-emerald-700">${item.codigo}</td>
-                        <td class="p-2 border font-medium">${item.descricao}</td>
-                        <td class="p-2 border text-center font-bold ${alertaEstoque ? 'text-rose-600 bg-rose-50' : ''}">${item.estoque}</td>
-                        <td class="p-2 border text-center font-medium">${item.minimo}</td>
-                        <td class="p-2 border text-right font-bold text-emerald-700">R$ ${(item.custo || 0).toFixed(2)}</td>
-                        <td class="p-2 border text-center">
-                            <button onclick="excluirPeca('${item.id}')" class="p-1 text-rose-600 hover:bg-rose-50 rounded" title="Excluir"><i class="fa-solid fa-trash"></i></button>
-                        </td>
-                    </tr>
-                `;
-            }).join('');
-        }
-
-        function salvarPeca(e) {
-            e.preventDefault();
-            const item = {
-                id: Date.now().toString(),
-                codigo: document.getElementById("pecaCodigo").value.trim().toUpperCase(),
-                descricao: document.getElementById("pecaDescricao").value.trim(),
-                estoque: Number(document.getElementById("pecaEstoque").value),
-                minimo: Number(document.getElementById("pecaMinimo").value),
-                custo: Number(document.getElementById("pecaCusto").value) || 0
-            };
-
-            let list = JSON.parse(localStorage.getItem(CHAVES.PECAS) || "[]");
-            list.push(item);
-            localStorage.setItem(CHAVES.PECAS, JSON.stringify(list));
-
-            document.getElementById("formPeca").reset();
-            carregarPecas();
-        }
-
-        function excluirPeca(id) {
-            if (confirm("Deseja realmente excluir esta peça?")) {
-                let list = JSON.parse(localStorage.getItem(CHAVES.PECAS) || "[]");
-                list = list.filter(i => i.id !== id);
-                localStorage.setItem(CHAVES.PECAS, JSON.stringify(list));
-                carregarPecas();
+            // Tabela Próximas Lubrificações no Dash
+            const lubList = JSON.parse(localStorage.getItem(CHAVES.LUBRIFICACAO) || "[]");
+            const tblDashLub = document.getElementById("tblDashLubrificacao");
+            if (tblDashLub) {
+                tblDashLub.innerHTML = lubList.length === 0 ? `<tr><td colspan="4" class="p-3 text-center italic text-slate-400">Nenhum plano cadastrado.</td></tr>` :
+                lubList.slice(0, 5).map(l => {
+                    const eq = eqList.find(e => String(e.id) === String(l.equipamento_id));
+                    return `
+                        <tr class="border-b">
+                            <td class="p-2 font-bold">${eq ? eq.tag : 'Ativo'}</td>
+                            <td class="p-2">${l.ponto}</td>
+                            <td class="p-2 font-semibold text-amber-700">${l.lubrificante}</td>
+                            <td class="p-2 text-center font-bold">${l.frequencia}</td>
+                        </tr>
+                    `;
+                }).join('');
             }
         }
 
@@ -1378,288 +1435,13 @@
 
         function atualizarGrafico() {
             if (!chartTiposOSInstance) return;
-
             const osList = JSON.parse(localStorage.getItem(CHAVES.OS) || "[]");
-            const c = osList.filter(o => o.tipo === 'Corretiva').reduce((a, b) => a + (b.horas || 0), 0);
-            const p = osList.filter(o => o.tipo === 'Preventiva').reduce((a, b) => a + (b.horas || 0), 0);
-            const pd = osList.filter(o => o.tipo === 'Preditiva').reduce((a, b) => a + (b.horas || 0), 0);
+            const c = osList.filter(o => o.tipo === 'Corretiva').reduce((a, b) => a + (Number(b.horas) || 0), 0);
+            const p = osList.filter(o => o.tipo === 'Preventiva').reduce((a, b) => a + (Number(b.horas) || 0), 0);
+            const pd = osList.filter(o => o.tipo === 'Preditiva').reduce((a, b) => a + (Number(b.horas) || 0), 0);
 
             chartTiposOSInstance.data.datasets[0].data = [c, p, pd];
             chartTiposOSInstance.update();
-
-            const totalHorasParadas = c + p + pd;
-            const eqList = JSON.parse(localStorage.getItem(CHAVES.EQUIPAMENTOS) || "[]");
-            const horasPlanejadasMes = (eqList.reduce((a, b) => a + (b.horasDia || 16), 0) || 16) * 30;
-
-            const disp = horasPlanejadasMes > 0 ? Math.max(0, ((horasPlanejadasMes - totalHorasParadas) / horasPlanejadasMes) * 100) : 100;
-            document.getElementById("kpiDisponibilidade").textContent = `${disp.toFixed(1)}%`;
-
-            const numFalhas = osList.filter(o => o.tipo === 'Corretiva').length;
-            const mtbf = numFalhas > 0 ? (horasPlanejadasMes - totalHorasParadas) / numFalhas : horasPlanejadasMes;
-            const mttr = numFalhas > 0 ? c / numFalhas : 0;
-
-            document.getElementById("kpiMTBF").textContent = `${mtbf.toFixed(1)} h`;
-            document.getElementById("kpiMTTR").textContent = `${mttr.toFixed(1)} h`;
-
-            const oee = (disp / 100) * 0.90 * 0.98 * 100;
-            document.getElementById("kpiOEE").textContent = `${oee.toFixed(1)} %`;
-        }
-
-        function atualizarContadoresSelecao() {
-            const countPMP = document.querySelectorAll(".chk-pmp:checked").length;
-            const countOS = document.querySelectorAll(".chk-os:checked").length;
-            const countLub = document.querySelectorAll(".chk-lub:checked").length;
-
-            const elPMP = document.getElementById("countPMPSelecionados");
-            const elOS = document.getElementById("countOSSelecionadas");
-            const elLub = document.getElementById("countLubSelecionadas");
-
-            if (elPMP) elPMP.textContent = countPMP;
-            if (elOS) elOS.textContent = countOS;
-            if (elLub) elLub.textContent = countLub;
-        }
-
-        /* FUNÇÕES DE IMPRESSÃO */
-        function executarImpressao(conteudoHtml) {
-            const area = document.getElementById("areaImpressao");
-            area.innerHTML = conteudoHtml;
-            area.classList.remove("hidden");
-            window.print();
-            area.classList.add("hidden");
-            area.innerHTML = "";
-        }
-
-        /* 1. IMPRESSÃO PMP */
-        function gerarHtmlPMP(pmp, eq) {
-            const checklistRows = (pmp.checklist || []).map((item, index) => `
-                <tr style="border-bottom: 1px solid #ddd;">
-                    <td style="padding: 6px; text-align: center; font-weight: bold;">${index + 1}</td>
-                    <td style="padding: 6px;">${item.descricao}</td>
-                    <td style="padding: 6px; text-align: center;">${item.especialidade}</td>
-                    <td style="padding: 6px; text-align: center;">[ &nbsp; ] C &nbsp;&nbsp; [ &nbsp; ] NC &nbsp;&nbsp; [ &nbsp; ] N/A</td>
-                </tr>
-            `).join('');
-
-            return `
-                <div class="page-break" style="font-family: Arial, sans-serif; font-size: 12px; color: #000; margin-bottom: 30px;">
-                    <div style="text-align: center; border-bottom: 2px solid #000; padding-bottom: 8px; margin-bottom: 12px;">
-                        <h2 style="margin:0; font-size: 16px; font-weight: bold;">MES DONA ZARA - PLANO DE MANUTENÇÃO PREVENTIVA (PMP)</h2>
-                        <p style="margin: 2px 0 0 0; font-size: 11px;">Relatório de Ficha Técnica e Rotina de Inspeção</p>
-                    </div>
-
-                    <table style="width: 100%; border-collapse: collapse; margin-bottom: 15px; font-size: 11px;" border="1">
-                        <tr>
-                            <td style="padding: 5px; background: #f2f2f2; font-weight: bold; width: 20%;">Título do Plano:</td>
-                            <td style="padding: 5px; font-weight: bold;" colspan="3">${pmp.titulo}</td>
-                        </tr>
-                        <tr>
-                            <td style="padding: 5px; background: #f2f2f2; font-weight: bold;">Equipamento / Ativo:</td>
-                            <td style="padding: 5px;">${eq ? eq.tag + ' - ' + eq.nomeMacro + ' (' + eq.componente + ')' : 'N/A'}</td>
-                            <td style="padding: 5px; background: #f2f2f2; font-weight: bold; width: 15%;">Setor:</td>
-                            <td style="padding: 5px;">${eq ? eq.setor : 'N/A'}</td>
-                        </tr>
-                        <tr>
-                            <td style="padding: 5px; background: #f2f2f2; font-weight: bold;">Gatilho / Frequência:</td>
-                            <td style="padding: 5px;">${pmp.intervalo} ${pmp.frequencia_tipo === 'TEMPO' ? 'Dias' : 'Horas'}</td>
-                            <td style="padding: 5px; background: #f2f2f2; font-weight: bold;">Tempo Estimado:</td>
-                            <td style="padding: 5px;">${pmp.tempo_estimado_minutos} minutos</td>
-                        </tr>
-                    </table>
-
-                    <h4 style="margin: 10px 0 5px 0; font-size: 12px; font-weight: bold;">CHECKLIST DE INSPEÇÃO E MANUTENÇÃO:</h4>
-                    <table style="width: 100%; border-collapse: collapse; font-size: 11px;" border="1">
-                        <thead>
-                            <tr style="background: #f2f2f2;">
-                                <th style="padding: 5px; width: 8%;">Item</th>
-                                <th style="padding: 5px;">Descrição da Tarefa</th>
-                                <th style="padding: 5px; width: 20%;">Especialidade</th>
-                                <th style="padding: 5px; width: 25%;">Status Execução</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            ${checklistRows || '<tr><td colspan="4" style="padding: 8px; text-align: center;">Nenhuma tarefa cadastrada neste plano.</td></tr>'}
-                        </tbody>
-                    </table>
-
-                    <div style="margin-top: 30px; display: flex; justify-content: space-between; font-size: 10px;">
-                        <div style="width: 45%; border-top: 1px solid #000; text-align: center; padding-top: 4px;">Assinatura do Técnico Responsável</div>
-                        <div style="width: 45%; border-top: 1px solid #000; text-align: center; padding-top: 4px;">Supervisão / PCM</div>
-                    </div>
-                </div>
-            `;
-        }
-
-        function imprimirPMPUnico(id) {
-            const list = JSON.parse(localStorage.getItem(CHAVES.PMP) || "[]");
-            const eqList = JSON.parse(localStorage.getItem(CHAVES.EQUIPAMENTOS) || "[]");
-            const pmp = list.find(i => i.id === id);
-            if (!pmp) return;
-            const eq = eqList.find(e => e.id === pmp.equipamentoId);
-            executarImpressao(gerarHtmlPMP(pmp, eq));
-        }
-
-        function imprimirPMPSelecionados() {
-            const selecionados = Array.from(document.querySelectorAll(".chk-pmp:checked")).map(c => c.value);
-            if (selecionados.length === 0) {
-                alert("Selecione ao menos um Plano PMP para imprimir.");
-                return;
-            }
-            const list = JSON.parse(localStorage.getItem(CHAVES.PMP) || "[]");
-            const eqList = JSON.parse(localStorage.getItem(CHAVES.EQUIPAMENTOS) || "[]");
-
-            let htmlFinal = "";
-            selecionados.forEach(id => {
-                const pmp = list.find(i => i.id === id);
-                if (pmp) {
-                    const eq = eqList.find(e => e.id === pmp.equipamentoId);
-                    htmlFinal += gerarHtmlPMP(pmp, eq);
-                }
-            });
-
-            executarImpressao(htmlFinal);
-        }
-
-        /* 2. IMPRESSÃO O/S */
-        function gerarHtmlOS(os, eq, tec) {
-            return `
-                <div class="page-break" style="font-family: Arial, sans-serif; font-size: 12px; color: #000; margin-bottom: 30px;">
-                    <div style="text-align: center; border-bottom: 2px solid #000; padding-bottom: 8px; margin-bottom: 12px;">
-                        <h2 style="margin:0; font-size: 16px; font-weight: bold;">MES DONA ZARA - ORDEM DE SERVIÇO DE MANUTENÇÃO</h2>
-                        <p style="margin: 2px 0 0 0; font-size: 11px;">Nº da O/S: #OS-${os.id.slice(-4)} | Data: ${os.data || '-'}</p>
-                    </div>
-
-                    <table style="width: 100%; border-collapse: collapse; margin-bottom: 15px; font-size: 11px;" border="1">
-                        <tr>
-                            <td style="padding: 5px; background: #f2f2f2; font-weight: bold; width: 20%;">Equipamento:</td>
-                            <td style="padding: 5px;" colspan="3">${eq ? eq.tag + ' - ' + eq.nomeMacro + ' (' + eq.componente + ')' : 'N/A'}</td>
-                        </tr>
-                        <tr>
-                            <td style="padding: 5px; background: #f2f2f2; font-weight: bold;">Setor:</td>
-                            <td style="padding: 5px;">${eq ? eq.setor : 'N/A'}</td>
-                            <td style="padding: 5px; background: #f2f2f2; font-weight: bold; width: 20%;">Tipo de Intervenção:</td>
-                            <td style="padding: 5px; font-weight: bold;">${os.tipo}</td>
-                        </tr>
-                        <tr>
-                            <td style="padding: 5px; background: #f2f2f2; font-weight: bold;">Técnico Responsável:</td>
-                            <td style="padding: 5px;">${tec ? tec.nome + ' (' + tec.especialidade + ')' : 'N/A'}</td>
-                            <td style="padding: 5px; background: #f2f2f2; font-weight: bold;">Status da O/S:</td>
-                            <td style="padding: 5px; font-weight: bold;">${os.status}</td>
-                        </tr>
-                        <tr>
-                            <td style="padding: 5px; background: #f2f2f2; font-weight: bold;">Tempo Máquina Parada:</td>
-                            <td style="padding: 5px;">${os.horas} horas</td>
-                            <td style="padding: 5px; background: #f2f2f2; font-weight: bold;">Custo de Peças:</td>
-                            <td style="padding: 5px;">R$ ${(os.custoPecas || 0).toFixed(2)}</td>
-                        </tr>
-                    </table>
-
-                    <div style="border: 1px solid #000; padding: 8px; margin-bottom: 20px; min-height: 80px;">
-                        <h4 style="margin: 0 0 5px 0; font-size: 11px; font-weight: bold;">DESCRIÇÃO DA OCORRÊNCIA E SERVIÇO REALIZADO:</h4>
-                        <p style="margin:0; font-size: 11px; white-space: pre-wrap;">${os.descricao}</p>
-                    </div>
-
-                    <div style="margin-top: 40px; display: flex; justify-content: space-between; font-size: 10px;">
-                        <div style="width: 45%; border-top: 1px solid #000; text-align: center; padding-top: 4px;">Assinatura do Mantenedor</div>
-                        <div style="width: 45%; border-top: 1px solid #000; text-align: center; padding-top: 4px;">Aprovação Operação / PCM</div>
-                    </div>
-                </div>
-            `;
-        }
-
-        function imprimirOSUnica(id) {
-            const list = JSON.parse(localStorage.getItem(CHAVES.OS) || "[]");
-            const eqList = JSON.parse(localStorage.getItem(CHAVES.EQUIPAMENTOS) || "[]");
-            const tecList = JSON.parse(localStorage.getItem(CHAVES.TECNICOS) || "[]");
-            const os = list.find(i => i.id === id);
-            if (!os) return;
-            const eq = eqList.find(e => e.id === os.equipamentoId);
-            const tec = tecList.find(t => t.id === os.tecnicoId);
-            executarImpressao(gerarHtmlOS(os, eq, tec));
-        }
-
-        function imprimirOSSelecionadas() {
-            const selecionados = Array.from(document.querySelectorAll(".chk-os:checked")).map(c => c.value);
-            if (selecionados.length === 0) {
-                alert("Selecione ao menos uma Ordem de Serviço para imprimir.");
-                return;
-            }
-            const list = JSON.parse(localStorage.getItem(CHAVES.OS) || "[]");
-            const eqList = JSON.parse(localStorage.getItem(CHAVES.EQUIPAMENTOS) || "[]");
-            const tecList = JSON.parse(localStorage.getItem(CHAVES.TECNICOS) || "[]");
-
-            let htmlFinal = "";
-            selecionados.forEach(id => {
-                const os = list.find(i => i.id === id);
-                if (os) {
-                    const eq = eqList.find(e => e.id === os.equipamentoId);
-                    const tec = tecList.find(t => t.id === os.tecnicoId);
-                    htmlFinal += gerarHtmlOS(os, eq, tec);
-                }
-            });
-
-            executarImpressao(htmlFinal);
-        }
-
-        /* 3. IMPRESSÃO LUBRIFICAÇÃO */
-        function imprimirLubrificacoesSelecionadas() {
-            const selecionados = Array.from(document.querySelectorAll(".chk-lub:checked")).map(c => c.value);
-            if (selecionados.length === 0) {
-                alert("Selecione ao menos um Plano de Lubrificação para imprimir.");
-                return;
-            }
-
-            const list = JSON.parse(localStorage.getItem(CHAVES.LUBRIFICACAO) || "[]");
-            const eqList = JSON.parse(localStorage.getItem(CHAVES.EQUIPAMENTOS) || "[]");
-
-            const rows = selecionados.map(id => {
-                const lub = list.find(i => i.id === id);
-                if (!lub) return '';
-                const eq = eqList.find(e => e.id === lub.equipamentoId);
-                return `
-                    <tr style="border-bottom: 1px solid #000;">
-                        <td style="padding: 6px; font-weight: bold;">${eq ? eq.tag + ' - ' + eq.nomeMacro : 'N/A'}</td>
-                        <td style="padding: 6px;">${lub.ponto}</td>
-                        <td style="padding: 6px;">${lub.lubrificante}</td>
-                        <td style="padding: 6px;">${lub.quantidade}</td>
-                        <td style="padding: 6px; text-align: center;">${lub.frequencia}</td>
-                        <td style="padding: 6px;">${lub.metodo}</td>
-                        <td style="padding: 6px; text-align: center;">[ &nbsp; ] OK</td>
-                    </tr>
-                `;
-            }).join('');
-
-            const htmlFinal = `
-                <div style="font-family: Arial, sans-serif; font-size: 11px; color: #000;">
-                    <div style="text-align: center; border-bottom: 2px solid #000; padding-bottom: 8px; margin-bottom: 12px;">
-                        <h2 style="margin:0; font-size: 16px; font-weight: bold;">MES DONA ZARA - ROTEIRO DE LUBRIFICAÇÃO INDUSTRIAL</h2>
-                        <p style="margin: 2px 0 0 0; font-size: 11px;">Checklist e Plano de Trabalho para Aplicação de Lubrificantes</p>
-                    </div>
-
-                    <table style="width: 100%; border-collapse: collapse; font-size: 11px;" border="1">
-                        <thead>
-                            <tr style="background: #f2f2f2;">
-                                <th style="padding: 6px;">Equipamento / Tag</th>
-                                <th style="padding: 6px;">Ponto de Lubrificação</th>
-                                <th style="padding: 6px;">Lubrificante Especificado</th>
-                                <th style="padding: 6px;">Volume / Qtd.</th>
-                                <th style="padding: 6px;">Frequência</th>
-                                <th style="padding: 6px;">Método</th>
-                                <th style="padding: 6px; width: 12%;">Visto</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            ${rows}
-                        </tbody>
-                    </table>
-
-                    <div style="margin-top: 40px; display: flex; justify-content: space-between; font-size: 10px;">
-                        <div style="width: 45%; border-top: 1px solid #000; text-align: center; padding-top: 4px;">Lubrificador / Responsável</div>
-                        <div style="width: 45%; border-top: 1px solid #000; text-align: center; padding-top: 4px;">Supervisão de Manutenção</div>
-                    </div>
-                </div>
-            `;
-
-            executarImpressao(htmlFinal);
         }
     </script>
 </body>
