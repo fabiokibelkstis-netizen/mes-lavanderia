@@ -768,16 +768,36 @@ document.addEventListener('DOMContentLoaded', carregarSelectsProdutosQuimicos);
             carregarQuadrosResumo();
             renderizarGraficoGeral();
         } else if (opcao === 'quimicos') {
-	    // Atualiza a lista com o cadastro mais recente
-            carregarSelectsProdutosQuimicos();
-            moduloAtual = 'quimicos';
-            const config = MODULOS.quimicos;
-            document.getElementById('tituloPagina').innerText = config.titulo;
-            document.getElementById('subtituloPagina').innerText = config.subtitulo;
-            document.getElementById('acaoTopBar').innerHTML = '';
-            document.getElementById('view-quimicos-modulo').classList.remove('hidden');
-            
-            alternarAbaQuimicos('historico');
+// 1. Atualiza os selects de produtos do localStorage
+    if (typeof carregarSelectsProdutosQuimicos === 'function') {
+        carregarSelectsProdutosQuimicos();
+    }
+
+    moduloAtual = 'quimicos';
+    const config = MODULOS.quimicos || { 
+        titulo: "Gestão Integrada de Produtos Químicos", 
+        subtitulo: "Registo de Consumo Diário, Recebimento e Estoque" 
+    };
+
+    // 2. Atualiza os títulos da página
+    const elTitulo = document.getElementById('tituloPagina');
+    const elSub = document.getElementById('subtituloPagina');
+    const elAcao = document.getElementById('acaoTopBar');
+
+    if (elTitulo) elTitulo.innerText = config.titulo;
+    if (elSub) elSub.innerText = config.subtitulo;
+    if (elAcao) elAcao.innerHTML = '';
+
+    // 3. Exibe o módulo correto usando o ID exatamente como declarado no HTML (modulo-quimicos)
+    const viewQuimicos = document.getElementById('modulo-quimicos') || document.getElementById('view-quimicos-modulo');
+    if (viewQuimicos) {
+        viewQuimicos.classList.remove('hidden');
+    }
+
+    // 4. Abre por padrão a aba de Consumo
+    if (typeof alternarAbaQuimicos === 'function') {
+        alternarAbaQuimicos('consumo');
+    }
         } else {
             moduloAtual = opcao;
             const config = MODULOS[opcao];
@@ -828,23 +848,50 @@ function preencherSelectsProdutosQuimicos() {
 }
 
 // --- CONTROLE DAS ABAS DO MÓDULO DE PRODUTOS QUÍMICOS ---
+// --- NAVEGAÇÃO SEGURA DAS ABAS DE PRODUTOS QUÍMICOS ---
 function alternarAbaQuimicos(aba) {
-    carregarSelectsProdutosQuimicos();
+    // 1. Mapeia os containers das subviews de forma segura
+    const viewHist = document.getElementById('subview-quimicos-historico') || document.getElementById('quimicos-tab-historico');
+    const viewCons = document.getElementById('subview-quimicos-consumo') || document.getElementById('quimicos-tab-consumo');
+    const viewEst  = document.getElementById('subview-quimicos-estoque') || document.getElementById('quimicos-tab-recebimento');
 
-    // Mostra/oculta subviews
-    document.getElementById('subview-quimicos-historico').classList.add('hidden');
-    document.getElementById('subview-quimicos-consumo').classList.add('hidden');
-    document.getElementById('subview-quimicos-estoque').classList.add('hidden');
+    // Oculta todas as subviews verificando se existem (evita travar o JS)
+    if (viewHist) viewHist.classList.add('hidden');
+    if (viewCons) viewCons.classList.add('hidden');
+    if (viewEst)  viewEst.classList.add('hidden');
 
-    if (aba === 'consumo') {
-        document.getElementById('subview-quimicos-consumo').classList.remove('hidden');
-        renderizarHistoricoConsumoQuimico(); // Carrega o histórico ao abrir a aba
-    } else if (aba === 'historico') {
-        document.getElementById('subview-quimicos-historico').classList.remove('hidden');
+    // 2. Mapeia os botões seletores
+    const btnHist = document.getElementById('tab-quimicos-historico');
+    const btnCons = document.getElementById('tab-quimicos-consumo');
+    const btnEst  = document.getElementById('tab-quimicos-estoque');
+
+    const classeInativa = "px-4 py-2.5 rounded-lg text-xs font-bold transition flex items-center gap-2 text-slate-600 hover:bg-slate-100";
+    const classeAtiva   = "px-4 py-2.5 rounded-lg text-xs font-bold transition flex items-center gap-2 bg-purple-600 text-white shadow";
+
+    if (btnHist) btnHist.className = classeInativa;
+    if (btnCons) btnCons.className = classeInativa;
+    if (btnEst)  btnEst.className = classeInativa;
+
+    // 3. Atualiza os selects de produtos químicos
+    if (typeof preencherSelectsProdutosQuimicos === 'function') {
+        preencherSelectsProdutosQuimicos();
+    }
+
+    // 4. Exibe a subview solicitada
+    if (aba === 'historico') {
+        if (btnHist) btnHist.className = classeAtiva;
+        if (viewHist) viewHist.classList.remove('hidden');
+        if (typeof renderizarHistoricoConsumoQuimico === 'function') renderizarHistoricoConsumoQuimico();
+    } else if (aba === 'consumo') {
+        if (btnCons) btnCons.className = classeAtiva;
+        if (viewCons) viewCons.classList.remove('hidden');
+        if (typeof renderizarHistoricoConsumoQuimico === 'function') renderizarHistoricoConsumoQuimico();
     } else if (aba === 'estoque') {
-        document.getElementById('subview-quimicos-estoque').classList.remove('hidden');
+        if (btnEst) btnEst.className = classeAtiva;
+        if (viewEst) viewEst.classList.remove('hidden');
     }
 }
+
 function salvarConsumoQuimico(e) {
     e.preventDefault();
     const dataVal = document.getElementById('consumoData').value;
