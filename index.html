@@ -1531,6 +1531,123 @@ function salvarConsumoQuimico(e) {
             `;
         }).join('');
     }
+
+// --- OBTÉM O ÚLTIMO ESTOQUE REGISTRADO PARA UM PRODUTO ESPECÍFICO ---
+function obterUltimoEstoque(prodId) {
+    const historicoConsumo = JSON.parse(localStorage.getItem('mes_quimicos_consumo') || '[]');
+    // Procura o registro mais recente desse produto
+    const ultimoRegistro = historicoConsumo.find(item => item.prodId === prodId);
+    
+    if (ultimoRegistro && ultimoRegistro.estoqueAtual !== undefined) {
+        return parseFloat(ultimoRegistro.estoqueAtual);
+    }
+
+    // Caso não exista consumo anterior, busca o estoque inicial do cadastro em configuracoes.html
+    const produtosConfig = JSON.parse(localStorage.getItem('mes_config_quimicos') || '[]');
+    const prodConfig = produtosConfig.find(p => (p.id || p.codigo) === prodId);
+    return prodConfig ? (parseFloat(prodConfig.estoqueInicial) || 0) : 0;
+}
+
+// --- ATUALIZA A TELA QUANDO O PRODUTO É SELECIONADO ---
+function atualizarPreviewEstoqueAnterior() {
+    const prodId = document.getElementById('consumoProdId').value;
+    const infoBox = document.getElementById('infoEstoqueAnterior');
+    const valSpan = document.getElementById('valEstoqueAnterior');
+
+    if (!prodId) {
+        if (infoBox) infoBox.classList.add('hidden');
+        return;
+    }
+
+    const estoqueAnterior = obterUltimoEstoque(prodId);
+    if (valSpan) valSpan.innerText = `${estoqueAnterior.toFixed(2)}`;
+    if (infoBox) infoBox.classList.remove('hidden');
+
+    calcularPreviewConsumo();
+}
+
+// --- CALCULA EM TEMPO REAL O CONSUMO E EXIBE NO CAMPO ---
+function calcularPreviewConsumo() {
+    const prodId = document.getElementById('consumoProdId').value;
+    const estoqueAtual = parseFloat(document.getElementById('consumoEstoqueAtual').value) || 0;
+    const previewInput = document.getElementById('previewConsumoCalculado');
+
+    if (!prodId) {
+        if (previewInput) previewInput.value = '0.00';
+        return;
+    }
+
+    const estoqueAnterior = obterUltimoEstoque(prodId);
+    // Consumo = Estoque Anterior - Estoque Atual (ou 0 se o estoque atual for maior/igual)
+    let consumoCalculado = estoqueAnterior - estoqueAtual;
+    if (consumoCalculado < 0) consumoCalculado = 0;
+
+    if (previewInput) {
+        previewInput.value = `${consumoCalculado.toFixed(2)}`;
+    }
+}
+
+// --- SALVA O CONSUMO CALCULADO COM O CUSTO PROPORCIONAL ---
+function salvarConsumoQuimico(e) {
+    e.preventDefault();
+
+    const prodId = document.getElementById('consumoProdId').value;
+    const estoqueAtual = parseFloat(document.getElementById('consumoEstoqueAtual').value) || 0;
+    const dataVal = document.getElementById('consumoData').value;
+    const obs = document.getElementById('consumoObs').value;
+
+    if (!prodId) {
+        alert("Selecione um produto químico.");
+        return;
+    }
+
+    // 1. Busca produto em configuracoes.html para pegar custo e unidade
+    const produtosConfig = JSON.parse(localStorage.getItem('mes_config_quimicos') || '[]');
+    const produto = produtosConfig.find(p => (p.id || p.codigo) === prodId);
+
+    const custoUnitario = produto ? (parseFloat(produto.custoPadrao) || 0) : 0;
+    const estoqueAnterior = obterUltimoEstoque(prodId);
+
+    // 2. Cálculo do Consumo e Custo Proporcional
+    let quantidadeConsumida = estoqueAnterior - estoqueAtual;
+    if (quantidadeConsumida < 0) {
+        if (!confirm("O estoque atual informado é maior que o estoque anterior registrado. Deseja prosseguir considerando consumo zero?")) {
+            return;
+        }
+        quantidadeConsumida = 0;
+    }
+
+    const custoTotalProporcional = quantidadeConsumida * custoUnitario;
+
+    // 3. Estrutura do objeto gravado
+    const novoRegistro = {
+        id: Date.now().toString(),
+        prodId: prodId,
+        produtoNome: produto ? produto.nome : prodId,
+        unidade: produto ? (produto.un || produto.unidade || 'L') : 'L',
+        estoqueAnterior: estoqueAnterior,
+        estoqueAtual: estoqueAtual,
+        quantidadeConsumida: quantidadeConsumida,
+        custoUnitario: custoUnitario,
+        custoTotal: custoTotalProporcional,
+        data: dataVal,
+        observacao: obs
+    };
+
+    // 4. Grava no localStorage
+    let historicoConsumo = JSON.parse(localStorage.getItem('mes_quimicos_consumo') || '[]');
+    historicoConsumo.unshift(novoRegistro);
+    localStorage.setItem('mes_quimicos_consumo', JSON.stringify(historicoConsumo));
+
+    alert(`Consumo de ${quantidadeConsumida.toFixed(2)} registrado com sucesso!\nCusto Proporcional: R$ ${custoTotalProporcional.toFixed(2)}`);
+
+    // Reset do Formulário e Atualização da UI
+    document.getElementById('formConsumoQuimico').reset();
+    document.getElementById('infoEstoqueAnterior').classList.add('hidden');
+    
+    if (typeof renderizarHistoricoConsumo === 'function') renderizarHistoricoConsumo();
+    if (typeof renderizarGraficoConsumo === 'function') renderizarGraficoConsumo();
+}
     </script>
 </body>
 </html>
