@@ -577,41 +577,39 @@
     ];
     */
 
-// Chave utilizada em configuracoes.html
+// Chave do localStorage gravada pelo configuracoes.html
 const CHAVE_CONFIG_QUIMICOS = 'mes_config_quimicos';
 
 /**
- * Atualiza os campos <select> de Consumo e Recebimento com os produtos de configuracoes.html
+ * Busca os produtos cadastrados em configuracoes.html e popula os selects de Consumo e Recebimento
  */
 function carregarSelectsProdutosQuimicos() {
-    // 1. Busca os produtos químicos salvos no localStorage
+    // 1. Obtém os produtos salvos no localStorage
     const listaProdutos = JSON.parse(localStorage.getItem(CHAVE_CONFIG_QUIMICOS) || "[]");
 
-    // 2. Captura os elementos <select> da tela (Ajuste os IDs se no seu HTML forem diferentes)
-    const selectConsumo = document.getElementById('consumoProduto') || document.getElementById('consumo_produto_id');
-    const selectRecebimento = document.getElementById('recebimentoProduto') || document.getElementById('recebimento_produto_id');
+    // 2. Captura os elementos <select> exatos presentes no index.html
+    const selectConsumo = document.getElementById('consumoProduto');
+    const selectRecebimento = document.getElementById('recebimentoProduto');
 
-    // 3. Monta as opções HTML
+    // 3. Monta as opções do dropdown
     let optionsHTML = '<option value="">-- Selecione o Produto Químico --</option>';
 
     if (listaProdutos.length === 0) {
         optionsHTML += '<option value="" disabled>Nenhum produto cadastrado em Configurações</option>';
     } else {
         listaProdutos.forEach(prod => {
-            // Exibe 'Nome (Unidade)' no texto da opção
-            optionsHTML += `<option value="${prod.id}">${prod.nome} (${prod.un})</option>`;
+            // Utiliza prod.id (código) como valor e mostra "Nome (Unidade)"
+            optionsHTML += `<option value="${prod.id}">${prod.nome} (${prod.un || 'un'})</option>`;
         });
     }
 
-    // 4. Aplica os options nos selects da tela
+    // 4. Injeta nos selects caso existam na página
     if (selectConsumo) selectConsumo.innerHTML = optionsHTML;
     if (selectRecebimento) selectRecebimento.innerHTML = optionsHTML;
 }
 
-// Executa o carregamento assim que o DOM estiver pronto
-document.addEventListener('DOMContentLoaded', () => {
-    carregarSelectsProdutosQuimicos();
-});
+// Carrega automaticamente ao abrir/recarregar a página
+document.addEventListener('DOMContentLoaded', carregarSelectsProdutosQuimicos);
 
     // MAPEAMENTO DAS CHAVES DE LOCALSTORAGE PARA TODOS OS MÓDULOS
     const MODULOS = {
@@ -771,6 +769,8 @@ document.addEventListener('DOMContentLoaded', () => {
             carregarQuadrosResumo();
             renderizarGraficoGeral();
         } else if (opcao === 'quimicos') {
+	    // Atualiza a lista com o cadastro mais recente
+            carregarSelectsProdutosQuimicos();
             moduloAtual = 'quimicos';
             const config = MODULOS.quimicos;
             document.getElementById('tituloPagina').innerText = config.titulo;
