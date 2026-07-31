@@ -397,11 +397,8 @@
                             </div>
                             <div>
                                 <label class="block text-xs font-bold text-slate-700 mb-1">Produto Químico</label>
-                                <!--<select id="consumoProdId" required class="w-full p-2.5 border rounded-xl text-xs bg-slate-50 focus:ring-2 focus:ring-purple-500 outline-none">
-                                    </select>-->
-					    <select id="consumoProduto" required class="w-full p-2.5 border rounded-xl text-xs bg-slate-50 font-semibold focus:ring-2 focus:ring-blue-500">
-        					<option value="">-- Selecione o Produto Químico --</option>
-    					    </select>
+					<select id="consumoProdId" name="produto" required class="w-full p-2.5 border rounded-xl text-xs bg-slate-50 font-semibold focus:ring-2 focus:ring-					purple-500 outline-none">
+					</select>
                             </div>
                        </div>
 
@@ -449,11 +446,8 @@
                             </div>
                             <div>
                                 <label class="block text-xs font-bold text-slate-700 mb-1">Produto Químico</label>
-                                <!--<select id="recProdId" required class="w-full p-2.5 border rounded-xl text-xs bg-slate-50 focus:ring-2 focus:ring-emerald-500 outline-none">
-                                    </select>-->
-    					<select id="recebimentoProduto" required class="w-full p-2.5 border rounded-xl text-xs bg-slate-50 font-semibold focus:ring-2 focus:ring-emerald-500">
-        					<option value="">-- Selecione o Produto Químico --</option>
-    					</select>
+				<select id="recProdId" name="produto" required class="w-full p-2.5 border rounded-xl text-xs bg-slate-50 font-semibold focus:ring-2 focus:ring-emerald-500 				outline-none">
+				</select>
 
                             </div>
 
@@ -584,26 +578,32 @@ const CHAVE_CONFIG_QUIMICOS = 'mes_config_quimicos';
  * Busca os produtos cadastrados em configuracoes.html e popula os selects de Consumo e Recebimento
  */
 function carregarSelectsProdutosQuimicos() {
-    // 1. Obtém os produtos salvos no localStorage
-    const listaProdutos = JSON.parse(localStorage.getItem(CHAVE_CONFIG_QUIMICOS) || "[]");
+    // 1. Tenta buscar ambos os IDs (garante compatibilidade com os formulários do HTML)
+    const selectConsumo = document.getElementById('consumoProdId') || document.getElementById('consumoProduto');
+    const selectRecebimento = document.getElementById('recProdId') || document.getElementById('recebimentoProduto');
 
-    // 2. Captura os elementos <select> exatos presentes no index.html
-    const selectConsumo = document.getElementById('consumoProduto');
-    const selectRecebimento = document.getElementById('recebimentoProduto');
+    if (!selectConsumo && !selectRecebimento) return;
 
-    // 3. Monta as opções do dropdown
+    // 2. Busca lista atualizada de produtos químicos do localStorage
+    const listaProdutos = obterListaProdutosQuimicos();
+
+    // 3. Monta as opções dinâmicas
     let optionsHTML = '<option value="">-- Selecione o Produto Químico --</option>';
 
     if (listaProdutos.length === 0) {
         optionsHTML += '<option value="" disabled>Nenhum produto cadastrado em Configurações</option>';
     } else {
         listaProdutos.forEach(prod => {
-            // Utiliza prod.id (código) como valor e mostra "Nome (Unidade)"
-            optionsHTML += `<option value="${prod.id}">${prod.nome} (${prod.un || 'un'})</option>`;
+            // Suporta tanto a propriedade 'id' quanto 'codigo'
+            const idVal = prod.id || prod.codigo;
+            // Suporta tanto 'un' quanto 'unidade'
+            const unVal = prod.un || prod.unidade || 'un';
+
+            optionsHTML += `<option value="${idVal}">${prod.nome} (${unVal})</option>`;
         });
     }
 
-    // 4. Injeta nos selects caso existam na página
+    // 4. Injeta as opções nos campos select encontrados
     if (selectConsumo) selectConsumo.innerHTML = optionsHTML;
     if (selectRecebimento) selectRecebimento.innerHTML = optionsHTML;
 }
@@ -800,47 +800,75 @@ document.addEventListener('DOMContentLoaded', carregarSelectsProdutosQuimicos);
     }
 
     // CONTROLE DAS ABAS DE PRODUTOS QUÍMICOS
-    function alternarAbaQuimicos(aba) {
-        document.getElementById('subview-quimicos-historico').classList.add('hidden');
-        document.getElementById('subview-quimicos-consumo').classList.add('hidden');
-        document.getElementById('subview-quimicos-estoque').classList.add('hidden');
+// --- CARREGAR PRODUTOS QUÍMICOS DO LOCALSTORAGE ---
+function obterListaProdutosQuimicos() {
+    return JSON.parse(localStorage.getItem('mes_config_quimicos') || '[]');
+}
 
-        const btnHist = document.getElementById('tab-quimicos-historico');
-        const btnCons = document.getElementById('tab-quimicos-consumo');
-        const btnEst = document.getElementById('tab-quimicos-estoque');
+function preencherSelectsProdutosQuimicos() {
+    const lista = obterListaProdutosQuimicos();
+    
+    // Tenta capturar pelos IDs possíveis no HTML
+    const selConsumo = document.getElementById('consumoProdId') || document.getElementById('consumoProduto');
+    const selRec = document.getElementById('recProdId') || document.getElementById('recebimentoProduto');
 
-        const classeInativa = "px-4 py-2.5 rounded-lg text-xs font-bold transition flex items-center gap-2 text-slate-600 hover:bg-slate-100";
-        const classeAtiva = "px-4 py-2.5 rounded-lg text-xs font-bold transition flex items-center gap-2 bg-purple-600 text-white shadow";
+    let optionsHtml = '<option value="">-- Selecione o Produto --</option>';
 
-        btnHist.className = classeInativa;
-        btnCons.className = classeInativa;
-        btnEst.className = classeInativa;
-
-        if (aba === 'historico') {
-            btnHist.className = classeAtiva;
-            document.getElementById('subview-quimicos-historico').classList.remove('hidden');
-            carregarDetalheModuloQuimicos();
-        } else if (aba === 'consumo') {
-            btnCons.className = classeAtiva;
-            document.getElementById('subview-quimicos-consumo').classList.remove('hidden');
-        } else if (aba === 'estoque') {
-            btnEst.className = classeAtiva;
-            document.getElementById('subview-quimicos-estoque').classList.remove('hidden');
-            carregarEstoqueQuimicos();
-        }
+    if (lista.length === 0) {
+        optionsHtml += '<option value="" disabled>Nenhum produto cadastrado em Configurações</option>';
+    } else {
+        optionsHtml += lista.map(p => {
+            const idVal = p.id || p.codigo;
+            const unVal = p.un || p.unidade || 'un';
+            return `<option value="${idVal}">${p.nome} (${unVal})</option>`;
+        }).join('');
     }
 
-    function preencherSelectsProdutosQuimicos() {
-        const lista = obterListaProdutosQuimicos();
-        const optionsHtml = lista.map(p => `<option value="${p.id}">${p.nome} (${p.un})</option>`).join('');
-        
-        const selConsumo = document.getElementById('consumoProdId');
-        const selRec = document.getElementById('recProdId');
-        
-        if (selConsumo) selConsumo.innerHTML = optionsHtml;
-        if (selRec) selRec.innerHTML = optionsHtml;
-    }
+    if (selConsumo) selConsumo.innerHTML = optionsHtml;
+    if (selRec) selRec.innerHTML = optionsHtml;
+}
 
+// --- CONTROLE DAS ABAS DO MÓDULO DE PRODUTOS QUÍMICOS ---
+function alternarAbaQuimicos(aba) {
+    // 1. Garante que os selects estejam preenchidos sempre que trocar de aba
+    preencherSelectsProdutosQuimicos();
+
+    // 2. Mapeamento dos containers das subviews
+    const viewHistorico = document.getElementById('subview-quimicos-historico') || document.getElementById('quimicos-tab-historico');
+    const viewConsumo = document.getElementById('subview-quimicos-consumo') || document.getElementById('quimicos-tab-consumo');
+    const viewEstoque = document.getElementById('subview-quimicos-estoque') || document.getElementById('quimicos-tab-recebimento');
+
+    // Esconde todas as abas primeiro
+    if (viewHistorico) viewHistorico.classList.add('hidden');
+    if (viewConsumo) viewConsumo.classList.add('hidden');
+    if (viewEstoque) viewEstoque.classList.add('hidden');
+
+    // 3. Estilização dos botões das abas
+    const btnHist = document.getElementById('tab-quimicos-historico');
+    const btnCons = document.getElementById('tab-quimicos-consumo');
+    const btnEst = document.getElementById('tab-quimicos-estoque');
+
+    const classeInativa = "px-4 py-2.5 rounded-lg text-xs font-bold transition flex items-center gap-2 text-slate-600 hover:bg-slate-100";
+    const classeAtiva = "px-4 py-2.5 rounded-lg text-xs font-bold transition flex items-center gap-2 bg-purple-600 text-white shadow";
+
+    if (btnHist) btnHist.className = classeInativa;
+    if (btnCons) btnCons.className = classeInativa;
+    if (btnEst) btnEst.className = classeInativa;
+
+    // 4. Exibe a aba selecionada
+    if (aba === 'historico') {
+        if (btnHist) btnHist.className = classeAtiva;
+        if (viewHistorico) viewHistorico.classList.remove('hidden');
+        if (typeof carregarDetalheModuloQuimicos === 'function') carregarDetalheModuloQuimicos();
+    } else if (aba === 'consumo') {
+        if (btnCons) btnCons.className = classeAtiva;
+        if (viewConsumo) viewConsumo.classList.remove('hidden');
+    } else if (aba === 'estoque') {
+        if (btnEst) btnEst.className = classeAtiva;
+        if (viewEstoque) viewEstoque.classList.remove('hidden');
+        if (typeof carregarEstoqueQuimicos === 'function') carregarEstoqueQuimicos();
+    }
+}
     function salvarConsumoQuimico(e) {
         e.preventDefault();
         const dataVal = document.getElementById('consumoData').value;
