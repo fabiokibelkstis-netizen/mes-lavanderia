@@ -344,93 +344,87 @@
                 </button>
             </div>
 
-            <div id="subview-quimicos-historico" class="space-y-6">
-                <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 flex flex-wrap justify-between items-center gap-4">
-                    <div class="flex items-center gap-2">
-                        <i class="fa-solid fa-filter text-purple-600"></i>
-                        <span class="text-xs font-bold text-slate-700">Período de Análise dos Indicadores:</span>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <label for="selectDias" class="text-xs font-medium text-slate-500">Exibir últimos:</label>
-                        <select id="selectDias" onchange="alterarFiltroDias()" class="bg-slate-50 border border-slate-300 text-slate-800 text-xs font-bold rounded-lg px-3 py-1.5 focus:ring-2 focus:ring-purple-500 outline-none">
-                            <option value="7">7 Dias</option>
-                            <option value="15" selected>15 Dias</option>
-                            <option value="30">30 Dias</option>
-                            <option value="90">90 Dias</option>
+<div id="subview-quimicos-consumo" class="hidden space-y-6">
+    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 max-w-3xl mx-auto space-y-5">
+        <div class="border-b pb-3 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="bg-purple-100 text-purple-700 p-3 rounded-xl">
+                    <i class="fa-solid fa-flask text-lg"></i>
+                </div>
+                <div>
+                    <h3 class="text-base font-bold text-slate-800" id="tituloFormConsumo">Registo de Consumo Diário</h3>
+                    <p class="text-xs text-slate-500">Apontamento das quantidades consumidas no processo de lavagem.</p>
+                </div>
+            </div>
+        </div>
+
+        <form id="formConsumoQuimico" onsubmit="salvarConsumoQuimico(event)" class="space-y-4">
+            <input type="hidden" id="consumoEditIndex" value="">
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Data e Hora do Consumo *</label>
+                    <input type="datetime-local" id="consumoData" required class="w-full p-2.5 border rounded-xl text-xs bg-slate-50 focus:ring-2 focus:ring-purple-500 outline-none font-semibold">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Produto Químico *</label>
+                    <select id="consumoProdId" name="produto" required class="w-full p-2.5 border rounded-xl text-xs bg-slate-50 font-semibold focus:ring-2 focus:ring-purple-500 outline-none">
                         </select>
-                    </div>
-                </div>
-
-                <div id="detalheKpis" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
-
-                <div class="bg-white rounded-2xl shadow-sm p-6 border border-slate-200 space-y-4">
-                    <div class="flex justify-between items-center border-b pb-3">
-                        <h3 class="text-sm font-bold text-slate-800">Últimos Lançamentos Efetuados</h3>
-                        <span id="txtInfoDias" class="text-xs font-medium text-slate-400">Exibindo registos dos últimos 15 dias</span>
-                    </div>
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left text-xs border-collapse">
-                            <thead id="headTabelaDetalhe" class="bg-slate-100 text-slate-700"></thead>
-                            <tbody id="bodyTabelaDetalhe"></tbody>
-                        </table>
-                    </div>
                 </div>
             </div>
 
-            <div id="subview-quimicos-consumo" class="hidden space-y-6">
-                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 max-w-3xl mx-auto space-y-5">
-                    <div class="border-b pb-3 flex items-center gap-3">
-                        <div class="bg-purple-100 text-purple-700 p-3 rounded-xl">
-                            <i class="fa-solid fa-flask text-lg"></i>
-                        </div>
-                        <div>
-                            <h3 class="text-base font-bold text-slate-800">Registo de Consumo Diário</h3>
-                            <p class="text-xs text-slate-500">Apontamento das quantidades consumidas no processo de lavagem.</p>
-                        </div>
-                    </div>
-
-                    <form id="formConsumoQuimico" onsubmit="salvarConsumoQuimico(event)" class="space-y-4">
-    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div>
-            <label class="block text-xs font-bold text-slate-700 mb-1">Data e Hora da Medição *</label>
-            <input type="datetime-local" id="consumoData" required class="w-full p-2.5 border rounded-xl text-xs bg-slate-50 focus:ring-2 focus:ring-purple-500 outline-none font-semibold">
-        </div>
-        <div>
-            <label class="block text-xs font-bold text-slate-700 mb-1">Produto Químico *</label>
-            <select id="consumoProdId" required onchange="atualizarPreviewEstoqueAnterior()" class="w-full p-2.5 border rounded-xl text-xs bg-slate-50 font-semibold focus:ring-2 focus:ring-purple-500 outline-none">
-                </select>
-        </div>
-    </div>
-
-    <div id="infoEstoqueAnterior" class="bg-purple-50 border border-purple-200 p-3 rounded-xl flex justify-between items-center text-xs text-purple-900 hidden">
-        <span>Estoque/Medição Anterior: <strong id="valEstoqueAnterior">0.00</strong></span>
-        <span class="text-[10px] text-purple-700">(Calculado automaticamente)</span>
-    </div>
-
-    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div>
-            <label class="block text-xs font-bold text-slate-700 mb-1">Estoque/Leitura Atual (Kg ou L) *</label>
-            <input type="number" step="0.01" id="consumoEstoqueAtual" required placeholder="Ex: 85.00" oninput="calcularPreviewConsumo()" class="w-full p-2.5 border rounded-xl text-xs bg-slate-50 focus:ring-2 focus:ring-purple-500 outline-none font-bold text-slate-800">
-        </div>
-        <div>
-            <label class="block text-xs font-bold text-slate-700 mb-1">Consumo Calculado (Estimado)</label>
-            <input type="text" id="previewConsumoCalculado" readonly placeholder="0.00" class="w-full p-2.5 border rounded-xl text-xs bg-slate-200 text-purple-700 font-extrabold outline-none cursor-not-allowed">
-        </div>
-    </div>
-
-    <div>
-        <label class="block text-xs font-bold text-slate-700 mb-1">Setor / Equipamento / Obs</label>
-        <input type="text" id="consumoObs" placeholder="Ex: Dosagem Lavadora Extratora 01" class="w-full p-2.5 border rounded-xl text-xs bg-slate-50 focus:ring-2 focus:ring-purple-500 outline-none">
-    </div>
-
-    <div class="pt-3 border-t flex justify-end gap-3">
-        <button type="reset" class="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl text-xs font-bold transition">Limpar</button>
-        <button type="submit" class="px-6 py-2.5 bg-purple-600 hover:bg-purple-700 text-white rounded-xl text-xs font-bold transition shadow">Registrar Medição</button>
-    </div>
-</form>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Quantidade Consumida (Kg ou L) *</label>
+                    <input type="number" step="0.01" id="consumoQtd" required placeholder="0.00" class="w-full p-2.5 border rounded-xl text-xs bg-slate-50 focus:ring-2 focus:ring-purple-500 outline-none font-bold text-slate-800">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Setor / Lavadora / Destino</label>
+                    <input type="text" id="consumoSetor" placeholder="Ex: Lavadora Extratora 01" class="w-full p-2.5 border rounded-xl text-xs bg-slate-50 focus:ring-2 focus:ring-purple-500 outline-none">
                 </div>
             </div>
 
+            <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">Observações / Notas</label>
+                <input type="text" id="consumoObs" placeholder="Observações opcionais..." class="w-full p-2.5 border rounded-xl text-xs bg-slate-50 focus:ring-2 focus:ring-purple-500 outline-none">
+            </div>
+
+            <div class="pt-3 border-t flex justify-end gap-3">
+                <button type="button" onclick="limparFormConsumo()" class="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl text-xs font-bold transition">Cancelar / Limpar</button>
+                <button type="submit" id="btnSalvarConsumo" class="px-6 py-2.5 bg-purple-600 hover:bg-purple-700 text-white rounded-xl text-xs font-bold transition shadow">Salvar Consumo</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 max-w-5xl mx-auto space-y-4">
+        <div class="flex justify-between items-center border-b pb-3">
+            <h3 class="text-sm font-bold text-slate-800 flex items-center gap-2">
+                <i class="fa-solid fa-clock-rotate-left text-purple-600"></i>
+                Últimos Lançamentos Efetuados
+            </h3>
+            <span id="totalCustoConsumoSpan" class="text-xs font-extrabold bg-purple-50 text-purple-700 px-3 py-1.5 rounded-lg border border-purple-200">
+                Total do Período: R$ 0,00
+            </span>
+        </div>
+
+        <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs text-slate-600 border-collapse">
+                <thead>
+                    <tr class="bg-slate-100 text-slate-700 uppercase font-extrabold border-b border-slate-200">
+                        <th class="p-3 border">Data / Hora</th>
+                        <th class="p-3 border">Produto Químico</th>
+                        <th class="p-3 border text-right">Qtd. Consumida</th>
+                        <th class="p-3 border text-right">Custo Proporcional</th>
+                        <th class="p-3 border">Setor / Obs</th>
+                        <th class="p-3 border text-center">Ações</th>
+                    </tr>
+                </thead>
+                <tbody id="tbodyHistoricoConsumoQuimico">
+                    </tbody>
+            </table>
+        </div>
+    </div>
+</div>
             <div id="subview-quimicos-estoque" class="hidden space-y-6">
                 <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 max-w-3xl mx-auto space-y-5">
                     <div class="border-b pb-3 flex items-center gap-3">
@@ -835,39 +829,20 @@ function preencherSelectsProdutosQuimicos() {
 
 // --- CONTROLE DAS ABAS DO MÓDULO DE PRODUTOS QUÍMICOS ---
 function alternarAbaQuimicos(aba) {
-    // 1. Esconde todas as abas
+    carregarSelectsProdutosQuimicos();
+
+    // Mostra/oculta subviews
     document.getElementById('subview-quimicos-historico').classList.add('hidden');
     document.getElementById('subview-quimicos-consumo').classList.add('hidden');
     document.getElementById('subview-quimicos-estoque').classList.add('hidden');
 
-    // 2. Obtém os botões
-    const btnHist = document.getElementById('tab-quimicos-historico');
-    const btnCons = document.getElementById('tab-quimicos-consumo');
-    const btnEst = document.getElementById('tab-quimicos-estoque');
-
-    const classeInativa = "px-4 py-2.5 rounded-lg text-xs font-bold transition flex items-center gap-2 text-slate-600 hover:bg-slate-100";
-    const classeAtiva = "px-4 py-2.5 rounded-lg text-xs font-bold transition flex items-center gap-2 bg-purple-600 text-white shadow";
-
-    if (btnHist) btnHist.className = classeInativa;
-    if (btnCons) btnCons.className = classeInativa;
-    if (btnEst) btnEst.className = classeInativa;
-
-    // 3. Atualiza os selects com os produtos do localStorage
-    carregarSelectsProdutosQuimicos();
-
-    // 4. Mostra a aba correspondente
-    if (aba === 'historico') {
-        if (btnHist) btnHist.className = classeAtiva;
-        document.getElementById('subview-quimicos-historico').classList.remove('hidden');
-        carregarDetalheModuloQuimicos();
-    } else if (aba === 'consumo') {
-        if (btnCons) btnCons.className = classeAtiva;
-        // REMOVE O HIDDEN DA ABA DE CONSUMO
+    if (aba === 'consumo') {
         document.getElementById('subview-quimicos-consumo').classList.remove('hidden');
+        renderizarHistoricoConsumoQuimico(); // Carrega o histórico ao abrir a aba
+    } else if (aba === 'historico') {
+        document.getElementById('subview-quimicos-historico').classList.remove('hidden');
     } else if (aba === 'estoque') {
-        if (btnEst) btnEst.className = classeAtiva;
         document.getElementById('subview-quimicos-estoque').classList.remove('hidden');
-        carregarEstoqueQuimicos();
     }
 }
 function salvarConsumoQuimico(e) {
@@ -1647,6 +1622,147 @@ function salvarConsumoQuimico(e) {
     
     if (typeof renderizarHistoricoConsumo === 'function') renderizarHistoricoConsumo();
     if (typeof renderizarGraficoConsumo === 'function') renderizarGraficoConsumo();
+}
+
+// --- SALVAR / EDITAR REGISTO DE CONSUMO ---
+function salvarConsumoQuimico(e) {
+    e.preventDefault();
+
+    const editIndex = document.getElementById('consumoEditIndex').value;
+    const dataVal = document.getElementById('consumoData').value;
+    const prodId = document.getElementById('consumoProdId').value;
+    const qtd = parseFloat(document.getElementById('consumoQtd').value) || 0;
+    const setor = document.getElementById('consumoSetor').value;
+    const obs = document.getElementById('consumoObs').value;
+
+    if (!prodId || qtd <= 0) {
+        alert("Selecione um produto químico e informe uma quantidade válida.");
+        return;
+    }
+
+    // Busca dados do produto cadastrado em configuracoes.html para nome e custo
+    const produtosConfig = JSON.parse(localStorage.getItem('mes_config_quimicos') || '[]');
+    const produto = produtosConfig.find(p => (p.id || p.codigo) === prodId);
+
+    const custoUnitario = produto ? (parseFloat(produto.custoPadrao) || 0) : 0;
+    const custoTotal = qtd * custoUnitario;
+
+    let historico = JSON.parse(localStorage.getItem('mes_historico_consumo_quimicos') || '[]');
+
+    const registro = {
+        id: editIndex !== "" ? historico[parseInt(editIndex)].id : Date.now().toString(),
+        data: dataVal,
+        prodId: prodId,
+        produtoNome: produto ? produto.nome : prodId,
+        unidade: produto ? (produto.un || produto.unidade || 'L/Kg') : 'L/Kg',
+        quantidade: qtd,
+        custoUnitario: custoUnitario,
+        custoTotal: custoTotal,
+        setor: setor,
+        obs: obs
+    };
+
+    if (editIndex !== "") {
+        historico[parseInt(editIndex)] = registro;
+        alert("Lançamento atualizado com sucesso!");
+    } else {
+        historico.unshift(registro);
+        alert("Consumo registrado com sucesso!");
+    }
+
+    localStorage.setItem('mes_historico_consumo_quimicos', JSON.stringify(historico));
+
+    limparFormConsumo();
+    renderizarHistoricoConsumoQuimico();
+}
+
+// --- RENDERIZAR TABELA DE HISTÓRICO ---
+function renderizarHistoricoConsumoQuimico() {
+    const tbody = document.getElementById('tbodyHistoricoConsumoQuimico');
+    const totalSpan = document.getElementById('totalCustoConsumoSpan');
+    if (!tbody) return;
+
+    const historico = JSON.parse(localStorage.getItem('mes_historico_consumo_quimicos') || '[]');
+    let somaCustos = 0;
+
+    if (historico.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" class="text-center p-4 text-slate-400 font-medium">Nenhum consumo registrado.</td></tr>`;
+        if (totalSpan) totalSpan.innerText = "Total do Período: R$ 0,00";
+        return;
+    }
+
+    tbody.innerHTML = historico.map((item, index) => {
+        somaCustos += item.custoTotal || 0;
+        const dtFormatted = item.data ? new Date(item.data).toLocaleString('pt-BR') : '-';
+
+        return `
+            <tr class="hover:bg-slate-50 border-b border-slate-100 text-xs">
+                <td class="p-3 border font-mono font-medium">${dtFormatted}</td>
+                <td class="p-3 border font-bold text-slate-800">${item.produtoNome}</td>
+                <td class="p-3 border text-right font-black text-purple-700 bg-purple-50/30">
+                    ${(item.quantidade || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })} ${item.unidade}
+                </td>
+                <td class="p-3 border text-right font-black text-emerald-700 bg-emerald-50/30">
+                    R$ ${(item.custoTotal || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                </td>
+                <td class="p-3 border text-slate-600">
+                    ${item.setor ? `<strong>${item.setor}</strong> ` : ''}${item.obs ? `- ${item.obs}` : ''}
+                </td>
+                <td class="p-3 border text-center space-x-2">
+                    <button onclick="editarConsumoQuimico(${index})" class="text-blue-600 hover:text-blue-800 transition" title="Editar Lançamento">
+                        <i class="fa-solid fa-pen-to-square"></i>
+                    </button>
+                    <button onclick="excluirConsumoQuimico(${index})" class="text-rose-500 hover:text-rose-700 transition" title="Excluir Lançamento">
+                        <i class="fa-solid fa-trash-can"></i>
+                    </button>
+                </td>
+            </tr>
+        `;
+    }).join('');
+
+    if (totalSpan) {
+        totalSpan.innerText = `Total do Período: R$ ${somaCustos.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    }
+}
+
+// --- CARREGAR REGISTRO PARA EDIÇÃO ---
+function editarConsumoQuimico(index) {
+    const historico = JSON.parse(localStorage.getItem('mes_historico_consumo_quimicos') || '[]');
+    const item = historico[index];
+
+    if (!item) return;
+
+    document.getElementById('consumoEditIndex').value = index;
+    document.getElementById('consumoData').value = item.data || '';
+    document.getElementById('consumoProdId').value = item.prodId || '';
+    document.getElementById('consumoQtd').value = item.quantidade || '';
+    document.getElementById('consumoSetor').value = item.setor || '';
+    document.getElementById('consumoObs').value = item.obs || '';
+
+    document.getElementById('tituloFormConsumo').innerText = "Editar Registo de Consumo";
+    document.getElementById('btnSalvarConsumo').innerText = "Atualizar Consumo";
+    
+    // Rola a tela suavemente até o formulário
+    document.getElementById('formConsumoQuimico').scrollIntoView({ behavior: 'smooth' });
+}
+
+// --- EXCLUIR REGISTRO ---
+function excluirConsumoQuimico(index) {
+    if (!confirm("Tem certeza que deseja excluir este lançamento de consumo?")) return;
+
+    let historico = JSON.parse(localStorage.getItem('mes_historico_consumo_quimicos') || '[]');
+    historico.splice(index, 1);
+    localStorage.setItem('mes_historico_consumo_quimicos', JSON.stringify(historico));
+
+    renderizarHistoricoConsumoQuimico();
+}
+
+// --- LIMPAR FORMULÁRIO / CANCELAR EDIÇÃO ---
+function limparFormConsumo() {
+    document.getElementById('formConsumoQuimico').reset();
+    document.getElementById('consumoEditIndex').value = "";
+    document.getElementById('tituloFormConsumo').innerText = "Registo de Consumo Diário";
+    document.getElementById('btnSalvarConsumo').innerText = "Salvar Consumo";
 }
     </script>
 </body>
