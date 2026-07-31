@@ -830,20 +830,12 @@ function preencherSelectsProdutosQuimicos() {
 
 // --- CONTROLE DAS ABAS DO MÓDULO DE PRODUTOS QUÍMICOS ---
 function alternarAbaQuimicos(aba) {
-    // 1. Garante que os selects estejam preenchidos sempre que trocar de aba
-    preencherSelectsProdutosQuimicos();
+    // 1. Esconde todas as abas
+    document.getElementById('subview-quimicos-historico').classList.add('hidden');
+    document.getElementById('subview-quimicos-consumo').classList.add('hidden');
+    document.getElementById('subview-quimicos-estoque').classList.add('hidden');
 
-    // 2. Mapeamento dos containers das subviews
-    const viewHistorico = document.getElementById('subview-quimicos-historico') || document.getElementById('quimicos-tab-historico');
-    const viewConsumo = document.getElementById('subview-quimicos-consumo') || document.getElementById('quimicos-tab-consumo');
-    const viewEstoque = document.getElementById('subview-quimicos-estoque') || document.getElementById('quimicos-tab-recebimento');
-
-    // Esconde todas as abas primeiro
-    if (viewHistorico) viewHistorico.classList.add('hidden');
-    if (viewConsumo) viewConsumo.classList.add('hidden');
-    if (viewEstoque) viewEstoque.classList.add('hidden');
-
-    // 3. Estilização dos botões das abas
+    // 2. Obtém os botões
     const btnHist = document.getElementById('tab-quimicos-historico');
     const btnCons = document.getElementById('tab-quimicos-consumo');
     const btnEst = document.getElementById('tab-quimicos-estoque');
@@ -855,54 +847,57 @@ function alternarAbaQuimicos(aba) {
     if (btnCons) btnCons.className = classeInativa;
     if (btnEst) btnEst.className = classeInativa;
 
-    // 4. Exibe a aba selecionada
+    // 3. Atualiza os selects com os produtos do localStorage
+    carregarSelectsProdutosQuimicos();
+
+    // 4. Mostra a aba correspondente
     if (aba === 'historico') {
         if (btnHist) btnHist.className = classeAtiva;
-        if (viewHistorico) viewHistorico.classList.remove('hidden');
-        if (typeof carregarDetalheModuloQuimicos === 'function') carregarDetalheModuloQuimicos();
+        document.getElementById('subview-quimicos-historico').classList.remove('hidden');
+        carregarDetalheModuloQuimicos();
     } else if (aba === 'consumo') {
         if (btnCons) btnCons.className = classeAtiva;
-        if (viewConsumo) viewConsumo.classList.remove('hidden');
+        // REMOVE O HIDDEN DA ABA DE CONSUMO
+        document.getElementById('subview-quimicos-consumo').classList.remove('hidden');
     } else if (aba === 'estoque') {
         if (btnEst) btnEst.className = classeAtiva;
-        if (viewEstoque) viewEstoque.classList.remove('hidden');
-        if (typeof carregarEstoqueQuimicos === 'function') carregarEstoqueQuimicos();
+        document.getElementById('subview-quimicos-estoque').classList.remove('hidden');
+        carregarEstoqueQuimicos();
     }
 }
-    function salvarConsumoQuimico(e) {
-        e.preventDefault();
-        const dataVal = document.getElementById('consumoData').value;
-        const prodId = document.getElementById('consumoProdId').value;
-        const qtd = parseFloat(document.getElementById('consumoQtd').value) || 0;
-        const setor = document.getElementById('consumoSetor').value;
-        const obs = document.getElementById('consumoObs').value;
+function salvarConsumoQuimico(e) {
+    e.preventDefault();
+    const dataVal = document.getElementById('consumoData').value;
+    const prodId = document.getElementById('consumoProdId').value;
+    const qtd = parseFloat(document.getElementById('consumoQtd').value) || 0;
+    const setor = document.getElementById('consumoSetor').value;
+    const obs = document.getElementById('consumoObs').value;
 
-        if (!dataVal || !prodId || qtd <= 0) {
-            alert('Por favor, preencha a data, o produto e a quantidade corretamente.');
-            return;
-        }
-
-        const novoConsumo = {
-            id: Date.now(),
-            data: dataVal,
-            prodId: prodId,
-            qtd: qtd,
-            setor: setor,
-            obs: obs
-        };
-
-        const consumos = JSON.parse(localStorage.getItem('mes_lancamentos_consumo')) || [];
-        consumos.unshift(novoConsumo);
-        localStorage.setItem('mes_lancamentos_consumo', JSON.stringify(consumos));
-
-        alert('Consumo registrado com sucesso!');
-        document.getElementById('formConsumoQuimico').reset();
-        
-        const now = new Date();
-        document.getElementById('consumoData').value = new Date(now.getTime() - (now.getTimezoneOffset() * 60000)).toISOString().slice(0, 16);
-        
-        alternarAbaQuimicos('historico');
+    if (!prodId || qtd <= 0) {
+        alert('Por favor, selecione o produto químico e informe uma quantidade válida.');
+        return;
     }
+
+    const novoConsumo = {
+        id: Date.now(),
+        data: dataVal,
+        prodId: prodId,
+        qtd: qtd,
+        setor: setor,
+        obs: obs
+    };
+
+    // Salva na chave de consumo do localStorage
+    const consumos = JSON.parse(localStorage.getItem('mes_historico_quimicos')) || [];
+    consumos.unshift(novoConsumo);
+    localStorage.setItem('mes_historico_quimicos', JSON.stringify(consumos));
+
+    alert('Consumo registrado com sucesso!');
+    document.getElementById('formConsumoQuimico').reset();
+    
+    // Volta para a aba de histórico para visualizar o lançamento
+    alternarAbaQuimicos('historico');
+}
 
     function salvarRecebimentoQuimico(e) {
         e.preventDefault();
