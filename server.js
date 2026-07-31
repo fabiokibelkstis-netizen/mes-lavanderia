@@ -442,12 +442,10 @@ app.post('/api/pcm/ordens-servico', async (req, res) => {
     }
 });
 
-const express = require('express');
 const path = require('path');
 const planoRoutes = require('./src/routes/planoRoutes');
 require('dotenv').config();
 
-const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Middleware para processar JSON
