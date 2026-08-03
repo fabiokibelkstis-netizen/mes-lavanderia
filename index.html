@@ -1519,11 +1519,12 @@ function salvarConsumoQuimico(e) {
             thead.innerHTML = `
                 <tr>
                     <th class="p-2.5 border">Data</th>
-                    <th class="p-2.5 border">Setor / Operador</th>
-                    <th class="p-2.5 border text-right">Horas Normais</th>
-                    <th class="p-2.5 border text-right">Horas Extras</th>
-                    <th class="p-2.5 border text-right">Absenteísmo</th>
-                    <th class="p-2.5 border">Observação</th>
+                    <th class="p-2.5 border text-center">Horas Totais</th>
+                    <th class="p-2.5 border text-center">Horas Normais</th>
+                    <th class="p-2.5 border text-center">Horas Extras</th>
+                    <th class="p-2.5 border text-center">Absenteísmo</th>
+                    <th class="p-2.5 border text-center">Hora Extra (%)</th>
+                    <th class="p-2.5 border text-center">Absenteísmo (%)</th>
                 </tr>
             `;
             tbody.innerHTML = lista.map(item => {
@@ -1532,12 +1533,12 @@ function salvarConsumoQuimico(e) {
                 return `
                     <tr class="hover:bg-slate-50 border-b text-xs">
                         <td class="p-2.5 border font-medium">${dt}</td>
-                        <td class="p-2.5 border text-right font-semibold">${res.ht.toLocaleString('pt-BR')} h</td>
+                        <td class="p-2.5 border text-center font-semibold">${res.ht.toLocaleString('pt-BR')} h</td>
                         <!--<td class="p-2.5 border font-semibold text-slate-800">${item.setor || item.operador || '-'}</td>-->
-                        <td class="p-2.5 border text-right font-semibold">${res.hn.toLocaleString('pt-BR')} h</td>
-                        <td class="p-2.5 border text-right font-semibold text-rose-600">${res.he.toLocaleString('pt-BR')} h</td>
-                        <td class="p-2.5 border text-right font-semibold text-amber-600">${res.abs.toLocaleString('pt-BR')} h</td>
-                        <td class="p-2.5 border text-slate-500">${item.obs || item.observacao || '-'}</td>
+                        <td class="p-2.5 border text-center font-semibold">${res.hn.toLocaleString('pt-BR')} h</td>
+                        <td class="p-2.5 border text-center font-semibold text-rose-600">${res.he.toLocaleString('pt-BR')} h</td>
+                        <td class="p-2.5 border text-center font-semibold text-amber-600">${res.abs.toLocaleString('pt-BR')} h</td>
+                        <!--<td class="p-2.5 border text-slate-500">${item.obs || item.observacao || '-'}</td>-->
                     </tr>
                 `;
             }).join('');

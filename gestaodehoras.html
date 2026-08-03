@@ -125,11 +125,11 @@
                 <table class="w-full text-left text-xs border-collapse">
                     <thead class="bg-slate-100 text-slate-700">
                         <tr>
-                            <th class="p-3 border">Data</th>
-                            <th class="p-3 border text-right">Horas Totais (h)</th>
-                            <th class="p-3 border text-right">Horas Normais (h)</th>
-                            <th class="p-3 border text-right">Horas Extras (h)</th>
-                            <th class="p-3 border text-right">Absenteísmo (h)</th>
+                            <th class="p-3 border text-center">Data</th>
+                            <th class="p-3 border text-center">Horas Totais (h)</th>
+                            <th class="p-3 border text-center">Horas Normais (h)</th>
+                            <th class="p-3 border text-center">Horas Extras (h)</th>
+                            <th class="p-3 border text-center">Absenteísmo (h)</th>
                             <th class="p-3 border text-center">Hora Extra (%)</th>
                             <th class="p-3 border text-center">Absenteísmo (%)</th>
                             <th class="p-3 border text-center">Ações</th>
@@ -241,12 +241,12 @@
             }
 
             tbody.innerHTML = lancamentos.map((item, i) => `
-                <tr class="hover:bg-slate-50 transition">
-                    <td class="p-3 border font-medium text-slate-800">${new Date(item.data + 'T00:00:00').toLocaleDateString('pt-BR')}</td>
-                    <td class="p-3 border text-right font-bold text-slate-800">${item.totais.toFixed(1)} h</td>
-                    <td class="p-3 border text-right">${item.normais.toFixed(1)} h</td>
-                    <td class="p-3 border text-right font-semibold text-amber-600">${item.extras.toFixed(1)} h</td>
-                    <td class="p-3 border text-right font-semibold text-red-600">${item.absenteismo.toFixed(1)} h</td>
+                <tr class="hover:bg-slate-50 transition">center
+                    <td class="p-3 border text-center font-medium text-slate-800">${new Date(item.data + 'T00:00:00').toLocaleDateString('pt-BR')}</td>
+                    <td class="p-3 border text-center font-bold text-slate-800">${item.totais.toFixed(1)} h</td>
+                    <td class="p-3 border text-center">${item.normais.toFixed(1)} h</td>
+                    <td class="p-3 border text-center font-semibold text-amber-600">${item.extras.toFixed(1)} h</td>
+                    <td class="p-3 border text-center font-semibold text-red-600">${item.absenteismo.toFixed(1)} h</td>
                     <td class="p-3 border text-center font-bold text-amber-700">${item.percentExtra.toFixed(1)} %</td>
                     <td class="p-3 border text-center font-bold text-red-700">${item.percentAbs.toFixed(1)} %</td>
                     <td class="p-3 border text-center gap-2">
