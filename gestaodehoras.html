@@ -82,7 +82,11 @@
             </form>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
+                <span class="text-xs font-bold text-slate-500 uppercase">Horas Totais</span>
+                <p id="kpiTotais" class="text-2xl font-black text-slate-800 mt-2">0.0 h</p>
+            </div>
             <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
                 <span class="text-xs font-bold text-slate-500 uppercase">Horas Normais</span>
                 <p id="kpiNormais" class="text-2xl font-black text-slate-800 mt-2">0.0 h</p>
@@ -257,10 +261,12 @@
             const totNormais = lancamentos.reduce((acc, l) => acc + l.normais, 0);
             const totExtras = lancamentos.reduce((acc, l) => acc + l.extras, 0);
             const totAbs = lancamentos.reduce((acc, l) => acc + l.absenteismo, 0);
+            
+	    const totTotais = totNormais + totExtras;
 
             const avgExtra = totNormais > 0 ? (totExtras / totNormais) * 100 : 0;
             const avgAbs = (totNormais + totAbs) > 0 ? (totAbs / (totNormais + totAbs)) * 100 : 0;
-
+            document.getElementById('kpiTotais').innerText = `${totTotais.toFixed(1)} h`;
             document.getElementById('kpiNormais').innerText = `${totNormais.toFixed(1)} h`;
             document.getElementById('kpiExtras').innerText = `${totExtras.toFixed(1)} h`;
             document.getElementById('kpiAbsenteismo').innerText = `${totAbs.toFixed(1)} h`;

@@ -539,7 +539,7 @@
 
             <div class="bg-white rounded-2xl shadow-sm p-6 border border-slate-200 space-y-4">
                 <div class="flex justify-between items-center border-b pb-3">
-                    <h3 class="text-sm font-bold text-slate-800">Últimos Lançamentos de Estoque20Efetuados</h3>
+                    <h3 class="text-sm font-bold text-slate-800">Últimos Lançamentos de Horas Efetuados</h3>
                     <span id="txtInfoDiasGeral" class="text-xs font-medium text-slate-400">Exibindo registos dos últimos 15 dias</span>
                 </div>
                 <div class="overflow-x-auto">
@@ -1353,13 +1353,17 @@ function salvarConsumoQuimico(e) {
         let totalVal = 0, totalGaiolas = 0, contagem = lista.length;
 
         if (moduloKey === 'horas') {
-            let hn = 0, he = 0, abs = 0;
+            let hn = 0, he = 0, ht = 0; abs = 0;
             lista.forEach(i => {
                 const res = extrairValoresHoras(i);
-                hn += res.hn; he += res.he; abs += res.abs;
+                hn += res.hn; ht += res.ht; he += res.he; abs += res.abs;
             });
 
             container.innerHTML = `
+                <div class="bg-white p-4 rounded-xl border border-slate-200 border-l-4 border-l-blue-600">
+                    <span class="text-xs font-bold text-slate-500 uppercase">Horas Totais</span>
+                    <p class="text-xl font-black text-slate-800 mt-1">${ht.toLocaleString('pt-BR')} h</p>
+                </div>
                 <div class="bg-white p-4 rounded-xl border border-slate-200 border-l-4 border-l-blue-600">
                     <span class="text-xs font-bold text-slate-500 uppercase">Horas Normais</span>
                     <p class="text-xl font-black text-slate-800 mt-1">${hn.toLocaleString('pt-BR')} h</p>
@@ -1372,6 +1376,13 @@ function salvarConsumoQuimico(e) {
                     <span class="text-xs font-bold text-slate-500 uppercase">Absenteísmo</span>
                     <p class="text-xl font-black text-amber-600 mt-1">${abs.toLocaleString('pt-BR')} h</p>
                 </div>
+                <div class="bg-white p-4 rounded-xl border border-slate-200 border-l-4 border-l-amber-500">
+                    <span class="text-xs font-bold text-slate-500 uppercase">Média Hora Extra / Absenteísmo</span>
+                    <p class="text-xl font-black text-amber-600 mt-1">${he.toLocaleString('pt-BR')} 
+			<!--/ ${hn.toLocaleString('pt-BR')} % / ${abs.toLocaleString('pt-BR')} / ${hn.toLocaleString('pt-BR')} / %-->
+			</p>
+                </div>
+		
             `;
             return;
         }
@@ -1521,7 +1532,8 @@ function salvarConsumoQuimico(e) {
                 return `
                     <tr class="hover:bg-slate-50 border-b text-xs">
                         <td class="p-2.5 border font-medium">${dt}</td>
-                        <td class="p-2.5 border font-semibold text-slate-800">${item.setor || item.operador || '-'}</td>
+                        <td class="p-2.5 border text-right font-semibold">${res.ht.toLocaleString('pt-BR')} h</td>
+                        <!--<td class="p-2.5 border font-semibold text-slate-800">${item.setor || item.operador || '-'}</td>-->
                         <td class="p-2.5 border text-right font-semibold">${res.hn.toLocaleString('pt-BR')} h</td>
                         <td class="p-2.5 border text-right font-semibold text-rose-600">${res.he.toLocaleString('pt-BR')} h</td>
                         <td class="p-2.5 border text-right font-semibold text-amber-600">${res.abs.toLocaleString('pt-BR')} h</td>
