@@ -27,7 +27,7 @@
                     <i class="fa-solid fa-plus-circle"></i> Novo Lançamento
                 </a>
                 <a href="index.html" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl text-xs font-bold transition flex items-center gap-2 border border-slate-700">
-                    <i class="fa-solid fa-arrow-left"></i> Painel Principal
+                    <i class="fa-solid fa-arrow-left"></i> Menu Principal
                 </a>
             </div>
         </div>
@@ -51,10 +51,19 @@
             </div>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+            
             <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
                 <div>
-                    <span class="text-[11px] font-bold text-slate-400 uppercase">H. Normais Totais</span>
+                    <span class="text-[11px] font-bold text-slate-400 uppercase">Horas Totais</span>
+                    <h3 class="text-2xl font-black text-slate-800 mt-1" id="kpiTotais">0,0 h</h3>
+                </div>
+                <div class="bg-slate-100 text-slate-700 p-3 rounded-xl text-lg"><i class="fa-solid fa-business-time"></i></div>
+            </div>
+
+            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
+                <div>
+                    <span class="text-[11px] font-bold text-slate-400 uppercase">Horas Normais</span>
                     <h3 class="text-2xl font-black text-blue-600 mt-1" id="kpiNormais">0,0 h</h3>
                 </div>
                 <div class="bg-blue-50 text-blue-600 p-3 rounded-xl text-lg"><i class="fa-solid fa-clock"></i></div>
@@ -62,15 +71,15 @@
 
             <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
                 <div>
-                    <span class="text-[11px] font-bold text-slate-400 uppercase">H. Extras Totais</span>
+                    <span class="text-[11px] font-bold text-slate-400 uppercase">Horas Extras</span>
                     <h3 class="text-2xl font-black text-amber-600 mt-1" id="kpiExtras">0,0 h</h3>
                 </div>
-                <div class="bg-amber-50 text-amber-600 p-3 rounded-xl text-lg"><i class="fa-solid fa-business-time"></i></div>
+                <div class="bg-amber-50 text-amber-600 p-3 rounded-xl text-lg"><i class="fa-solid fa-user-clock"></i></div>
             </div>
 
             <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
                 <div>
-                    <span class="text-[11px] font-bold text-slate-400 uppercase">Total Absenteísmo</span>
+                    <span class="text-[11px] font-bold text-slate-400 uppercase">Absenteísmo Total</span>
                     <h3 class="text-2xl font-black text-rose-600 mt-1" id="kpiAbs">0,0 h</h3>
                 </div>
                 <div class="bg-rose-50 text-rose-600 p-3 rounded-xl text-lg"><i class="fa-solid fa-user-slash"></i></div>
@@ -78,8 +87,12 @@
 
             <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
                 <div>
-                    <span class="text-[11px] font-bold text-slate-400 uppercase">% Horas Extras</span>
-                    <h3 class="text-2xl font-black text-purple-600 mt-1" id="kpiPercExtra">0,0%</h3>
+                    <span class="text-[11px] font-bold text-slate-400 uppercase">% Extra / Absenteísmo</span>
+                    <div class="flex items-baseline gap-2 mt-1">
+                        <h3 class="text-xl font-black text-amber-600" id="kpiPercExtra" title="Hora Extra (%)">0,0%</h3>
+                        <span class="text-slate-300 font-bold">/</span>
+                        <h3 class="text-xl font-black text-rose-600" id="kpiPercAbsenteismo" title="Absenteísmo (%)">0,0%</h3>
+                    </div>
                 </div>
                 <div class="bg-purple-50 text-purple-600 p-3 rounded-xl text-lg"><i class="fa-solid fa-percent"></i></div>
             </div>
@@ -92,7 +105,7 @@
                         <i class="fa-solid fa-chart-column text-amber-600"></i>
                         Evolução Diária de Horas Trabalhadas
                     </h3>
-                    <span class="text-xs text-slate-400 font-medium" id="lblPeriodoGrafico1">Últimos 30 dias</span>
+                    <span class="text-xs text-slate-400 font-medium" id="lblPeriodoGrafico1">Histórico Temporal</span>
                 </div>
                 <div class="h-72 relative">
                     <canvas id="chartEvolucaoDiaria"></canvas>
@@ -103,7 +116,7 @@
                 <div class="flex justify-between items-center border-b pb-3">
                     <h3 class="text-sm font-bold text-slate-800 flex items-center gap-2">
                         <i class="fa-solid fa-chart-pie text-amber-600"></i>
-                        Distribuição por Tipo
+                        Proporção de Horas
                     </h3>
                 </div>
                 <div class="h-72 relative flex items-center justify-center">
@@ -116,23 +129,23 @@
             <div class="flex justify-between items-center border-b pb-3">
                 <h3 class="text-sm font-bold text-slate-800 flex items-center gap-2">
                     <i class="fa-solid fa-list-check text-amber-600"></i>
-                    Histórico de Lançamentos (Do mais recente para o mais antigo)
+                    Histórico de Lançamentos e Correções (Mais atual ao mais antigo)
                 </h3>
-                <a href="lancamento_horas.html" class="text-xs text-amber-600 font-bold hover:underline flex items-center gap-1">
-                    <i class="fa-solid fa-pen"></i> Gerenciar Registros
-                </a>
+                <span id="qtdRegistros" class="text-xs text-slate-500 font-semibold">0 registro(s)</span>
             </div>
 
             <div class="overflow-x-auto">
                 <table class="w-full text-left text-xs text-slate-600 border-collapse">
                     <thead>
                         <tr class="bg-slate-100 text-slate-700 uppercase font-extrabold border-b border-slate-200">
-                            <th class="p-3 border">Data</th>
-                            <th class="p-3 border text-right">Horas Normais</th>
-                            <th class="p-3 border text-right">Horas Extras</th>
-                            <th class="p-3 border text-right">Absenteísmo</th>
-                            <th class="p-3 border text-right">Total Apontado</th>
-                            <th class="p-3 border">Setor / Observações</th>
+                            <th class="p-3 border text-center">Data</th>
+                            <th class="p-3 border text-right">Horas Totais (h)</th>
+                            <th class="p-3 border text-right">Horas Normais (h)</th>
+                            <th class="p-3 border text-right">Horas Extras (h)</th>
+                            <th class="p-3 border text-right">Absenteísmo (h)</th>
+                            <th class="p-3 border text-right">Hora Extra (%)</th>
+                            <th class="p-3 border text-right">Absenteísmo (%)</th>
+                            <th class="p-3 border text-center">Ações</th>
                         </tr>
                     </thead>
                     <tbody id="tbodyHistorico">
@@ -144,7 +157,7 @@
     </main>
 
     <footer class="bg-slate-900 text-slate-400 text-center py-4 text-xs border-t border-slate-800">
-        Lavanderia Dona Zara &copy; MES System - Módulo de Gestão de Horas
+        Lavanderia Dona Zara &copy; MES System 2026 - Gestão de Horas
     </footer>
 
     <script>
@@ -156,10 +169,18 @@
             carregarDashboard();
         });
 
+        function obteerLancamentosLocais() {
+            return JSON.parse(localStorage.getItem('mes_lancamentos_horas') || localStorage.getItem('mes_historico_horas') || '[]');
+        }
+
+        function salvarLancamentosLocais(dados) {
+            localStorage.setItem('mes_lancamentos_horas', JSON.stringify(dados));
+            localStorage.setItem('mes_historico_horas', JSON.stringify(dados));
+        }
+
         function definirFiltroPeriodo(dias) {
             filtroDiasAtual = dias;
 
-            // Estilização dos botões
             document.querySelectorAll('.btn-filtro').forEach(btn => {
                 btn.className = "btn-filtro px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-100 text-slate-600 hover:bg-amber-500 hover:text-white transition";
             });
@@ -173,9 +194,9 @@
         }
 
         function carregarDashboard() {
-            const todosLancamentos = JSON.parse(localStorage.getItem('mes_historico_horas') || '[]');
+            const todosLancamentos = obteerLancamentosLocais();
 
-            // 1. Filtrar pelo Período Selecionado
+            // 1. Filtro por Período
             let dataLimite = null;
             if (filtroDiasAtual !== 'todos') {
                 dataLimite = new Date();
@@ -190,13 +211,13 @@
                 return dt >= dataLimite;
             });
 
-            // 2. Ordenar do mais antigo ao mais recente para os gráficos
+            // 2. Ordenação Cronológica (Para Gráficos)
             const ordenadosCronologico = [...filtrados].sort((a, b) => new Date(a.data) - new Date(b.data));
 
-            // 3. Ordenar do mais recente para o mais antigo para a tabela
+            // 3. Ordenação Decrescente - Do mais novo para o mais antigo (Para Tabela)
             const ordenadosDecrescente = [...filtrados].sort((a, b) => new Date(b.data) - new Date(a.data));
 
-            // 4. Renderizar Componentes
+            // 4. Atualização da Interface
             atualizarKPIs(filtrados);
             renderizarGraficoEvolucao(ordenadosCronologico);
             renderizarGraficoProporcao(filtrados);
@@ -205,18 +226,24 @@
 
         function atualizarKPIs(lista) {
             let normais = 0, extras = 0, abs = 0;
+
             lista.forEach(i => {
                 normais += parseFloat(i.normais || i.horasNormais) || 0;
                 extras += parseFloat(i.extras || i.horasExtras) || 0;
                 abs += parseFloat(i.absenteismo) || 0;
             });
 
+            const totais = normais + extras;
             const percExtra = normais > 0 ? (extras / normais) * 100 : 0;
+            const percAbs = (normais + abs) > 0 ? (abs / (normais + abs)) * 100 : 0;
 
+            document.getElementById('kpiTotais').innerText = `${totais.toFixed(1)} h`;
             document.getElementById('kpiNormais').innerText = `${normais.toFixed(1)} h`;
             document.getElementById('kpiExtras').innerText = `${extras.toFixed(1)} h`;
             document.getElementById('kpiAbs').innerText = `${abs.toFixed(1)} h`;
+            
             document.getElementById('kpiPercExtra').innerText = `${percExtra.toFixed(1)}%`;
+            document.getElementById('kpiPercAbsenteismo').innerText = `${percAbs.toFixed(1)}%`;
         }
 
         function renderizarGraficoEvolucao(lista) {
@@ -230,9 +257,9 @@
                 data: {
                     labels: labels,
                     datasets: [
-                        { label: 'Horas Normais', data: lista.map(l => l.normais || l.horasNormais || 0), backgroundColor: '#2563eb', borderRadius: 4 },
-                        { label: 'Horas Extras', data: lista.map(l => l.extras || l.horasExtras || 0), backgroundColor: '#d97706', borderRadius: 4 },
-                        { label: 'Absenteísmo', data: lista.map(l => l.absenteismo || 0), backgroundColor: '#e11d48', borderRadius: 4 }
+                        { label: 'Horas Normais', data: lista.map(l => parseFloat(l.normais || l.horasNormais) || 0), backgroundColor: '#3b82f6', borderRadius: 4 },
+                        { label: 'Horas Extras', data: lista.map(l => parseFloat(l.extras || l.horasExtras) || 0), backgroundColor: '#d97706', borderRadius: 4 },
+                        { label: 'Absenteísmo', data: lista.map(l => parseFloat(l.absenteismo) || 0), backgroundColor: '#dc2626', borderRadius: 4 }
                     ]
                 },
                 options: {
@@ -260,7 +287,7 @@
                     labels: ['H. Normais', 'H. Extras', 'Absenteísmo'],
                     datasets: [{
                         data: [normais, extras, abs],
-                        backgroundColor: ['#2563eb', '#d97706', '#e11d48']
+                        backgroundColor: ['#3b82f6', '#d97706', '#dc2626']
                     }]
                 },
                 options: {
@@ -273,31 +300,64 @@
 
         function renderizarTabelaHistorico(lista) {
             const tbody = document.getElementById('tbodyHistorico');
+            document.getElementById('qtdRegistros').innerText = `${lista.length} registro(s)`;
+
             if (!tbody) return;
 
             if (lista.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" class="text-center p-6 text-slate-400 font-medium">Nenhum lançamento no período selecionado.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="8" class="text-center p-6 text-slate-400 italic">Nenhum lançamento encontrado no período selecionado.</td></tr>`;
                 return;
             }
+
+            const todosLancamentos = obteerLancamentosLocais();
 
             tbody.innerHTML = lista.map(item => {
                 const normais = parseFloat(item.normais || item.horasNormais) || 0;
                 const extras = parseFloat(item.extras || item.horasExtras) || 0;
                 const abs = parseFloat(item.absenteismo) || 0;
-                const total = normais + extras;
+                const totais = item.totais !== undefined ? parseFloat(item.totais) : (normais + extras);
+
+                const percExtra = normais > 0 ? (extras / normais) * 100 : 0;
+                const percAbs = (normais + abs) > 0 ? (abs / (normais + abs)) * 100 : 0;
+
                 const dt = item.data ? new Date(item.data.includes('T') ? item.data : item.data + 'T00:00:00').toLocaleDateString('pt-BR') : '-';
 
+                // Encontra o índice real no array original de lançamentos para edição/exclusão precisa
+                const idxReal = todosLancamentos.findIndex(l => l.data === item.data && (l.normais === item.normais || l.horasNormais === item.normais));
+
                 return `
-                    <tr class="hover:bg-slate-50 border-b border-slate-100 text-xs">
-                        <td class="p-3 border font-mono font-bold text-slate-800">${dt}</td>
+                    <tr class="hover:bg-slate-50 border-b border-slate-100 text-xs transition">
+                        <td class="p-3 border text-center font-mono font-bold text-slate-800">${dt}</td>
+                        <td class="p-3 border text-right font-black text-slate-800 bg-slate-100/50">${totais.toFixed(1)} h</td>
                         <td class="p-3 border text-right font-bold text-blue-700 bg-blue-50/20">${normais.toFixed(1)} h</td>
                         <td class="p-3 border text-right font-bold text-amber-700 bg-amber-50/20">${extras.toFixed(1)} h</td>
                         <td class="p-3 border text-right font-bold text-rose-700 bg-rose-50/20">${abs.toFixed(1)} h</td>
-                        <td class="p-3 border text-right font-black text-slate-800 bg-slate-100/50">${total.toFixed(1)} h</td>
-                        <td class="p-3 border text-slate-600">${item.obs || item.observacoes || '-'}</td>
+                        <td class="p-3 border text-right font-bold text-amber-700">${percExtra.toFixed(1)} %</td>
+                        <td class="p-3 border text-right font-bold text-rose-700">${percAbs.toFixed(1)} %</td>
+                        <td class="p-3 border text-center gap-2">
+                            <button onclick="editarRegistro(${idxReal})" class="text-blue-600 hover:text-blue-800 font-bold px-2 py-1 text-sm" title="Editar / Corrigir">✏️</button>
+                            <button onclick="excluirRegistro(${idxReal})" class="text-rose-600 hover:text-rose-800 font-bold px-2 py-1 text-sm" title="Excluir">❌</button>
+                        </td>
                     </tr>
                 `;
             }).join('');
+        }
+
+        function editarRegistro(index) {
+            if (index === -1 || index === undefined) return;
+            // Redireciona para a tela de lançamento passando o índice via parâmetro URL
+            window.location.href = `lancamento_horas.html?editIndex=${index}`;
+        }
+
+        function excluirRegistro(index) {
+            if (index === -1 || index === undefined) return;
+            
+            if (confirm("Deseja realmente excluir este lançamento de horas?")) {
+                let todos = obteerLancamentosLocais();
+                todos.splice(index, 1);
+                salvarLancamentosLocais(todos);
+                carregarDashboard();
+            }
         }
     </script>
 </body>
