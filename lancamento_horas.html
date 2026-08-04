@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MES - Lançamento de Horas | Lavanderia Dona Zara</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body class="bg-slate-100 font-sans min-h-screen flex flex-col justify-between text-slate-800">
+
+    <header class="bg-slate-900 text-white p-4 shadow-lg sticky top-0 z-50">
+        <div class="max-w-5xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="bg-amber-600 p-2.5 rounded-xl text-white shadow">
+                    <i class="fa-solid fa-clock text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold">Apontamento de Horas</h1>
+                    <p class="text-xs text-slate-400">Lançamento diário de jornada de trabalho</p>
+                </div>
+            </div>
+            <a href="gestaodehoras.html" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl text-xs font-bold transition border border-slate-700">
+                <i class="fa-solid fa-chart-line"></i> Voltar ao Dashboard
+            </a>
+        </div>
+    </header>
+
+    <main class="max-w-5xl mx-auto w-full p-4 md:p-6 space-y-6 flex-grow">
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 space-y-4">
+            <h3 class="text-sm font-bold text-slate-800 border-b pb-3" id="tituloForm">Novo Registro de Horas</h3>
+
+            <form id="formHoras" onsubmit="salvarLançamento(event)" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <input type="hidden" id="editIndex" value="">
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Data *</label>
+                    <input type="date" id="data" required class="w-full p-2.5 border rounded-xl text-xs bg-slate-50 font-bold focus:ring-2 focus:ring-amber-500 outline-none">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Horas Normais *</label>
+                    <input type="number" step="0.1" id="normais" required placeholder="Ex: 8.0" class="w-full p-2.5 border rounded-xl text-xs bg-slate-50 font-bold focus:ring-2 focus:ring-amber-500 outline-none">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Horas Extras</label>
+                    <input type="number" step="0.1" id="extras" placeholder="Ex: 2.0" class="w-full p-2.5 border rounded-xl text-xs bg-slate-50 font-bold focus:ring-2 focus:ring-amber-500 outline-none text-amber-600">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Absenteísmo (Faltas / Off)</label>
+                    <input type="number" step="0.1" id="absenteismo" placeholder="Ex: 0.0" class="w-full p-2.5 border rounded-xl text-xs bg-slate-50 font-bold focus:ring-2 focus:ring-amber-500 outline-none text-rose-600">
+                </div>
+
+                <div class="md:col-span-2">
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Setor / Observações</label>
+                    <input type="text" id="obs" placeholder="Ex: Setor de Lavagem / Turno Manhã" class="w-full p-2.5 border rounded-xl text-xs bg-slate-50 focus:ring-2 focus:ring-amber-500 outline-none">
+                </div>
+
+                <div class="md:col-span-2 flex gap-2 pt-2">
+                    <button type="button" onclick="limparForm()" class="w-1/3 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl text-xs font-bold">Limpar</button>
+                    <button type="submit" id="btnSalvar" class="w-2/3 py-2.5 bg-amber-600 hover:bg-amber-700 text-white rounded-xl text-xs font-bold shadow">Salvar Lançamento</button>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <script>
+        function salvarLançamento(e) {
+            e.preventDefault();
+            const idx = document.getElementById('editIndex').value;
+            let lancamentos = JSON.parse(localStorage.getItem('mes_historico_horas') || '[]');
+
+            const registro = {
+                id: idx !== "" ? lancamentos[idx].id : Date.now().toString(),
+                data: document.getElementById('data').value,
+                normais: parseFloat(document.getElementById('normais').value) || 0,
+                extras: parseFloat(document.getElementById('extras').value) || 0,
+                absenteismo: parseFloat(document.getElementById('absenteismo').value) || 0,
+                obs: document.getElementById('obs').value
+            };
+
+            if (idx !== "") {
+                lancamentos[idx] = registro;
+                alert("Lançamento atualizado!");
+            } else {
+                lancamentos.unshift(registro);
+                alert("Lançamento efetuado!");
+            }
+
+            localStorage.setItem('mes_historico_horas', JSON.stringify(lancamentos));
+            window.location.href = "gestaodehoras.html";
+        }
+
+        function limparForm() {
+            document.getElementById('formHoras').reset();
+            document.getElementById('editIndex').value = "";
+        }
+    </script>
+</body>
+</html>
