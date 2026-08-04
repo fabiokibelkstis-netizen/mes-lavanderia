@@ -35,26 +35,19 @@
 
     <main class="max-w-7xl mx-auto w-full p-4 md:p-6 space-y-6 flex-grow">
 
-        <div class="bg-white rounded-2xl shadow-sm p-4 border border-slate-200 flex flex-wrap items-center justify-between gap-4">
-            <div class="flex items-center gap-2 text-slate-800 font-bold text-sm">
+        <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 flex flex-wrap justify-between items-center gap-4">
+            <div class="flex items-center gap-2">
                 <i class="fa-solid fa-filter text-amber-600"></i>
-                <span>Período de Avaliação</span>
+                <span class="text-xs font-bold text-slate-700 uppercase tracking-wider">Período de Análise:</span>
             </div>
-            <div class="flex flex-wrap items-center gap-3 text-xs w-full sm:w-auto">
-                <div class="flex items-center gap-2">
-                    <label class="text-slate-600 font-semibold">De:</label>
-                    <input type="date" id="filtroDataInicio" onchange="carregarDashboard()" class="p-2 border rounded-lg bg-slate-50 outline-none focus:ring-2 focus:ring-amber-500 font-medium">
-                </div>
-                <div class="flex items-center gap-2">
-                    <label class="text-slate-600 font-semibold">Até:</label>
-                    <input type="date" id="filtroDataFim" onchange="carregarDashboard()" class="p-2 border rounded-lg bg-slate-50 outline-none focus:ring-2 focus:ring-amber-500 font-medium">
-                </div>
-                <button onclick="definirUltimos7Dias()" class="bg-amber-100 hover:bg-amber-200 text-amber-800 font-bold px-3 py-2 rounded-lg transition">
-                    Últimos 7 Dias
-                </button>
-                <button onclick="limparFiltroData()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold px-3 py-2 rounded-lg transition" title="Exibir todo o histórico de lançamentos">
-                    Exibir Todos
-                </button>
+            
+            <div class="flex flex-wrap items-center gap-2">
+                <button onclick="definirFiltroPeriodo(7)" id="btnFiltro7" class="btn-filtro px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-100 text-slate-600 hover:bg-amber-500 hover:text-white transition">7 Dias</button>
+                <button onclick="definirFiltroPeriodo(15)" id="btnFiltro15" class="btn-filtro px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-100 text-slate-600 hover:bg-amber-500 hover:text-white transition">15 Dias</button>
+                <button onclick="definirFiltroPeriodo(30)" id="btnFiltro30" class="btn-filtro px-3 py-1.5 rounded-xl text-xs font-bold bg-amber-600 text-white shadow">30 Dias</button>
+                <button onclick="definirFiltroPeriodo(60)" id="btnFiltro60" class="btn-filtro px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-100 text-slate-600 hover:bg-amber-500 hover:text-white transition">60 Dias</button>
+                <button onclick="definirFiltroPeriodo(90)" id="btnFiltro90" class="btn-filtro px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-100 text-slate-600 hover:bg-amber-500 hover:text-white transition">90 Dias</button>
+                <button onclick="definirFiltroPeriodo('todos')" id="btnFiltroTodos" class="btn-filtro px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-100 text-slate-600 hover:bg-amber-500 hover:text-white transition">Todos os Dados</button>
             </div>
         </div>
 
@@ -136,7 +129,7 @@
             <div class="flex justify-between items-center border-b pb-3">
                 <h3 class="text-sm font-bold text-slate-800 flex items-center gap-2">
                     <i class="fa-solid fa-list-check text-amber-600"></i>
-                    Histórico de Lançamentos do Período (Mais atual ao mais antigo)
+                    Histórico de Lançamentos e Correções (Mais atual ao mais antigo)
                 </h3>
                 <span id="qtdRegistros" class="text-xs text-slate-500 font-semibold">0 registro(s)</span>
             </div>
@@ -155,7 +148,8 @@
                             <th class="p-3 border text-center">Ações</th>
                         </tr>
                     </thead>
-                    <tbody id="tbodyHistorico"></tbody>
+                    <tbody id="tbodyHistorico">
+                        </tbody>
                 </table>
             </div>
         </div>
@@ -167,30 +161,13 @@
     </footer>
 
     <script>
+        let filtroDiasAtual = 30;
         let chartEvolucaoInstance = null;
         let chartProporcaoInstance = null;
 
         document.addEventListener('DOMContentLoaded', () => {
-            definirUltimos7Dias();
+            carregarDashboard();
         });
-
-        // Preenche os campos com a data de hoje e 6 dias atrás (totalizando 7 dias)
-        function definirUltimos7Dias() {
-            const hoje = new Date();
-            const seteDiasAtras = new Date();
-            seteDiasAtras.setDate(hoje.getDate() - 6);
-
-            document.getElementById('filtroDataFim').value = hoje.toISOString().split('T')[0];
-            document.getElementById('filtroDataInicio').value = seteDiasAtras.toISOString().split('T')[0];
-
-            carregarDashboard();
-        }
-
-        function limparFiltroData() {
-            document.getElementById('filtroDataInicio').value = '';
-            document.getElementById('filtroDataFim').value = '';
-            carregarDashboard();
-        }
 
         function obteerLancamentosLocais() {
             return JSON.parse(localStorage.getItem('mes_lancamentos_horas') || localStorage.getItem('mes_historico_horas') || '[]');
@@ -201,29 +178,46 @@
             localStorage.setItem('mes_historico_horas', JSON.stringify(dados));
         }
 
+        function definirFiltroPeriodo(dias) {
+            filtroDiasAtual = dias;
+
+            document.querySelectorAll('.btn-filtro').forEach(btn => {
+                btn.className = "btn-filtro px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-100 text-slate-600 hover:bg-amber-500 hover:text-white transition";
+            });
+
+            const btnAtivo = document.getElementById(`btnFiltro${dias === 'todos' ? 'Todos' : dias}`);
+            if (btnAtivo) {
+                btnAtivo.className = "btn-filtro px-3 py-1.5 rounded-xl text-xs font-bold bg-amber-600 text-white shadow";
+            }
+
+            carregarDashboard();
+        }
+
         function carregarDashboard() {
             const todosLancamentos = obteerLancamentosLocais();
 
-            const dtInicio = document.getElementById('filtroDataInicio').value;
-            const dtFim = document.getElementById('filtroDataFim').value;
+            // 1. Filtro por Período
+            let dataLimite = null;
+            if (filtroDiasAtual !== 'todos') {
+                dataLimite = new Date();
+                dataLimite.setDate(dataLimite.getDate() - parseInt(filtroDiasAtual));
+                dataLimite.setHours(0, 0, 0, 0);
+            }
 
-            // Filtro por intervalo de datas
             const filtrados = todosLancamentos.filter(item => {
+                if (!dataLimite) return true;
                 if (!item.data) return false;
-                const dataItem = item.data.split('T')[0];
-                
-                if (dtInicio && dataItem < dtInicio) return false;
-                if (dtFim && dataItem > dtFim) return false;
-                return true;
+                const dt = new Date(item.data.includes('T') ? item.data : item.data + 'T00:00:00');
+                return dt >= dataLimite;
             });
 
-            // Ordenação Cronológica (Para Gráficos)
+            // 2. Ordenação Cronológica (Para Gráficos)
             const ordenadosCronologico = [...filtrados].sort((a, b) => new Date(a.data) - new Date(b.data));
 
-            // Ordenação Decrescente - Do mais novo ao mais antigo (Para Tabela)
+            // 3. Ordenação Decrescente - Do mais novo para o mais antigo (Para Tabela)
             const ordenadosDecrescente = [...filtrados].sort((a, b) => new Date(b.data) - new Date(a.data));
 
-            // Atualização da Interface
+            // 4. Atualização da Interface
             atualizarKPIs(filtrados);
             renderizarGraficoEvolucao(ordenadosCronologico);
             renderizarGraficoProporcao(filtrados);
@@ -328,6 +322,7 @@
 
                 const dt = item.data ? new Date(item.data.includes('T') ? item.data : item.data + 'T00:00:00').toLocaleDateString('pt-BR') : '-';
 
+                // Encontra o índice real no array original de lançamentos para edição/exclusão precisa
                 const idxReal = todosLancamentos.findIndex(l => l.data === item.data && (l.normais === item.normais || l.horasNormais === item.normais));
 
                 return `
@@ -350,6 +345,7 @@
 
         function editarRegistro(index) {
             if (index === -1 || index === undefined) return;
+            // Redireciona para a tela de lançamento passando o índice via parâmetro URL
             window.location.href = `lancamento_horas.html?editIndex=${index}`;
         }
 

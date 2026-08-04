@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MES - Gestão do Consumo de Água | Lavanderia Dona Zara</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body class="bg-slate-100 font-sans min-h-screen flex flex-col justify-between">
+
+    <header class="bg-slate-900 text-white p-4 shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto flex flex-wrap justify-between items-center gap-4">
+            <div class="flex items-center gap-3">
+                <div class="bg-cyan-600 p-2.5 rounded-xl text-white shadow">
+                    <i class="fa-solid fa-droplet text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold tracking-wider">MES - Gestão do Consumo de Água</h1>
+                    <p class="text-xs text-slate-400">Controle Operacional de Leitura e Indicadores Hídricos</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-2">
+                <a href="lancamento_agua.html" class="bg-cyan-600 hover:bg-cyan-500 text-white text-xs font-bold px-4 py-2 rounded-lg transition flex items-center gap-2">
+                    <i class="fa-solid fa-plus"></i> Ir para Lançamentos
+                </a>
+                <a href="index.html" class="bg-slate-700 hover:bg-slate-600 text-xs font-bold px-4 py-2 rounded-lg transition">⬅️ Menu Principal</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto w-full p-4 my-4 space-y-6">
+
+        <div class="bg-white rounded-2xl shadow-md p-4 border border-slate-200 flex flex-wrap items-center justify-between gap-4">
+            <div class="flex items-center gap-2 text-slate-800 font-bold text-sm">
+                <i class="fa-solid fa-filter text-cyan-600"></i>
+                <span class="text-xs font-bold text-slate-700 uppercase tracking-wider">Período de Análise:</span>
+            </div>
+            <div class="flex flex-wrap items-center gap-3 text-xs w-full sm:w-auto">
+                <div class="flex items-center gap-2">
+                    <label class="text-slate-600 font-semibold">De:</label>
+                    <input type="date" id="filtroDataInicio" onchange="atualizarTela()" class="p-2 border rounded-lg bg-slate-50 outline-none focus:ring-2 focus:ring-cyan-500 font-medium">
+                </div>
+                <div class="flex items-center gap-2">
+                    <label class="text-slate-600 font-semibold">Até:</label>
+                    <input type="date" id="filtroDataFim" onchange="atualizarTela()" class="p-2 border rounded-lg bg-slate-50 outline-none focus:ring-2 focus:ring-cyan-500 font-medium">
+                </div>
+                <button onclick="definirUltimos7Dias()" class="bg-cyan-100 hover:bg-cyan-200 text-cyan-800 font-bold px-3 py-2 rounded-lg transition">
+                    Últimos 7 Dias
+                </button>
+                <button onclick="limparFiltroData()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold px-3 py-2 rounded-lg transition" title="Exibir todo o histórico de lançamentos">
+                    Exibir Todos
+                </button>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
+                <span class="text-xs font-bold text-slate-500 uppercase">Consumo Total</span>
+                <p id="kpiConsumoTotal" class="text-2xl font-black text-cyan-700 mt-2">0.00 m³</p>
+            </div>
+            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
+                <span class="text-xs font-bold text-slate-500 uppercase">Média Diária</span>
+                <p id="kpiMediaDiaria" class="text-2xl font-black text-slate-800 mt-2">0.00 m³</p>
+            </div>
+            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
+                <span class="text-xs font-bold text-slate-500 uppercase">Custo Total Estimado</span>
+                <p id="kpiCustoTotal" class="text-2xl font-black text-emerald-600 mt-2">R$ 0,00</p>
+            </div>
+            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
+                <span class="text-xs font-bold text-slate-500 uppercase">Total de Medições</span>
+                <p id="kpiTotalMedicoes" class="text-2xl font-black text-slate-800 mt-2">0</p>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-2xl shadow-md p-6 border border-slate-200">
+            <h3 class="text-sm font-bold text-slate-800 mb-4 border-b pb-2 flex items-center gap-2">
+                <i class="fa-solid fa-list-check text-cyan-600"></i>
+                Resumo dos Lançamentos Efetuados por Ponto de Medição
+            </h3>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-xs border-collapse">
+                    <thead class="bg-slate-100 text-slate-700">
+                        <tr>
+                            <th class="p-3 border">Ponto de Medição / Local</th>
+                            <th class="p-3 border text-center">Qtd. Medições</th>
+                            <th class="p-3 border text-center">Consumo Acumulado (m³)</th>
+                            <th class="p-3 border text-center">Custo Estimado (R$)</th>
+                            <th class="p-3 border text-center">Representatividade (%)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabelaResumoPontos"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div class="lg:col-span-2 bg-white p-6 rounded-2xl shadow-md border border-slate-200">
+                <h3 class="text-sm font-bold text-slate-800 mb-4 flex items-center gap-2">
+                    <i class="fa-solid fa-chart-column text-cyan-600"></i>
+                    Evolução Diária do Consumo de Água (m³)
+                </h3>
+                <div class="h-64">
+                    <canvas id="chartAguaBarra"></canvas>
+                </div>
+            </div>
+
+            <div class="bg-white p-6 rounded-2xl shadow-md border border-slate-200">
+                <h3 class="text-sm font-bold text-slate-800 mb-4 flex items-center gap-2">
+                    <i class="fa-solid fa-chart-pie text-cyan-600"></i>
+                    Consumo por Ponto (%)
+                </h3>
+                <div class="h-64 flex items-center justify-center">
+                    <canvas id="chartAguaRosca"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-2xl shadow-md p-6 border border-slate-200">
+            <h3 class="text-sm font-bold text-slate-800 mb-4 border-b pb-2 flex justify-between items-center">
+                <span>Histórico de Lançamentos do Período</span>
+                <span id="qtdRegistros" class="text-xs text-slate-500 font-normal">0 registro(s)</span>
+            </h3>
+            
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-xs border-collapse">
+                    <thead class="bg-slate-100 text-slate-700">
+                        <tr>
+                            <th class="p-3 border text-center">Data</th>
+                            <th class="p-3 border text-center">Local / Ponto</th>
+                            <th class="p-3 border text-center">Consumo (m³)</th>
+                            <th class="p-3 border text-center">Custo Estimado (R$)</th>
+                            <th class="p-3 border text-center">Observação</th>
+                            <th class="p-3 border text-center">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabelaHistorico"></tbody>
+                </table>
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="bg-white border-t border-slate-200 p-4 text-center text-xs text-slate-500">
+        MES Dona Zara &copy; 2026 - Módulo de Gestão do Consumo de Água
+    </footer>
+
+    <script>
+        let lancamentos = JSON.parse(localStorage.getItem('mes_lancamentos_agua') || localStorage.getItem('mes_historico_agua') || '[]');
+        let chartBarraInstance = null;
+        let chartRoscaInstance = null;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            definirUltimos7Dias();
+        });
+
+        // Configura as datas pré-selecionadas para os últimos 7 dias
+        function definirUltimos7Dias() {
+            const hoje = new Date();
+            const seteDiasAtras = new Date();
+            seteDiasAtras.setDate(hoje.getDate() - 6);
+
+            document.getElementById('filtroDataFim').value = hoje.toISOString().split('T')[0];
+            document.getElementById('filtroDataInicio').value = seteDiasAtras.toISOString().split('T')[0];
+
+            atualizarTela();
+        }
+
+        function salvarLancamentosLocais() {
+            localStorage.setItem('mes_lancamentos_agua', JSON.stringify(lancamentos));
+            localStorage.setItem('mes_historico_agua', JSON.stringify(lancamentos));
+        }
+
+        // Filtra lançamentos conforme período escolhido
+        function obterLancamentosFiltrados() {
+            const dtInicio = document.getElementById('filtroDataInicio').value;
+            const dtFim = document.getElementById('filtroDataFim').value;
+
+            return lancamentos.filter(item => {
+                if (dtInicio && item.data < dtInicio) return false;
+                if (dtFim && item.data > dtFim) return false;
+                return true;
+            });
+        }
+
+        function limparFiltroData() {
+            document.getElementById('filtroDataInicio').value = '';
+            document.getElementById('filtroDataFim').value = '';
+            atualizarTela();
+        }
+
+        function editarRegistro(i) {
+            const filtrados = [...obterLancamentosFiltrados()].reverse();
+            const item = filtrados[i];
+            const originalIndex = lancamentos.indexOf(item);
+
+            if (originalIndex !== -1) {
+                // Redireciona para a tela dedicada de lançamento em modo de edição
+                window.location.href = `lancamento_agua.html?editIndex=${originalIndex}`;
+            }
+        }
+
+        function excluirRegistro(i) {
+            const filtrados = [...obterLancamentosFiltrados()].reverse();
+            const item = filtrados[i];
+            const originalIndex = lancamentos.indexOf(item);
+
+            if (originalIndex !== -1 && confirm("Deseja realmente excluir este lançamento de água?")) {
+                lancamentos.splice(originalIndex, 1);
+                salvarLancamentosLocais();
+                atualizarTela();
+            }
+        }
+
+        function atualizarTela() {
+            const filtrados = obterLancamentosFiltrados();
+            renderizarKPIs(filtrados);
+            renderizarResumoPontos(filtrados);
+            renderizarTabela(filtrados);
+            renderizarGraficoBarras(filtrados);
+            renderizarGraficoRosca(filtrados);
+        }
+
+        function renderizarKPIs(dados) {
+            const totalConsumo = dados.reduce((acc, l) => acc + (l.consumo || 0), 0);
+            const totalCusto = dados.reduce((acc, l) => acc + (l.custo || 0), 0);
+            const mediaDiaria = dados.length > 0 ? (totalConsumo / dados.length) : 0;
+
+            document.getElementById('kpiConsumoTotal').innerText = `${totalConsumo.toFixed(2)} m³`;
+            document.getElementById('kpiMediaDiaria').innerText = `${mediaDiaria.toFixed(2)} m³`;
+            document.getElementById('kpiCustoTotal').innerText = `R$ ${totalCusto.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+            document.getElementById('kpiTotalMedicoes').innerText = `${dados.length}`;
+        }
+
+        // Tabela de resumo agrupada por ponto de medição
+        function renderizarResumoPontos(dados) {
+            const tbody = document.getElementById('tabelaResumoPontos');
+            const totalGeralConsumo = dados.reduce((acc, l) => acc + (l.consumo || 0), 0);
+
+            if (dados.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" class="p-4 text-center italic text-slate-400">Nenhum lançamento no período selecionado.</td></tr>';
+                return;
+            }
+
+            const agrupado = {};
+            dados.forEach(item => {
+                const ponto = item.localMedicao || item.setor || 'Não especificado';
+                if (!agrupado[ponto]) {
+                    agrupado[ponto] = { qtd: 0, consumo: 0, custo: 0 };
+                }
+                agrupado[ponto].qtd += 1;
+                agrupado[ponto].consumo += (item.consumo || 0);
+                agrupado[ponto].custo += (item.custo || 0);
+            });
+
+            tbody.innerHTML = Object.keys(agrupado).map(ponto => {
+                const info = agrupado[ponto];
+                const pct = totalGeralConsumo > 0 ? (info.consumo / totalGeralConsumo) * 100 : 0;
+
+                return `
+                    <tr class="hover:bg-slate-50 border-b">
+                        <td class="p-3 font-semibold text-slate-800">${ponto}</td>
+                        <td class="p-3 text-center text-slate-600">${info.qtd}</td>
+                        <td class="p-3 text-center font-bold text-cyan-700">${info.consumo.toFixed(2)} m³</td>
+                        <td class="p-3 text-center font-semibold text-emerald-700">R$ ${info.custo.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+                        <td class="p-3 text-center font-bold text-slate-700">
+                            <div class="flex items-center justify-center gap-2">
+                                <span>${pct.toFixed(1)}%</span>
+                                <div class="w-16 bg-slate-200 rounded-full h-2 hidden sm:block">
+                                    <div class="bg-cyan-600 h-2 rounded-full" style="width: ${Math.min(pct, 100)}%"></div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function renderizarTabela(dados) {
+            const tbody = document.getElementById('tabelaHistorico');
+            document.getElementById('qtdRegistros').innerText = `${dados.length} registro(s)`;
+
+            if (dados.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="p-4 text-center italic text-slate-400">Nenhum lançamento cadastrado no período.</td></tr>';
+                return;
+            }
+
+            const ordenadosInvertidos = [...dados].reverse();
+
+            tbody.innerHTML = ordenadosInvertidos.map((item, i) => `
+                <tr class="hover:bg-slate-50 transition border-b">
+                    <td class="p-3 text-center font-medium text-slate-800">${new Date(item.data + 'T00:00:00').toLocaleDateString('pt-BR')}</td>
+                    <td class="p-3 text-center font-semibold text-slate-700">${item.localMedicao || item.setor || 'Geral'}</td>
+                    <td class="p-3 text-center font-bold text-cyan-700 bg-cyan-50/30">${(item.consumo || 0).toFixed(2)} m³</td>
+                    <td class="p-3 text-center font-semibold text-emerald-700">R$ ${(item.custo || 0).toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+                    <td class="p-3 text-center text-slate-600">${item.obs || '-'}</td>
+                    <td class="p-3 text-center gap-2">
+                        <button onclick="editarRegistro(${i})" class="text-blue-600 font-bold px-2 py-1" title="Editar na tela de lançamento">✏️</button>
+                        <button onclick="excluirRegistro(${i})" class="text-red-600 font-bold px-2 py-1" title="Excluir">❌</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function renderizarGraficoBarras(dados) {
+            const ctx = document.getElementById('chartAguaBarra').getContext('2d');
+            if (chartBarraInstance) chartBarraInstance.destroy();
+
+            const labels = dados.map(l => new Date(l.data + 'T00:00:00').toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }));
+            const dataConsumo = dados.map(l => l.consumo || 0);
+
+            chartBarraInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        { label: 'Consumo (m³)', data: dataConsumo, backgroundColor: '#0891b2', borderRadius: 4 }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: { y: { beginAtZero: true } }
+                }
+            });
+        }
+
+        function renderizarGraficoRosca(dados) {
+            const ctx = document.getElementById('chartAguaRosca').getContext('2d');
+            if (chartRoscaInstance) chartRoscaInstance.destroy();
+
+            const agrupado = {};
+            dados.forEach(item => {
+                const ponto = item.localMedicao || item.setor || 'Não especificado';
+                agrupado[ponto] = (agrupado[ponto] || 0) + (item.consumo || 0);
+            });
+
+            const labels = Object.keys(agrupado);
+            const values = Object.values(agrupado);
+            const cores = ['#0891b2', '#0284c7', '#2563eb', '#7c3aed', '#059669', '#d97706'];
+
+            chartRoscaInstance = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: values,
+                        backgroundColor: cores.slice(0, labels.length)
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom' }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>
