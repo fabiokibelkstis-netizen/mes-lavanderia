@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MES - Gestão do Consumo de Energia Elétrica | Lavanderia Dona Zara</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body class="bg-slate-100 font-sans min-h-screen flex flex-col justify-between">
+
+    <header class="bg-slate-900 text-white p-4 shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto flex flex-wrap justify-between items-center gap-4">
+            <div class="flex items-center gap-3">
+                <div class="bg-amber-500 p-2.5 rounded-xl text-slate-900 shadow">
+                    <i class="fa-solid fa-bolt text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold tracking-wider">MES - Gestão de Energia Elétrica</h1>
+                    <p class="text-xs text-slate-400">Controle Operacional de Leitura e Indicadores Elétricos</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-2">
+                <a href="lancamento_energia.html" class="bg-amber-500 hover:bg-amber-400 text-slate-900 text-xs font-bold px-4 py-2 rounded-xl transition flex items-center gap-2 shadow">
+                    <i class="fa-solid fa-plus-circle"></i> Novo Lançamento de Energia
+                </a>
+                <a href="index.html" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl text-xs font-bold transition flex items-center gap-2 border border-slate-700">
+                    <i class="fa-solid fa-arrow-left"></i> Menu Principal
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto w-full p-4 my-4 space-y-6">
+
+        <div class="bg-white rounded-2xl shadow-md p-4 border border-slate-200 flex flex-wrap items-center justify-between gap-4">
+            <div class="flex items-center gap-2 text-slate-800 font-bold text-sm">
+                <i class="fa-solid fa-filter text-amber-500"></i>
+                <span class="text-xs font-bold text-slate-700 uppercase tracking-wider">Período de Análise:</span>
+            </div>
+            <div class="flex flex-wrap items-center gap-3 text-xs w-full sm:w-auto">
+                <div class="flex items-center gap-2">
+                    <label class="text-slate-600 font-semibold">De:</label>
+                    <input type="date" id="filtroDataInicio" onchange="atualizarTela()" class="p-2 border rounded-lg bg-slate-50 outline-none focus:ring-2 focus:ring-amber-500 font-medium">
+                </div>
+                <div class="flex items-center gap-2">
+                    <label class="text-slate-600 font-semibold">Até:</label>
+                    <input type="date" id="filtroDataFim" onchange="atualizarTela()" class="p-2 border rounded-lg bg-slate-50 outline-none focus:ring-2 focus:ring-amber-500 font-medium">
+                </div>
+                <button onclick="definirUltimos7Dias()" class="bg-amber-100 hover:bg-amber-200 text-amber-900 font-bold px-3 py-2 rounded-lg transition">
+                    Últimos 7 Dias
+                </button>
+                <button onclick="limparFiltroData()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold px-3 py-2 rounded-lg transition" title="Exibir todo o histórico de lançamentos">
+                    Exibir Todos
+                </button>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
+                <span class="text-xs font-bold text-slate-500 uppercase">Consumo Total</span>
+                <p id="kpiConsumoTotal" class="text-2xl font-black text-amber-600 mt-2">0.00 kWh</p>
+            </div>
+            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
+                <span class="text-xs font-bold text-slate-500 uppercase">Média Diária (Consumo)</span>
+                <p id="kpiMediaDiaria" class="text-2xl font-black text-slate-800 mt-2">0.00 kWh</p>
+            </div>
+            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
+                <span class="text-xs font-bold text-slate-500 uppercase">Custo Total Estimado</span>
+                <p id="kpiCustoTotal" class="text-2xl font-black text-emerald-600 mt-2">R$ 0,00</p>
+            </div>
+            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
+                <span class="text-xs font-bold text-slate-500 uppercase">Total de Medições</span>
+                <p id="kpiTotalMedicoes" class="text-2xl font-black text-slate-800 mt-2">0</p>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div class="bg-white rounded-2xl shadow-md p-6 border border-slate-200">
+                <h3 class="text-sm font-bold text-slate-800 mb-4 border-b pb-2 flex items-center gap-2">
+                    <i class="fa-solid fa-plug text-amber-500"></i>
+                    Resumo de Entrada / Fontes Elétricas
+                </h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs border-collapse">
+                        <thead class="bg-amber-50 text-amber-900">
+                            <tr>
+                                <th class="p-3 border border-amber-200">Ponto / Fonte</th>
+                                <th class="p-3 border border-amber-200 text-center">Qtd.</th>
+                                <th class="p-3 border border-amber-200 text-center">Energia (kWh)</th>
+                                <th class="p-3 border border-amber-200 text-center">Represent. (%)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabelaResumoEntrada"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-2xl shadow-md p-6 border border-slate-200">
+                <h3 class="text-sm font-bold text-slate-800 mb-4 border-b pb-2 flex items-center gap-2">
+                    <i class="fa-solid fa-industry text-blue-600"></i>
+                    Resumo de Pontos de Consumo
+                </h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs border-collapse">
+                        <thead class="bg-blue-50 text-blue-900">
+                            <tr>
+                                <th class="p-3 border border-blue-200">Ponto de Consumo</th>
+                                <th class="p-3 border border-blue-200 text-center">Qtd.</th>
+                                <th class="p-3 border border-blue-200 text-center">Energia (kWh)</th>
+                                <th class="p-3 border border-blue-200 text-center">Custo (R$)</th>
+                                <th class="p-3 border border-blue-200 text-center">Represent. (%)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabelaResumoConsumo"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div class="lg:col-span-2 bg-white p-6 rounded-2xl shadow-md border border-slate-200">
+                <h3 class="text-sm font-bold text-slate-800 mb-4 flex items-center gap-2">
+                    <i class="fa-solid fa-chart-column text-amber-500"></i>
+                    Evolução Diária: Entrada vs Consumo (kWh)
+                </h3>
+                <div class="h-72">
+                    <canvas id="chartEnergiaBarra"></canvas>
+                </div>
+            </div>
+
+            <div class="bg-white p-6 rounded-2xl shadow-md border border-slate-200 space-y-4">
+                <h3 class="text-sm font-bold text-slate-800 border-b pb-2 flex items-center gap-2">
+                    <i class="fa-solid fa-chart-pie text-amber-500"></i>
+                    Distribuição Por Ponto (%)
+                </h3>
+                <div>
+                    <span class="text-[11px] font-bold text-amber-700 block text-center mb-1">Entrada / Fontes</span>
+                    <div class="h-28 flex items-center justify-center">
+                        <canvas id="chartEntradaRosca"></canvas>
+                    </div>
+                </div>
+                <div class="pt-2 border-t">
+                    <span class="text-[11px] font-bold text-blue-700 block text-center mb-1">Pontos de Consumo</span>
+                    <div class="h-28 flex items-center justify-center">
+                        <canvas id="chartConsumoRosca"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-2xl shadow-md p-6 border border-slate-200">
+            <h3 class="text-sm font-bold text-slate-800 mb-4 border-b pb-2 flex justify-between items-center">
+                <span>Histórico de Lançamentos do Período</span>
+                <span id="qtdRegistros" class="text-xs text-slate-500 font-normal">0 registro(s)</span>
+            </h3>
+            
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-xs border-collapse">
+                    <thead class="bg-slate-100 text-slate-700">
+                        <tr>
+                            <th class="p-3 border text-center">Data</th>
+                            <th class="p-3 border text-center">Tipo</th>
+                            <th class="p-3 border text-center">Local / Ponto</th>
+                            <th class="p-3 border text-center">Energia (kWh)</th>
+                            <th class="p-3 border text-center">Custo Estimado (R$)</th>
+                            <th class="p-3 border text-center">Observação</th>
+                            <th class="p-3 border text-center">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabelaHistorico"></tbody>
+                </table>
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="bg-white border-t border-slate-200 p-4 text-center text-xs text-slate-500">
+        MES Dona Zara &copy; 2026 - Módulo de Gestão do Consumo de Energia Elétrica
+    </footer>
+
+    <script>
+        const TARIFA_KWH = 0.85; // Tarifa base para cálculo de custos
+
+        let rawHistorico = [];
+        let lancamentosProcessados = [];
+        let chartBarraInstance = null;
+        let chartEntradaRoscaInstance = null;
+        let chartConsumoRoscaInstance = null;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            carregarEProcessarDados();
+            definirUltimos7Dias();
+        });
+
+        function carregarEProcessarDados() {
+            rawHistorico = JSON.parse(localStorage.getItem('mes_historico_energia') || localStorage.getItem('mes_lancamentos_energia') || '[]');
+            lancamentosProcessados = [];
+
+            rawHistorico.forEach((reg, rawIdx) => {
+                const dataIso = reg.dataLeitura ? reg.dataLeitura.split('T')[0] : (reg.data || new Date().toISOString().split('T')[0]);
+                const operador = reg.operador || 'Operador';
+
+                // Processa Entradas/Fontes (Análogo a Poços no modelo)
+                if (reg.leiturasEntrada && Array.isArray(reg.leiturasEntrada)) {
+                    reg.leiturasEntrada.forEach(p => {
+                        lancamentosProcessados.push({
+                            rawIndex: rawIdx,
+                            data: dataIso,
+                            tipo: 'ENTRADA',
+                            localMedicao: p.nome,
+                            consumo: parseFloat(p.valor) || 0,
+                            custo: 0,
+                            obs: `Operador: ${operador}`
+                        });
+                    });
+                }
+
+                // Processa Pontos de Consumo Interno
+                if (reg.leiturasConsumo && Array.isArray(reg.leiturasConsumo)) {
+                    reg.leiturasConsumo.forEach(c => {
+                        const kwh = parseFloat(c.valor) || 0;
+                        lancamentosProcessados.push({
+                            rawIndex: rawIdx,
+                            data: dataIso,
+                            tipo: 'CONSUMO',
+                            localMedicao: c.nome,
+                            consumo: kwh,
+                            custo: kwh * TARIFA_KWH,
+                            obs: `Operador: ${operador}`
+                        });
+                    });
+                }
+
+                // Suporte para a estrutura em colunas (leitura_1, leitura_2, etc.)
+                if (!reg.leiturasEntrada && !reg.leiturasConsumo) {
+                    const volTotal = parseFloat(reg.consumo_diario) || parseFloat(reg.consumo) || 0;
+                    lancamentosProcessados.push({
+                        rawIndex: rawIdx,
+                        data: dataIso,
+                        tipo: 'CONSUMO',
+                        localMedicao: reg.localMedicao || reg.setor || 'Geral (Medidor Principal)',
+                        consumo: volTotal,
+                        custo: reg.custo ? parseFloat(reg.custo) : volTotal * TARIFA_KWH,
+                        obs: reg.observacao || reg.obs || `Operador: ${operador}`
+                    });
+                }
+            });
+        }
+
+        function definirUltimos7Dias() {
+            const hoje = new Date();
+            const seteDiasAtras = new Date();
+            seteDiasAtras.setDate(hoje.getDate() - 6);
+
+            document.getElementById('filtroDataFim').value = hoje.toISOString().split('T')[0];
+            document.getElementById('filtroDataInicio').value = seteDiasAtras.toISOString().split('T')[0];
+
+            atualizarTela();
+        }
+
+        function salvarLancamentosLocais() {
+            localStorage.setItem('mes_historico_energia', JSON.stringify(rawHistorico));
+            localStorage.setItem('mes_lancamentos_energia', JSON.stringify(rawHistorico));
+        }
+
+        function obterLancamentosFiltrados() {
+            const dtInicio = document.getElementById('filtroDataInicio').value;
+            const dtFim = document.getElementById('filtroDataFim').value;
+
+            return lancamentosProcessados.filter(item => {
+                if (dtInicio && item.data < dtInicio) return false;
+                if (dtFim && item.data > dtFim) return false;
+                return true;
+            });
+        }
+
+        function limparFiltroData() {
+            document.getElementById('filtroDataInicio').value = '';
+            document.getElementById('filtroDataFim').value = '';
+            atualizarTela();
+        }
+
+        function editarRegistro(rawIdx) {
+            if (rawIdx !== undefined && rawIdx !== null) {
+                window.location.href = `lancamento_energia.html?editIndex=${rawIdx}`;
+            }
+        }
+
+        function excluirRegistro(rawIdx) {
+            if (rawIdx !== undefined && confirm("Deseja realmente excluir este lançamento completo?")) {
+                rawHistorico.splice(rawIdx, 1);
+                salvarLancamentosLocais();
+                carregarEProcessarDados();
+                atualizarTela();
+            }
+        }
+
+        function atualizarTela() {
+            const filtrados = obterLancamentosFiltrados();
+            renderizarKPIs(filtrados);
+            renderizarResumoPontosSeparados(filtrados);
+            renderizarTabela(filtrados);
+            renderizarGraficoBarras(filtrados);
+            renderizarGraficosRoscaSeparados(filtrados);
+        }
+
+        function renderizarKPIs(dados) {
+            const dadosConsumo = dados.filter(d => d.tipo === 'CONSUMO');
+            const totalConsumo = dadosConsumo.reduce((acc, l) => acc + (l.consumo || 0), 0);
+            const totalCusto = dadosConsumo.reduce((acc, l) => acc + (l.custo || 0), 0);
+            
+            const diasUnicos = new Set(dadosConsumo.map(d => d.data)).size;
+            const mediaDiaria = diasUnicos > 0 ? (totalConsumo / diasUnicos) : 0;
+
+            document.getElementById('kpiConsumoTotal').innerText = `${totalConsumo.toFixed(2)} kWh`;
+            document.getElementById('kpiMediaDiaria').innerText = `${mediaDiaria.toFixed(2)} kWh`;
+            document.getElementById('kpiCustoTotal').innerText = `R$ ${totalCusto.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+            document.getElementById('kpiTotalMedicoes').innerText = `${dados.length}`;
+        }
+
+        function renderizarResumoPontosSeparados(dados) {
+            const tbodyEntrada = document.getElementById('tabelaResumoEntrada');
+            const tbodyConsumo = document.getElementById('tabelaResumoConsumo');
+
+            const entrada = dados.filter(d => d.tipo === 'ENTRADA');
+            const consumo = dados.filter(d => d.tipo === 'CONSUMO');
+
+            const totalEntrada = entrada.reduce((acc, d) => acc + d.consumo, 0);
+            const totalConsumido = consumo.reduce((acc, d) => acc + d.consumo, 0);
+
+            // RENDERIZA ENTRADA / FONTES
+            if (entrada.length === 0) {
+                tbodyEntrada.innerHTML = '<tr><td colspan="4" class="p-3 text-center italic text-slate-400">Sem registros de entrada/fonte.</td></tr>';
+            } else {
+                const ag = {};
+                entrada.forEach(i => {
+                    ag[i.localMedicao] = ag[i.localMedicao] || { qtd: 0, vol: 0 };
+                    ag[i.localMedicao].qtd += 1;
+                    ag[i.localMedicao].vol += i.consumo;
+                });
+
+                tbodyEntrada.innerHTML = Object.keys(ag).map(p => {
+                    const pct = totalEntrada > 0 ? (ag[p].vol / totalEntrada) * 100 : 0;
+                    return `
+                        <tr class="hover:bg-slate-50 border-b">
+                            <td class="p-2.5 font-semibold text-slate-800">${p}</td>
+                            <td class="p-2.5 text-center text-slate-600">${ag[p].qtd}</td>
+                            <td class="p-2.5 text-center font-bold text-amber-600">${ag[p].vol.toFixed(2)} kWh</td>
+                            <td class="p-2.5 text-center font-semibold text-slate-700">${pct.toFixed(1)}%</td>
+                        </tr>
+                    `;
+                }).join('');
+            }
+
+            // RENDERIZA CONSUMO
+            if (consumo.length === 0) {
+                tbodyConsumo.innerHTML = '<tr><td colspan="5" class="p-3 text-center italic text-slate-400">Sem registros de consumo.</td></tr>';
+            } else {
+                const ag = {};
+                consumo.forEach(i => {
+                    ag[i.localMedicao] = ag[i.localMedicao] || { qtd: 0, vol: 0, custo: 0 };
+                    ag[i.localMedicao].qtd += 1;
+                    ag[i.localMedicao].vol += i.consumo;
+                    ag[i.localMedicao].custo += i.custo;
+                });
+
+                tbodyConsumo.innerHTML = Object.keys(ag).map(p => {
+                    const pct = totalConsumido > 0 ? (ag[p].vol / totalConsumido) * 100 : 0;
+                    return `
+                        <tr class="hover:bg-slate-50 border-b">
+                            <td class="p-2.5 font-semibold text-slate-800">${p}</td>
+                            <td class="p-2.5 text-center text-slate-600">${ag[p].qtd}</td>
+                            <td class="p-2.5 text-center font-bold text-blue-700">${ag[p].vol.toFixed(2)} kWh</td>
+                            <td class="p-2.5 text-center font-semibold text-emerald-700">R$ ${ag[p].custo.toFixed(2)}</td>
+                            <td class="p-2.5 text-center font-semibold text-slate-700">${pct.toFixed(1)}%</td>
+                        </tr>
+                    `;
+                }).join('');
+            }
+        }
+
+        function renderizarTabela(dados) {
+            const tbody = document.getElementById('tabelaHistorico');
+            document.getElementById('qtdRegistros').innerText = `${dados.length} registro(s)`;
+
+            if (dados.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" class="p-4 text-center italic text-slate-400">Nenhum lançamento no período.</td></tr>';
+                return;
+            }
+
+            const ordenadosInvertidos = [...dados].reverse();
+
+            tbody.innerHTML = ordenadosInvertidos.map((item) => {
+                const isEntrada = item.tipo === 'ENTRADA';
+                const tagTipo = isEntrada 
+                    ? '<span class="bg-amber-100 text-amber-900 text-[10px] font-bold px-2 py-0.5 rounded">ENTRADA</span>'
+                    : '<span class="bg-blue-100 text-blue-800 text-[10px] font-bold px-2 py-0.5 rounded">CONSUMO</span>';
+
+                return `
+                    <tr class="hover:bg-slate-50 transition border-b">
+                        <td class="p-3 text-center font-medium text-slate-800">${new Date(item.data + 'T00:00:00').toLocaleDateString('pt-BR')}</td>
+                        <td class="p-3 text-center">${tagTipo}</td>
+                        <td class="p-3 text-center font-semibold text-slate-700">${item.localMedicao}</td>
+                        <td class="p-3 text-center font-bold ${isEntrada ? 'text-amber-600' : 'text-blue-700'}">${(item.consumo || 0).toFixed(2)} kWh</td>
+                        <td class="p-3 text-center font-semibold text-emerald-700">${item.custo > 0 ? 'R$ ' + item.custo.toFixed(2) : '-'}</td>
+                        <td class="p-3 text-center text-slate-600">${item.obs || '-'}</td>
+                        <td class="p-3 text-center gap-2">
+                            <button onclick="editarRegistro(${item.rawIndex})" class="text-blue-600 font-bold px-2 py-1" title="Editar">✏️</button>
+                            <button onclick="excluirRegistro(${item.rawIndex})" class="text-red-600 font-bold px-2 py-1" title="Excluir">❌</button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function renderizarGraficoBarras(dados) {
+            const ctx = document.getElementById('chartEnergiaBarra').getContext('2d');
+            if (chartBarraInstance) chartBarraInstance.destroy();
+
+            const ag = {};
+            dados.forEach(l => {
+                if (!ag[l.data]) ag[l.data] = { entrada: 0, consumo: 0 };
+                if (l.tipo === 'ENTRADA') ag[l.data].entrada += l.consumo;
+                else ag[l.data].consumo += l.consumo;
+            });
+
+            const datas = Object.keys(ag).sort();
+            const labels = datas.map(d => new Date(d + 'T00:00:00').toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }));
+            const entradaVal = datas.map(d => ag[d].entrada);
+            const consumoVal = datas.map(d => ag[d].consumo);
+
+            chartBarraInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        { label: 'Entrada / Fontes', data: entradaVal, backgroundColor: '#f59e0b', borderRadius: 4 },
+                        { label: 'Consumo (Pontos)', data: consumoVal, backgroundColor: '#2563eb', borderRadius: 4 }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: { y: { beginAtZero: true } }
+                }
+            });
+        }
+
+        function renderizarGraficosRoscaSeparados(dados) {
+            const ctxEntrada = document.getElementById('chartEntradaRosca').getContext('2d');
+            const ctxConsumo = document.getElementById('chartConsumoRosca').getContext('2d');
+
+            if (chartEntradaRoscaInstance) chartEntradaRoscaInstance.destroy();
+            if (chartConsumoRoscaInstance) chartConsumoRoscaInstance.destroy();
+
+            const agEnt = {}, agCon = {};
+
+            dados.forEach(i => {
+                if (i.tipo === 'ENTRADA') agEnt[i.localMedicao] = (agEnt[i.localMedicao] || 0) + i.consumo;
+                else agCon[i.localMedicao] = (agCon[i.localMedicao] || 0) + i.consumo;
+            });
+
+            const cores = ['#f59e0b', '#d97706', '#2563eb', '#7c3aed', '#059669', '#0891b2'];
+
+            // ROSCA ENTRADA
+            chartEntradaRoscaInstance = new Chart(ctxEntrada, {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(agEnt),
+                    datasets: [{ data: Object.values(agEnt), backgroundColor: cores }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right' } } }
+            });
+
+            // ROSCA CONSUMO
+            chartConsumoRoscaInstance = new Chart(ctxConsumo, {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(agCon),
+                    datasets: [{ data: Object.values(agCon), backgroundColor: cores }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right' } } }
+            });
+        }
+    </script>
+</body>
+</html>

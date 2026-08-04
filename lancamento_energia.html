@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MES - Lançamento de Energia Elétrica | Lavanderia Dona Zara</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body class="bg-slate-100 font-sans min-h-screen flex flex-col justify-between">
+
+    <header class="bg-slate-900 text-white p-4 shadow-lg sticky top-0 z-50">
+        <div class="max-w-4xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="bg-slate-800 border border-slate-700 p-2.5 rounded-xl text-yellow-400 shadow">
+                    <i class="fa-solid fa-bolt text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold tracking-wider">Novo Lançamento - Energia Elétrica</h1>
+                    <p class="text-xs text-slate-400">Entrada diária das medições de consumo</p>
+                </div>
+            </div>
+            <a href="gestaodeenergia.html" class="bg-slate-700 hover:bg-slate-600 text-xs font-bold px-4 py-2 rounded-lg transition">⬅️ Voltar</a>
+        </div>
+    </header>
+
+    <main class="max-w-4xl mx-auto w-full p-4 my-6">
+        <form onsubmit="salvarLancamento(event)" class="bg-white p-6 rounded-2xl shadow-md border border-slate-200 space-y-6">
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 border-b pb-4 border-slate-100">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Data da Leitura *</label>
+                    <input type="date" id="dataLeitura" required class="w-full p-2.5 border rounded-lg text-sm bg-slate-50 outline-none focus:ring-2 focus:ring-yellow-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Operador / Responsável *</label>
+                    <input type="text" id="operador" required placeholder="Ex: João Silva" class="w-full p-2.5 border rounded-lg text-sm bg-slate-50 outline-none focus:ring-2 focus:ring-yellow-500">
+                </div>
+            </div>
+
+            <div class="space-y-4">
+                <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-2">
+                    <i class="fa-solid fa-gauge text-yellow-500"></i> Medidores Cadastrados
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="containerCamposMedidores">
+                    </div>
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">Observações Operacionais</label>
+                <textarea id="observacao" rows="2" placeholder="Ocorrências ou notas sobre o consumo do dia..." class="w-full p-2.5 border rounded-lg text-sm bg-slate-50 outline-none focus:ring-2 focus:ring-yellow-500"></textarea>
+            </div>
+
+            <div class="flex gap-3 pt-4 border-t border-slate-100">
+                <a href="gestaodeenergia.html" class="w-1/2 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold py-3 rounded-xl text-xs transition text-center">Cancelar</a>
+                <button type="submit" class="w-1/2 bg-yellow-500 hover:bg-yellow-600 text-slate-900 font-bold py-3 rounded-xl text-xs transition shadow">
+                    💾 SALVAR LANÇAMENTO
+                </button>
+            </div>
+
+        </form>
+    </main>
+
+    <footer class="bg-white border-t border-slate-200 p-4 text-center text-xs text-slate-500">
+        MES Dona Zara &copy; 2026 - Módulo de Gestão de Energia Elétrica
+    </footer>
+
+    <script>
+        let configEnergia = { qtd: 2, nomes: ["Medidor Principal", "Medidor Auxiliar"] };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('dataLeitura').value = new Date().toISOString().split('T')[0];
+            carregarConfiguracaoEPreencherCampos();
+        });
+
+        function carregarConfiguracaoEPreencherCampos() {
+            const configSalva = localStorage.getItem('mes_config_energia');
+            if (configSalva) {
+                configEnergia = JSON.parse(configSalva);
+            }
+
+            const container = document.getElementById('containerCamposMedidores');
+            container.innerHTML = '';
+
+            configEnergia.nomes.forEach((nomeMedidor, idx) => {
+                container.innerHTML += `
+                    <div class="bg-slate-50 p-3 rounded-xl border border-slate-200">
+                        <label class="block text-xs font-bold text-slate-700 mb-1">${nomeMedidor} (kWh) *</label>
+                        <input type="number" step="0.01" min="0" id="medidor_${idx}" required placeholder="0.00" class="w-full p-2.5 border rounded-lg text-sm bg-white outline-none focus:ring-2 focus:ring-yellow-500 font-mono">
+                    </div>
+                `;
+            });
+        }
+
+        function salvarLancamento(e) {
+            e.preventDefault();
+
+            const data = document.getElementById('dataLeitura').value;
+            const operador = document.getElementById('operador').value.trim();
+            const observacao = document.getElementById('observacao').value.trim();
+
+            const leituras = [];
+            configEnergia.nomes.forEach((_, idx) => {
+                const val = parseFloat(document.getElementById(`medidor_${idx}`).value) || 0;
+                leituras.push(val);
+            });
+
+            const novoLancamento = {
+                id: 'eng_' + Date.now(),
+                data,
+                operador,
+                leituras,
+                observacao
+            };
+
+            const lancamentosExistentes = JSON.parse(localStorage.getItem('mes_lancamentos_energia') || '[]');
+            lancamentosExistentes.push(novoLancamento);
+
+            localStorage.setItem('mes_lancamentos_energia', JSON.stringify(lancamentosExistentes));
+
+            alert("Lançamento de Energia Elétrica salvo com sucesso!");
+            window.location.href = "gestaodeenergia.html";
+        }
+    </script>
+</body>
+</html>
