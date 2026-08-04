@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MES - Lançamento de Consumo de Água | Lavanderia Dona Zara</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body class="bg-slate-100 font-sans min-h-screen flex flex-col justify-between text-slate-800">
+
+    <header class="bg-slate-900 text-white p-4 shadow-lg sticky top-0 z-50">
+        <div class="max-w-xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="bg-cyan-600 p-2.5 rounded-xl text-white shadow">
+                    <i class="fa-solid fa-droplet text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold">Apontamento de Água</h1>
+                    <p class="text-xs text-slate-400">Lançamento de consumo diário (m³)</p>
+                </div>
+            </div>
+            <a href="gestaodeagua.html" class="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl text-xs font-bold transition border border-slate-700 flex items-center gap-2">
+                <i class="fa-solid fa-chart-line"></i> Dashboard
+            </a>
+        </div>
+    </header>
+
+    <main class="max-w-xl mx-auto w-full p-4 md:p-6 space-y-6 flex-grow">
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 space-y-5">
+            <h3 class="text-sm font-bold text-slate-800 border-b pb-3 flex items-center justify-between" id="tituloForm">
+                <span><i class="fa-solid fa-pen-to-square text-cyan-600 mr-2"></i>Novo Registro de Consumo</span>
+                <span id="badgeModo" class="hidden text-xs bg-cyan-100 text-cyan-800 font-semibold px-2.5 py-0.5 rounded-full">Modo de Edição</span>
+            </h3>
+
+            <form id="formAgua" onsubmit="salvarLancamento(event)" class="flex flex-col gap-4">
+                <input type="hidden" id="editIndex" value="">
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Data *</label>
+                    <input type="date" id="data" required class="w-full p-3 border border-slate-300 rounded-xl text-sm bg-slate-50 font-bold text-slate-800 focus:ring-2 focus:ring-cyan-500 focus:bg-white outline-none transition">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Local / Ponto de Medição *</label>
+                    <select id="localMedicao" required class="w-full p-3 border border-slate-300 rounded-xl text-sm bg-slate-50 font-bold text-slate-800 focus:ring-2 focus:ring-cyan-500 focus:bg-white outline-none transition">
+                        <option value="">Carregando locais...</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Consumo de Água (m³) *</label>
+                    <input type="number" step="0.01" id="consumo" required placeholder="Ex: 12.50" class="w-full p-3 border border-slate-300 rounded-xl text-sm bg-slate-50 font-bold text-cyan-700 focus:ring-2 focus:ring-cyan-500 focus:bg-white outline-none transition">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Custo Estimado (R$)</label>
+                    <input type="number" step="0.01" id="custo" placeholder="Ex: 150.00" class="w-full p-3 border border-slate-300 rounded-xl text-sm bg-slate-50 font-bold text-emerald-700 focus:ring-2 focus:ring-cyan-500 focus:bg-white outline-none transition">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Observações Adicionais</label>
+                    <input type="text" id="obs" placeholder="Ex: Leitura realizada às 08:00 / Troca do hidrômetro" class="w-full p-3 border border-slate-300 rounded-xl text-sm bg-slate-50 text-slate-800 focus:ring-2 focus:ring-cyan-500 focus:bg-white outline-none transition">
+                </div>
+
+                <div class="flex gap-3 pt-3">
+                    <button type="button" onclick="limparForm()" class="w-1/3 py-3 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl text-xs font-bold transition">
+                        Limpar / Cancelar
+                    </button>
+                    <button type="submit" id="btnSalvar" class="w-2/3 py-3 bg-cyan-600 hover:bg-cyan-700 text-white rounded-xl text-xs font-bold shadow transition">
+                        Salvar Lançamento
+                    </button>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <footer class="bg-slate-900 text-slate-400 text-center py-4 text-xs border-t border-slate-800">
+        Lavanderia Dona Zara &copy; MES System 2026
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            if (!document.getElementById('data').value) {
+                document.getElementById('data').valueAsDate = new Date();
+            }
+            carregarLocaisConfiguracao();
+            verificarEdicaoURL();
+        });
+
+        // Carrega locais configurados em configuracoes.html
+        function carregarLocaisConfiguracao() {
+            const selectLocal = document.getElementById('localMedicao');
+            
+            // Busca nas configurações locais específicos de água ou setores gerais
+            let locais = JSON.parse(
+                localStorage.getItem('mes_config_locais_agua') || 
+                localStorage.getItem('mes_config_setores') || 
+                '["Hidrômetro Principal", "Setor Lavagem", "Caldeira / Utilidades", "Reuso / Tratamento"]'
+            );
+
+            selectLocal.innerHTML = '<option value="">-- Selecione o Local / Ponto --</option>';
+
+            locais.forEach(local => {
+                const option = document.createElement('option');
+                option.value = local;
+                option.textContent = local;
+                selectLocal.appendChild(option);
+            });
+        }
+
+        function obterLancamentosLocais() {
+            return JSON.parse(localStorage.getItem('mes_lancamentos_agua') || localStorage.getItem('mes_historico_agua') || '[]');
+        }
+
+        function salvarLancamentosLocais(dados) {
+            localStorage.setItem('mes_lancamentos_agua', JSON.stringify(dados));
+            localStorage.setItem('mes_historico_agua', JSON.stringify(dados));
+        }
+
+        function verificarEdicaoURL() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const editIndex = urlParams.get('editIndex');
+
+            if (editIndex !== null && editIndex !== '') {
+                const lancamentos = obterLancamentosLocais();
+                const item = lancamentos[editIndex];
+
+                if (item) {
+                    document.getElementById('editIndex').value = editIndex;
+                    document.getElementById('data').value = item.data || '';
+                    document.getElementById('localMedicao').value = item.localMedicao || item.setor || '';
+                    document.getElementById('consumo').value = item.consumo !== undefined ? item.consumo : '';
+                    document.getElementById('custo').value = item.custo !== undefined ? item.custo : '';
+                    document.getElementById('obs').value = item.obs || item.observacoes || '';
+
+                    document.getElementById('tituloForm').querySelector('span').innerHTML = '<i class="fa-solid fa-pen-to-square text-cyan-600 mr-2"></i>Editar Lançamento de Água';
+                    document.getElementById('badgeModo').classList.remove('hidden');
+                    document.getElementById('btnSalvar').innerText = "Atualizar Lançamento";
+                    document.getElementById('btnSalvar').className = "w-2/3 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold shadow transition";
+                }
+            }
+        }
+
+        function salvarLancamento(e) {
+            e.preventDefault();
+            const idx = document.getElementById('editIndex').value;
+            let lancamentos = obterLancamentosLocais();
+
+            const consumoVal = parseFloat(document.getElementById('consumo').value) || 0;
+            const custoVal = parseFloat(document.getElementById('custo').value) || 0;
+
+            const registro = {
+                id: idx !== "" ? (lancamentos[idx] ? lancamentos[idx].id : Date.now().toString()) : Date.now().toString(),
+                data: document.getElementById('data').value,
+                localMedicao: document.getElementById('localMedicao').value,
+                consumo: consumoVal,
+                custo: custoVal,
+                obs: document.getElementById('obs').value
+            };
+
+            if (idx !== "" && lancamentos[idx]) {
+                lancamentos[idx] = registro;
+                salvarLancamentosLocais(lancamentos);
+                alert("Lançamento de água atualizado com sucesso!");
+            } else {
+                lancamentos.unshift(registro);
+                salvarLancamentosLocais(lancamentos);
+                alert("Lançamento de água efetuado com sucesso!");
+            }
+
+            window.location.href = "gestaodeagua.html";
+        }
+
+        function limparForm() {
+            document.getElementById('formAgua').reset();
+            document.getElementById('editIndex').value = "";
+            document.getElementById('data').valueAsDate = new Date();
+            document.getElementById('badgeModo').classList.add('hidden');
+            document.getElementById('tituloForm').querySelector('span').innerHTML = '<i class="fa-solid fa-pen-to-square text-cyan-600 mr-2"></i>Novo Registro de Consumo';
+            document.getElementById('btnSalvar').innerText = "Salvar Lançamento";
+            document.getElementById('btnSalvar').className = "w-2/3 py-3 bg-cyan-600 hover:bg-cyan-700 text-white rounded-xl text-xs font-bold shadow transition";
+        }
+    </script>
+</body>
+</html>
