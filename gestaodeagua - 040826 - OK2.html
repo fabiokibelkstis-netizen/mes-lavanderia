@@ -147,66 +147,13 @@
     </footer>
 
     <script>
-        let rawHistorico = [];
-        let lancamentosProcessados = [];
+        let lancamentos = JSON.parse(localStorage.getItem('mes_lancamentos_agua') || localStorage.getItem('mes_historico_agua') || '[]');
         let chartBarraInstance = null;
         let chartRoscaInstance = null;
 
         document.addEventListener('DOMContentLoaded', () => {
-            carregarEProcessarDados();
             definirUltimos7Dias();
         });
-
-        // Carrega do LocalStorage e desmembra os objetos complexos para a estrutura da tela
-        function carregarEProcessarDados() {
-            rawHistorico = JSON.parse(localStorage.getItem('mes_historico_agua') || localStorage.getItem('mes_lancamentos_agua') || '[]');
-            lancamentosProcessados = [];
-
-            rawHistorico.forEach((reg, rawIdx) => {
-                const dataIso = reg.dataLeitura ? reg.dataLeitura.split('T')[0] : reg.data;
-                const operador = reg.operador || 'Operador';
-
-                // Processa Poços (Captação)
-                if (reg.leiturasPocos && Array.isArray(reg.leiturasPocos)) {
-                    reg.leiturasPocos.forEach(p => {
-                        lancamentosProcessados.push({
-                            rawIndex: rawIdx,
-                            data: dataIso,
-                            localMedicao: `Captação: ${p.nome}`,
-                            consumo: parseFloat(p.valor) || 0,
-                            custo: (parseFloat(p.valor) || 0) * 10, // Exemplo taxa R$ 10 / m³
-                            obs: `Resp: ${operador}`
-                        });
-                    });
-                }
-
-                // Processa Pontos de Consumo
-                if (reg.leiturasConsumo && Array.isArray(reg.leiturasConsumo)) {
-                    reg.leiturasConsumo.forEach(c => {
-                        lancamentosProcessados.push({
-                            rawIndex: rawIdx,
-                            data: dataIso,
-                            localMedicao: c.nome,
-                            consumo: parseFloat(c.valor) || 0,
-                            custo: (parseFloat(c.valor) || 0) * 10,
-                            obs: `Resp: ${operador}`
-                        });
-                    });
-                }
-
-                // Suporte legados (formato chave simples)
-                if (!reg.leiturasPocos && !reg.leiturasConsumo) {
-                    lancamentosProcessados.push({
-                        rawIndex: rawIdx,
-                        data: dataIso || new Date().toISOString().split('T')[0],
-                        localMedicao: reg.localMedicao || reg.setor || 'Geral',
-                        consumo: parseFloat(reg.consumo) || 0,
-                        custo: parseFloat(reg.custo) || 0,
-                        obs: reg.obs || '-'
-                    });
-                }
-            });
-        }
 
         // Configura as datas pré-selecionadas para os últimos 7 dias
         function definirUltimos7Dias() {
@@ -221,8 +168,8 @@
         }
 
         function salvarLancamentosLocais() {
-            localStorage.setItem('mes_historico_agua', JSON.stringify(rawHistorico));
-            localStorage.setItem('mes_lancamentos_agua', JSON.stringify(rawHistorico));
+            localStorage.setItem('mes_lancamentos_agua', JSON.stringify(lancamentos));
+            localStorage.setItem('mes_historico_agua', JSON.stringify(lancamentos));
         }
 
         // Filtra lançamentos conforme período escolhido
@@ -230,7 +177,7 @@
             const dtInicio = document.getElementById('filtroDataInicio').value;
             const dtFim = document.getElementById('filtroDataFim').value;
 
-            return lancamentosProcessados.filter(item => {
+            return lancamentos.filter(item => {
                 if (dtInicio && item.data < dtInicio) return false;
                 if (dtFim && item.data > dtFim) return false;
                 return true;
@@ -243,17 +190,25 @@
             atualizarTela();
         }
 
-        function editarRegistro(rawIdx) {
-            if (rawIdx !== undefined && rawIdx !== null) {
-                window.location.href = `lancamento_agua.html?editIndex=${rawIdx}`;
+        function editarRegistro(i) {
+            const filtrados = [...obterLancamentosFiltrados()].reverse();
+            const item = filtrados[i];
+            const originalIndex = lancamentos.indexOf(item);
+
+            if (originalIndex !== -1) {
+                // Redireciona para a tela dedicada de lançamento em modo de edição
+                window.location.href = `lancamento_agua.html?editIndex=${originalIndex}`;
             }
         }
 
-        function excluirRegistro(rawIdx) {
-            if (rawIdx !== undefined && confirm("Deseja realmente excluir este grupo de lançamento de água?")) {
-                rawHistorico.splice(rawIdx, 1);
+        function excluirRegistro(i) {
+            const filtrados = [...obterLancamentosFiltrados()].reverse();
+            const item = filtrados[i];
+            const originalIndex = lancamentos.indexOf(item);
+
+            if (originalIndex !== -1 && confirm("Deseja realmente excluir este lançamento de água?")) {
+                lancamentos.splice(originalIndex, 1);
                 salvarLancamentosLocais();
-                carregarEProcessarDados();
                 atualizarTela();
             }
         }
@@ -270,10 +225,7 @@
         function renderizarKPIs(dados) {
             const totalConsumo = dados.reduce((acc, l) => acc + (l.consumo || 0), 0);
             const totalCusto = dados.reduce((acc, l) => acc + (l.custo || 0), 0);
-            
-            // Calcula dias únicos no período filtrado
-            const diasUnicos = new Set(dados.map(d => d.data)).size;
-            const mediaDiaria = diasUnicos > 0 ? (totalConsumo / diasUnicos) : 0;
+            const mediaDiaria = dados.length > 0 ? (totalConsumo / dados.length) : 0;
 
             document.getElementById('kpiConsumoTotal').innerText = `${totalConsumo.toFixed(2)} m³`;
             document.getElementById('kpiMediaDiaria').innerText = `${mediaDiaria.toFixed(2)} m³`;
@@ -293,7 +245,7 @@
 
             const agrupado = {};
             dados.forEach(item => {
-                const ponto = item.localMedicao || 'Não especificado';
+                const ponto = item.localMedicao || item.setor || 'Não especificado';
                 if (!agrupado[ponto]) {
                     agrupado[ponto] = { qtd: 0, consumo: 0, custo: 0 };
                 }
@@ -336,16 +288,16 @@
 
             const ordenadosInvertidos = [...dados].reverse();
 
-            tbody.innerHTML = ordenadosInvertidos.map((item) => `
+            tbody.innerHTML = ordenadosInvertidos.map((item, i) => `
                 <tr class="hover:bg-slate-50 transition border-b">
                     <td class="p-3 text-center font-medium text-slate-800">${new Date(item.data + 'T00:00:00').toLocaleDateString('pt-BR')}</td>
-                    <td class="p-3 text-center font-semibold text-slate-700">${item.localMedicao}</td>
+                    <td class="p-3 text-center font-semibold text-slate-700">${item.localMedicao || item.setor || 'Geral'}</td>
                     <td class="p-3 text-center font-bold text-cyan-700 bg-cyan-50/30">${(item.consumo || 0).toFixed(2)} m³</td>
                     <td class="p-3 text-center font-semibold text-emerald-700">R$ ${(item.custo || 0).toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
                     <td class="p-3 text-center text-slate-600">${item.obs || '-'}</td>
                     <td class="p-3 text-center gap-2">
-                        <button onclick="editarRegistro(${item.rawIndex})" class="text-blue-600 font-bold px-2 py-1" title="Editar na tela de lançamento">✏️</button>
-                        <button onclick="excluirRegistro(${item.rawIndex})" class="text-red-600 font-bold px-2 py-1" title="Excluir">❌</button>
+                        <button onclick="editarRegistro(${i})" class="text-blue-600 font-bold px-2 py-1" title="Editar na tela de lançamento">✏️</button>
+                        <button onclick="excluirRegistro(${i})" class="text-red-600 font-bold px-2 py-1" title="Excluir">❌</button>
                     </td>
                 </tr>
             `).join('');
@@ -355,15 +307,8 @@
             const ctx = document.getElementById('chartAguaBarra').getContext('2d');
             if (chartBarraInstance) chartBarraInstance.destroy();
 
-            // Agrupa consumo total por data
-            const consumoPorData = {};
-            dados.forEach(l => {
-                consumoPorData[l.data] = (consumoPorData[l.data] || 0) + (l.consumo || 0);
-            });
-
-            const datasOrdenadas = Object.keys(consumoPorData).sort();
-            const labels = datasOrdenadas.map(d => new Date(d + 'T00:00:00').toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }));
-            const dataConsumo = datasOrdenadas.map(d => consumoPorData[d]);
+            const labels = dados.map(l => new Date(l.data + 'T00:00:00').toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }));
+            const dataConsumo = dados.map(l => l.consumo || 0);
 
             chartBarraInstance = new Chart(ctx, {
                 type: 'bar',
@@ -387,7 +332,7 @@
 
             const agrupado = {};
             dados.forEach(item => {
-                const ponto = item.localMedicao || 'Não especificado';
+                const ponto = item.localMedicao || item.setor || 'Não especificado';
                 agrupado[ponto] = (agrupado[ponto] || 0) + (item.consumo || 0);
             });
 
