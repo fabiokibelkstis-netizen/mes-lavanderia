@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MES - Lançamento de Gás | Lavanderia Dona Zara</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body class="bg-slate-100 font-sans min-h-screen flex flex-col justify-between">
+
+    <header class="bg-slate-900 text-white p-4 shadow-lg sticky top-0 z-50">
+        <div class="max-w-4xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="bg-orange-600 p-2.5 rounded-xl text-white shadow">
+                    <i class="fa-solid fa-fire-flame-simple text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold tracking-wider">MES - Lançamento de Medições de Gás</h1>
+                    <p class="text-xs text-slate-400">Leitura Diária/Periódica dos Relógios de Consumo de Gás (GLP/GN)</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-2">
+                <a href="configuracoes.html" class="bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold px-3 py-2 rounded-lg transition border border-slate-700">⚙️ Configurações</a>
+		<a href="gestaodegas.html" class="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl text-xs font-bold transition border border-slate-700 flex items-center gap-2">
+                <i class="fa-solid fa-chart-line"></i> Dashboard de Gás
+            </a>            
+	    </div>
+        </div>
+    </header>
+
+    <main class="max-w-4xl mx-auto w-full p-4 my-4">
+        <div class="bg-white rounded-2xl shadow-md p-6 border border-slate-200">
+            <h2 id="tituloForm" class="text-base font-bold text-slate-800 border-b pb-3 mb-6 flex items-center gap-2">
+                <i class="fa-solid fa-pen-to-square text-orange-600"></i>
+                Novo Lançamento Diário de Gás
+            </h2>
+
+            <form id="formLancamentoGas" onsubmit="salvarLancamento(event)" class="space-y-6">
+                
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-slate-50 p-4 rounded-xl border border-slate-200">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Data da Leitura</label>
+                        <input type="date" id="dataLeitura" required class="w-full p-2.5 border rounded-lg text-xs bg-white outline-none focus:ring-2 focus:ring-orange-500 font-semibold">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Operador / Responsável</label>
+                        <input type="text" id="operador" required placeholder="Ex: João Silva" class="w-full p-2.5 border rounded-lg text-xs bg-white outline-none focus:ring-2 focus:ring-orange-500">
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="text-xs font-bold text-orange-800 uppercase tracking-wider mb-3 flex items-center gap-2">
+                        <i class="fa-solid fa-gauge-high"></i>
+                        Leituras dos Medidores Cadastrados
+                    </h3>
+                    <div id="containerMedidores" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Observações Operacionais</label>
+                    <textarea id="obs" rows="2" placeholder="Anote vazamentos, trocas de cilindros ou irregularidades..." class="w-full p-2.5 border rounded-lg text-xs bg-slate-50 outline-none focus:ring-2 focus:ring-orange-500"></textarea>
+                </div>
+
+                <div class="flex gap-3 pt-2">
+                    <button type="submit" class="flex-1 bg-orange-600 hover:bg-orange-700 text-white font-bold py-3 rounded-xl text-xs transition shadow flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-floppy-disk"></i> SALVAR LEITURAS DE GÁS
+                    </button>
+                    <a href="gestaodegas.html" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold px-6 py-3 rounded-xl text-xs transition flex items-center justify-center">
+                        Cancelar
+                    </a>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <footer class="bg-white border-t border-slate-200 p-4 text-center text-xs text-slate-500">
+        MES Dona Zara &copy; 2026 - Módulo de Lançamentos de Gás
+    </footer>
+
+    <script>
+        let editIdx = null;
+        let configGas = { qtd: 2, nomes: ["Relógio 1", "Relógio 2"] };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            carregarConfiguracao();
+            gerarCamposMedidores();
+            verificarModoEdicao();
+        });
+
+        function carregarConfiguracao() {
+            const saved = localStorage.getItem('mes_config_gas');
+            if (saved) {
+                configGas = JSON.parse(saved);
+            }
+        }
+
+        function gerarCamposMedidores() {
+            const container = document.getElementById('containerMedidores');
+            container.innerHTML = '';
+
+            configGas.nomes.forEach((nomeMedidor, idx) => {
+                container.innerHTML += `
+                    <div class="p-3 bg-white rounded-xl border border-slate-200 shadow-sm space-y-2">
+                        <span class="text-xs font-bold text-slate-800 block border-b pb-1">
+                            <i class="fa-solid fa-fire text-orange-500"></i> ${nomeMedidor}
+                        </span>
+                        <div>
+                            <label class="block text-[11px] font-semibold text-slate-600">Volume Consumido (m³)</label>
+                            <input type="number" step="0.01" min="0" id="medidor_${idx}" placeholder="0.00" required class="w-full p-2 border rounded-lg text-xs bg-slate-50 outline-none focus:ring-2 focus:ring-orange-500 font-bold text-orange-700">
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function verificarModoEdicao() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const editParam = urlParams.get('editIndex');
+
+            if (editParam !== null) {
+                editIdx = parseInt(editParam);
+                const historico = JSON.parse(localStorage.getItem('mes_historico_gas') || '[]');
+                
+                if (historico[editIdx]) {
+                    const reg = historico[editIdx];
+                    document.getElementById('tituloForm').innerHTML = `<i class="fa-solid fa-pen text-orange-600"></i> Editar Lançamento de Gás`;
+                    document.getElementById('dataLeitura').value = reg.dataLeitura || reg.data;
+                    document.getElementById('operador').value = reg.operador || '';
+                    document.getElementById('obs').value = reg.obs || '';
+
+                    if (reg.leituras && Array.isArray(reg.leituras)) {
+                        reg.leituras.forEach((m, idx) => {
+                            const field = document.getElementById(`medidor_${idx}`);
+                            if (field) field.value = m.valor;
+                        });
+                    }
+                }
+            } else {
+                document.getElementById('dataLeitura').value = new Date().toISOString().split('T')[0];
+            }
+        }
+
+        function salvarLancamento(e) {
+            e.preventDefault();
+
+            const dataLeitura = document.getElementById('dataLeitura').value;
+            const operador = document.getElementById('operador').value.trim();
+            const obs = document.getElementById('obs').value.trim();
+
+            const leituras = [];
+            configGas.nomes.forEach((nomeMedidor, idx) => {
+                const valor = parseFloat(document.getElementById(`medidor_${idx}`).value) || 0;
+                leituras.push({
+                    nome: nomeMedidor,
+                    valor: valor,
+                    custo: valor * 12.50 // Custo estimado dinâmico
+                });
+            });
+
+            const registro = {
+                dataLeitura,
+                operador,
+                leituras,
+                obs
+            };
+
+            const historico = JSON.parse(localStorage.getItem('mes_historico_gas') || '[]');
+
+            if (editIdx !== null) {
+                historico[editIdx] = registro;
+            } else {
+                historico.push(registro);
+            }
+
+            localStorage.setItem('mes_historico_gas', JSON.stringify(historico));
+            window.location.href = 'gestaodegas.html';
+        }
+    </script>
+</body>
+</html>
