@@ -147,15 +147,10 @@
     </footer>
 
     <script>
+	// 1. Obtém os lançamentos salvos no localStorage
+
         let lancamentos = JSON.parse(localStorage.getItem('mes_lancamentos_horas') || '[]');
         let chartInstance = null;
-
-        // 2. ORDENAÇÃO: Do mais recente para o mais antigo por data
-        lancamentos.sort((a, b) => {
-            const dataA = new Date(a.data ? (a.data.includes('T') ? a.data : a.data + 'T00:00:00') : 0);
-            const dataB = new Date(b.data ? (b.data.includes('T') ? b.data : b.data + 'T00:00:00') : 0);
-            return dataB - dataA; // Retorno negativo/positivo coloca a maior data (mais recente) no topo
-         });
 
         // Configura a data inicial do formulário para hoje
         document.getElementById('inputData').valueAsDate = new Date();
