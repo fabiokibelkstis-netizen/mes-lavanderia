@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MES - Lançamento de Estoque Químico | Lavanderia Dona Zara</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body class="bg-slate-100 font-sans min-h-screen flex flex-col justify-between">
+
+    <header class="bg-slate-900 text-white p-4 shadow-lg sticky top-0 z-50">
+        <div class="max-w-5xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="bg-indigo-600 p-2.5 rounded-xl text-white shadow">
+                    <i class="fa-solid fa-boxes-stacked text-xl"></i>
+                </div>
+                <div>
+                    <h1 id="tituloPagina" class="text-xl font-bold tracking-wider">Registro de Estoque de Produtos Químicos</h1>
+                    <p class="text-xs text-slate-400">Apuração e Contagem Física do Saldo em Estoque</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-2">
+                <a href="configuracoes.html" class="bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold px-3 py-2 rounded-lg transition border border-slate-700">⚙️ Configurações</a>
+		<a href="gestao_estoque_quimico.html" class="bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold px-4 py-2 rounded-xl transition flex items-center gap-2 shadow">
+                <i class="fa-solid fa-chart-line"></i> Dashboard de Estoque de Químicos
+            </a>            
+	    </div>
+        </div>
+    </header>
+
+    <main class="max-w-5xl mx-auto w-full p-4 my-4">
+        <form id="formEstoqueQuimico" onsubmit="salvarLancamento(event)" class="bg-white rounded-2xl shadow-md p-6 border border-slate-200 space-y-6">
+            
+            <div id="bannerModo" class="bg-indigo-50 border border-indigo-200 text-indigo-900 p-3 rounded-xl flex items-center justify-between text-xs font-semibold">
+                <span class="flex items-center gap-2">
+                    <i id="iconeModo" class="fa-solid fa-plus-circle text-indigo-600"></i>
+                    <span id="textoModo">Registrando nova contagem de saldo diário para todos os produtos.</span>
+                </span>
+                <span id="tagModo" class="bg-indigo-600 text-white px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider">Novo</span>
+            </div>
+
+            <div class="space-y-3">
+                <h2 class="text-sm font-bold text-slate-800 uppercase tracking-wider flex items-center gap-2 border-b pb-2">
+                    <i class="fa-solid fa-clipboard-check text-indigo-600"></i>
+                    Informações da Contagem
+                </h2>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Data / Hora da Contagem *</label>
+                        <input type="datetime-local" id="fieldDataHora" required class="w-full p-2.5 border rounded-xl text-xs bg-slate-50 outline-none focus:ring-2 focus:ring-indigo-500 font-medium">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Responsável / Operador *</label>
+                        <input type="text" id="fieldOperador" placeholder="Nome do responsável" required class="w-full p-2.5 border rounded-xl text-xs bg-slate-50 outline-none focus:ring-2 focus:ring-indigo-500 font-medium">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Tipo / Motivo da Apuração *</label>
+                        <select id="fieldTipoApuracao" required class="w-full p-2.5 border rounded-xl text-xs bg-slate-50 outline-none focus:ring-2 focus:ring-indigo-500 font-medium text-slate-800">
+                            <option value="Conferência Diária">Conferência Diária</option>
+                            <option value="Inventário Periódico">Inventário Periódico</option>
+                            <option value="Ajuste de Saldo">Ajuste de Saldo</option>
+                            <option value="Fechamento Mensal">Fechamento Mensal</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="space-y-3">
+                <div class="flex items-center justify-between border-b pb-2">
+                    <h2 class="text-sm font-bold text-slate-800 uppercase tracking-wider flex items-center gap-2">
+                        <i class="fa-solid fa-list-check text-indigo-600"></i>
+                        Saldos em Estoque por Produto
+                    </h2>
+                    <span class="text-xs text-slate-500 font-normal">Preencha o saldo de cada produto listado</span>
+                </div>
+
+                <div class="overflow-x-auto rounded-xl border border-slate-200">
+                    <table class="w-full text-left text-xs border-collapse">
+                        <thead class="bg-indigo-50 text-indigo-900 font-bold border-b border-slate-200">
+                            <tr>
+                                <th class="p-3">#</th>
+                                <th class="p-3">Produto Químico Cadastrado</th>
+                                <th class="p-3 text-center">Unidade</th>
+                                <th class="p-3 text-right sm:w-1/3">Quantidade em Estoque (Saldo) *</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabelaListaProdutos" class="divide-y divide-slate-100 bg-white">
+                            </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="space-y-2">
+                <label class="block text-xs font-semibold text-slate-700 mb-1">Observações / Anotações de Estoque</label>
+                <textarea id="fieldObservacao" rows="3" placeholder="Avaria de embalagem, produto próximo do vencimento, divergências, etc..." class="w-full p-2.5 border rounded-xl text-xs bg-slate-50 outline-none focus:ring-2 focus:ring-indigo-500 font-medium"></textarea>
+            </div>
+
+            <div class="flex items-center justify-end gap-3 pt-4 border-t">
+                <a href="gestao_estoque_quimico.html" class="px-5 py-2.5 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-xl text-xs font-bold transition">
+                    Cancelar
+                </a>
+                <button type="submit" class="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition shadow-md flex items-center gap-2">
+                    <i class="fa-solid fa-floppy-disk"></i> Salvar Apuração de Estoque
+                </button>
+            </div>
+
+        </form>
+    </main>
+
+    <footer class="bg-white border-t border-slate-200 p-4 text-center text-xs text-slate-500">
+        MES Dona Zara &copy; 2026 - Módulo de Gestão e Registro de Estoque de Produtos Químicos
+    </footer>
+
+    <script>
+        const PRODUTOS_PADRAO = [
+            { id: "beiclean_cwt", nome: "BEICLEAN CWT", un: "L" },
+            { id: "beipur_msc", nome: "BEIPUR MSC", un: "L" },
+            { id: "beibleach_pe", nome: "BEIBLEACH PE", un: "L" },
+            { id: "beibleach_hc_liq", nome: "BEIBLEACH HC LIQ", un: "L" },
+            { id: "beibleach_net", nome: "BEIBLEACH NET", un: "L" },
+            { id: "beiplex_cab", nome: "BEIPLEX CAB", un: "L" },
+            { id: "beiblanc_had", nome: "BEIBLANC HAD", un: "L" },
+            { id: "beibleach_blue", nome: "BEIBLEACH BLUE ACTIVE", un: "L" },
+            { id: "beiacid_wsd", nome: "BEIACID WSD", un: "L" },
+            { id: "wp35", nome: "WP35", un: "L" },
+            { id: "beisoft_avra", nome: "BEISOFT AVRA", un: "L" },
+            { id: "sal_grosso", nome: "SAL GROSSO", un: "Kg" }
+        ];
+
+        let rawHistorico = [];
+        let listaProdutos = [];
+        let editIndex = null;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            carregarProdutosDisponiveis();
+            carregarHistoricoLocal();
+            verificarModoEdicao();
+        });
+
+        function carregarProdutosDisponiveis() {
+            const configSalva = localStorage.getItem('mes_config_quimicos');
+            listaProdutos = configSalva ? JSON.parse(configSalva) : PRODUTOS_PADRAO;
+        }
+
+        function carregarHistoricoLocal() {
+            rawHistorico = JSON.parse(localStorage.getItem('mes_historico_estoque_quimico') || '[]');
+        }
+
+        function verificarModoEdicao() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const editParam = urlParams.get('edit');
+
+            if (editParam !== null && !isNaN(parseInt(editParam))) {
+                const idx = parseInt(editParam);
+                if (rawHistorico[idx]) {
+                    editIndex = idx;
+                    preencherCamposParaEdicao(rawHistorico[idx]);
+                    return;
+                }
+            }
+
+            // Modo Novo Lançamento
+            definirDataHoraAtual();
+            renderizarListaCompletaProdutos();
+        }
+
+        function definirDataHoraAtual() {
+            const agora = new Date();
+            agora.setMinutes(agora.getMinutes() - agora.getTimezoneOffset());
+            document.getElementById('fieldDataHora').value = agora.toISOString().slice(0, 16);
+        }
+
+        function renderizarListaCompletaProdutos(valoresSalvos = {}) {
+            const tbody = document.getElementById('tabelaListaProdutos');
+            tbody.innerHTML = '';
+
+            listaProdutos.forEach((p, idx) => {
+                const un = p.un || p.unidade || 'L';
+                const valorAtual = valoresSalvos[p.nome] !== undefined ? valoresSalvos[p.nome] : '';
+
+                tbody.innerHTML += `
+                    <tr class="hover:bg-slate-50 transition prod-item-row" data-nome="${p.nome}" data-un="${un}">
+                        <td class="p-3 text-slate-400 font-mono text-center w-10">${idx + 1}</td>
+                        <td class="p-3 font-semibold text-slate-800">${p.nome}</td>
+                        <td class="p-3 text-center">
+                            <span class="bg-slate-100 text-slate-600 font-bold px-2 py-1 rounded text-[11px]">${un}</span>
+                        </td>
+                        <td class="p-3 text-right">
+                            <input type="number" 
+                                   step="0.01" 
+                                   min="0" 
+                                   placeholder="0.00" 
+                                   value="${valorAtual}" 
+                                   class="field-item-valor w-full sm:w-48 p-2 border rounded-lg text-xs bg-white text-right outline-none focus:ring-2 focus:ring-indigo-500 font-mono font-bold text-indigo-700 border-slate-300">
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        function preencherCamposParaEdicao(reg) {
+            document.getElementById('tituloPagina').innerText = "Editar Apuração de Estoque";
+            document.getElementById('textoModo').innerText = `Editando apuração de estoque (Registro #${editIndex + 1}).`;
+            document.getElementById('tagModo').innerText = "Modo Edição";
+            document.getElementById('tagModo').className = "bg-amber-500 text-white px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider";
+            document.getElementById('iconeModo').className = "fa-solid fa-pen text-amber-600";
+            document.getElementById('bannerModo').className = "bg-amber-50 border border-amber-200 text-amber-900 p-3 rounded-xl flex items-center justify-between text-xs font-semibold";
+
+            document.getElementById('fieldDataHora').value = reg.dataLeitura ? reg.dataLeitura.slice(0, 16) : '';
+            document.getElementById('fieldOperador').value = reg.operador || '';
+            document.getElementById('fieldTipoApuracao').value = reg.tipoApuracao || 'Conferência Diária';
+            document.getElementById('fieldObservacao').value = reg.observacao || '';
+
+            // Mapeia os valores salvos anteriormente por nome de produto
+            const valoresSalvos = {};
+            if (reg.itensEstoque && Array.isArray(reg.itensEstoque)) {
+                reg.itensEstoque.forEach(item => {
+                    valoresSalvos[item.nome] = item.valor;
+                });
+            }
+
+            renderizarListaCompletaProdutos(valoresSalvos);
+        }
+
+        function salvarLancamento(e) {
+            e.preventDefault();
+
+            const dataHora = document.getElementById('fieldDataHora').value;
+            const operador = document.getElementById('fieldOperador').value.trim();
+            const tipoApuracao = document.getElementById('fieldTipoApuracao').value;
+            const observacao = document.getElementById('fieldObservacao').value.trim();
+
+            const itensEstoque = [];
+            const rows = document.querySelectorAll('.prod-item-row');
+
+            rows.forEach(row => {
+                const nome = row.getAttribute('data-nome');
+                const unidade = row.getAttribute('data-un');
+                const valInput = row.querySelector('.field-item-valor');
+                const valorStr = valInput ? valInput.value.trim() : '';
+
+                if (valorStr !== '') {
+                    const valorNum = parseFloat(valorStr);
+                    if (!isNaN(valorNum) && valorNum >= 0) {
+                        itensEstoque.push({
+                            nome: nome,
+                            unidade: unidade,
+                            valor: valorNum
+                        });
+                    }
+                }
+            });
+
+            if (itensEstoque.length === 0) {
+                alert("Preencha a quantidade em estoque de pelo menos um produto!");
+                return;
+            }
+
+            const registro = {
+                dataLeitura: dataHora,
+                operador: operador,
+                tipoApuracao: tipoApuracao,
+                observacao: observacao,
+                itensEstoque: itensEstoque
+            };
+
+            if (editIndex !== null && !isNaN(editIndex)) {
+                rawHistorico[editIndex] = registro;
+                alert("Apuração de estoque atualizada com sucesso!");
+            } else {
+                rawHistorico.push(registro);
+                alert("Apuração diária de estoque salva com sucesso!");
+            }
+
+            localStorage.setItem('mes_historico_estoque_quimico', JSON.stringify(rawHistorico));
+            window.location.href = 'gestao_estoque_quimico.html';
+        }
+    </script>
+</body>
+</html>
