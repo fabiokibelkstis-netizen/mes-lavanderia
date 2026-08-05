@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MES - Gestão de Produtos Químicos | Lavanderia Dona Zara</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body class="bg-slate-100 font-sans min-h-screen flex flex-col justify-between">
+
+    <header class="bg-slate-900 text-white p-4 shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto flex flex-wrap justify-between items-center gap-4">
+            <div class="flex items-center gap-3">
+                <div class="bg-purple-600 p-2.5 rounded-xl text-white shadow">
+                    <i class="fa-solid fa-flask-vial text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold tracking-wider">MES - Gestão de Produtos Químicos</h1>
+                    <p class="text-xs text-slate-400">Controle Operacional de Entradas e Recebimentos de Insumos e Produtos Químicos</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-2">
+                <a href="lancamento_quimico.html" class="bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold px-4 py-2 rounded-xl transition flex items-center gap-2 shadow">
+                    <i class="fa-solid fa-plus-circle"></i> Novo Recebimento Químico
+                </a>
+                <a href="index.html" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl text-xs font-bold transition flex items-center gap-2 border border-slate-700">
+                    <i class="fa-solid fa-arrow-left"></i> Menu Principal
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto w-full p-4 my-4 space-y-6">
+
+        <div class="bg-white rounded-2xl shadow-md p-4 border border-slate-200 flex flex-wrap items-center justify-between gap-4">
+            <div class="flex items-center gap-2 text-slate-800 font-bold text-sm">
+                <i class="fa-solid fa-filter text-purple-600"></i>
+                <span class="text-xs font-bold text-slate-700 uppercase tracking-wider">Período de Análise:</span>
+            </div>
+            <div class="flex flex-wrap items-center gap-3 text-xs w-full sm:w-auto">
+                <div class="flex items-center gap-2">
+                    <label class="text-slate-600 font-semibold">De:</label>
+                    <input type="date" id="filtroDataInicio" onchange="atualizarTela()" class="p-2 border rounded-lg bg-slate-50 outline-none focus:ring-2 focus:ring-purple-500 font-medium">
+                </div>
+                <div class="flex items-center gap-2">
+                    <label class="text-slate-600 font-semibold">Até:</label>
+                    <input type="date" id="filtroDataFim" onchange="atualizarTela()" class="p-2 border rounded-lg bg-slate-50 outline-none focus:ring-2 focus:ring-purple-500 font-medium">
+                </div>
+                <button onclick="definirUltimos7Dias()" class="bg-purple-100 hover:bg-purple-200 text-purple-900 font-bold px-3 py-2 rounded-lg transition">
+                    Últimos 7 Dias
+                </button>
+                <button onclick="limparFiltroData()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold px-3 py-2 rounded-lg transition" title="Exibir todo o histórico">
+                    Exibir Todos
+                </button>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
+                <span class="text-xs font-bold text-slate-500 uppercase">Volume Total (Kg / L)</span>
+                <p id="kpiVolumeTotal" class="text-2xl font-black text-purple-600 mt-2">0.00</p>
+            </div>
+            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
+                <span class="text-xs font-bold text-slate-500 uppercase">Total de Notas / Entradas</span>
+                <p id="kpiTotalNotas" class="text-2xl font-black text-slate-800 mt-2">0</p>
+            </div>
+            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
+                <span class="text-xs font-bold text-slate-500 uppercase">Fornecedores Distintos</span>
+                <p id="kpiTotalFornecedores" class="text-2xl font-black text-indigo-600 mt-2">0</p>
+            </div>
+            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
+                <span class="text-xs font-bold text-slate-500 uppercase">Média por Recebimento</span>
+                <p id="kpiMediaRecebimento" class="text-2xl font-black text-slate-800 mt-2">0.00</p>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div class="bg-white rounded-2xl shadow-md p-6 border border-slate-200">
+                <h3 class="text-sm font-bold text-slate-800 mb-4 border-b pb-2 flex items-center gap-2">
+                    <i class="fa-solid fa-boxes-stacked text-purple-600"></i>
+                    Resumo de Entradas por Produto
+                </h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs border-collapse">
+                        <thead class="bg-purple-50 text-purple-900">
+                            <tr>
+                                <th class="p-3 border border-purple-200">Produto Químico</th>
+                                <th class="p-3 border border-purple-200 text-center">Unidade</th>
+                                <th class="p-3 border border-purple-200 text-center">Qtd. Recebida</th>
+                                <th class="p-3 border border-purple-200 text-center">Represent. (%)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabelaResumoProdutos"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-2xl shadow-md p-6 border border-slate-200">
+                <h3 class="text-sm font-bold text-slate-800 mb-4 border-b pb-2 flex items-center gap-2">
+                    <i class="fa-solid fa-truck text-indigo-600"></i>
+                    Resumo por Fornecedor
+                </h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs border-collapse">
+                        <thead class="bg-indigo-50 text-indigo-900">
+                            <tr>
+                                <th class="p-3 border border-indigo-200">Fornecedor</th>
+                                <th class="p-3 border border-indigo-200 text-center">Entradas</th>
+                                <th class="p-3 border border-indigo-200 text-center">Volume Acumulado</th>
+                                <th class="p-3 border border-indigo-200 text-center">Represent. (%)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabelaResumoFornecedores"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div class="lg:col-span-2 bg-white p-6 rounded-2xl shadow-md border border-slate-200">
+                <h3 class="text-sm font-bold text-slate-800 mb-4 flex items-center gap-2">
+                    <i class="fa-solid fa-chart-column text-purple-600"></i>
+                    Evolução Diária do Recebimento de Produtos (Kg / L)
+                </h3>
+                <div class="h-72">
+                    <canvas id="chartQuimicoBarra"></canvas>
+                </div>
+            </div>
+
+            <div class="bg-white p-6 rounded-2xl shadow-md border border-slate-200 space-y-4">
+                <h3 class="text-sm font-bold text-slate-800 border-b pb-2 flex items-center gap-2">
+                    <i class="fa-solid fa-chart-pie text-purple-600"></i>
+                    Distribuição por Produto (%)
+                </h3>
+                <div class="h-60 flex items-center justify-center">
+                    <canvas id="chartQuimicoRosca"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-2xl shadow-md p-6 border border-slate-200">
+            <h3 class="text-sm font-bold text-slate-800 mb-4 border-b pb-2 flex justify-between items-center">
+                <span>Histórico de Recebimentos Registrados</span>
+                <span id="qtdRegistros" class="text-xs text-slate-500 font-normal">0 registro(s)</span>
+            </h3>
+            
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-xs border-collapse">
+                    <thead class="bg-slate-100 text-slate-700">
+                        <tr>
+                            <th class="p-3 border text-center">Data / Hora</th>
+                            <th class="p-3 border text-center">NF / Lote</th>
+                            <th class="p-3 border text-center">Fornecedor</th>
+                            <th class="p-3 border text-center">Produto</th>
+                            <th class="p-3 border text-center">Qtd. Recebida</th>
+                            <th class="p-3 border text-center">Operador</th>
+                            <th class="p-3 border text-center">Observação</th>
+                            <th class="p-3 border text-center">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabelaHistorico"></tbody>
+                </table>
+            </div>
+        </div>
+
+    </main>
+
+    <div id="modalEditar" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-2xl p-6 w-full max-w-2xl shadow-xl space-y-4 max-h-[90vh] flex flex-col justify-between">
+            <div>
+                <h3 class="text-sm font-bold text-slate-800 border-b pb-2 flex items-center gap-2">
+                    <i class="fa-solid fa-pen text-purple-600"></i> Editar Todos os Campos do Recebimento
+                </h3>
+            </div>
+            
+            <form id="formEditar" onsubmit="salvarEdicao(event)" class="space-y-4 overflow-y-auto pr-1">
+                <input type="hidden" id="editRawIndex">
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 bg-slate-50 p-3 rounded-xl border border-slate-200">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Data / Hora</label>
+                        <input type="datetime-local" id="editDataHora" required class="w-full p-2 border rounded-lg text-xs bg-white outline-none focus:ring-1 focus:ring-purple-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Operador / Recebedor</label>
+                        <input type="text" id="editOperador" required class="w-full p-2 border rounded-lg text-xs bg-white outline-none focus:ring-1 focus:ring-purple-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Fornecedor</label>
+                        <input type="text" id="editFornecedor" required class="w-full p-2 border rounded-lg text-xs bg-white outline-none focus:ring-1 focus:ring-purple-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">NF / Lote</label>
+                        <input type="text" id="editNotaFiscalLote" required class="w-full p-2 border rounded-lg text-xs bg-white outline-none focus:ring-1 focus:ring-purple-500">
+                    </div>
+                </div>
+
+                <div class="space-y-2">
+                    <label class="block text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center justify-between border-b pb-1">
+                        <span>Produtos e Quantidades</span>
+                        <span class="text-[11px] text-slate-500 font-normal">Altere os valores ou o produto cadastrado</span>
+                    </label>
+                    <div id="containerEditProdutos" class="space-y-2">
+                        </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Observações / Anomalias</label>
+                    <textarea id="editObservacao" rows="2" class="w-full p-2 border rounded-lg text-xs bg-slate-50 outline-none focus:ring-1 focus:ring-purple-500"></textarea>
+                </div>
+
+                <div class="flex justify-end gap-2 pt-3 border-t">
+                    <button type="button" onclick="fecharModalEditar()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-4 py-2 rounded-lg text-xs font-bold transition">Cancelar</button>
+                    <button type="submit" class="bg-purple-600 hover:bg-purple-700 text-white font-bold px-5 py-2 rounded-lg text-xs transition shadow">Salvar Alterações</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <footer class="bg-white border-t border-slate-200 p-4 text-center text-xs text-slate-500">
+        MES Dona Zara &copy; 2026 - Módulo de Gestão de Produtos Químicos
+    </footer>
+
+    <script>
+        const PRODUTOS_PADRAO = [
+            { id: "beiclean_cwt", nome: "BEICLEAN CWT", un: "L" },
+            { id: "beipur_msc", nome: "BEIPUR MSC", un: "L" },
+            { id: "beibleach_pe", nome: "BEIBLEACH PE", un: "L" },
+            { id: "beibleach_hc_liq", nome: "BEIBLEACH HC LIQ", un: "L" },
+            { id: "beibleach_net", nome: "BEIBLEACH NET", un: "L" },
+            { id: "beiplex_cab", nome: "BEIPLEX CAB", un: "L" },
+            { id: "beiblanc_had", nome: "BEIBLANC HAD", un: "L" },
+            { id: "beibleach_blue", nome: "BEIBLEACH BLUE ACTIVE", un: "L" },
+            { id: "beiacid_wsd", nome: "BEIACID WSD", un: "L" },
+            { id: "wp35", nome: "WP35", un: "L" },
+            { id: "beisoft_avra", nome: "BEISOFT AVRA", un: "L" },
+            { id: "sal_grosso", nome: "SAL GROSSO", un: "Kg" }
+        ];
+
+        let rawHistorico = [];
+        let lancamentosProcessados = [];
+        let listaProdutosCadastrados = [];
+        let chartBarraInstance = null;
+        let chartRoscaInstance = null;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            carregarProdutosCadastrados();
+            carregarEProcessarDados();
+            definirUltimos7Dias();
+        });
+
+        function carregarProdutosCadastrados() {
+            const configSalva = localStorage.getItem('mes_config_quimicos');
+            listaProdutosCadastrados = configSalva ? JSON.parse(configSalva) : PRODUTOS_PADRAO;
+        }
+
+        function carregarEProcessarDados() {
+            rawHistorico = JSON.parse(
+                localStorage.getItem('mes_historico_quimico') || 
+                localStorage.getItem('mes_lancamentos_quimico') || 
+                '[]'
+            );
+
+            lancamentosProcessados = [];
+
+            rawHistorico.forEach((reg, rawIdx) => {
+                const dataHoraIso = reg.dataLeitura || new Date().toISOString();
+                const dataIso = dataHoraIso.split('T')[0];
+                const operador = reg.operador || 'Operador';
+                const fornecedor = reg.fornecedor || 'Não Informado';
+                const nfLote = reg.notaFiscalLote || '-';
+
+                if (reg.leiturasEntrada && Array.isArray(reg.leiturasEntrada)) {
+                    reg.leiturasEntrada.forEach((p, subIdx) => {
+                        lancamentosProcessados.push({
+                            rawIndex: rawIdx,
+                            subIndex: subIdx,
+                            dataHora: dataHoraIso,
+                            data: dataIso,
+                            fornecedor: fornecedor,
+                            notaFiscalLote: nfLote,
+                            produto: p.nome,
+                            unidade: p.unidade || p.un || 'Kg/L',
+                            quantidade: parseFloat(p.valor) || 0,
+                            operador: operador,
+                            obs: reg.observacao || '-'
+                        });
+                    });
+                }
+            });
+        }
+
+        function definirUltimos7Dias() {
+            const hoje = new Date();
+            const seteDiasAtras = new Date();
+            seteDiasAtras.setDate(hoje.getDate() - 6);
+
+            document.getElementById('filtroDataFim').value = hoje.toISOString().split('T')[0];
+            document.getElementById('filtroDataInicio').value = seteDiasAtras.toISOString().split('T')[0];
+
+            atualizarTela();
+        }
+
+        function salvarLancamentosLocais() {
+            localStorage.setItem('mes_historico_quimico', JSON.stringify(rawHistorico));
+            localStorage.setItem('mes_lancamentos_quimico', JSON.stringify(rawHistorico));
+        }
+
+        function obterLancamentosFiltrados() {
+            const dtInicio = document.getElementById('filtroDataInicio').value;
+            const dtFim = document.getElementById('filtroDataFim').value;
+
+            return lancamentosProcessados.filter(item => {
+                if (dtInicio && item.data < dtInicio) return false;
+                if (dtFim && item.data > dtFim) return false;
+                return true;
+            });
+        }
+
+        function limparFiltroData() {
+            document.getElementById('filtroDataInicio').value = '';
+            document.getElementById('filtroDataFim').value = '';
+            atualizarTela();
+        }
+
+        // --- AÇÕES: EDITAR TODOS OS CAMPOS ---
+        function editarRegistro(rawIdx) {
+    // Redireciona para a tela de lançamento passando o índice do registro na URL
+    window.location.href = `lancamento_quimico.html?edit=${rawIdx}`;
+	}
+
+        function renderizarLinhasEdicaoProdutos(leituras) {
+            const container = document.getElementById('containerEditProdutos');
+            container.innerHTML = '';
+
+            const listaGeral = [...listaProdutosCadastrados];
+            leituras.forEach(l => {
+                if (!listaGeral.some(p => p.nome === l.nome)) {
+                    listaGeral.push({ nome: l.nome, un: l.unidade || 'L' });
+                }
+            });
+
+            leituras.forEach((item, idx) => {
+                const optionsHtml = listaGeral.map(p => {
+                    const un = p.un || p.unidade || 'L';
+                    const selected = p.nome === item.nome ? 'selected' : '';
+                    return `<option value="${p.nome}" data-un="${un}" ${selected}>${p.nome} (${un})</option>`;
+                }).join('');
+
+                container.innerHTML += `
+                    <div class="flex items-center gap-2 bg-slate-50 p-2 rounded-lg border border-slate-200 edit-item-row">
+                        <div class="w-1/2">
+                            <label class="block text-[10px] font-bold text-slate-500 uppercase">Produto</label>
+                            <select class="edit-prod-nome w-full p-2 border rounded text-xs bg-white outline-none">
+                                ${optionsHtml}
+                            </select>
+                        </div>
+                        <div class="w-1/2">
+                            <label class="block text-[10px] font-bold text-slate-500 uppercase">Qtd. Recebida</label>
+                            <input type="number" step="0.01" min="0" value="${item.valor}" class="edit-prod-valor w-full p-2 border rounded text-xs bg-white outline-none font-mono">
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function fecharModalEditar() {
+            document.getElementById('modalEditar').classList.add('hidden');
+        }
+
+        function salvarEdicao(e) {
+            e.preventDefault();
+            const rawIdx = parseInt(document.getElementById('editRawIndex').value);
+
+            if (!isNaN(rawIdx) && rawHistorico[rawIdx]) {
+                const novasLeituras = [];
+                const rows = document.querySelectorAll('.edit-item-row');
+
+                rows.forEach(row => {
+                    const selectEl = row.querySelector('.edit-prod-nome');
+                    const valEl = row.querySelector('.edit-prod-valor');
+
+                    const nomeProd = selectEl.value;
+                    const valorProd = parseFloat(valEl.value) || 0;
+                    const unProd = selectEl.options[selectEl.selectedIndex].getAttribute('data-un') || 'L';
+
+                    if (valorProd > 0) {
+                        novasLeituras.push({
+                            nome: nomeProd,
+                            unidade: unProd,
+                            valor: valorProd
+                        });
+                    }
+                });
+
+                if (novasLeituras.length === 0) {
+                    alert("O recebimento deve ter ao menos um produto com quantidade maior que zero!");
+                    return;
+                }
+
+                rawHistorico[rawIdx].dataLeitura = document.getElementById('editDataHora').value;
+                rawHistorico[rawIdx].fornecedor = document.getElementById('editFornecedor').value.trim();
+                rawHistorico[rawIdx].notaFiscalLote = document.getElementById('editNotaFiscalLote').value.trim();
+                rawHistorico[rawIdx].operador = document.getElementById('editOperador').value.trim();
+                rawHistorico[rawIdx].observacao = document.getElementById('editObservacao').value.trim();
+                rawHistorico[rawIdx].leiturasEntrada = novasLeituras;
+
+                salvarLancamentosLocais();
+                carregarEProcessarDados();
+                atualizarTela();
+                fecharModalEditar();
+                alert("Todas as alterações do recebimento foram salvas com sucesso!");
+            }
+        }
+
+        function excluirRegistro(rawIdx) {
+            if (rawIdx !== undefined && confirm("Deseja realmente excluir este recebimento?")) {
+                rawHistorico.splice(rawIdx, 1);
+                salvarLancamentosLocais();
+                carregarEProcessarDados();
+                atualizarTela();
+            }
+        }
+
+        function atualizarTela() {
+            const filtrados = obterLancamentosFiltrados();
+            renderizarKPIs(filtrados);
+            renderizarResumos(filtrados);
+            renderizarTabela(filtrados);
+            renderizarGraficoBarras(filtrados);
+            renderizarGraficoRosca(filtrados);
+        }
+
+        function renderizarKPIs(dados) {
+            const totalVolume = dados.reduce((acc, l) => acc + l.quantidade, 0);
+            const notasUnicas = new Set(dados.map(d => d.notaFiscalLote)).size;
+            const fornecedoresUnicos = new Set(dados.map(d => d.fornecedor)).size;
+            const media = dados.length > 0 ? (totalVolume / dados.length) : 0;
+
+            document.getElementById('kpiVolumeTotal').innerText = `${totalVolume.toFixed(2)}`;
+            document.getElementById('kpiTotalNotas').innerText = `${notasUnicas}`;
+            document.getElementById('kpiTotalFornecedores').innerText = `${fornecedoresUnicos}`;
+            document.getElementById('kpiMediaRecebimento').innerText = `${media.toFixed(2)}`;
+        }
+
+        function renderizarResumos(dados) {
+            const tbodyProd = document.getElementById('tabelaResumoProdutos');
+            const tbodyForn = document.getElementById('tabelaResumoFornecedores');
+
+            const totalGeral = dados.reduce((acc, d) => acc + d.quantidade, 0);
+
+            if (dados.length === 0) {
+                tbodyProd.innerHTML = '<tr><td colspan="4" class="p-3 text-center italic text-slate-400">Sem registros.</td></tr>';
+            } else {
+                const agProd = {};
+                dados.forEach(i => {
+                    agProd[i.produto] = agProd[i.produto] || { qtd: 0, unidade: i.unidade };
+                    agProd[i.produto].qtd += i.quantidade;
+                });
+
+                tbodyProd.innerHTML = Object.keys(agProd).map(p => {
+                    const pct = totalGeral > 0 ? (agProd[p].qtd / totalGeral) * 100 : 0;
+                    return `
+                        <tr class="hover:bg-slate-50 border-b">
+                            <td class="p-2.5 font-semibold text-slate-800">${p}</td>
+                            <td class="p-2.5 text-center text-slate-600">${agProd[p].unidade}</td>
+                            <td class="p-2.5 text-center font-bold text-purple-700">${agProd[p].qtd.toFixed(2)}</td>
+                            <td class="p-2.5 text-center font-semibold text-slate-700">${pct.toFixed(1)}%</td>
+                        </tr>
+                    `;
+                }).join('');
+            }
+
+            if (dados.length === 0) {
+                tbodyForn.innerHTML = '<tr><td colspan="4" class="p-3 text-center italic text-slate-400">Sem registros.</td></tr>';
+            } else {
+                const agForn = {};
+                dados.forEach(i => {
+                    agForn[i.fornecedor] = agForn[i.fornecedor] || { entradas: 0, vol: 0 };
+                    agForn[i.fornecedor].entradas += 1;
+                    agForn[i.fornecedor].vol += i.quantidade;
+                });
+
+                tbodyForn.innerHTML = Object.keys(agForn).map(f => {
+                    const pct = totalGeral > 0 ? (agForn[f].vol / totalGeral) * 100 : 0;
+                    return `
+                        <tr class="hover:bg-slate-50 border-b">
+                            <td class="p-2.5 font-semibold text-slate-800">${f}</td>
+                            <td class="p-2.5 text-center text-slate-600">${agForn[f].entradas}</td>
+                            <td class="p-2.5 text-center font-bold text-indigo-700">${agForn[f].vol.toFixed(2)}</td>
+                            <td class="p-2.5 text-center font-semibold text-slate-700">${pct.toFixed(1)}%</td>
+                        </tr>
+                    `;
+                }).join('');
+            }
+        }
+
+        function renderizarTabela(dados) {
+            const tbody = document.getElementById('tabelaHistorico');
+            document.getElementById('qtdRegistros').innerText = `${dados.length} registro(s)`;
+
+            if (dados.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" class="p-4 text-center italic text-slate-400">Nenhum lançamento de químico no período.</td></tr>';
+                return;
+            }
+
+            const ordenadosInvertidos = [...dados].reverse();
+
+            tbody.innerHTML = ordenadosInvertidos.map((item) => {
+                const dataFmt = new Date(item.dataHora).toLocaleString('pt-BR');
+
+                return `
+                    <tr class="hover:bg-slate-50 transition border-b">
+                        <td class="p-3 text-center font-medium text-slate-800">${dataFmt}</td>
+                        <td class="p-3 text-center font-bold text-slate-700">${item.notaFiscalLote}</td>
+                        <td class="p-3 text-center font-semibold text-indigo-700">${item.fornecedor}</td>
+                        <td class="p-3 text-center font-semibold text-slate-800">${item.produto}</td>
+                        <td class="p-3 text-center font-bold text-purple-700">${item.quantidade.toFixed(2)} ${item.unidade}</td>
+                        <td class="p-3 text-center text-slate-600">${item.operador}</td>
+                        <td class="p-3 text-center text-slate-600">${item.obs}</td>
+                        <td class="p-3 text-center whitespace-nowrap">
+                            <button onclick="editarRegistro(${item.rawIndex})" class="text-blue-600 hover:text-blue-800 font-bold px-1.5 py-1 transition" title="Editar Lançamento">✏️</button>
+                            <button onclick="excluirRegistro(${item.rawIndex})" class="text-red-600 hover:text-red-800 font-bold px-1.5 py-1 transition" title="Excluir Lançamento">❌</button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function renderizarGraficoBarras(dados) {
+            const ctx = document.getElementById('chartQuimicoBarra').getContext('2d');
+            if (chartBarraInstance) chartBarraInstance.destroy();
+
+            const ag = {};
+            dados.forEach(l => {
+                ag[l.data] = (ag[l.data] || 0) + l.quantidade;
+            });
+
+            const datas = Object.keys(ag).sort();
+            const labels = datas.map(d => new Date(d + 'T00:00:00').toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }));
+            const valores = datas.map(d => ag[d]);
+
+            chartBarraInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Volume Recebido (Kg / L)',
+                        data: valores,
+                        backgroundColor: '#9333ea',
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: { y: { beginAtZero: true } }
+                }
+            });
+        }
+
+        function renderizarGraficoRosca(dados) {
+            const ctx = document.getElementById('chartQuimicoRosca').getContext('2d');
+            if (chartRoscaInstance) chartRoscaInstance.destroy();
+
+            const ag = {};
+            dados.forEach(i => {
+                ag[i.produto] = (ag[i.produto] || 0) + i.quantidade;
+            });
+
+            const cores = ['#9333ea', '#4f46e5', '#0284c7', '#059669', '#d97706', '#dc2626'];
+
+            chartRoscaInstance = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(ag),
+                    datasets: [{ data: Object.values(ag), backgroundColor: cores }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { position: 'right' } }
+                }
+            });
+        }
+    </script>
+</body>
+</html>
