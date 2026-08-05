@@ -92,35 +92,46 @@
             });
         }
 
-        function salvarLancamento(e) {
-            e.preventDefault();
+function salvarLancamento(e) {
+    e.preventDefault();
 
-            const data = document.getElementById('dataLeitura').value;
-            const operador = document.getElementById('operador').value.trim();
-            const observacao = document.getElementById('observacao').value.trim();
+    const data = document.getElementById('dataLeitura').value;
+    const operador = document.getElementById('operador').value.trim();
+    const observacao = document.getElementById('observacao').value.trim();
 
-            const leituras = [];
-            configEnergia.nomes.forEach((_, idx) => {
-                const val = parseFloat(document.getElementById(`medidor_${idx}`).value) || 0;
-                leituras.push(val);
-            });
+    // Mapeia os valores inseridos associando aos nomes das fontes/medidores
+    const leiturasConsumo = [];
+    configEnergia.nomes.forEach((nomeMedidor, idx) => {
+        const val = parseFloat(document.getElementById(`medidor_${idx}`).value) || 0;
+        leiturasConsumo.push({
+            nome: nomeMedidor,
+            valor: val
+        });
+    });
 
-            const novoLancamento = {
-                id: 'eng_' + Date.now(),
-                data,
-                operador,
-                leituras,
-                observacao
-            };
+    const novoLancamento = {
+        id: 'eng_' + Date.now(),
+        dataLeitura: data,
+        operador: operador,
+        leiturasConsumo: leiturasConsumo,
+        observacao: observacao
+    };
 
-            const lancamentosExistentes = JSON.parse(localStorage.getItem('mes_lancamentos_energia') || '[]');
-            lancamentosExistentes.push(novoLancamento);
+    // Atualiza ambas as chaves para manter a compatibilidade
+    const lancamentosExistentes = JSON.parse(
+        localStorage.getItem('mes_historico_energia') || 
+        localStorage.getItem('mes_lancamentos_energia') || 
+        '[]'
+    );
+    
+    lancamentosExistentes.push(novoLancamento);
 
-            localStorage.setItem('mes_lancamentos_energia', JSON.stringify(lancamentosExistentes));
+    localStorage.setItem('mes_lancamentos_energia', JSON.stringify(lancamentosExistentes));
+    localStorage.setItem('mes_historico_energia', JSON.stringify(lancamentosExistentes));
 
-            alert("Lançamento de Energia Elétrica salvo com sucesso!");
-            window.location.href = "gestaodeenergia.html";
-        }
+    alert("Lançamento de Energia Elétrica salvo com sucesso!");
+    window.location.href = "gestaodeenergia.html";
+}
     </script>
 </body>
 </html>
