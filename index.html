@@ -294,7 +294,7 @@
             carregarDadosDash();
         });
 
-        function carregarDadosDash() {
+function carregarDadosDash() {
             const recs = JSON.parse(localStorage.getItem('mes_historico_recebimento') || '[]');
             const exps = JSON.parse(localStorage.getItem('mes_historico_expedicao') || '[]');
             const aguas = JSON.parse(localStorage.getItem('mes_historico_agua') || '[]');
@@ -303,27 +303,65 @@
             const horas = JSON.parse(localStorage.getItem('mes_historico_horas') || '[]');
             const quimicos = JSON.parse(localStorage.getItem('mes_historico_quimico') || '[]');
 
+            // --- RECEBIMENTO ---
             let totalEntrada = 0, totalGaiolasIn = 0;
             recs.forEach(r => {
                 totalEntrada += parseFloat(r.peso) || 0;
                 totalGaiolasIn += parseInt(r.gaiolas) || 0;
             });
 
+            // --- EXPEDIÇÃO ---
             let totalSaida = 0, totalGaiolasOut = 0;
             exps.forEach(e => {
                 totalSaida += parseFloat(e.peso) || 0;
                 totalGaiolasOut += parseInt(e.gaiolas) || 0;
             });
 
+            // --- HORAS ---
             let totalHoras = 0;
             horas.forEach(h => {
                 totalHoras += (parseFloat(h.horasNormais) || 0) + (parseFloat(h.horasExtras) || 0);
             });
 
-            let totalAgua = 0; aguas.forEach(a => totalAgua += parseFloat(a.consumo || a.valor) || 0);
-            let totalGas = 0; gases.forEach(g => totalGas += parseFloat(g.consumo || g.valor) || 0);
-            let totalEnergia = 0; energias.forEach(e => totalEnergia += parseFloat(e.consumo || e.valor) || 0);
-            let totalQuimico = 0; quimicos.forEach(q => totalQuimico += parseFloat(q.quantidade || q.valor) || 0);
+            // --- ÁGUA (Lê array de consumo ou legado) ---
+            let totalAgua = 0; 
+            aguas.forEach(a => {
+                if (a.leiturasConsumo && Array.isArray(a.leiturasConsumo)) {
+                    a.leiturasConsumo.forEach(c => totalAgua += parseFloat(c.valor) || 0);
+                } else {
+                    totalAgua += parseFloat(a.consumo || a.valor) || 0;
+                }
+            });
+
+            // --- GÁS (Lê array de leituras ou legado) ---
+            let totalGas = 0; 
+            gases.forEach(g => {
+                if (g.leituras && Array.isArray(g.leituras)) {
+                    g.leituras.forEach(l => totalGas += parseFloat(l.valor) || 0);
+                } else {
+                    totalGas += parseFloat(g.consumo || g.valor) || 0;
+                }
+            });
+
+            // --- ENERGIA (Lê array de consumo ou legado) ---
+            let totalEnergia = 0; 
+            energias.forEach(e => {
+                if (e.leiturasConsumo && Array.isArray(e.leiturasConsumo)) {
+                    e.leiturasConsumo.forEach(c => totalEnergia += parseFloat(c.valor) || 0);
+                } else {
+                    totalEnergia += parseFloat(e.consumo_diario || e.consumo || e.valor) || 0;
+                }
+            });
+
+            // --- QUÍMICOS (Lê itens da formulação ou legado) ---
+            let totalQuimico = 0; 
+            quimicos.forEach(q => {
+                if (q.itens && Array.isArray(q.itens)) {
+                    q.itens.forEach(i => totalQuimico += parseFloat(i.quantidade || i.valor) || 0);
+                } else {
+                    totalQuimico += parseFloat(q.quantidade || q.valor) || 0;
+                }
+            });
 
             const rendimento = totalEntrada > 0 ? (totalSaida / totalEntrada) * 100 : 0;
             const produtividade = totalHoras > 0 ? (totalSaida / totalHoras) : 0;
@@ -336,7 +374,7 @@
             document.getElementById('dashKpiRetorno').innerText = rendimento.toFixed(1) + ' %';
             document.getElementById('dashKpiProdutividade').innerText = produtividade.toFixed(1) + ' Kg/h';
 
-            document.getElementById('dashKpiAgua').innerText = totalAgua.toLocaleString('pt-BR') + ' L';
+            document.getElementById('dashKpiAgua').innerText = totalAgua.toLocaleString('pt-BR') + ' L'; // ou m³, confirme a unidade padrão do seu dashboard
             document.getElementById('dashKpiAguaProp').innerText = (totalSaida > 0 ? (totalAgua / totalSaida) : 0).toFixed(2) + ' L/Kg';
 
             document.getElementById('dashKpiGas').innerText = totalGas.toLocaleString('pt-BR') + ' m³';
