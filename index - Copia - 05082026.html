@@ -1,0 +1,1833 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MES Dona Zara - Painel de Controle & BI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body class="bg-slate-100 font-sans min-h-screen flex text-slate-800">
+
+    <aside class="w-64 bg-slate-900 text-slate-300 flex flex-col justify-between min-h-screen sticky top-0 z-50">
+        <div>
+            <div class="p-5 border-b border-slate-800 flex items-center gap-3">
+                <div class="bg-blue-600 text-white p-2.5 rounded-xl shadow">
+                    <i class="fa-solid fa-industry text-lg"></i>
+                </div>
+                <div>
+                    <h1 class="text-sm font-black text-white tracking-wider">MES DONA ZARA</h1>
+                    <p class="text-[10px] text-slate-400">Gestão Industrial & BI</p>
+                </div>
+            </div>
+
+            <nav class="p-3 space-y-1 text-xs font-semibold">
+                <div class="px-3 py-2 text-[10px] uppercase font-bold text-slate-500 tracking-wider">Navegação Principal</div>
+
+                <button onclick="navegarPara('dashboard')" id="btn-dashboard" class="menu-item w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition bg-blue-600 text-white font-bold">
+                    <i class="fa-solid fa-chart-pie w-5 text-center text-sm"></i>
+                    <span>Dashboard Geral</span>
+                </button>
+
+                <div class="px-3 py-2 pt-4 text-[10px] uppercase font-bold text-slate-500 tracking-wider">Lançamentos & Apontamentos</div>
+
+                <button onclick="navegarPara('horas')" id="btn-horas" class="menu-item w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition hover:bg-slate-800 hover:text-white text-slate-300">
+                    <i class="fa-solid fa-clock text-rose-400 w-5 text-center text-sm"></i>
+                    <span>Gestão de Horas</span>
+                </button>
+
+                <button onclick="navegarPara('recebimento')" id="btn-recebimento" class="menu-item w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition hover:bg-slate-800 hover:text-white text-slate-300">
+                    <i class="fa-solid fa-truck-ramp-box text-blue-400 w-5 text-center text-sm"></i>
+                    <span>Pesagem Recebimento</span>
+                </button>
+
+                <button onclick="navegarPara('expedicao')" id="btn-expedicao" class="menu-item w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition hover:bg-slate-800 hover:text-white text-slate-300">
+                    <i class="fa-solid fa-truck-fast text-emerald-400 w-5 text-center text-sm"></i>
+                    <span>Pesagem Expedição</span>
+                </button>
+
+                <div class="px-3 py-2 pt-4 text-[10px] uppercase font-bold text-slate-500 tracking-wider">Utilidades & Insumos</div>
+
+                <button onclick="navegarPara('quimicos')" id="btn-quimicos" class="menu-item w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition hover:bg-slate-800 hover:text-white text-slate-300">
+                    <i class="fa-solid fa-vial text-purple-400 w-5 text-center text-sm"></i>
+                    <span>Produtos Químicos</span>
+                </button>
+
+                <button onclick="navegarPara('agua')" id="btn-agua" class="menu-item w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition hover:bg-slate-800 hover:text-white text-slate-300">
+                    <i class="fa-solid fa-droplet text-cyan-400 w-5 text-center text-sm"></i>
+                    <span>Consumo de Água</span>
+                </button>
+
+                <button onclick="navegarPara('gas')" id="btn-gas" class="menu-item w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition hover:bg-slate-800 hover:text-white text-slate-300">
+                    <i class="fa-solid fa-fire-flame-simple text-orange-400 w-5 text-center text-sm"></i>
+                    <span>Consumo de Gás</span>
+                </button>
+
+                <button onclick="navegarPara('energia')" id="btn-energia" class="menu-item w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition hover:bg-slate-800 hover:text-white text-slate-300">
+                    <i class="fa-solid fa-bolt text-yellow-400 w-5 text-center text-sm"></i>
+                    <span>Energia Elétrica</span>
+                </button>
+
+		<button onclick="window.location.href='pcm_manutencao.html'" id="btn-manutencao" class="menu-item w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition hover:bg-		slate-800 hover:text-white text-slate-300">
+    		<i class="fa-solid fa-wrench text-emerald-400 w-5 text-center text-sm"></i>
+    		<span>Manutenção & Ativos</span>
+		</button>
+            </nav>
+        </div>
+
+        <div class="p-3 border-t border-slate-800">
+            <a href="configuracoes.html" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold text-slate-400 hover:bg-slate-800 hover:text-amber-400 transition">
+                <i class="fa-solid fa-gear w-5 text-center text-sm"></i>
+                <span>Configurações</span>
+            </a>
+        </div>
+    </aside>
+
+    <main class="flex-1 p-6 overflow-y-auto space-y-6">
+
+        <header class="flex justify-between items-center pb-4 border-b border-slate-200">
+            <div>
+                <h2 id="tituloPagina" class="text-xl font-bold text-slate-900">Dashboard Geral de Indicadores</h2>
+                <p id="subtituloPagina" class="text-xs text-slate-500">Resumo consolidado das operações, recebimento, expedição, utilidades e proporcionalidade de consumos.</p>
+            </div>
+            <div id="acaoTopBar"></div>
+        </header>
+
+        <div id="view-dashboard" class="space-y-6">
+
+            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 space-y-4">
+                <div class="flex justify-between items-center border-b pb-2">
+                    <h3 class="text-xs font-black text-slate-700 uppercase tracking-wider flex items-center gap-2">
+                        <i class="fa-solid fa-chart-line text-blue-600"></i>
+                        Balanço Geral, Rendimento (%) e Produtividade (Kg/h)
+                    </h3>
+                    <div class="flex gap-2">
+                        <a href="pesagemrecebimento.html" class="text-xs text-blue-600 hover:underline font-bold">Lançar Recebimento ➔</a>
+                        <span class="text-slate-300">|</span>
+                        <a href="pesagemexpedicao.html" class="text-xs text-emerald-600 hover:underline font-bold">Lançar Expedição ➔</a>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4">
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 border-l-4 border-l-blue-600">
+                        <span class="text-[11px] font-bold text-slate-500 uppercase">Peso Entrada (Sujo)</span>
+                        <p id="dashKpiPesoEntrada" class="text-xl font-black text-slate-800 mt-1">0,0 Kg</p>
+                        <span class="text-[10px] text-slate-400">Total rececionado</span>
+                    </div>
+
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 border-l-4 border-l-indigo-600">
+                        <span class="text-[11px] font-bold text-slate-500 uppercase">Gaiolas Entrada</span>
+                        <p id="dashKpiGaiolasEntrada" class="text-xl font-black text-slate-800 mt-1">0 und</p>
+                        <span class="text-[10px] text-slate-400">Total rececionado</span>
+                    </div>
+
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 border-l-4 border-l-emerald-600">
+                        <span class="text-[11px] font-bold text-slate-500 uppercase">Peso Saída (Limpo)</span>
+                        <p id="dashKpiPesoSaida" class="text-xl font-black text-slate-800 mt-1">0,0 Kg</p>
+                        <span class="text-[10px] text-slate-400">Total expedido</span>
+                    </div>
+
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 border-l-4 border-l-teal-600">
+                        <span class="text-[11px] font-bold text-slate-500 uppercase">Gaiolas Saída</span>
+                        <p id="dashKpiGaiolasSaida" class="text-xl font-black text-slate-800 mt-1">0 und</p>
+                        <span class="text-[10px] text-slate-400">Total despachado</span>
+                    </div>
+
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 border-l-4 border-l-amber-500">
+                        <span class="text-[11px] font-bold text-slate-500 uppercase">Rendimento (%)</span>
+                        <p id="dashKpiRetorno" class="text-xl font-black text-amber-600 mt-1">0,0 %</p>
+                        <span class="text-[10px] text-slate-400">(Saída / Entrada)</span>
+                    </div>
+
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 border-l-4 border-l-violet-600">
+                        <span class="text-[11px] font-bold text-slate-500 uppercase">Produtividade</span>
+                        <p id="dashKpiProdutividade" class="text-xl font-black text-violet-700 mt-1">0,0 Kg/h</p>
+                        <span class="text-[10px] text-slate-400">(Peso Saída / Horas)</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 space-y-4">
+                <div class="flex justify-between items-center border-b pb-2">
+                    <h3 class="text-xs font-black text-slate-700 uppercase tracking-wider flex items-center gap-2">
+                        <i class="fa-solid fa-scale-balanced text-purple-600"></i>
+                        Consumos Totais & Indicadores de Proporcionalidade (Por Kg Limpo Processado)
+                    </h3>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 border-l-4 border-l-rose-500 flex flex-col justify-between">
+                        <div>
+                            <span class="text-xs font-bold text-slate-500 uppercase">Horas Totais Produção</span>
+                            <p id="dashKpiHoras" class="text-xl font-black text-slate-800 mt-1">0,0 h</p>
+                        </div>
+                        <span class="text-[10px] text-slate-400 mt-2">Normais + Extras</span>
+                    </div>
+
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 border-l-4 border-l-purple-600 flex flex-col justify-between">
+                        <div>
+                            <span class="text-xs font-bold text-slate-500 uppercase">Produtos Químicos Consumidos</span>
+                            <p id="dashKpiQuimicos" class="text-xl font-black text-purple-700 mt-1">0,0 kg/L</p>
+                        </div>
+                        <div class="mt-2 pt-2 border-t border-slate-200 flex justify-between items-center">
+                            <span class="text-[10px] font-bold text-slate-500">Consumo Específico:</span>
+                            <span id="dashKpiQuimicosProp" class="text-xs font-black text-purple-800">0,000 / Kg</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 border-l-4 border-l-cyan-600 flex flex-col justify-between">
+                        <div>
+                            <span class="text-xs font-bold text-slate-500 uppercase">Água Captada</span>
+                            <p id="dashKpiAgua" class="text-xl font-black text-cyan-700 mt-1">0 L</p>
+                        </div>
+                        <div class="mt-2 pt-2 border-t border-slate-200 flex justify-between items-center">
+                            <span class="text-[10px] font-bold text-slate-500">Consumo Específico:</span>
+                            <span id="dashKpiAguaProp" class="text-xs font-black text-cyan-800">0,00 L / Kg</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 border-l-4 border-l-orange-600 flex flex-col justify-between">
+                        <div>
+                            <span class="text-xs font-bold text-slate-500 uppercase">Gás Consumido</span>
+                            <p id="dashKpiGas" class="text-xl font-black text-orange-600 mt-1">0 m³</p>
+                        </div>
+                        <div class="mt-2 pt-2 border-t border-slate-200 flex justify-between items-center">
+                            <span class="text-[10px] font-bold text-slate-500">Consumo Específico:</span>
+                            <span id="dashKpiGasProp" class="text-xs font-black text-orange-800">0,00 m³ / Kg</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 border-l-4 border-l-yellow-500 flex flex-col justify-between">
+                        <div>
+                            <span class="text-xs font-bold text-slate-500 uppercase">Energia Elétrica</span>
+                            <p id="dashKpiEnergia" class="text-xl font-black text-yellow-600 mt-1">0 kWh</p>
+                        </div>
+                        <div class="mt-2 pt-2 border-t border-slate-200 flex justify-between items-center">
+                            <span class="text-[10px] font-bold text-slate-500">Consumo Específico:</span>
+                            <span id="dashKpiEnergiaProp" class="text-xs font-black text-yellow-800">0,00 kWh / Kg</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+                <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 space-y-3">
+                    <div class="flex justify-between items-center border-b pb-2">
+                        <h4 class="text-xs font-bold text-slate-800 flex items-center gap-2">
+                            <i class="fa-solid fa-truck-ramp-box text-blue-600"></i>
+                            Quadro Resumo: Recebimento (Sujo)
+                        </h4>
+                        <a href="pesagemrecebimento.html" class="text-[10px] bg-blue-50 text-blue-700 px-2 py-1 rounded font-bold hover:bg-blue-100">Lançar Entrada</a>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-[11px] border-collapse">
+                            <thead class="bg-slate-100 text-slate-700">
+                                <tr>
+                                    <th class="p-2 border">Data</th>
+                                    <th class="p-2 border">Cliente / Origem</th>
+                                    <th class="p-2 border text-right">Peso Entrada</th>
+                                    <th class="p-2 border text-center">Gaiolas</th>
+                                </tr>
+                            </thead>
+                            <tbody id="quadroResumoRecebimento">
+                                <tr><td colspan="4" class="p-3 text-center italic text-slate-400">Nenhum registo encontrado.</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 space-y-3">
+                    <div class="flex justify-between items-center border-b pb-2">
+                        <h4 class="text-xs font-bold text-slate-800 flex items-center gap-2">
+                            <i class="fa-solid fa-truck-fast text-emerald-600"></i>
+                            Quadro Resumo: Expedição (Limpo)
+                        </h4>
+                        <a href="pesagemexpedicao.html" class="text-[10px] bg-emerald-50 text-emerald-700 px-2 py-1 rounded font-bold hover:bg-emerald-100">Lançar Saída</a>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-[11px] border-collapse">
+                            <thead class="bg-slate-100 text-slate-700">
+                                <tr>
+                                    <th class="p-2 border">Data</th>
+                                    <th class="p-2 border">Cliente / Destino</th>
+                                    <th class="p-2 border text-right">Peso Saída</th>
+                                    <th class="p-2 border text-center">Gaiolas</th>
+                                </tr>
+                            </thead>
+                            <tbody id="quadroResumoExpedicao">
+                                <tr><td colspan="4" class="p-3 text-center italic text-slate-400">Nenhum registo encontrado.</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 space-y-3">
+                    <div class="flex justify-between items-center border-b pb-2">
+                        <h4 class="text-xs font-bold text-slate-800 flex items-center gap-2">
+                            <i class="fa-solid fa-user-clock text-rose-500"></i>
+                            Quadro Resumo: Gestão de Horas
+                        </h4>
+                        <a href="gestaodehoras.html" class="text-[10px] bg-rose-50 text-rose-700 px-2 py-1 rounded font-bold hover:bg-rose-100">Abrir Lançamento</a>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-[11px] border-collapse">
+                            <thead class="bg-slate-100 text-slate-700">
+                                <tr>
+                                    <th class="p-2 border">Data</th>
+                                    <th class="p-2 border">Setor / Operador</th>
+                                    <th class="p-2 border text-right">Horas Normais</th>
+                                    <th class="p-2 border text-right">Horas Extras</th>
+                                    <th class="p-2 border text-right">Absenteísmo</th>
+                                </tr>
+                            </thead>
+                            <tbody id="quadroResumoHoras">
+                                <tr><td colspan="5" class="p-3 text-center italic text-slate-400">Nenhum registo encontrado.</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 space-y-3">
+                    <div class="flex justify-between items-center border-b pb-2">
+                        <h4 class="text-xs font-bold text-slate-800 flex items-center gap-2">
+                            <i class="fa-solid fa-faucet-drip text-cyan-600"></i>
+                            Quadro Resumo: Utilidades (Água, Gás e Energia)
+                        </h4>
+                        <div class="flex gap-1">
+                            <a href="consumoagua.html" class="text-[10px] bg-cyan-50 text-cyan-700 px-1.5 py-0.5 rounded font-bold">Água</a>
+                            <a href="consumogas.html" class="text-[10px] bg-orange-50 text-orange-700 px-1.5 py-0.5 rounded font-bold">Gás</a>
+                            <a href="consumoenergia.html" class="text-[10px] bg-yellow-50 text-yellow-800 px-1.5 py-0.5 rounded font-bold">Energia</a>
+                        </div>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-[11px] border-collapse">
+                            <thead class="bg-slate-100 text-slate-700">
+                                <tr>
+                                    <th class="p-2 border">Data</th>
+                                    <th class="p-2 border text-right">Água (L)</th>
+                                    <th class="p-2 border text-right">Gás (m³)</th>
+                                    <th class="p-2 border text-right">Energia (kWh)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="quadroResumoUtilidades">
+                                <tr><td colspan="4" class="p-3 text-center italic text-slate-400">Nenhum registo encontrado.</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                <h3 class="text-sm font-bold text-slate-800 mb-4">Comparativo Diário: Peso Entrada vs. Saída (Kg)</h3>
+                <div class="h-64">
+                    <canvas id="chartGeral"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div id="view-quimicos-modulo" class="hidden space-y-6">
+            <div class="flex border-b border-slate-300 bg-white rounded-xl shadow-sm p-1.5 gap-2">
+                <button onclick="alternarAbaQuimicos('historico')" id="tab-quimicos-historico" class="px-4 py-2.5 rounded-lg text-xs font-bold transition flex items-center gap-2 bg-purple-600 text-white shadow">
+                    <i class="fa-solid fa-clock-rotate-left"></i>
+                    <span>Histórico dos Registos e Consumos</span>
+                </button>
+                <button onclick="alternarAbaQuimicos('consumo')" id="tab-quimicos-consumo" class="px-4 py-2.5 rounded-lg text-xs font-bold transition flex items-center gap-2 text-slate-600 hover:bg-slate-100">
+                    <i class="fa-solid fa-vial-circle-check"></i>
+                    <span>Registro de Estoque de Químicos</span>
+                </button>
+                <button onclick="alternarAbaQuimicos('estoque')" id="tab-quimicos-estoque" class="px-4 py-2.5 rounded-lg text-xs font-bold transition flex items-center gap-2 text-slate-600 hover:bg-slate-100">
+                    <i class="fa-solid fa-boxes-stacked"></i>
+                    <span>Registo de Recebimento de Produtos Químicos</span>
+                </button>
+            </div>
+
+<div id="subview-quimicos-consumo" class="hidden space-y-6">
+    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 max-w-3xl mx-auto space-y-5">
+        <div class="border-b pb-3 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="bg-purple-100 text-purple-700 p-3 rounded-xl">
+                    <i class="fa-solid fa-flask text-lg"></i>
+                </div>
+                <div>
+                    <h3 class="text-base font-bold text-slate-800" id="tituloFormConsumo">Registo do Estoque de Produtos Químicos</h3>
+                    <p class="text-xs text-slate-500">Apontamento das quantidades de estoque de químicos.</p>
+                </div>
+            </div>
+        </div>
+
+        <form id="formConsumoQuimico" onsubmit="salvarConsumoQuimico(event)" class="space-y-4">
+            <input type="hidden" id="consumoEditIndex" value="">
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Data e Hora do Lançamento *</label>
+                    <input type="datetime-local" id="consumoData" required class="w-full p-2.5 border rounded-xl text-xs bg-slate-50 focus:ring-2 focus:ring-purple-500 outline-none font-semibold">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Produto Químico *</label>
+                    <select id="consumoProdId" name="produto" required class="w-full p-2.5 border rounded-xl text-xs bg-slate-50 font-semibold focus:ring-2 focus:ring-purple-500 outline-none">
+                        </select>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Quantidade em Estoque (Kg ou L) *</label>
+                    <input type="number" step="0.01" id="consumoQtd" required placeholder="0.00" class="w-full p-2.5 border rounded-xl text-xs bg-slate-50 focus:ring-2 focus:ring-purple-500 outline-none font-bold text-slate-800">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Setor / Lavadora / Destino</label>
+                    <input type="text" id="consumoSetor" placeholder="Ex: Lavadora Extratora 01" class="w-full p-2.5 border rounded-xl text-xs bg-slate-50 focus:ring-2 focus:ring-purple-500 outline-none">
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">Observações / Notas</label>
+                <input type="text" id="consumoObs" placeholder="Observações opcionais..." class="w-full p-2.5 border rounded-xl text-xs bg-slate-50 focus:ring-2 focus:ring-purple-500 outline-none">
+            </div>
+
+            <div class="pt-3 border-t flex justify-end gap-3">
+                <button type="button" onclick="limparFormConsumo()" class="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl text-xs font-bold transition">Cancelar / Limpar</button>
+                <button type="submit" id="btnSalvarConsumo" class="px-6 py-2.5 bg-purple-600 hover:bg-purple-700 text-white rounded-xl text-xs font-bold transition shadow">Salvar Posição do Estoque</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 max-w-5xl mx-auto space-y-4">
+        <div class="flex justify-between items-center border-b pb-3">
+            <h3 class="text-sm font-bold text-slate-800 flex items-center gap-2">
+                <i class="fa-solid fa-clock-rotate-left text-purple-600"></i>
+                Últimos Lançamentos de Posição de Estoque Efetuados
+            </h3>
+            <!--<span id="totalCustoConsumoSpan" class="text-xs font-extrabold bg-purple-50 text-purple-700 px-3 py-1.5 rounded-lg border border-purple-200">
+                Total do Período: R$ 0,00
+            </span>-->
+        </div>
+
+        <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs text-slate-600 border-collapse">
+                <thead>
+                    <tr class="bg-slate-100 text-slate-700 font-extrabold border-b border-slate-200">
+                        <th class="p-3 border">Data / Hora</th>
+                        <th class="p-3 border">Produto Químico</th>
+                        <th class="p-3 border text-right">Quantidade em Estoque (Kg ou L)</th>
+                        <!--<th class="p-3 border text-right">Custo Proporcional</th>-->
+                        <th class="p-3 border">Setor</th>
+			<th class="p-3 border">Notas</th>
+                        <th class="p-3 border text-center">Ações</th>
+                    </tr>
+                </thead>
+                <tbody id="tbodyHistoricoConsumoQuimico">
+                    </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+            <div id="subview-quimicos-estoque" class="hidden space-y-6">
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 max-w-3xl mx-auto space-y-5">
+                    <div class="border-b pb-3 flex items-center gap-3">
+                        <div class="bg-emerald-100 text-emerald-700 p-3 rounded-xl">
+                            <i class="fa-solid fa-truck-droplet text-lg"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-base font-bold text-slate-800">Registo de Recebimento de Produtos Químicos</h3>
+                            <p class="text-xs text-slate-500">Lançamento de novos recebimentos de insumos químicos para entrada em estoque.</p>
+                        </div>
+                    </div>
+
+                    <form id="formRecebimentoQuimico" onsubmit="salvarRecebimentoQuimico(event)" class="space-y-4">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                	    <div>
+                    	   	<label class="block text-xs font-bold text-slate-700 mb-1">Data e Hora do Recebimento *</label>
+                    		<input type="datetime-local" id="recData" required class="w-full p-2.5 border rounded-xl text-xs bg-slate-50 focus:ring-2 focus:ring-purple-500 outline-				none font-semibold">
+                	    </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">Produto Químico *</label>
+				<select id="recProdId" name="produto" required class="w-full p-2.5 border rounded-xl text-xs bg-slate-50 font-semibold focus:ring-2 focus:ring-emerald-500 				outline-none">
+				</select>
+
+                            </div>
+
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">Quantidade Recebida (Kg ou L) *</label>
+                                <input type="number" step="0.01" id="recQtd" required placeholder="0.00" class="w-full p-2.5 border rounded-xl text-xs bg-slate-50 focus:ring-2 focus:ring-emerald-500 outline-none font-bold text-slate-800">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">Nº Nota Fiscal / Lote *</label>
+                                <input type="text" id="recNf" placeholder="Ex: NF 10452 / Lote B2026" class="w-full p-2.5 border rounded-xl text-xs bg-slate-50 focus:ring-2 focus:ring-emerald-500 outline-none">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">Fornecedor / Observações *</label>
+                            <input type="text" id="recObs" placeholder="Ex: Diversey / Spartan / Beiclean" class="w-full p-2.5 border rounded-xl text-xs bg-slate-50 focus:ring-2 focus:ring-emerald-500 outline-none">
+                        </div>
+
+                        <div class="pt-3 border-t flex justify-end gap-3">
+                            <button type="reset" class="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl text-xs font-bold transition">Cancelar / Limpar</button>
+                            <button type="submit" class="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition shadow">Salvar Entrada no Estoque</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 space-y-4">
+                    <div class="flex justify-between items-center border-b pb-3">
+            <h3 class="text-sm font-bold text-slate-800 flex items-center gap-2">
+                <i class="fa-solid fa-clock-rotate-left text-purple-600"></i>
+                Últimos Lançamentos de Recebimentos Efetuados
+            </h3>
+
+                        <!--<span class="text-xs font-semibold text-slate-400">Total Recebido - Total Consumido</span>-->
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs border-collapse">
+                            <thead class="bg-slate-100 text-slate-700">
+                                <tr>
+                                    <th class="p-2.5 border">Data</th>
+                                    <th class="p-2.5 border">Produto Químico</th>
+                                    <th class="p-2.5 border text-center">Quantidade Recebida (Kg ou L)</th>
+                                    <th class="p-2.5 border text-right">Nº Nota Fiscal / Lote</th>
+                                    <th class="p-2.5 border text-right">Fornecedor / Observações</th>
+                                    <!--<th class="p-2.5 border text-right">Saldo em Stock</th>-->
+                                </tr>
+                            </thead>
+                            <tbody id="tabelaEstoqueQuimicos">
+                                <tr><td colspan="6" class="p-4 text-center italic text-slate-400">A carregar estoque...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="view-detalhe" class="hidden space-y-6">
+
+            <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 flex flex-wrap justify-between items-center gap-4">
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-filter text-blue-600"></i>
+                    <span class="text-xs font-bold text-slate-700">Período de Análise dos Indicadores:</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <label for="selectDiasGeral" class="text-xs font-medium text-slate-500">Exibir últimos:</label>
+                    <select id="selectDiasGeral" onchange="alterarFiltroDiasGeral()" class="bg-slate-50 border border-slate-300 text-slate-800 text-xs font-bold rounded-lg px-3 py-1.5 focus:ring-2 focus:ring-blue-500 outline-none">
+                        <option value="7">7 Dias</option>
+                        <option value="15" selected>15 Dias</option>
+                        <option value="30">30 Dias</option>
+                        <option value="30">60 Dias</option>
+                        <option value="90">90 Dias</option>
+                    </select>
+                </div>
+            </div>
+
+            <div id="detalheKpisGeral" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+
+            <div id="bannerLancamento" class="bg-slate-900 text-white p-5 rounded-2xl shadow-md flex justify-between items-center">
+                <div>
+                    <h3 id="bannerTitulo" class="text-base font-bold">Lançar novos registos</h3>
+                    <p id="bannerDesc" class="text-xs text-slate-400">Acesse o formulário completo para registrar novos dados no sistema.</p>
+                </div>
+                <a id="btnAbrirForm" href="#" class="bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs px-5 py-2.5 rounded-xl transition shadow">
+                    🚀 Abrir Tela de Lançamento
+                </a>
+            </div>
+
+            <div class="bg-white rounded-2xl shadow-sm p-6 border border-slate-200 space-y-4">
+                <div class="flex justify-between items-center border-b pb-3">
+                    <h3 class="text-sm font-bold text-slate-800">Últimos Lançamentos de Horas Efetuados</h3>
+                    <span id="txtInfoDiasGeral" class="text-xs font-medium text-slate-400">Exibindo registos dos últimos 15 dias</span>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs border-collapse">
+                        <thead id="headTabelaDetalheGeral" class="bg-slate-100 text-slate-700"></thead>
+                        <tbody id="bodyTabelaDetalheGeral"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+    /*
+    // LISTA DE PRODUTOS QUÍMICOS PADRÃO PARA RESOLUÇÃO DE NOMES
+    const PRODUTOS_QUIMICOS_PADRAO = [
+        { id: "beiclean_cwt", nome: "BEICLEAN CWT", un: "Kg" },
+        { id: "beipur_msc", nome: "BEIPUR MSC", un: "Kg" },
+        { id: "beibleach_pe", nome: "BEIBLEACH PE", un: "Kg" },
+        { id: "beibleach_hc_liq", nome: "BEIBLEACH HC LIQ", un: "L" },
+        { id: "beibleach_net", nome: "BEIBLEACH NET", un: "Kg" },
+        { id: "beiplex_cab", nome: "BEIPLEX CAB", un: "Kg" },
+        { id: "beiblanc_had", nome: "BEIBLANC HAD", un: "Kg" },
+        { id: "beibleach_blue", nome: "BEIBLEACH BLUE ACTIVE", un: "Kg" },
+        { id: "beiacid_wsd", nome: "BEIACID WSD", un: "Kg" },
+        { id: "wp35", nome: "WP35", un: "Kg" },
+        { id: "beisoft_avra", nome: "BEISOFT AVRA", un: "L" },
+        { id: "sal_grosso", nome: "SAL GROSSO", un: "Kg" }
+    ];
+    */
+
+// Chave do localStorage gravada pelo configuracoes.html
+const CHAVE_CONFIG_QUIMICOS = 'mes_config_quimicos';
+
+/**
+ * Busca os produtos cadastrados em configuracoes.html e popula os selects de Consumo e Recebimento
+ */
+function carregarSelectsProdutosQuimicos() {
+    // 1. Tenta buscar ambos os IDs (garante compatibilidade com os formulários do HTML)
+    const selectConsumo = document.getElementById('consumoProdId') || document.getElementById('consumoProduto');
+    const selectRecebimento = document.getElementById('recProdId') || document.getElementById('recebimentoProduto');
+
+    if (!selectConsumo && !selectRecebimento) return;
+
+    // 2. Busca lista atualizada de produtos químicos do localStorage
+    const listaProdutos = obterListaProdutosQuimicos();
+
+    // 3. Monta as opções dinâmicas
+    let optionsHTML = '<option value="">-- Selecione o Produto Químico --</option>';
+
+    if (listaProdutos.length === 0) {
+        optionsHTML += '<option value="" disabled>Nenhum produto cadastrado em Configurações</option>';
+    } else {
+        listaProdutos.forEach(prod => {
+            // Suporta tanto a propriedade 'id' quanto 'codigo'
+            const idVal = prod.id || prod.codigo;
+            // Suporta tanto 'un' quanto 'unidade'
+            const unVal = prod.un || prod.unidade || 'un';
+
+            optionsHTML += `<option value="${idVal}">${prod.nome} (${unVal})</option>`;
+        });
+    }
+
+    // 4. Injeta as opções nos campos select encontrados
+    if (selectConsumo) selectConsumo.innerHTML = optionsHTML;
+    if (selectRecebimento) selectRecebimento.innerHTML = optionsHTML;
+}
+
+// Carrega automaticamente ao abrir/recarregar a página
+document.addEventListener('DOMContentLoaded', carregarSelectsProdutosQuimicos);
+
+    // MAPEAMENTO DAS CHAVES DE LOCALSTORAGE PARA TODOS OS MÓDULOS
+    const MODULOS = {
+        horas: {
+            titulo: "Gestão de Horas de Produção",
+            subtitulo: "Apontamento de horas normais, horas extras, absenteísmo e produtividade.",
+            urlLancamento: "gestaodehoras.html",
+            storageKeys: ["mes_historico_horas", "historico_horas", "horas_lancamentos", "gestao_horas", "horas"],
+            unidade: "h"
+        },
+        recebimento: {
+            titulo: "Pesagem de Recebimento (Entrada)",
+            subtitulo: "Registo de entrada de roupa suja, controlo de gaiolas e romaneios de entrada.",
+            urlLancamento: "pesagemrecebimento.html",
+            storageKeys: ["mes_pesagem_recebimento", "mes_historico_recebimento", "historico_recebimento", "pesagem_recebimento", "recebimento"],
+            unidade: "Kg"
+        },
+        expedicao: {
+            titulo: "Pesagem de Expedição (Saída)",
+            subtitulo: "Registo de saída de roupa limpa, expedição de gaiolas e conferência de romaneios.",
+            urlLancamento: "pesagemexpedicao.html",
+            storageKeys: ["mes_pesagem_expedicao", "mes_historico_expedicao", "historico_expedicao", "pesagem_expedicao", "expedicao"],
+            unidade: "Kg"
+        },
+        quimicos: {
+            titulo: "Gestão Integrada de Produtos Químicos",
+            subtitulo: "Controlo de consumos, recebimento de lotes e saldo de estoque de insumos.",
+            urlLancamento: "#",
+            storageKeys: ["mes_lancamentos_consumo", "mes_historico_quimicos", "historico_quimicos", "consumo_quimicos"],
+            unidade: "kg/L"
+        },
+        agua: {
+            titulo: "Consumo de Água",
+            subtitulo: "Acompanhamento de leituras de hidrómetros e consumo hídrico.",
+            urlLancamento: "consumoagua.html",
+            storageKeys: ["mes_historico_agua", "historico_agua", "consumo_agua"],
+            unidade: "L"
+        },
+        gas: {
+            titulo: "Consumo de Gás (Caldeira)",
+            subtitulo: "Leitura dos medidores de gás e consumo do processo.",
+            urlLancamento: "consumogas.html",
+            storageKeys: ["mes_historico_gas", "historico_gas", "consumo_gas"],
+            unidade: "m³"
+        },
+        energia: {
+            titulo: "Energia Elétrica",
+            subtitulo: "Medição do consumo e procura de energia elétrica.",
+            urlLancamento: "consumoenergia.html",
+            storageKeys: ["mes_historico_energia", "historico_energia", "consumo_energia"],
+            unidade: "kWh"
+        }
+    };
+
+    let moduloAtual = null;
+    let chartGeralInstance = null;
+
+    function parseNumero(valor) {
+        if (valor === undefined || valor === null || valor === '') return 0;
+        if (typeof valor === 'number') return isNaN(valor) ? 0 : valor;
+        const limpo = String(valor).replace(/\./g, '').replace(',', '.').replace(/[^0-9.-]/g, '');
+        const num = parseFloat(limpo);
+        return isNaN(num) ? 0 : num;
+    }
+
+    function obterDadosLocalStorage(chaves) {
+        for (let k of chaves) {
+            const item = localStorage.getItem(k);
+            if (item) {
+                try {
+                    const parsed = JSON.parse(item);
+                    if (Array.isArray(parsed) && parsed.length > 0) {
+                        return parsed;
+                    }
+                } catch(e) {}
+            }
+        }
+        return [];
+    }
+
+    function obterListaProdutosQuimicos() {
+        return JSON.parse(localStorage.getItem('mes_config_quimicos')) || PRODUTOS_QUIMICOS_PADRAO;
+    }
+
+    function obterNomeProdutoQuimico(prodId) {
+        if (!prodId) return null;
+        const lista = obterListaProdutosQuimicos();
+        const prod = lista.find(p => p.id === prodId);
+        return prod ? prod.nome : prodId;
+    }
+
+    function extrairValoresHoras(item) {
+        const hn = parseNumero(item.horasNormais ?? item.horas_normais ?? item.normais ?? item.horasTrabalhadas ?? item.horas ?? 0);
+        const he = parseNumero(item.horasExtras ?? item.horas_extras ?? item.extras ?? 0);
+        const abs = parseNumero(item.absenteismo ?? item.horasParada ?? item.ausencias ?? item.faltas ?? 0);
+        return { hn, he, abs, ht: hn + he };
+    }
+
+    function extrairPesoEGaiolasRecebimento(item) {
+        const peso = parseNumero(item.pesoEntrada ?? item.pesoLiquido ?? item.pesoLíquido ?? item.peso_entrada ?? item.peso ?? item.quantidade ?? 0);
+        const gaiolas = parseNumero(item.gaiolasEntrada ?? item.gaiolas ?? item.gaiolas_entrada ?? item.qtdGaiolas ?? item.gaiola ?? 0);
+        return { peso, gaiolas };
+    }
+
+    function extrairPesoEGaiolasExpedicao(item) {
+        const peso = parseNumero(item.pesoSaida ?? item.pesoLiquido ?? item.pesoLíquido ?? item.peso_saida ?? item.peso ?? item.quantidade ?? 0);
+        const gaiolas = parseNumero(item.gaiolasSaida ?? item.gaiolas ?? item.gaiolas_saida ?? item.qtdGaiolas ?? item.gaiola ?? 0);
+        return { peso, gaiolas };
+    }
+
+    function extrairValorGenerico(item) {
+        return parseNumero(
+            item.qtd ?? item.totalGeral ?? item.totalCaptacao ?? item.totalGas ?? item.totalEnergia ?? 
+            item.quantidade ?? item.pesoEntrada ?? item.pesoSaida ?? item.peso ?? item.valor ?? item.consumo ?? 0
+        );
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        carregarKPIsGerais();
+        carregarQuadrosResumo();
+        renderizarGraficoGeral();
+        preencherSelectsProdutosQuimicos();
+        
+        // Define data/hora atual padrão nos formulários de químicos
+        const now = new Date();
+        const localIso = new Date(now.getTime() - (now.getTimezoneOffset() * 60000)).toISOString().slice(0, 16);
+        const dateIso = now.toISOString().slice(0, 10);
+        
+        const elConsData = document.getElementById('consumoData');
+        if (elConsData) elConsData.value = localIso;
+        
+        const elRecData = document.getElementById('recData');
+        if (elRecData) elRecData.value = dateIso;
+    });
+
+    function navegarPara(opcao) {
+        document.querySelectorAll('.menu-item').forEach(btn => {
+            btn.className = "menu-item w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition hover:bg-slate-800 hover:text-white text-slate-300";
+        });
+
+        const btnAtivo = document.getElementById(`btn-${opcao}`);
+        if (btnAtivo) {
+            btnAtivo.className = "menu-item w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition bg-blue-600 text-white font-bold";
+        }
+
+        document.getElementById('view-dashboard').classList.add('hidden');
+        document.getElementById('view-quimicos-modulo').classList.add('hidden');
+        document.getElementById('view-detalhe').classList.add('hidden');
+
+        if (opcao === 'dashboard') {
+            moduloAtual = null;
+            document.getElementById('tituloPagina').innerText = "Dashboard Geral de Indicadores";
+            document.getElementById('subtituloPagina').innerText = "Resumo consolidado das operações, recebimento, expedição e utilidades.";
+            document.getElementById('acaoTopBar').innerHTML = '';
+            document.getElementById('view-dashboard').classList.remove('hidden');
+            carregarKPIsGerais();
+            carregarQuadrosResumo();
+            renderizarGraficoGeral();
+        } else if (opcao === 'quimicos') {
+// 1. Atualiza os selects de produtos do localStorage
+    if (typeof carregarSelectsProdutosQuimicos === 'function') {
+        carregarSelectsProdutosQuimicos();
+    }
+
+    moduloAtual = 'quimicos';
+    const config = MODULOS.quimicos || { 
+        titulo: "Gestão Integrada de Produtos Químicos", 
+        subtitulo: "Registo de Consumo Diário, Recebimento e Estoque" 
+    };
+
+    // 2. Atualiza os títulos da página
+    const elTitulo = document.getElementById('tituloPagina');
+    const elSub = document.getElementById('subtituloPagina');
+    const elAcao = document.getElementById('acaoTopBar');
+
+    if (elTitulo) elTitulo.innerText = config.titulo;
+    if (elSub) elSub.innerText = config.subtitulo;
+    if (elAcao) elAcao.innerHTML = '';
+
+    // 3. Exibe o módulo correto usando o ID exatamente como declarado no HTML (modulo-quimicos)
+    const viewQuimicos = document.getElementById('modulo-quimicos') || document.getElementById('view-quimicos-modulo');
+    if (viewQuimicos) {
+        viewQuimicos.classList.remove('hidden');
+    }
+
+    // 4. Abre por padrão a aba de Consumo
+    if (typeof alternarAbaQuimicos === 'function') {
+        alternarAbaQuimicos('consumo');
+    }
+        } else {
+            moduloAtual = opcao;
+            const config = MODULOS[opcao];
+            document.getElementById('tituloPagina').innerText = config.titulo;
+            document.getElementById('subtituloPagina').innerText = config.subtitulo;
+            document.getElementById('acaoTopBar').innerHTML = `
+                <a href="${config.urlLancamento}" class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-4 py-2 rounded-xl transition flex items-center gap-2 shadow">
+                    <i class="fa-solid fa-plus"></i> Abrir Tela de Lançamento
+                </a>
+            `;
+
+            document.getElementById('bannerTitulo').innerText = `Ir para tela de ${config.titulo}`;
+            document.getElementById('bannerDesc').innerText = `Acesse o formulário exclusivo para registrar novos lançamentos em ${config.titulo}.`;
+            document.getElementById('btnAbrirForm').href = config.urlLancamento;
+
+            carregarDetalheModuloGeral(opcao);
+            document.getElementById('view-detalhe').classList.remove('hidden');
+        }
+    }
+
+    // CONTROLE DAS ABAS DE PRODUTOS QUÍMICOS
+// --- CARREGAR PRODUTOS QUÍMICOS DO LOCALSTORAGE ---
+function obterListaProdutosQuimicos() {
+    return JSON.parse(localStorage.getItem('mes_config_quimicos') || '[]');
+}
+
+function preencherSelectsProdutosQuimicos() {
+    const lista = obterListaProdutosQuimicos();
+    
+    // Tenta capturar pelos IDs possíveis no HTML
+    const selConsumo = document.getElementById('consumoProdId') || document.getElementById('consumoProduto');
+    const selRec = document.getElementById('recProdId') || document.getElementById('recebimentoProduto');
+
+    let optionsHtml = '<option value="">-- Selecione o Produto --</option>';
+
+    if (lista.length === 0) {
+        optionsHtml += '<option value="" disabled>Nenhum produto cadastrado em Configurações</option>';
+    } else {
+        optionsHtml += lista.map(p => {
+            const idVal = p.id || p.codigo;
+            const unVal = p.un || p.unidade || 'un';
+            return `<option value="${idVal}">${p.nome} (${unVal})</option>`;
+        }).join('');
+    }
+
+    if (selConsumo) selConsumo.innerHTML = optionsHtml;
+    if (selRec) selRec.innerHTML = optionsHtml;
+}
+
+// --- CONTROLE DAS ABAS DO MÓDULO DE PRODUTOS QUÍMICOS ---
+// --- NAVEGAÇÃO SEGURA DAS ABAS DE PRODUTOS QUÍMICOS ---
+function alternarAbaQuimicos(aba) {
+    // 1. Mapeia os containers das subviews de forma segura
+    const viewHist = document.getElementById('subview-quimicos-historico') || document.getElementById('quimicos-tab-historico');
+    const viewCons = document.getElementById('subview-quimicos-consumo') || document.getElementById('quimicos-tab-consumo');
+    const viewEst  = document.getElementById('subview-quimicos-estoque') || document.getElementById('quimicos-tab-recebimento');
+
+    // Oculta todas as subviews verificando se existem (evita travar o JS)
+    if (viewHist) viewHist.classList.add('hidden');
+    if (viewCons) viewCons.classList.add('hidden');
+    if (viewEst)  viewEst.classList.add('hidden');
+
+    // 2. Mapeia os botões seletores
+    const btnHist = document.getElementById('tab-quimicos-historico');
+    const btnCons = document.getElementById('tab-quimicos-consumo');
+    const btnEst  = document.getElementById('tab-quimicos-estoque');
+
+    const classeInativa = "px-4 py-2.5 rounded-lg text-xs font-bold transition flex items-center gap-2 text-slate-600 hover:bg-slate-100";
+    const classeAtiva   = "px-4 py-2.5 rounded-lg text-xs font-bold transition flex items-center gap-2 bg-purple-600 text-white shadow";
+
+    if (btnHist) btnHist.className = classeInativa;
+    if (btnCons) btnCons.className = classeInativa;
+    if (btnEst)  btnEst.className = classeInativa;
+
+    // 3. Atualiza os selects de produtos químicos
+    if (typeof preencherSelectsProdutosQuimicos === 'function') {
+        preencherSelectsProdutosQuimicos();
+    }
+
+    // 4. Exibe a subview solicitada
+    if (aba === 'historico') {
+        if (btnHist) btnHist.className = classeAtiva;
+        if (viewHist) viewHist.classList.remove('hidden');
+        if (typeof renderizarHistoricoConsumoQuimico === 'function') renderizarHistoricoConsumoQuimico();
+    } else if (aba === 'consumo') {
+        if (btnCons) btnCons.className = classeAtiva;
+        if (viewCons) viewCons.classList.remove('hidden');
+        if (typeof renderizarHistoricoConsumoQuimico === 'function') renderizarHistoricoConsumoQuimico();
+    } else if (aba === 'estoque') {
+        if (btnEst) btnEst.className = classeAtiva;
+        if (viewEst) viewEst.classList.remove('hidden');
+    }
+}
+
+function salvarConsumoQuimico(e) {
+    e.preventDefault();
+    const dataVal = document.getElementById('consumoData').value;
+    const prodId = document.getElementById('consumoProdId').value;
+    const qtd = parseFloat(document.getElementById('consumoQtd').value) || 0;
+    const setor = document.getElementById('consumoSetor').value;
+    const obs = document.getElementById('consumoObs').value;
+
+    if (!prodId || qtd <= 0) {
+        alert('Por favor, selecione o produto químico e informe uma quantidade válida.');
+        return;
+    }
+
+    const novoConsumo = {
+        id: Date.now(),
+        data: dataVal,
+        prodId: prodId,
+        qtd: qtd,
+        setor: setor,
+        obs: obs
+    };
+
+    // Salva na chave de consumo do localStorage
+    const consumos = JSON.parse(localStorage.getItem('mes_historico_quimicos')) || [];
+    consumos.unshift(novoConsumo);
+    localStorage.setItem('mes_historico_quimicos', JSON.stringify(consumos));
+
+    alert('Estoque registrado com sucesso!');
+    document.getElementById('formConsumoQuimico').reset();
+    
+    // Volta para a aba de histórico para visualizar o lançamento
+    alternarAbaQuimicos('historico');
+}
+
+    function salvarRecebimentoQuimico(e) {
+        e.preventDefault();
+        const dataVal = document.getElementById('recData').value;
+        const prodId = document.getElementById('recProdId').value;
+        const qtd = parseFloat(document.getElementById('recQtd').value) || 0;
+        const nf = document.getElementById('recNf').value;
+        const obs = document.getElementById('recObs').value;
+
+        if (!dataVal || !prodId || qtd <= 0) {
+            alert('Por favor, preencha a data, o produto e a quantidade corretamente.');
+            return;
+        }
+
+        const novoRecebimento = {
+            id: Date.now(),
+            data: dataVal,
+            prodId: prodId,
+            qtd: qtd,
+            nf: nf,
+            obs: obs
+        };
+
+        const recebimentos = JSON.parse(localStorage.getItem('mes_recebimento_quimicos')) || [];
+        recebimentos.unshift(novoRecebimento);
+        localStorage.setItem('mes_recebimento_quimicos', JSON.stringify(recebimentos));
+
+        alert('Entrada no estoque registrada com sucesso!');
+        document.getElementById('formRecebimentoQuimico').reset();
+        document.getElementById('recData').value = new Date().toISOString().slice(0, 10);
+
+        carregarEstoqueQuimicos();
+    }
+
+    function carregarEstoqueQuimicos() {
+        const listaProdutos = obterListaProdutosQuimicos();
+        const listaRecebimentos = JSON.parse(localStorage.getItem('mes_recebimento_quimicos')) || [];
+        const listaConsumos = obterDadosLocalStorage(MODULOS.quimicos.storageKeys);
+
+        const tbody = document.getElementById('tabelaEstoqueQuimicos');
+        if (!tbody) return;
+
+        if (listaProdutos.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-center italic text-slate-400">Nenhum produto cadastrado.</td></tr>`;
+            return;
+        }
+
+        tbody.innerHTML = listaProdutos.map(p => {
+            const totalRecebido = listaRecebimentos
+                .filter(r => r.prodId === p.id)
+                .reduce((acc, cur) => acc + (parseFloat(cur.qtd) || 0), 0);
+
+            const totalConsumido = listaConsumos
+                .filter(c => c.prodId === p.id)
+                .reduce((acc, cur) => acc + (parseFloat(cur.qtd) || 0), 0);
+
+            const saldo = totalRecebido - totalConsumido;
+            const classeSaldo = saldo < 0 ? 'text-red-600' : 'text-slate-800';
+
+            return `
+                <tr class="hover:bg-slate-50 transition border-b text-xs">
+                    <td class="p-2.5 border font-mono text-[11px] text-slate-500">${p.id}</td>
+                    <td class="p-2.5 border font-bold text-slate-800">${p.nome}</td>
+                    <td class="p-2.5 border text-center font-semibold text-purple-700">${p.un}</td>
+                    <td class="p-2.5 border text-right text-emerald-700 font-semibold">+${totalRecebido.toFixed(2)}</td>
+                    <td class="p-2.5 border text-right text-purple-700 font-semibold">-${totalConsumido.toFixed(2)}</td>
+                    <td class="p-2.5 border text-right font-black ${classeSaldo}">${saldo.toFixed(2)}</td>
+                </tr>
+            `;
+        }).join('');
+    }
+
+    function alterarFiltroDias() {
+        if (moduloAtual === 'quimicos') {
+            carregarDetalheModuloQuimicos();
+        }
+    }
+
+    function alterarFiltroDiasGeral() {
+        if (moduloAtual && moduloAtual !== 'quimicos') {
+            carregarDetalheModuloGeral(moduloAtual);
+        }
+    }
+
+    // CARREGAMENTO DOS INDICADORES CONSOLIDADOS DO DASHBOARD
+    function carregarKPIsGerais() {
+        const dadosRecebimento = obterDadosLocalStorage(MODULOS.recebimento.storageKeys);
+        const dadosExpedicao = obterDadosLocalStorage(MODULOS.expedicao.storageKeys);
+        const dadosHoras = obterDadosLocalStorage(MODULOS.horas.storageKeys);
+        const dadosQuimicos = obterDadosLocalStorage(MODULOS.quimicos.storageKeys);
+        const dadosAgua = obterDadosLocalStorage(MODULOS.agua.storageKeys);
+        const dadosGas = obterDadosLocalStorage(MODULOS.gas.storageKeys);
+        const dadosEnergia = obterDadosLocalStorage(MODULOS.energia.storageKeys);
+
+        let totPesoEntrada = 0, totGaiolasEntrada = 0;
+        dadosRecebimento.forEach(i => {
+            const res = extrairPesoEGaiolasRecebimento(i);
+            totPesoEntrada += res.peso;
+            totGaiolasEntrada += res.gaiolas;
+        });
+
+        let totPesoSaida = 0, totGaiolasSaida = 0;
+        dadosExpedicao.forEach(i => {
+            const res = extrairPesoEGaiolasExpedicao(i);
+            totPesoSaida += res.peso;
+            totGaiolasSaida += res.gaiolas;
+        });
+
+        let totHoras = 0;
+        dadosHoras.forEach(i => {
+            const res = extrairValoresHoras(i);
+            totHoras += res.ht;
+        });
+
+        let totQuimicos = 0;
+        dadosQuimicos.forEach(i => totQuimicos += extrairValorGenerico(i));
+
+        let totAgua = 0;
+        dadosAgua.forEach(i => totAgua += extrairValorGenerico(i));
+
+        let totGas = 0;
+        dadosGas.forEach(i => totGas += extrairValorGenerico(i));
+
+        let totEnergia = 0;
+        dadosEnergia.forEach(i => totEnergia += extrairValorGenerico(i));
+
+        const rendimento = totPesoEntrada > 0 ? (totPesoSaida / totPesoEntrada) * 100 : 0;
+        const produtividade = totHoras > 0 ? (totPesoSaida / totHoras) : 0;
+
+        document.getElementById('dashKpiPesoEntrada').innerText = `${totPesoEntrada.toLocaleString('pt-BR', {minimumFractionDigits: 1, maximumFractionDigits: 1})} Kg`;
+        document.getElementById('dashKpiGaiolasEntrada').innerText = `${totGaiolasEntrada.toLocaleString('pt-BR')} und`;
+        document.getElementById('dashKpiPesoSaida').innerText = `${totPesoSaida.toLocaleString('pt-BR', {minimumFractionDigits: 1, maximumFractionDigits: 1})} Kg`;
+        document.getElementById('dashKpiGaiolasSaida').innerText = `${totGaiolasSaida.toLocaleString('pt-BR')} und`;
+        document.getElementById('dashKpiRetorno').innerText = `${rendimento.toLocaleString('pt-BR', {minimumFractionDigits: 1, maximumFractionDigits: 1})} %`;
+        document.getElementById('dashKpiProdutividade').innerText = `${produtividade.toLocaleString('pt-BR', {minimumFractionDigits: 1, maximumFractionDigits: 1})} Kg/h`;
+
+        document.getElementById('dashKpiHoras').innerText = `${totHoras.toLocaleString('pt-BR', {minimumFractionDigits: 1, maximumFractionDigits: 1})} h`;
+        document.getElementById('dashKpiQuimicos').innerText = `${totQuimicos.toLocaleString('pt-BR', {minimumFractionDigits: 1, maximumFractionDigits: 1})} kg/L`;
+        document.getElementById('dashKpiAgua').innerText = `${totAgua.toLocaleString('pt-BR', {maximumFractionDigits: 0})} L`;
+        document.getElementById('dashKpiGas').innerText = `${totGas.toLocaleString('pt-BR', {minimumFractionDigits: 1, maximumFractionDigits: 1})} m³`;
+        document.getElementById('dashKpiEnergia').innerText = `${totEnergia.toLocaleString('pt-BR', {maximumFractionDigits: 0})} kWh`;
+
+        const baseKg = totPesoSaida > 0 ? totPesoSaida : 1;
+        document.getElementById('dashKpiQuimicosProp').innerText = `${(totQuimicos / baseKg).toLocaleString('pt-BR', {minimumFractionDigits: 3, maximumFractionDigits: 3})} / Kg`;
+        document.getElementById('dashKpiAguaProp').innerText = `${(totAgua / baseKg).toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})} L / Kg`;
+        document.getElementById('dashKpiGasProp').innerText = `${(totGas / baseKg).toLocaleString('pt-BR', {minimumFractionDigits: 3, maximumFractionDigits: 3})} m³ / Kg`;
+        document.getElementById('dashKpiEnergiaProp').innerText = `${(totEnergia / baseKg).toLocaleString('pt-BR', {minimumFractionDigits: 3, maximumFractionDigits: 3})} kWh / Kg`;
+    }
+
+    function carregarQuadrosResumo() {
+        // 1. QUADRO RECEBIMENTO
+        const recData = obterDadosLocalStorage(MODULOS.recebimento.storageKeys);
+        recData.sort((a,b) => new Date(b.data || 0) - new Date(a.data || 0));
+        const topRec = recData.slice(0, 5);
+        const tbRec = document.getElementById('quadroResumoRecebimento');
+        if (topRec.length === 0) {
+            tbRec.innerHTML = `<tr><td colspan="4" class="p-3 text-center italic text-slate-400">Nenhum registo encontrado.</td></tr>`;
+        } else {
+            tbRec.innerHTML = topRec.map(item => {
+                const res = extrairPesoEGaiolasRecebimento(item);
+                const dt = item.data ? new Date(item.data.includes('T') ? item.data : item.data + 'T00:00:00').toLocaleDateString('pt-BR') : '-';
+                return `
+                    <tr class="border-b hover:bg-slate-50 text-[11px]">
+                        <td class="p-2 border">${dt}</td>
+                        <td class="p-2 border font-medium text-slate-800">${item.cliente || item.fornecedor || item.origem || '-'}</td>
+                        <td class="p-2 border text-right font-bold text-blue-700">${res.peso.toLocaleString('pt-BR')} kg</td>
+                        <td class="p-2 border text-center font-semibold">${res.gaiolas}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // 2. QUADRO EXPEDIÇÃO
+        const expData = obterDadosLocalStorage(MODULOS.expedicao.storageKeys);
+        expData.sort((a,b) => new Date(b.data || 0) - new Date(a.data || 0));
+        const topExp = expData.slice(0, 5);
+        const tbExp = document.getElementById('quadroResumoExpedicao');
+        if (topExp.length === 0) {
+            tbExp.innerHTML = `<tr><td colspan="4" class="p-3 text-center italic text-slate-400">Nenhum registo encontrado.</td></tr>`;
+        } else {
+            tbExp.innerHTML = topExp.map(item => {
+                const res = extrairPesoEGaiolasExpedicao(item);
+                const dt = item.data ? new Date(item.data.includes('T') ? item.data : item.data + 'T00:00:00').toLocaleDateString('pt-BR') : '-';
+                return `
+                    <tr class="border-b hover:bg-slate-50 text-[11px]">
+                        <td class="p-2 border">${dt}</td>
+                        <td class="p-2 border font-medium text-slate-800">${item.cliente || item.destinatario || item.destino || '-'}</td>
+                        <td class="p-2 border text-right font-bold text-emerald-700">${res.peso.toLocaleString('pt-BR')} kg</td>
+                        <td class="p-2 border text-center font-semibold">${res.gaiolas}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // 3. QUADRO HORAS
+        const hrsData = obterDadosLocalStorage(MODULOS.horas.storageKeys);
+        hrsData.sort((a,b) => new Date(b.data || 0) - new Date(a.data || 0));
+        const topHrs = hrsData.slice(0, 5);
+        const tbHrs = document.getElementById('quadroResumoHoras');
+        if (topHrs.length === 0) {
+            tbHrs.innerHTML = `<tr><td colspan="5" class="p-3 text-center italic text-slate-400">Nenhum registo encontrado.</td></tr>`;
+        } else {
+            tbHrs.innerHTML = topHrs.map(item => {
+                const res = extrairValoresHoras(item);
+                const dt = item.data ? new Date(item.data.includes('T') ? item.data : item.data + 'T00:00:00').toLocaleDateString('pt-BR') : '-';
+                return `
+                    <tr class="border-b hover:bg-slate-50 text-[11px]">
+                        <td class="p-2 border">${dt}</td>
+                        <td class="p-2 border font-medium text-slate-800">${item.setor || item.operador || '-'}</td>
+                        <td class="p-2 border text-right font-semibold">${res.hn.toLocaleString('pt-BR')} h</td>
+                        <td class="p-2 border text-right font-semibold text-rose-600">${res.he.toLocaleString('pt-BR')} h</td>
+                        <td class="p-2 border text-right font-semibold text-amber-600">${res.abs.toLocaleString('pt-BR')} h</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // 4. QUADRO UTILIDADES CONSOLIDADAS POR DATA
+        const aguaData = obterDadosLocalStorage(MODULOS.agua.storageKeys);
+        const gasData = obterDadosLocalStorage(MODULOS.gas.storageKeys);
+        const energData = obterDadosLocalStorage(MODULOS.energia.storageKeys);
+
+        const mapaUtil = {};
+        aguaData.forEach(i => {
+            if(!i.data) return;
+            const keyData = i.data.split('T')[0];
+            mapaUtil[keyData] = mapaUtil[keyData] || { agua: 0, gas: 0, energ: 0 };
+            mapaUtil[keyData].agua += extrairValorGenerico(i);
+        });
+        gasData.forEach(i => {
+            if(!i.data) return;
+            const keyData = i.data.split('T')[0];
+            mapaUtil[keyData] = mapaUtil[keyData] || { agua: 0, gas: 0, energ: 0 };
+            mapaUtil[keyData].gas += extrairValorGenerico(i);
+        });
+        energData.forEach(i => {
+            if(!i.data) return;
+            const keyData = i.data.split('T')[0];
+            mapaUtil[keyData] = mapaUtil[keyData] || { agua: 0, gas: 0, energ: 0 };
+            mapaUtil[keyData].energ += extrairValorGenerico(i);
+        });
+
+        const datasUtil = Object.keys(mapaUtil).sort((a,b) => new Date(b) - new Date(a)).slice(0, 5);
+        const tbUtil = document.getElementById('quadroResumoUtilidades');
+
+        if (datasUtil.length === 0) {
+            tbUtil.innerHTML = `<tr><td colspan="4" class="p-3 text-center italic text-slate-400">Nenhum registo encontrado.</td></tr>`;
+        } else {
+            tbUtil.innerHTML = datasUtil.map(dtKey => {
+                const dt = new Date(dtKey + 'T00:00:00').toLocaleDateString('pt-BR');
+                const u = mapaUtil[dtKey];
+                return `
+                    <tr class="border-b hover:bg-slate-50 text-[11px]">
+                        <td class="p-2 border font-medium">${dt}</td>
+                        <td class="p-2 border text-right font-bold text-cyan-700">${u.agua.toLocaleString('pt-BR')} L</td>
+                        <td class="p-2 border text-right font-bold text-orange-600">${u.gas.toLocaleString('pt-BR')} m³</td>
+                        <td class="p-2 border text-right font-bold text-yellow-600">${u.energ.toLocaleString('pt-BR')} kWh</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+    }
+
+    function renderizarGraficoGeral() {
+        const ctx = document.getElementById('chartGeral');
+        if (!ctx) return;
+
+        const recData = obterDadosLocalStorage(MODULOS.recebimento.storageKeys);
+        const expData = obterDadosLocalStorage(MODULOS.expedicao.storageKeys);
+
+        const mapaDatas = {};
+        recData.forEach(i => {
+            if (!i.data) return;
+            const keyData = i.data.split('T')[0];
+            mapaDatas[keyData] = mapaDatas[keyData] || { entrada: 0, salida: 0 };
+            mapaDatas[keyData].entrada += extrairPesoEGaiolasRecebimento(i).peso;
+        });
+
+        expData.forEach(i => {
+            if (!i.data) return;
+            const keyData = i.data.split('T')[0];
+            mapaDatas[keyData] = mapaDatas[keyData] || { entrada: 0, salida: 0 };
+            mapaDatas[keyData].salida += extrairPesoEGaiolasExpedicao(i).peso;
+        });
+
+        const labels = Object.keys(mapaDatas).sort().slice(-10);
+        const dataEntrada = labels.map(d => mapaDatas[d].entrada);
+        const dataSaida = labels.map(d => mapaDatas[d].salida);
+        const labelsFmt = labels.map(d => new Date(d + 'T00:00:00').toLocaleDateString('pt-BR', {day: '2-digit', month: '2-digit'}));
+
+        if (chartGeralInstance) {
+            chartGeralInstance.destroy();
+        }
+
+        chartGeralInstance = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labelsFmt.length > 0 ? labelsFmt : ['Sem Dados'],
+                datasets: [
+                    {
+                        label: 'Peso Entrada (Sujo)',
+                        data: dataEntrada.length > 0 ? dataEntrada : [0],
+                        backgroundColor: 'rgba(37, 99, 235, 0.8)',
+                        borderRadius: 6
+                    },
+                    {
+                        label: 'Peso Saída (Limpo)',
+                        data: dataSaida.length > 0 ? dataSaida : [0],
+                        backgroundColor: 'rgba(16, 185, 129, 0.8)',
+                        borderRadius: 6
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'top' }
+                },
+                scales: {
+                    y: { beginAtZero: true }
+                }
+            }
+        });
+    }
+
+    // CARREGAMENTO DETALHADO DO MÓDULO DE QUÍMICOS
+    function carregarDetalheModuloQuimicos() {
+        const config = MODULOS.quimicos;
+        const todosDados = obterDadosLocalStorage(config.storageKeys);
+        const numDias = parseInt(document.getElementById('selectDias').value) || 15;
+
+        document.getElementById('txtInfoDias').innerText = `Exibindo lançamentos dos últimos ${numDias} dias`;
+
+        const dataLimite = new Date();
+        dataLimite.setDate(dataLimite.getDate() - numDias);
+
+        const dadosFiltrados = todosDados.filter(item => {
+            if (!item.data) return true;
+            const dataItem = new Date(item.data.includes('T') ? item.data : item.data + 'T00:00:00');
+            return dataItem >= dataLimite;
+        });
+
+        dadosFiltrados.sort((a, b) => new Date(b.data || 0) - new Date(a.data || 0));
+
+        let totalVal = 0;
+        dadosFiltrados.forEach(i => totalVal += extrairValorGenerico(i));
+        const contagem = dadosFiltrados.length;
+
+        const containerKpis = document.getElementById('detalheKpis');
+        containerKpis.innerHTML = `
+            <div class="bg-white p-4 rounded-xl border border-slate-200 border-l-4 border-l-purple-600">
+                <span class="text-xs font-bold text-slate-500 uppercase">Consumo Total no Período</span>
+                <p class="text-xl font-black text-slate-800 mt-1">${totalVal.toLocaleString('pt-BR')} kg/L</p>
+            </div>
+            <div class="bg-white p-4 rounded-xl border border-slate-200 border-l-4 border-l-emerald-600">
+                <span class="text-xs font-bold text-slate-500 uppercase">Apontamentos Realizados</span>
+                <p class="text-xl font-black text-emerald-600 mt-1">${contagem} registos</p>
+            </div>
+            <div class="bg-white p-4 rounded-xl border border-slate-200 border-l-4 border-l-indigo-600">
+                <span class="text-xs font-bold text-slate-500 uppercase">Média por Lançamento</span>
+                <p class="text-xl font-black text-indigo-600 mt-1">${(contagem > 0 ? totalVal / contagem : 0).toLocaleString('pt-BR', {maximumFractionDigits: 2})} kg/L</p>
+            </div>
+        `;
+
+        const thead = document.getElementById('headTabelaDetalhe');
+        const tbody = document.getElementById('bodyTabelaDetalhe');
+
+        if (dadosFiltrados.length === 0) {
+            thead.innerHTML = '';
+            tbody.innerHTML = `<tr><td colspan="4" class="p-4 text-center italic text-slate-400">Nenhum lançamento encontrado para o período selecionado.</td></tr>`;
+            return;
+        }
+
+        thead.innerHTML = `
+            <tr>
+                <th class="p-2.5 border">Data / Hora</th>
+                <th class="p-2.5 border">Produto Químico / Setor</th>
+                <th class="p-2.5 border text-right">Quantidade Registrada</th>
+                <th class="p-2.5 border">Observações</th>
+            </tr>
+        `;
+
+        tbody.innerHTML = dadosFiltrados.map(item => {
+            const dt = item.data ? new Date(item.data.includes('T') ? item.data : item.data + 'T00:00:00').toLocaleString('pt-BR') : '-';
+            const val = extrairValorGenerico(item);
+            const descricao = item.produto || item.nomeProduto || obterNomeProdutoQuimico(item.prodId) || item.setor || item.descricao || '-';
+            return `
+                <tr class="hover:bg-slate-50 border-b text-xs">
+                    <td class="p-2.5 border font-medium font-mono">${dt}</td>
+                    <td class="p-2.5 border font-semibold text-slate-800">${descricao}</td>
+                    <td class="p-2.5 border text-right font-black text-purple-700 bg-purple-50/50">${val.toLocaleString('pt-BR')} kg/L</td>
+                    <td class="p-2.5 border text-slate-500">${item.obs || item.observacao || '-'}</td>
+                </tr>
+            `;
+        }).join('');
+    }
+
+    // CARREGAMENTO DETALHADO DOS OUTROS MÓDULOS (HORAS, RECEBIMENTO, EXPEDIÇÃO, DEMAIS UTILIDADES)
+    function carregarDetalheModuloGeral(moduloKey) {
+        const config = MODULOS[moduloKey];
+        const todosDados = obterDadosLocalStorage(config.storageKeys);
+        const numDias = parseInt(document.getElementById('selectDiasGeral').value) || 15;
+
+        document.getElementById('txtInfoDiasGeral').innerText = `Exibindo lançamentos dos últimos ${numDias} dias`;
+
+        const dataLimite = new Date();
+        dataLimite.setDate(dataLimite.getDate() - numDias);
+
+        const dadosFiltrados = todosDados.filter(item => {
+            if (!item.data) return true;
+            const dataItem = new Date(item.data.includes('T') ? item.data : item.data + 'T00:00:00');
+            return dataItem >= dataLimite;
+        });
+
+        dadosFiltrados.sort((a, b) => new Date(b.data || 0) - new Date(a.data || 0));
+
+        renderizarKpisDetalheGeral(moduloKey, dadosFiltrados);
+        renderizarTabelaDetalheGeral(moduloKey, dadosFiltrados);
+    }
+
+    function renderizarKpisDetalheGeral(moduloKey, lista) {
+        const container = document.getElementById('detalheKpisGeral');
+        let totalVal = 0, totalGaiolas = 0, contagem = lista.length;
+
+        if (moduloKey === 'horas') {
+            let hn = 0, he = 0, ht = 0; abs = 0;
+            lista.forEach(i => {
+                const res = extrairValoresHoras(i);
+                hn += res.hn; ht += res.ht; he += res.he; abs += res.abs;
+            });
+
+            container.innerHTML = `
+                <div class="bg-white p-4 rounded-xl border border-slate-200 border-l-4 border-l-blue-600">
+                    <span class="text-xs font-bold text-slate-500 uppercase">Horas Totais</span>
+                    <p class="text-xl font-black text-slate-800 mt-1">${ht.toLocaleString('pt-BR')} h</p>
+                </div>
+                <div class="bg-white p-4 rounded-xl border border-slate-200 border-l-4 border-l-blue-600">
+                    <span class="text-xs font-bold text-slate-500 uppercase">Horas Normais</span>
+                    <p class="text-xl font-black text-slate-800 mt-1">${hn.toLocaleString('pt-BR')} h</p>
+                </div>
+                <div class="bg-white p-4 rounded-xl border border-slate-200 border-l-4 border-l-rose-500">
+                    <span class="text-xs font-bold text-slate-500 uppercase">Horas Extras</span>
+                    <p class="text-xl font-black text-rose-600 mt-1">${he.toLocaleString('pt-BR')} h</p>
+                </div>
+                <div class="bg-white p-4 rounded-xl border border-slate-200 border-l-4 border-l-amber-500">
+                    <span class="text-xs font-bold text-slate-500 uppercase">Absenteísmo</span>
+                    <p class="text-xl font-black text-amber-600 mt-1">${abs.toLocaleString('pt-BR')} h</p>
+                </div>
+                <div class="bg-white p-4 rounded-xl border border-slate-200 border-l-4 border-l-amber-500">
+                    <span class="text-xs font-bold text-slate-500 uppercase">Média Hora Extra / Absenteísmo</span>
+                    <p class="text-xl font-black text-amber-600 mt-1">${he.toLocaleString('pt-BR')} 
+			<!--/ ${hn.toLocaleString('pt-BR')} % / ${abs.toLocaleString('pt-BR')} / ${hn.toLocaleString('pt-BR')} / %-->
+			</p>
+                </div>
+		
+            `;
+            return;
+        }
+
+        if (moduloKey === 'recebimento') {
+            lista.forEach(i => {
+                const r = extrairPesoEGaiolasRecebimento(i);
+                totalVal += r.peso; totalGaiolas += r.gaiolas;
+            });
+            container.innerHTML = `
+                <div class="bg-white p-4 rounded-xl border border-slate-200 border-l-4 border-l-blue-600">
+                    <span class="text-xs font-bold text-slate-500 uppercase">Total Recebido (Sujo)</span>
+                    <p class="text-xl font-black text-slate-800 mt-1">${totalVal.toLocaleString('pt-BR')} Kg</p>
+                </div>
+                <div class="bg-white p-4 rounded-xl border border-slate-200 border-l-4 border-l-indigo-600">
+                    <span class="text-xs font-bold text-slate-500 uppercase">Total Gaiolas Entrada</span>
+                    <p class="text-xl font-black text-indigo-600 mt-1">${totalGaiolas.toLocaleString('pt-BR')} und</p>
+                </div>
+                <div class="bg-white p-4 rounded-xl border border-slate-200 border-l-4 border-l-emerald-600">
+                    <span class="text-xs font-bold text-slate-500 uppercase">Lançamentos Realizados</span>
+                    <p class="text-xl font-black text-emerald-600 mt-1">${contagem} registos</p>
+                </div>
+            `;
+            return;
+        }
+
+        if (moduloKey === 'expedicao') {
+            lista.forEach(i => {
+                const r = extrairPesoEGaiolasExpedicao(i);
+                totalVal += r.peso; totalGaiolas += r.gaiolas;
+            });
+            container.innerHTML = `
+                <div class="bg-white p-4 rounded-xl border border-slate-200 border-l-4 border-l-emerald-600">
+                    <span class="text-xs font-bold text-slate-500 uppercase">Total Expedido (Limpo)</span>
+                    <p class="text-xl font-black text-emerald-700 mt-1">${totalVal.toLocaleString('pt-BR')} Kg</p>
+                </div>
+                <div class="bg-white p-4 rounded-xl border border-slate-200 border-l-4 border-l-teal-600">
+                    <span class="text-xs font-bold text-slate-500 uppercase">Total Gaiolas Saída</span>
+                    <p class="text-xl font-black text-teal-600 mt-1">${totalGaiolas.toLocaleString('pt-BR')} und</p>
+                </div>
+                <div class="bg-white p-4 rounded-xl border border-slate-200 border-l-4 border-l-blue-600">
+                    <span class="text-xs font-bold text-slate-500 uppercase">Lançamentos Realizados</span>
+                    <p class="text-xl font-black text-blue-600 mt-1">${contagem} registos</p>
+                </div>
+            `;
+            return;
+        }
+
+        lista.forEach(i => totalVal += extrairValorGenerico(i));
+        const conf = MODULOS[moduloKey];
+        container.innerHTML = `
+            <div class="bg-white p-4 rounded-xl border border-slate-200 border-l-4 border-l-blue-600">
+                <span class="text-xs font-bold text-slate-500 uppercase">Consumo Acumulado no Período</span>
+                <p class="text-xl font-black text-slate-800 mt-1">${totalVal.toLocaleString('pt-BR')} ${conf.unidade}</p>
+            </div>
+            <div class="bg-white p-4 rounded-xl border border-slate-200 border-l-4 border-l-emerald-600">
+                <span class="text-xs font-bold text-slate-500 uppercase">Lançamentos Efetuados</span>
+                <p class="text-xl font-black text-emerald-600 mt-1">${contagem} registos</p>
+            </div>
+            <div class="bg-white p-4 rounded-xl border border-slate-200 border-l-4 border-l-purple-600">
+                <span class="text-xs font-bold text-slate-500 uppercase">Média Diária</span>
+                <p class="text-xl font-black text-purple-600 mt-1">${(contagem > 0 ? totalVal / contagem : 0).toLocaleString('pt-BR', {maximumFractionDigits: 1})} ${conf.unidade}</p>
+            </div>
+        `;
+    }
+
+    function renderizarTabelaDetalheGeral(moduloKey, lista) {
+        const thead = document.getElementById('headTabelaDetalheGeral');
+        const tbody = document.getElementById('bodyTabelaDetalheGeral');
+
+        if (lista.length === 0) {
+            thead.innerHTML = '';
+            tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-center italic text-slate-400">Nenhum lançamento encontrado para o período selecionado.</td></tr>`;
+            return;
+        }
+
+        if (moduloKey === 'recebimento') {
+            thead.innerHTML = `
+                <tr>
+                    <th class="p-2.5 border">Data</th>
+                    <th class="p-2.5 border">Cliente / Origem</th>
+                    <th class="p-2.5 border">Material / Produto</th>
+                    <th class="p-2.5 border">Placa / Romaneio</th>
+                    <th class="p-2.5 border text-right">Peso Entrada</th>
+                    <th class="p-2.5 border text-center">Gaiolas</th>
+                </tr>
+            `;
+            tbody.innerHTML = lista.map(item => {
+                const res = extrairPesoEGaiolasRecebimento(item);
+                const dt = item.data ? new Date(item.data.includes('T') ? item.data : item.data + 'T00:00:00').toLocaleDateString('pt-BR') : '-';
+                return `
+                    <tr class="hover:bg-slate-50 border-b text-xs">
+                        <td class="p-2.5 border font-medium">${dt}</td>
+                        <td class="p-2.5 border font-semibold text-slate-800">${item.cliente || item.fornecedor || '-'}</td>
+                        <td class="p-2.5 border text-slate-600">${item.material || item.produto || '-'}</td>
+                        <td class="p-2.5 border text-slate-600">${item.placa || item.romaneio || '-'}</td>
+                        <td class="p-2.5 border text-right font-black text-blue-700 bg-blue-50/50">${res.peso.toLocaleString('pt-BR')} kg</td>
+                        <td class="p-2.5 border text-center font-bold">${res.gaiolas}</td>
+                    </tr>
+                `;
+            }).join('');
+            return;
+        }
+
+        if (moduloKey === 'expedicao') {
+            thead.innerHTML = `
+                <tr>
+                    <th class="p-2.5 border">Data</th>
+                    <th class="p-2.5 border">Cliente / Destino</th>
+                    <th class="p-2.5 border">Material / Produto</th>
+                    <th class="p-2.5 border">Placa / Romaneio</th>
+                    <th class="p-2.5 border text-right">Peso Saída</th>
+                    <th class="p-2.5 border text-center">Gaiolas</th>
+                </tr>
+            `;
+            tbody.innerHTML = lista.map(item => {
+                const res = extrairPesoEGaiolasExpedicao(item);
+                const dt = item.data ? new Date(item.data.includes('T') ? item.data : item.data + 'T00:00:00').toLocaleDateString('pt-BR') : '-';
+                return `
+                    <tr class="hover:bg-slate-50 border-b text-xs">
+                        <td class="p-2.5 border font-medium">${dt}</td>
+                        <td class="p-2.5 border font-semibold text-slate-800">${item.cliente || item.destinatario || '-'}</td>
+                        <td class="p-2.5 border text-slate-600">${item.material || item.produto || '-'}</td>
+                        <td class="p-2.5 border text-slate-600">${item.placa || item.romaneio || '-'}</td>
+                        <td class="p-2.5 border text-right font-black text-emerald-700 bg-emerald-50/50">${res.peso.toLocaleString('pt-BR')} kg</td>
+                        <td class="p-2.5 border text-center font-bold">${res.gaiolas}</td>
+                    </tr>
+                `;
+            }).join('');
+            return;
+        }
+
+        if (moduloKey === 'horas') {
+            thead.innerHTML = `
+                <tr>
+                    <th class="p-2.5 border">Data</th>
+                    <th class="p-2.5 border text-center">Horas Totais</th>
+                    <th class="p-2.5 border text-center">Horas Normais</th>
+                    <th class="p-2.5 border text-center">Horas Extras</th>
+                    <th class="p-2.5 border text-center">Absenteísmo</th>
+                    <th class="p-2.5 border text-center">Hora Extra (%)</th>
+                    <th class="p-2.5 border text-center">Absenteísmo (%)</th>
+                </tr>
+            `;
+            tbody.innerHTML = lista.map(item => {
+                const res = extrairValoresHoras(item);
+                const dt = item.data ? new Date(item.data.includes('T') ? item.data : item.data + 'T00:00:00').toLocaleDateString('pt-BR') : '-';
+                return `
+                    <tr class="hover:bg-slate-50 border-b text-xs">
+                        <td class="p-2.5 border font-medium">${dt}</td>
+                        <td class="p-2.5 border text-center font-semibold">${res.ht.toLocaleString('pt-BR')} h</td>
+                        <!--<td class="p-2.5 border font-semibold text-slate-800">${item.setor || item.operador || '-'}</td>-->
+                        <td class="p-2.5 border text-center font-semibold">${res.hn.toLocaleString('pt-BR')} h</td>
+                        <td class="p-2.5 border text-center font-semibold text-rose-600">${res.he.toLocaleString('pt-BR')} h</td>
+                        <td class="p-2.5 border text-center font-semibold text-amber-600">${res.abs.toLocaleString('pt-BR')} h</td>
+                        <!--<td class="p-2.5 border text-slate-500">${item.obs || item.observacao || '-'}</td>-->
+                    </tr>
+                `;
+            }).join('');
+            return;
+        }
+
+        const unit = MODULOS[moduloKey].unidade;
+        thead.innerHTML = `
+            <tr>
+                <th class="p-2.5 border">Data / Hora</th>
+                <th class="p-2.5 border">Descrição / Setor</th>
+                <th class="p-2.5 border text-right">Valor Registrado (${unit})</th>
+                <th class="p-2.5 border">Observações / Equipamento</th>
+            </tr>
+        `;
+        tbody.innerHTML = lista.map(item => {
+            const dt = item.data ? new Date(item.data.includes('T') ? item.data : item.data + 'T00:00:00').toLocaleString('pt-BR') : '-';
+            const val = extrairValorGenerico(item);
+            const descricao = item.produto || item.setor || item.equipamento || item.descricao || '-';
+            return `
+                <tr class="hover:bg-slate-50 border-b text-xs">
+                    <td class="p-2.5 border font-medium font-mono">${dt}</td>
+                    <td class="p-2.5 border font-semibold text-slate-800">${descricao}</td>
+                    <td class="p-2.5 border text-right font-black text-blue-700 bg-blue-50/50">${val.toLocaleString('pt-BR')} ${unit}</td>
+                    <td class="p-2.5 border text-slate-500">${item.obs || item.observacao || '-'}</td>
+                </tr>
+            `;
+        }).join('');
+    }
+
+// --- OBTÉM O ÚLTIMO ESTOQUE REGISTRADO PARA UM PRODUTO ESPECÍFICO ---
+function obterUltimoEstoque(prodId) {
+    const historicoConsumo = JSON.parse(localStorage.getItem('mes_quimicos_consumo') || '[]');
+    // Procura o registro mais recente desse produto
+    const ultimoRegistro = historicoConsumo.find(item => item.prodId === prodId);
+    
+    if (ultimoRegistro && ultimoRegistro.estoqueAtual !== undefined) {
+        return parseFloat(ultimoRegistro.estoqueAtual);
+    }
+
+    // Caso não exista consumo anterior, busca o estoque inicial do cadastro em configuracoes.html
+    const produtosConfig = JSON.parse(localStorage.getItem('mes_config_quimicos') || '[]');
+    const prodConfig = produtosConfig.find(p => (p.id || p.codigo) === prodId);
+    return prodConfig ? (parseFloat(prodConfig.estoqueInicial) || 0) : 0;
+}
+
+// --- ATUALIZA A TELA QUANDO O PRODUTO É SELECIONADO ---
+function atualizarPreviewEstoqueAnterior() {
+    const prodId = document.getElementById('consumoProdId').value;
+    const infoBox = document.getElementById('infoEstoqueAnterior');
+    const valSpan = document.getElementById('valEstoqueAnterior');
+
+    if (!prodId) {
+        if (infoBox) infoBox.classList.add('hidden');
+        return;
+    }
+
+    const estoqueAnterior = obterUltimoEstoque(prodId);
+    if (valSpan) valSpan.innerText = `${estoqueAnterior.toFixed(2)}`;
+    if (infoBox) infoBox.classList.remove('hidden');
+
+    calcularPreviewConsumo();
+}
+
+// --- CALCULA EM TEMPO REAL O CONSUMO E EXIBE NO CAMPO ---
+function calcularPreviewConsumo() {
+    const prodId = document.getElementById('consumoProdId').value;
+    const estoqueAtual = parseFloat(document.getElementById('consumoEstoqueAtual').value) || 0;
+    const previewInput = document.getElementById('previewConsumoCalculado');
+
+    if (!prodId) {
+        if (previewInput) previewInput.value = '0.00';
+        return;
+    }
+
+    const estoqueAnterior = obterUltimoEstoque(prodId);
+    // Consumo = Estoque Anterior - Estoque Atual (ou 0 se o estoque atual for maior/igual)
+    let consumoCalculado = estoqueAnterior - estoqueAtual;
+    if (consumoCalculado < 0) consumoCalculado = 0;
+
+    if (previewInput) {
+        previewInput.value = `${consumoCalculado.toFixed(2)}`;
+    }
+}
+
+// --- SALVA O CONSUMO CALCULADO COM O CUSTO PROPORCIONAL ---
+function salvarConsumoQuimico(e) {
+    e.preventDefault();
+
+    const prodId = document.getElementById('consumoProdId').value;
+    const estoqueAtual = parseFloat(document.getElementById('consumoEstoqueAtual').value) || 0;
+    const dataVal = document.getElementById('consumoData').value;
+    const obs = document.getElementById('consumoObs').value;
+
+    if (!prodId) {
+        alert("Selecione um produto químico.");
+        return;
+    }
+
+    // 1. Busca produto em configuracoes.html para pegar custo e unidade
+    const produtosConfig = JSON.parse(localStorage.getItem('mes_config_quimicos') || '[]');
+    const produto = produtosConfig.find(p => (p.id || p.codigo) === prodId);
+
+    const custoUnitario = produto ? (parseFloat(produto.custoPadrao) || 0) : 0;
+    const estoqueAnterior = obterUltimoEstoque(prodId);
+
+    // 2. Cálculo do Consumo e Custo Proporcional
+    let quantidadeConsumida = estoqueAnterior - estoqueAtual;
+    if (quantidadeConsumida < 0) {
+        if (!confirm("O estoque atual informado é maior que o estoque anterior registrado. Deseja prosseguir considerando consumo zero?")) {
+            return;
+        }
+        quantidadeConsumida = 0;
+    }
+
+    const custoTotalProporcional = quantidadeConsumida * custoUnitario;
+
+    // 3. Estrutura do objeto gravado
+    const novoRegistro = {
+        id: Date.now().toString(),
+        prodId: prodId,
+        produtoNome: produto ? produto.nome : prodId,
+        unidade: produto ? (produto.un || produto.unidade || 'L') : 'L',
+        estoqueAnterior: estoqueAnterior,
+        estoqueAtual: estoqueAtual,
+        quantidadeConsumida: quantidadeConsumida,
+        custoUnitario: custoUnitario,
+        custoTotal: custoTotalProporcional,
+        data: dataVal,
+        observacao: obs
+    };
+
+    // 4. Grava no localStorage
+    let historicoConsumo = JSON.parse(localStorage.getItem('mes_quimicos_consumo') || '[]');
+    historicoConsumo.unshift(novoRegistro);
+    localStorage.setItem('mes_quimicos_consumo', JSON.stringify(historicoConsumo));
+
+    alert(`Consumo de ${quantidadeConsumida.toFixed(2)} registrado com sucesso!\nCusto Proporcional: R$ ${custoTotalProporcional.toFixed(2)}`);
+
+    // Reset do Formulário e Atualização da UI
+    document.getElementById('formConsumoQuimico').reset();
+    document.getElementById('infoEstoqueAnterior').classList.add('hidden');
+    
+    if (typeof renderizarHistoricoConsumo === 'function') renderizarHistoricoConsumo();
+    if (typeof renderizarGraficoConsumo === 'function') renderizarGraficoConsumo();
+}
+
+// --- SALVAR / EDITAR REGISTO DE CONSUMO ---
+function salvarConsumoQuimico(e) {
+    e.preventDefault();
+
+    const editIndex = document.getElementById('consumoEditIndex').value;
+    const dataVal = document.getElementById('consumoData').value;
+    const prodId = document.getElementById('consumoProdId').value;
+    const qtd = parseFloat(document.getElementById('consumoQtd').value) || 0;
+    const setor = document.getElementById('consumoSetor').value;
+    const obs = document.getElementById('consumoObs').value;
+
+    if (!prodId || qtd <= 0) {
+        alert("Selecione um produto químico e informe uma quantidade válida.");
+        return;
+    }
+
+    // Busca dados do produto cadastrado em configuracoes.html para nome e custo
+    const produtosConfig = JSON.parse(localStorage.getItem('mes_config_quimicos') || '[]');
+    const produto = produtosConfig.find(p => (p.id || p.codigo) === prodId);
+
+    const custoUnitario = produto ? (parseFloat(produto.custoPadrao) || 0) : 0;
+    const custoTotal = qtd * custoUnitario;
+
+    let historico = JSON.parse(localStorage.getItem('mes_historico_consumo_quimicos') || '[]');
+
+    const registro = {
+        id: editIndex !== "" ? historico[parseInt(editIndex)].id : Date.now().toString(),
+        data: dataVal,
+        prodId: prodId,
+        produtoNome: produto ? produto.nome : prodId,
+        unidade: produto ? (produto.un || produto.unidade || 'L/Kg') : 'L/Kg',
+        quantidade: qtd,
+        custoUnitario: custoUnitario,
+        custoTotal: custoTotal,
+        setor: setor,
+        obs: obs
+    };
+
+    if (editIndex !== "") {
+        historico[parseInt(editIndex)] = registro;
+        alert("Lançamento atualizado com sucesso!");
+    } else {
+        historico.unshift(registro);
+        alert("Consumo registrado com sucesso!");
+    }
+
+    localStorage.setItem('mes_historico_consumo_quimicos', JSON.stringify(historico));
+
+    limparFormConsumo();
+    renderizarHistoricoConsumoQuimico();
+}
+
+// --- RENDERIZAR TABELA DE HISTÓRICO ---
+function renderizarHistoricoConsumoQuimico() {
+    const tbody = document.getElementById('tbodyHistoricoConsumoQuimico');
+    const totalSpan = document.getElementById('totalCustoConsumoSpan');
+    if (!tbody) return;
+
+    const historico = JSON.parse(localStorage.getItem('mes_historico_consumo_quimicos') || '[]');
+    let somaCustos = 0;
+
+    if (historico.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" class="text-center p-4 text-slate-400 font-medium">Nenhum estoque registrado.</td></tr>`;
+        if (totalSpan) totalSpan.innerText = "Total do Período: R$ 0,00";
+        return;
+    }
+
+    tbody.innerHTML = historico.map((item, index) => {
+        somaCustos += item.custoTotal || 0;
+        const dtFormatted = item.data ? new Date(item.data).toLocaleString('pt-BR') : '-';
+
+        return `
+            <tr class="hover:bg-slate-50 border-b border-slate-100 text-xs">
+                <td class="p-3 border font-mono font-medium">${dtFormatted}</td>
+                <td class="p-3 border font-bold text-slate-800">${item.produtoNome}</td>
+                <td class="p-3 border text-right font-black text-purple-700 bg-purple-50/30">
+                    ${(item.quantidade || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })} ${item.unidade}
+                </td>
+                <!--<td class="p-3 border text-right font-black text-emerald-700 bg-emerald-50/30">
+                    <!--R$ ${(item.custoTotal || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}-->
+                <td class="p-3 border font-bold text-slate-800">${item.setor}</td>
+                <td class="p-3 border font-bold text-slate-800">${item.obs}</td>
+                <!--<td class="p-3 border text-slate-600">
+                    ${item.setor ? `<strong>${item.setor}</strong> ` : ''}${item.obs ? `- ${item.obs}` : ''}
+                </td>-->
+                <td class="p-3 border text-center space-x-2">
+                    <button onclick="editarConsumoQuimico(${index})" class="text-blue-600 hover:text-blue-800 transition" title="Editar Lançamento">
+                        <i class="fa-solid fa-pen-to-square"></i>
+                    </button>
+                    <button onclick="excluirConsumoQuimico(${index})" class="text-rose-500 hover:text-rose-700 transition" title="Excluir Lançamento">
+                        <i class="fa-solid fa-trash-can"></i>
+                    </button>
+                </td>
+            </tr>
+        `;
+    }).join('');
+
+    if (totalSpan) {
+        totalSpan.innerText = `Total do Período: R$ ${somaCustos.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    }
+}
+
+// --- CARREGAR REGISTRO PARA EDIÇÃO ---
+function editarConsumoQuimico(index) {
+    const historico = JSON.parse(localStorage.getItem('mes_historico_consumo_quimicos') || '[]');
+    const item = historico[index];
+
+    if (!item) return;
+
+    document.getElementById('consumoEditIndex').value = index;
+    document.getElementById('consumoData').value = item.data || '';
+    document.getElementById('consumoProdId').value = item.prodId || '';
+    document.getElementById('consumoQtd').value = item.quantidade || '';
+    document.getElementById('consumoSetor').value = item.setor || '';
+    document.getElementById('consumoObs').value = item.obs || '';
+
+    document.getElementById('tituloFormConsumo').innerText = "Editar Registo de Estoque";
+    document.getElementById('btnSalvarConsumo').innerText = "Atualizar Estoque";
+    
+    // Rola a tela suavemente até o formulário
+    document.getElementById('formConsumoQuimico').scrollIntoView({ behavior: 'smooth' });
+}
+
+// --- EXCLUIR REGISTRO ---
+function excluirConsumoQuimico(index) {
+    if (!confirm("Tem certeza que deseja excluir este lançamento de estoque?")) return;
+
+    let historico = JSON.parse(localStorage.getItem('mes_historico_consumo_quimicos') || '[]');
+    historico.splice(index, 1);
+    localStorage.setItem('mes_historico_consumo_quimicos', JSON.stringify(historico));
+
+    renderizarHistoricoConsumoQuimico();
+}
+
+// --- LIMPAR FORMULÁRIO / CANCELAR EDIÇÃO ---
+function limparFormConsumo() {
+    document.getElementById('formConsumoQuimico').reset();
+    document.getElementById('consumoEditIndex').value = "";
+    document.getElementById('tituloFormConsumo').innerText = "Registo de Estoque Diário";
+    document.getElementById('btnSalvarConsumo').innerText = "Salvar Estoque";
+}
+    </script>
+</body>
+</html>
