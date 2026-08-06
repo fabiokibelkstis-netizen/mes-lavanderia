@@ -10,82 +10,83 @@
 </head>
 <body class="bg-slate-100 font-sans min-h-screen flex text-slate-800">
 
-    <aside class="w-64 bg-slate-900 text-slate-300 flex flex-col justify-between min-h-screen sticky top-0 z-50">
-        <div>
-            <div class="p-5 border-b border-slate-800 flex items-center gap-3">
-                <div class="bg-blue-600 text-white p-2.5 rounded-xl shadow">
-                    <i class="fa-solid fa-industry text-lg"></i>
-                </div>
-                <div>
-                    <h1 class="text-sm font-black text-white tracking-wider">MES DONA ZARA</h1>
-                    <p class="text-[10px] text-slate-400">Gestão Industrial & BI</p>
-                </div>
+    <!-- Ajustado para h-screen e sticky top-0 para ficar totalmente fixo -->
+    <aside class="w-64 bg-slate-900 text-slate-300 flex flex-col h-screen sticky top-0 z-50">
+        <div class="p-5 border-b border-slate-800 flex items-center gap-3">
+            <div class="bg-blue-600 text-white p-2.5 rounded-xl shadow">
+                <i class="fa-solid fa-industry text-lg"></i>
             </div>
-
-            <nav class="p-3 space-y-1 text-xs font-semibold overflow-y-auto max-h-[calc(100vh-140px)]">
-                
-                <div class="px-3 py-2 text-[10px] uppercase font-bold text-slate-500 tracking-wider">Visão Consolidada</div>
-                <a href="index.html" class="menu-item w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition bg-blue-600 text-white font-bold">
-                    <i class="fa-solid fa-chart-pie w-5 text-center text-sm"></i>
-                    <span>Dashboard Geral</span>
-                </a>
-
-                <div class="px-3 py-2 pt-3 text-[10px] uppercase font-bold text-slate-500 tracking-wider">Pesagem & Processo</div>
-                <a href="pesagemrecebimento.html" class="menu-item w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition hover:bg-slate-800 hover:text-white text-slate-300">
-                    <i class="fa-solid fa-truck-ramp-box text-blue-400 w-5 text-center text-sm"></i>
-                    <span>Pesagem Recebimento</span>
-                </a>
-                <a href="pesagemexpedicao.html" class="menu-item w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition hover:bg-slate-800 hover:text-white text-slate-300">
-                    <i class="fa-solid fa-truck-fast text-emerald-400 w-5 text-center text-sm"></i>
-                    <span>Pesagem Expedição</span>
-                </a>
-
-                <div class="px-3 py-2 pt-3 text-[10px] uppercase font-bold text-slate-500 tracking-wider">Gestão de Insumos & Químicos</div>
-                <a href="dashboard_quimico_geral.html" class="menu-item w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition hover:bg-slate-800 hover:text-white text-slate-300">
-                    <i class="fa-solid fa-chart-line text-purple-400 w-5 text-center text-sm"></i>
-                    <span>Dashboard Químico Geral</span>
-                </a>
-                <a href="gestaoquimica.html" class="menu-item w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition hover:bg-slate-800 hover:text-white text-slate-300">
-                    <i class="fa-solid fa-flask text-purple-400 w-5 text-center text-sm"></i>
-                    <span>Recebimento de Químico</span>
-                </a>
-                <a href="gestao_estoque_quimico.html" class="menu-item w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition hover:bg-slate-800 hover:text-white text-slate-300">
-                    <i class="fa-solid fa-boxes-stacked text-indigo-400 w-5 text-center text-sm"></i>
-                    <span>Estoque de Químicos</span>
-                </a>
-
-                <div class="px-3 py-2 pt-3 text-[10px] uppercase font-bold text-slate-500 tracking-wider">Utilidades & Recursos</div>
-                <a href="gestaodeagua.html" class="menu-item w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition hover:bg-slate-800 hover:text-white text-slate-300">
-                    <i class="fa-solid fa-droplet text-cyan-400 w-5 text-center text-sm"></i>
-                    <span>Gestão de Água</span>
-                </a>
-                <a href="gestaodegas.html" class="menu-item w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition hover:bg-slate-800 hover:text-white text-slate-300">
-                    <i class="fa-solid fa-fire-flame-simple text-orange-400 w-5 text-center text-sm"></i>
-                    <span>Gestão de Gás</span>
-                </a>
-                <a href="gestaodeenergia.html" class="menu-item w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition hover:bg-slate-800 hover:text-white text-slate-300">
-                    <i class="fa-solid fa-bolt text-yellow-400 w-5 text-center text-sm"></i>
-                    <span>Gestão de Energia</span>
-                </a>
-
-                <div class="px-3 py-2 pt-3 text-[10px] uppercase font-bold text-slate-500 tracking-wider">Pessoas & Manutenção</div>
-                <a href="gestaodehoras.html" class="menu-item w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition hover:bg-slate-800 hover:text-white text-slate-300">
-                    <i class="fa-solid fa-clock text-rose-400 w-5 text-center text-sm"></i>
-                    <span>Gestão de Horas</span>
-                </a>
-                <a href="pcm_manutencao.html" class="menu-item w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition hover:bg-slate-800 hover:text-white text-slate-300">
-                    <i class="fa-solid fa-wrench text-emerald-400 w-5 text-center text-sm"></i>
-                    <span>PCM & Manutenção</span>
-                </a>
-            </nav>
+            <div>
+                <h1 class="text-sm font-black text-white tracking-wider">MES DONA ZARA</h1>
+                <p class="text-[10px] text-slate-400">Gestão Industrial & BI</p>
+            </div>
         </div>
 
-        <div class="p-3 border-t border-slate-800">
-            <a href="configuracoes.html" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold text-slate-400 hover:bg-slate-800 hover:text-amber-400 transition">
-                <i class="fa-solid fa-gear w-5 text-center text-sm"></i>
-                <span>Configurações</span>
+        <nav class="p-3 space-y-1 text-xs font-semibold overflow-hidden">
+            
+            <a href="index.html" class="menu-item w-full flex items-center gap-3 px-3 py-2 rounded-xl transition bg-blue-600 text-white font-bold">
+                <i class="fa-solid fa-chart-pie w-5 text-center text-sm"></i>
+                <span>Dashboard Geral</span>
             </a>
-        </div>
+
+            <a href="pesagemrecebimento.html" class="menu-item w-full flex items-center gap-3 px-3 py-2 rounded-xl transition hover:bg-slate-800 hover:text-white text-slate-300">
+                <i class="fa-solid fa-truck-ramp-box text-blue-400 w-5 text-center text-sm"></i>
+                <span>Pesagem Recebimento</span>
+            </a>
+            
+            <a href="pesagemexpedicao.html" class="menu-item w-full flex items-center gap-3 px-3 py-2 rounded-xl transition hover:bg-slate-800 hover:text-white text-slate-300">
+                <i class="fa-solid fa-truck-fast text-emerald-400 w-5 text-center text-sm"></i>
+                <span>Pesagem Expedição</span>
+            </a>
+
+            <a href="dashboard_quimico_geral.html" class="menu-item w-full flex items-center gap-3 px-3 py-2 rounded-xl transition hover:bg-slate-800 hover:text-white text-slate-300">
+                <i class="fa-solid fa-chart-line text-teal-600 w-5 text-center text-sm"></i>
+                <span>Dashboard Químico Geral</span>
+            </a>
+            
+            <a href="gestaoquimica.html" class="menu-item w-full flex items-center gap-3 px-3 py-2 rounded-xl transition hover:bg-slate-800 hover:text-white text-slate-300">
+                <i class="fa-solid fa-flask text-purple-400 w-5 text-center text-sm"></i>
+                <span>Recebimento de Químico</span>
+            </a>
+            
+            <a href="gestao_estoque_quimico.html" class="menu-item w-full flex items-center gap-3 px-3 py-2 rounded-xl transition hover:bg-slate-800 hover:text-white text-slate-300">
+                <i class="fa-solid fa-boxes-stacked text-indigo-400 w-5 text-center text-sm"></i>
+                <span>Estoque de Químicos</span>
+            </a>
+
+            <a href="gestaodeagua.html" class="menu-item w-full flex items-center gap-3 px-3 py-2 rounded-xl transition hover:bg-slate-800 hover:text-white text-slate-300">
+                <i class="fa-solid fa-droplet text-cyan-400 w-5 text-center text-sm"></i>
+                <span>Gestão de Água</span>
+            </a>
+            
+            <a href="gestaodegas.html" class="menu-item w-full flex items-center gap-3 px-3 py-2 rounded-xl transition hover:bg-slate-800 hover:text-white text-slate-300">
+                <i class="fa-solid fa-fire-flame-simple text-orange-400 w-5 text-center text-sm"></i>
+                <span>Gestão de Gás</span>
+            </a>
+            
+            <a href="gestaodeenergia.html" class="menu-item w-full flex items-center gap-3 px-3 py-2 rounded-xl transition hover:bg-slate-800 hover:text-white text-slate-300">
+                <i class="fa-solid fa-bolt text-yellow-400 w-5 text-center text-sm"></i>
+                <span>Gestão de Energia</span>
+            </a>
+
+            <a href="gestaodehoras.html" class="menu-item w-full flex items-center gap-3 px-3 py-2 rounded-xl transition hover:bg-slate-800 hover:text-white text-slate-300">
+                <i class="fa-solid fa-clock text-amber-600 w-5 text-center text-sm"></i>
+                <span>Gestão de Horas</span>
+            </a>
+            
+            <a href="pcm_manutencao.html" class="menu-item w-full flex items-center gap-3 px-3 py-2 rounded-xl transition hover:bg-slate-800 hover:text-white text-slate-300">
+                <i class="fa-solid fa-wrench text-emerald-400 w-5 text-center text-sm"></i>
+                <span>PCM & Manutenção</span>
+            </a>
+
+            <!-- Configurações subiu para ficar logo abaixo dos menus com uma linha separadora -->
+            <div class="pt-4 mt-2 border-t border-slate-800">
+                <a href="configuracoes.html" class="menu-item w-full flex items-center gap-3 px-3 py-2 rounded-xl transition hover:bg-slate-800 hover:text-amber-400 text-slate-400 font-bold">
+                    <i class="fa-solid fa-gear w-5 text-center text-sm"></i>
+                    <span>Configurações</span>
+                </a>
+            </div>
+        </nav>
     </aside>
 
     <main class="flex-1 p-6 overflow-y-auto space-y-6">
