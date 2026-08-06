@@ -2,17 +2,28 @@ const express = require('express');
 const cors = require('cors');
 const path = require('path');
 const { Pool } = require('pg');
-require('dotenv').config();
+
+// Define a raiz do projeto no Render (/opt/render/project/src ou raiz local)
+const ROOT_DIR = process.cwd();
+
+// Carrega variáveis de ambiente se o dotenv estiver disponível
+try {
+    require('dotenv').config();
+} catch (e) {
+    console.log('Dotenv não encontrado, utilizando variáveis do ambiente.');
+}
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 // =================================================================
-// 1. MIDDLEWARES GLOBAIS
+// 1. MIDDLEWARES GLOBAIS E ARQUIVOS ESTÁTICOS
 // =================================================================
 app.use(cors());
 app.use(express.json());
-app.use(express.static(path.join(__dirname, 'public')));
+
+// Serve os arquivos da pasta public localizada na raiz do projeto
+app.use(express.static(path.join(ROOT_DIR, 'public')));
 
 // =================================================================
 // 2. CONEXÃO COM O BANCO DE DADOS (POSTGRESQL / SUPABASE)
@@ -36,11 +47,16 @@ pool.connect((err, client, release) => {
 // 3. IMPORTAÇÃO DE ROTAS EXTERNAS (PLANO ROUTES)
 // =================================================================
 try {
-    const planoRoutes = require('./routes/planoRoutes');
+    let planoRoutes;
+    try {
+        planoRoutes = require(path.join(ROOT_DIR, 'routes', 'planoRoutes'));
+    } catch (e) {
+        planoRoutes = require(path.join(ROOT_DIR, 'src', 'routes', 'planoRoutes'));
+    }
     app.use('/api', planoRoutes);
-    console.log('✅ Módulo ./routes/planoRoutes carregado com sucesso!');
+    console.log('✅ Módulo planoRoutes carregado com sucesso!');
 } catch (err) {
-    console.warn('⚠️ Aviso: Não foi possível carregar ./routes/planoRoutes:', err.message);
+    console.warn('⚠️ Aviso: Não foi possível carregar o módulo planoRoutes:', err.message);
 }
 
 // =================================================================
@@ -174,7 +190,7 @@ app.post('/api/pcm/macro-componentes', async (req, res) => {
     }
 });
 
-// Equipamentos
+// Equipamentos / Ativos
 app.get('/api/pcm/equipamentos', async (req, res) => {
     try {
         const { rows } = await pool.query('SELECT * FROM vw_parque_equipamentos ORDER BY tag ASC');
@@ -401,11 +417,11 @@ app.post('/api/apontamento', async (req, res) => {
 // =================================================================
 
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'pcm_manutencao.html'));
+    res.sendFile(path.join(ROOT_DIR, 'public', 'pcm_manutencao.html'));
 });
 
 app.get('/cadastro-pmp', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+    res.sendFile(path.join(ROOT_DIR, 'public', 'index.html'));
 });
 
 // =================================================================
