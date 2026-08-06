@@ -443,7 +443,9 @@ app.post('/api/pcm/ordens-servico', async (req, res) => {
 });
 
 const path = require('path');
-const planoRoutes = require('./src/routes/planoRoutes');
+// Se server.js está dentro da pasta src:
+const planoRoutes = require('./routes/planoRoutes');
+// const planoRoutes = require('./src/routes/planoRoutes');
 require('dotenv').config();
 
 const PORT = process.env.PORT || 3000;
