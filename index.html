@@ -10,7 +10,7 @@
 </head>
 <body class="bg-slate-100 font-sans min-h-screen flex text-slate-800">
 
-    <!-- Ajustado para h-screen e sticky top-0 para ficar totalmente fixo -->
+    <!-- Sidebar Fixo -->
     <aside class="w-64 bg-slate-900 text-slate-300 flex flex-col h-screen sticky top-0 z-50">
         <div class="p-5 border-b border-slate-800 flex items-center gap-3">
             <div class="bg-blue-600 text-white p-2.5 rounded-xl shadow">
@@ -79,7 +79,6 @@
                 <span>PCM & Manutenção</span>
             </a>
 
-            <!-- Configurações subiu para ficar logo abaixo dos menus com uma linha separadora -->
             <div class="pt-4 mt-2 border-t border-slate-800">
                 <a href="configuracoes.html" class="menu-item w-full flex items-center gap-3 px-3 py-2 rounded-xl transition hover:bg-slate-800 hover:text-amber-400 text-slate-400 font-bold">
                     <i class="fa-solid fa-gear w-5 text-center text-sm"></i>
@@ -98,8 +97,33 @@
             </div>
         </header>
 
+        <!-- Filtro de Período de Análise -->
+        <div class="bg-white rounded-2xl shadow-sm p-4 border border-slate-200 flex flex-wrap items-center justify-between gap-4 mb-6">
+            <div class="flex items-center gap-2 text-slate-800 font-bold text-sm">
+                <i class="fa-solid fa-filter text-amber-600"></i>
+                <span class="text-xs font-bold text-slate-700 uppercase tracking-wider">Período de Análise:</span>
+            </div>
+            <div class="flex flex-wrap items-center gap-3 text-xs w-full sm:w-auto">
+                <div class="flex items-center gap-2">
+                    <label class="text-slate-600 font-semibold">De:</label>
+                    <input type="date" id="filtroDataInicio" onchange="carregarDashboard()" class="p-2 border rounded-lg bg-slate-50 outline-none focus:ring-2 focus:ring-amber-500 font-medium">
+                </div>
+                <div class="flex items-center gap-2">
+                    <label class="text-slate-600 font-semibold">Até:</label>
+                    <input type="date" id="filtroDataFim" onchange="carregarDashboard()" class="p-2 border rounded-lg bg-slate-50 outline-none focus:ring-2 focus:ring-amber-500 font-medium">
+                </div>
+                <button onclick="definirUltimos7Dias()" class="bg-amber-100 hover:bg-amber-200 text-amber-800 font-bold px-3 py-2 rounded-lg transition">
+                    Últimos 7 Dias
+                </button>
+                <button onclick="limparFiltroData()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold px-3 py-2 rounded-lg transition" title="Exibir todo o histórico de lançamentos">
+                    Exibir Todos
+                </button>
+            </div>
+        </div>
+
         <div id="view-dashboard" class="space-y-6">
 
+            <!-- Card Balanço Geral -->
             <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 space-y-4">
                 <div class="flex justify-between items-center border-b pb-2">
                     <h3 class="text-xs font-black text-slate-700 uppercase tracking-wider flex items-center gap-2">
@@ -152,6 +176,7 @@
                 </div>
             </div>
 
+            <!-- Painel Integrado -->
             <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 space-y-4">
                 <div class="flex justify-between items-center border-b pb-2">
                     <h3 class="text-xs font-black text-slate-700 uppercase tracking-wider flex items-center gap-2">
@@ -225,7 +250,7 @@
                             </span>
                             <a href="dashboard_quimico_geral.html" class="text-[10px] text-purple-600 font-bold hover:underline">Painel ➔</a>
                         </div>
-                        <p id="dashKpiQuimicos" class="text-xl font-black text-purple-600">0,0 L/Kg</p>
+                        <p id="dashKpiQuimicos" class="text-xl font-black text-purple-600">0,0 L</p>
                         <div class="text-[11px] text-slate-500 flex justify-between border-t pt-1">
                             <span>Consumo Esp.:</span>
                             <span id="dashKpiQuimicosProp" class="font-bold text-slate-800">0,000 / Kg</span>
@@ -277,6 +302,7 @@
                 </div>
             </div>
 
+            <!-- Gráfico Comparativo -->
             <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
                 <h3 class="text-sm font-bold text-slate-800 mb-4">Comparativo Diário: Peso Entrada vs. Saída (Kg)</h3>
                 <div class="h-64">
@@ -289,19 +315,68 @@
     </main>
 
     <script>
-        // Lógica para sincronização e cálculo de indicadores gerais via LocalStorage
+        let meuchartGeral = null;
+
+        // Configura o filtro inicial com 7 dias automaticamente ao carregar
         document.addEventListener('DOMContentLoaded', () => {
-            carregarDadosDash();
+            definirUltimos7Dias();
         });
 
-function carregarDadosDash() {
-            const recs = JSON.parse(localStorage.getItem('mes_historico_recebimento') || '[]');
-            const exps = JSON.parse(localStorage.getItem('mes_historico_expedicao') || '[]');
-            const aguas = JSON.parse(localStorage.getItem('mes_historico_agua') || '[]');
-            const gases = JSON.parse(localStorage.getItem('mes_historico_gas') || '[]');
-            const energias = JSON.parse(localStorage.getItem('mes_historico_energia') || '[]');
-            const horas = JSON.parse(localStorage.getItem('mes_historico_horas') || '[]');
-            const quimicos = JSON.parse(localStorage.getItem('mes_historico_quimico') || '[]');
+        // Formata objeto de data para string YYYY-MM-DD
+        function formatarDataISO(data) {
+            const ano = data.getFullYear();
+            const mes = String(data.getMonth() + 1).padStart(2, '0');
+            const dia = String(data.getDate()).padStart(2, '0');
+            return `${ano}-${mes}-${dia}`;
+        }
+
+        // Define filtro para os últimos 7 dias
+        function definirUltimos7Dias() {
+            const hoje = new Date();
+            const inicio = new Date();
+            inicio.setDate(hoje.getDate() - 6);
+
+            document.getElementById('filtroDataFim').value = formatarDataISO(hoje);
+            document.getElementById('filtroDataInicio').value = formatarDataISO(inicio);
+            carregarDashboard();
+        }
+
+        // Limpa os filtros de data para exibir todo o histórico
+        function limparFiltroData() {
+            document.getElementById('filtroDataInicio').value = '';
+            document.getElementById('filtroDataFim').value = '';
+            carregarDashboard();
+        }
+
+        // Função genérica de filtragem por período de datas
+        function filtrarPorPeriodo(lista) {
+            const dataInicio = document.getElementById('filtroDataInicio').value;
+            const dataFim = document.getElementById('filtroDataFim').value;
+
+            if (!dataInicio && !dataFim) return lista;
+
+            return lista.filter(item => {
+                const itemDataRaw = item.data || item.dataLeitura || item.dataLancamento || item.created_at;
+                if (!itemDataRaw) return true;
+
+                const dataItem = itemDataRaw.split('T')[0];
+
+                if (dataInicio && dataItem < dataInicio) return false;
+                if (dataFim && dataItem > dataFim) return false;
+
+                return true;
+            });
+        }
+
+        // Função principal para cálculo e exibição do Dashboard
+        function carregarDashboard() {
+            const recs = filtrarPorPeriodo(JSON.parse(localStorage.getItem('mes_historico_recebimento') || '[]'));
+            const exps = filtrarPorPeriodo(JSON.parse(localStorage.getItem('mes_historico_expedicao') || '[]'));
+            const aguas = filtrarPorPeriodo(JSON.parse(localStorage.getItem('mes_historico_agua') || '[]'));
+            const gases = filtrarPorPeriodo(JSON.parse(localStorage.getItem('mes_historico_gas') || '[]'));
+            const energias = filtrarPorPeriodo(JSON.parse(localStorage.getItem('mes_historico_energia') || '[]'));
+            const horas = filtrarPorPeriodo(JSON.parse(localStorage.getItem('mes_historico_horas') || '[]'));
+            const quimicos = filtrarPorPeriodo(JSON.parse(localStorage.getItem('mes_historico_quimico') || '[]'));
 
             // --- RECEBIMENTO ---
             let totalEntrada = 0, totalGaiolasIn = 0;
@@ -323,7 +398,7 @@ function carregarDadosDash() {
                 totalHoras += (parseFloat(h.horasNormais) || 0) + (parseFloat(h.horasExtras) || 0);
             });
 
-            // --- ÁGUA (Lê array de consumo ou legado) ---
+            // --- ÁGUA ---
             let totalAgua = 0; 
             aguas.forEach(a => {
                 if (a.leiturasConsumo && Array.isArray(a.leiturasConsumo)) {
@@ -333,7 +408,7 @@ function carregarDadosDash() {
                 }
             });
 
-            // --- GÁS (Lê array de leituras ou legado) ---
+            // --- GÁS ---
             let totalGas = 0; 
             gases.forEach(g => {
                 if (g.leituras && Array.isArray(g.leituras)) {
@@ -343,7 +418,7 @@ function carregarDadosDash() {
                 }
             });
 
-            // --- ENERGIA (Lê array de consumo ou legado) ---
+            // --- ENERGIA ---
             let totalEnergia = 0; 
             energias.forEach(e => {
                 if (e.leiturasConsumo && Array.isArray(e.leiturasConsumo)) {
@@ -353,7 +428,7 @@ function carregarDadosDash() {
                 }
             });
 
-            // --- QUÍMICOS (Lê itens da formulação ou legado) ---
+            // --- QUÍMICOS ---
             let totalQuimico = 0; 
             quimicos.forEach(q => {
                 if (q.itens && Array.isArray(q.itens)) {
@@ -366,7 +441,7 @@ function carregarDadosDash() {
             const rendimento = totalEntrada > 0 ? (totalSaida / totalEntrada) * 100 : 0;
             const produtividade = totalHoras > 0 ? (totalSaida / totalHoras) : 0;
 
-            // Preenchimento no DOM
+            // Atualizações no DOM
             document.getElementById('dashKpiPesoEntrada').innerText = totalEntrada.toLocaleString('pt-BR', { minimumFractionDigits: 1 }) + ' Kg';
             document.getElementById('dashKpiGaiolasEntrada').innerText = totalGaiolasIn + ' und';
             document.getElementById('dashKpiPesoSaida').innerText = totalSaida.toLocaleString('pt-BR', { minimumFractionDigits: 1 }) + ' Kg';
@@ -374,7 +449,7 @@ function carregarDadosDash() {
             document.getElementById('dashKpiRetorno').innerText = rendimento.toFixed(1) + ' %';
             document.getElementById('dashKpiProdutividade').innerText = produtividade.toFixed(1) + ' Kg/h';
 
-            document.getElementById('dashKpiAgua').innerText = totalAgua.toLocaleString('pt-BR') + ' L'; // ou m³, confirme a unidade padrão do seu dashboard
+            document.getElementById('dashKpiAgua').innerText = totalAgua.toLocaleString('pt-BR') + ' L';
             document.getElementById('dashKpiAguaProp').innerText = (totalSaida > 0 ? (totalAgua / totalSaida) : 0).toFixed(2) + ' L/Kg';
 
             document.getElementById('dashKpiGas').innerText = totalGas.toLocaleString('pt-BR') + ' m³';
@@ -386,7 +461,7 @@ function carregarDadosDash() {
             document.getElementById('dashKpiHoras').innerText = totalHoras.toFixed(1) + ' h';
             document.getElementById('dashKpiProdHoras').innerText = produtividade.toFixed(1) + ' Kg/h';
 
-            document.getElementById('dashKpiQuimicos').innerText = totalQuimico.toLocaleString('pt-BR') + ' L/Kg';
+            document.getElementById('dashKpiQuimicos').innerText = totalQuimico.toLocaleString('pt-BR') + ' L';
             document.getElementById('dashKpiQuimicosProp').innerText = (totalSaida > 0 ? (totalQuimico / totalSaida) : 0).toFixed(3) + ' / Kg';
 
             document.getElementById('dashKpiResumoRec').innerText = totalEntrada.toLocaleString('pt-BR', { minimumFractionDigits: 1 }) + ' Kg';
@@ -398,9 +473,20 @@ function carregarDadosDash() {
             renderizarGraficoComparativo(totalEntrada, totalSaida);
         }
 
+        // Mantém compatibilidade caso outro método busque por carregarDadosDash()
+        function carregarDadosDash() {
+            carregarDashboard();
+        }
+
+        // Renderização do gráfico
         function renderizarGraficoComparativo(entrada, salida) {
             const ctx = document.getElementById('chartGeral').getContext('2d');
-            new Chart(ctx, {
+            
+            if (meuchartGeral) {
+                meuchartGeral.destroy();
+            }
+
+            meuchartGeral = new Chart(ctx, {
                 type: 'bar',
                 data: {
                     labels: ['Balanço do Período'],
