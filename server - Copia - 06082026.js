@@ -1,22 +1,16 @@
 const express = require('express');
 const cors = require('cors');
-const path = require('path');
 const { Pool } = require('pg');
-require('dotenv').config();
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const port = process.env.PORT || 3000;
 
-// =================================================================
-// 1. MIDDLEWARES GLOBAIS
-// =================================================================
+// Middlewares
 app.use(cors());
 app.use(express.json());
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static('public')); // Serve os arquivos HTML/JS estáticos
 
-// =================================================================
-// 2. CONEXÃO COM O BANCO DE DADOS (POSTGRESQL / SUPABASE)
-// =================================================================
+// Configuração do PostgreSQL / Supabase
 const pool = new Pool({
     connectionString: process.env.DATABASE_URL,
     ssl: {
@@ -24,6 +18,7 @@ const pool = new Pool({
     }
 });
 
+// Teste de conexão com o banco
 pool.connect((err, client, release) => {
     if (err) {
         return console.error('❌ Erro ao conectar ao banco PostgreSQL:', err.stack);
@@ -32,19 +27,9 @@ pool.connect((err, client, release) => {
     release();
 });
 
-// =================================================================
-// 3. IMPORTAÇÃO DE ROTAS EXTERNAS (PLANO ROUTES)
-// =================================================================
-try {
-    const planoRoutes = require('./routes/planoRoutes');
-    app.use('/api', planoRoutes);
-    console.log('✅ Módulo ./routes/planoRoutes carregado com sucesso!');
-} catch (err) {
-    console.warn('⚠️ Aviso: Não foi possível carregar ./routes/planoRoutes:', err.message);
-}
 
 // =================================================================
-// 4. ROTAS DE CADASTRO GERAIS (CLIENTES, TIPOS DE OS, TARAS)
+// 1. ROTAS DE CADASTRO GERAIS (CLIENTES, TIPOS DE OS, TARAS)
 // =================================================================
 
 // Clientes
@@ -124,11 +109,12 @@ app.post('/api/taras-gaiolas', async (req, res) => {
     }
 });
 
+
 // =================================================================
-// 5. ROTAS MÓDULO PCM & MANUTENÇÃO INDUSTRIAL
+// 2. ROTAS MÓDULO PCM & MANUTENÇÃO INDUSTRIAL (NOVO)
 // =================================================================
 
-// Macro Máquinas
+// --- 2.1 MACRO MÁQUINAS ---
 app.get('/api/pcm/macro-maquinas', async (req, res) => {
     try {
         const { rows } = await pool.query('SELECT * FROM macro_maquinas ORDER BY nome ASC');
@@ -151,7 +137,7 @@ app.post('/api/pcm/macro-maquinas', async (req, res) => {
     }
 });
 
-// Tipos de Componentes
+// --- 2.2 TIPOS DE COMPONENTES ---
 app.get('/api/pcm/macro-componentes', async (req, res) => {
     try {
         const { rows } = await pool.query('SELECT * FROM macro_componentes ORDER BY nome ASC');
@@ -174,7 +160,7 @@ app.post('/api/pcm/macro-componentes', async (req, res) => {
     }
 });
 
-// Equipamentos
+// --- 2.3 EQUIPAMENTOS / ATIVOS ---
 app.get('/api/pcm/equipamentos', async (req, res) => {
     try {
         const { rows } = await pool.query('SELECT * FROM vw_parque_equipamentos ORDER BY tag ASC');
@@ -199,19 +185,14 @@ app.post('/api/pcm/equipamentos', async (req, res) => {
     }
 });
 
-// Ordens de Serviço (Manutenção)
+// --- 2.4 ORDENS DE SERVIÇO (MANUTENÇÃO) ---
 app.get('/api/pcm/ordens-servico', async (req, res) => {
     try {
         const { equipamento_id } = req.query;
         let sql = `
-            SELECT 
-                os.*, 
-                e.tag, 
-                e.setor,
-                COALESCE(t.nome, os.tecnico) AS tecnico_nome
+            SELECT os.*, e.tag, e.setor 
             FROM ordens_servico os
             JOIN equipamentos e ON os.equipamento_id = e.id
-            LEFT JOIN tecnicos t ON os.tecnico_id = t.id
         `;
         let params = [];
 
@@ -230,29 +211,21 @@ app.get('/api/pcm/ordens-servico', async (req, res) => {
 });
 
 app.post('/api/pcm/ordens-servico', async (req, res) => {
-    const { equipamento_id, tipo, descricao, data_os, horas_parada, tecnico_id, tecnico } = req.body;
+    const { equipamento_id, tipo, descricao, data_os, horas_parada, tecnico } = req.body;
     try {
         const query = `
-            INSERT INTO ordens_servico (equipamento_id, tipo, descricao, data_os, horas_parada, tecnico_id, tecnico)
-            VALUES ($1, $2, $3, $4, $5, $6, $7)
+            INSERT INTO ordens_servico (equipamento_id, tipo, descricao, data_os, horas_parada, tecnico)
+            VALUES ($1, $2, $3, $4, $5, $6)
             RETURNING *;
         `;
-        const { rows } = await pool.query(query, [
-            equipamento_id, 
-            tipo, 
-            descricao, 
-            data_os, 
-            horas_parada || 0, 
-            tecnico_id || null, 
-            tecnico || null
-        ]);
+        const { rows } = await pool.query(query, [equipamento_id, tipo, descricao, data_os, horas_parada || 0, tecnico]);
         res.status(201).json(rows[0]);
     } catch (err) {
         res.status(500).json({ erro: err.message });
     }
 });
 
-// Lubrificação
+// --- 2.5 LUBRIFICAÇÃO ---
 app.get('/api/pcm/lubrificacao', async (req, res) => {
     try {
         const { rows } = await pool.query(`
@@ -282,7 +255,7 @@ app.post('/api/pcm/lubrificacao', async (req, res) => {
     }
 });
 
-// Almoxarifado de Peças
+// --- 2.6 ALMOXARIFADO DE PEÇAS ---
 app.get('/api/pcm/pecas', async (req, res) => {
     try {
         const { rows } = await pool.query('SELECT * FROM pecas_reposicao ORDER BY nome ASC');
@@ -307,44 +280,9 @@ app.post('/api/pcm/pecas', async (req, res) => {
     }
 });
 
-// Técnicos
-app.get('/api/pcm/tecnicos', async (req, res) => {
-    try {
-        const { rows } = await pool.query('SELECT * FROM tecnicos WHERE ativo = TRUE ORDER BY nome ASC');
-        res.json(rows);
-    } catch (err) {
-        res.status(500).json({ erro: err.message });
-    }
-});
-
-app.post('/api/pcm/tecnicos', async (req, res) => {
-    const { nome, especialidade } = req.body;
-    try {
-        const query = `
-            INSERT INTO tecnicos (nome, especialidade)
-            VALUES ($1, $2)
-            ON CONFLICT (nome) DO UPDATE SET ativo = TRUE
-            RETURNING *;
-        `;
-        const { rows } = await pool.query(query, [nome, especialidade || 'Geral']);
-        res.status(201).json(rows[0]);
-    } catch (err) {
-        res.status(500).json({ erro: err.message });
-    }
-});
-
-app.delete('/api/pcm/tecnicos/:id', async (req, res) => {
-    const { id } = req.params;
-    try {
-        await pool.query('UPDATE tecnicos SET ativo = FALSE WHERE id = $1', [id]);
-        res.json({ mensagem: 'Técnico desativado com sucesso' });
-    } catch (err) {
-        res.status(500).json({ erro: err.message });
-    }
-});
 
 // =================================================================
-// 6. ROTAS OPERACIONAIS (APONTAMENTOS)
+// 3. ROTAS DE PROCESSAMENTO OPERACIONAL (RECEBIMENTO E EXPEDIÇÃO)
 // =================================================================
 
 app.post('/api/apontamento', async (req, res) => {
@@ -397,21 +335,143 @@ app.post('/api/apontamento', async (req, res) => {
 });
 
 // =================================================================
-// 7. ROTAS DE NAVEGAÇÃO E PÁGINAS HTML
+// 4. INICIALIZAÇÃO DO SERVIDOR
 // =================================================================
 
+app.listen(port, () => {
+    console.log(`🚀 Servidor MES & PCM rodando na porta ${port}`);
+});
+
+// =================================================================
+// ROTAS DE CADASTRO DE TÉCNICOS / RESPONSÁVEIS
+// =================================================================
+
+// Listar Técnicos
+app.get('/api/pcm/tecnicos', async (req, res) => {
+    try {
+        const { rows } = await pool.query('SELECT * FROM tecnicos WHERE ativo = TRUE ORDER BY nome ASC');
+        res.json(rows);
+    } catch (err) {
+        res.status(500).json({ erro: err.message });
+    }
+});
+
+// Cadastrar Novo Técnico
+app.post('/api/pcm/tecnicos', async (req, res) => {
+    const { nome, especialidade } = req.body;
+    try {
+        const query = `
+            INSERT INTO tecnicos (nome, especialidade)
+            VALUES ($1, $2)
+            ON CONFLICT (nome) DO UPDATE SET ativo = TRUE
+            RETURNING *;
+        `;
+        const { rows } = await pool.query(query, [nome, especialidade || 'Geral']);
+        res.status(201).json(rows[0]);
+    } catch (err) {
+        res.status(500).json({ erro: err.message });
+    }
+});
+
+// Desativar / Remover Técnico
+app.delete('/api/pcm/tecnicos/:id', async (req, res) => {
+    const { id } = req.params;
+    try {
+        await pool.query('UPDATE tecnicos SET ativo = FALSE WHERE id = $1', [id]);
+        res.json({ mensagem: 'Técnico desativado com sucesso' });
+    } catch (err) {
+        res.status(500).json({ erro: err.message });
+    }
+});
+
+// =================================================================
+// ATUALIZAÇÃO NAS ROTAS DE ORDENS DE SERVIÇO
+// =================================================================
+
+// Listar OS incluindo os dados do Técnico
+app.get('/api/pcm/ordens-servico', async (req, res) => {
+    try {
+        const { equipamento_id } = req.query;
+        let sql = `
+            SELECT 
+                os.*, 
+                e.tag, 
+                e.setor,
+                COALESCE(t.nome, os.tecnico) AS tecnico_nome
+            FROM ordens_servico os
+            JOIN equipamentos e ON os.equipamento_id = e.id
+            LEFT JOIN tecnicos t ON os.tecnico_id = t.id
+        `;
+        let params = [];
+
+        if (equipamento_id && equipamento_id !== 'TODOS') {
+            sql += ' WHERE os.equipamento_id = $1';
+            params.push(equipamento_id);
+        }
+
+        sql += ' ORDER BY os.data_os DESC, os.created_at DESC';
+
+        const { rows } = await pool.query(sql, params);
+        res.json(rows);
+    } catch (err) {
+        res.status(500).json({ erro: err.message });
+    }
+});
+
+// Salvar OS vinculando o tecnico_id
+app.post('/api/pcm/ordens-servico', async (req, res) => {
+    const { equipamento_id, tipo, descricao, data_os, horas_parada, tecnico_id, tecnico } = req.body;
+    try {
+        const query = `
+            INSERT INTO ordens_servico (equipamento_id, tipo, descricao, data_os, horas_parada, tecnico_id, tecnico)
+            VALUES ($1, $2, $3, $4, $5, $6, $7)
+            RETURNING *;
+        `;
+        const { rows } = await pool.query(query, [
+            equipamento_id, 
+            tipo, 
+            descricao, 
+            data_os, 
+            horas_parada || 0, 
+            tecnico_id || null, 
+            tecnico || null
+        ]);
+        res.status(201).json(rows[0]);
+    } catch (err) {
+        res.status(500).json({ erro: err.message });
+    }
+});
+
+const path = require('path');
+// Se server.js está dentro da pasta src:
+const planoRoutes = require('./routes/planoRoutes');
+// const planoRoutes = require('./src/routes/planoRoutes');
+require('dotenv').config();
+
+const PORT = process.env.PORT || 3000;
+
+// Middleware para processar JSON
+app.use(express.json());
+
+// Serve os ficheiros estáticos da pasta 'public' (HTML, CSS, JS)
+app.use(express.static(path.join(__dirname, 'public')));
+
+// Rotas da API
+app.use('/api', planoRoutes);
+
+// --- ROTAS DE NAVEGAÇÃO (HTML) ---
+
+// Rota principal (Abre o PCM Painel por padrão)
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'pcm_manutencao.html'));
+  res.sendFile(path.join(__dirname, 'public', 'pcm_manutencao.html'));
 });
 
+// Rota para a tela de Cadastro de PMP
 app.get('/cadastro-pmp', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-// =================================================================
-// 8. INICIALIZAÇÃO ÚNICA DO SERVIDOR
-// =================================================================
-
+// Inicialização do Servidor
 app.listen(PORT, () => {
-    console.log(`🚀 Servidor MES & PCM ativo na porta ${PORT}`);
+  console.log(`Servidor PCM a correr em: http://localhost:${PORT}`);
 });
