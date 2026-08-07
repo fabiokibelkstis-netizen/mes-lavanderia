@@ -22,10 +22,10 @@
             </div>
             <div class="flex items-center gap-2">
                 <a href="configuracoes.html" class="bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold px-3 py-2 rounded-lg transition border border-slate-700">⚙️ Configurações</a>
-		<a href="gestaodegas.html" class="bg-orange-600 hover:bg-cyan-500 text-white text-xs font-bold px-4 py-2 rounded-xl transition flex items-center gap-2 shadow">
-                <i class="fa-solid fa-chart-line"></i> Dashboard de Gás
-            </a>            
-	    </div>
+                <a href="gestaodegas.html" class="bg-orange-600 hover:bg-cyan-500 text-white text-xs font-bold px-4 py-2 rounded-xl transition flex items-center gap-2 shadow">
+                    <i class="fa-solid fa-chart-line"></i> Dashboard de Gás
+                </a>            
+            </div>
         </div>
     </header>
 
@@ -55,7 +55,7 @@
                         Leituras dos Medidores Cadastrados
                     </h3>
                     <div id="containerMedidores" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        </div>
+                    </div>
                 </div>
 
                 <div>
@@ -81,7 +81,7 @@
 
     <script>
         let editIdx = null;
-        let configGas = { qtd: 2, nomes: ["Relógio 1", "Relógio 2"] };
+        let configGas = { qtd: 2, nomes: ["Relógio 1", "Relógio 2"], custoM3: 0 };
 
         document.addEventListener('DOMContentLoaded', () => {
             carregarConfiguracao();
@@ -148,6 +148,7 @@
             const dataLeitura = document.getElementById('dataLeitura').value;
             const operador = document.getElementById('operador').value.trim();
             const obs = document.getElementById('obs').value.trim();
+            const custoUnitario = parseFloat(configGas.custoM3) || 0;
 
             const leituras = [];
             configGas.nomes.forEach((nomeMedidor, idx) => {
@@ -155,7 +156,7 @@
                 leituras.push({
                     nome: nomeMedidor,
                     valor: valor,
-                    custo: valor * 12.50 // Custo estimado dinâmico
+                    custo: valor * custoUnitario
                 });
             });
 

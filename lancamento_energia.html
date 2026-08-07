@@ -22,10 +22,11 @@
             </div>
             <div class="flex items-center gap-2">
                 <a href="configuracoes.html" class="bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold px-3 py-2 rounded-lg transition border border-slate-700">⚙️ Configurações</a>
-		<a href="gestaodeenergia.html" class="bg-amber-500 hover:bg-amber-400 text-slate-900 text-xs font-bold px-4 py-2 rounded-xl transition flex items-center gap-2 shadow">
-                <i class="fa-solid fa-chart-line"></i> Dashboard de Energia
-            </a>            
-	    </div>        </div>
+                <a href="gestaodeenergia.html" class="bg-amber-500 hover:bg-amber-400 text-slate-900 text-xs font-bold px-4 py-2 rounded-xl transition flex items-center gap-2 shadow">
+                    <i class="fa-solid fa-chart-line"></i> Dashboard de Energia
+                </a>            
+            </div>
+        </div>
     </header>
 
     <main class="max-w-4xl mx-auto w-full p-4 my-6">
@@ -47,7 +48,7 @@
                     <i class="fa-solid fa-gauge text-yellow-500"></i> Medidores Cadastrados
                 </h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="containerCamposMedidores">
-                    </div>
+                </div>
             </div>
 
             <div>
@@ -70,11 +71,12 @@
     </footer>
 
     <script>
-        let configEnergia = { qtd: 2, nomes: ["Medidor Principal", "Medidor Auxiliar"] };
+        let editIdx = null;
+        let configEnergia = { qtd: 2, nomes: ["Medidor Principal", "Medidor Auxiliar"], custoKwh: 0 };
 
         document.addEventListener('DOMContentLoaded', () => {
-            document.getElementById('dataLeitura').value = new Date().toISOString().split('T')[0];
             carregarConfiguracaoEPreencherCampos();
+            verificarModoEdicao();
         });
 
         function carregarConfiguracaoEPreencherCampos() {
@@ -96,46 +98,77 @@
             });
         }
 
-function salvarLancamento(e) {
-    e.preventDefault();
+        function verificarModoEdicao() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const editParam = urlParams.get('editIndex');
 
-    const data = document.getElementById('dataLeitura').value;
-    const operador = document.getElementById('operador').value.trim();
-    const observacao = document.getElementById('observacao').value.trim();
+            if (editParam !== null) {
+                editIdx = parseInt(editParam);
+                const historico = JSON.parse(localStorage.getItem('mes_historico_energia') || localStorage.getItem('mes_lancamentos_energia') || '[]');
+                
+                if (historico[editIdx]) {
+                    const reg = historico[editIdx];
+                    document.getElementById('dataLeitura').value = reg.dataLeitura || reg.data || '';
+                    document.getElementById('operador').value = reg.operador || '';
+                    document.getElementById('observacao').value = reg.observacao || reg.obs || '';
 
-    // Mapeia os valores inseridos associando aos nomes das fontes/medidores
-    const leiturasConsumo = [];
-    configEnergia.nomes.forEach((nomeMedidor, idx) => {
-        const val = parseFloat(document.getElementById(`medidor_${idx}`).value) || 0;
-        leiturasConsumo.push({
-            nome: nomeMedidor,
-            valor: val
-        });
-    });
+                    if (reg.leiturasConsumo && Array.isArray(reg.leiturasConsumo)) {
+                        reg.leiturasConsumo.forEach((m, idx) => {
+                            const field = document.getElementById(`medidor_${idx}`);
+                            if (field) field.value = m.valor;
+                        });
+                    }
+                }
+            } else {
+                document.getElementById('dataLeitura').value = new Date().toISOString().split('T')[0];
+            }
+        }
 
-    const novoLancamento = {
-        id: 'eng_' + Date.now(),
-        dataLeitura: data,
-        operador: operador,
-        leiturasConsumo: leiturasConsumo,
-        observacao: observacao
-    };
+        function salvarLancamento(e) {
+            e.preventDefault();
 
-    // Atualiza ambas as chaves para manter a compatibilidade
-    const lancamentosExistentes = JSON.parse(
-        localStorage.getItem('mes_historico_energia') || 
-        localStorage.getItem('mes_lancamentos_energia') || 
-        '[]'
-    );
-    
-    lancamentosExistentes.push(novoLancamento);
+            const data = document.getElementById('dataLeitura').value;
+            const operador = document.getElementById('operador').value.trim();
+            const observacao = document.getElementById('observacao').value.trim();
+            const custoUnitario = parseFloat(configEnergia.custoKwh) || 0;
 
-    localStorage.setItem('mes_lancamentos_energia', JSON.stringify(lancamentosExistentes));
-    localStorage.setItem('mes_historico_energia', JSON.stringify(lancamentosExistentes));
+            const leiturasConsumo = [];
+            configEnergia.nomes.forEach((nomeMedidor, idx) => {
+                const val = parseFloat(document.getElementById(`medidor_${idx}`).value) || 0;
+                leiturasConsumo.push({
+                    nome: nomeMedidor,
+                    valor: val,
+                    custo: val * custoUnitario
+                });
+            });
 
-    alert("Lançamento de Energia Elétrica salvo com sucesso!");
-    window.location.href = "gestaodeenergia.html";
-}
+            const registro = {
+                id: editIdx !== null ? undefined : ('eng_' + Date.now()),
+                dataLeitura: data,
+                operador: operador,
+                leiturasConsumo: leiturasConsumo,
+                observacao: observacao
+            };
+
+            const lancamentosExistentes = JSON.parse(
+                localStorage.getItem('mes_historico_energia') || 
+                localStorage.getItem('mes_lancamentos_energia') || 
+                '[]'
+            );
+
+            if (editIdx !== null) {
+                registro.id = lancamentosExistentes[editIdx]?.id || ('eng_' + Date.now());
+                lancamentosExistentes[editIdx] = registro;
+            } else {
+                lancamentosExistentes.push(registro);
+            }
+
+            localStorage.setItem('mes_lancamentos_energia', JSON.stringify(lancamentosExistentes));
+            localStorage.setItem('mes_historico_energia', JSON.stringify(lancamentosExistentes));
+
+            alert("Lançamento de Energia Elétrica salvo com sucesso!");
+            window.location.href = "gestaodeenergia.html";
+        }
     </script>
 </body>
 </html>

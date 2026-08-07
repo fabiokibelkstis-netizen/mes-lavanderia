@@ -181,28 +181,35 @@
     </footer>
 
     <script>
-        const TARIFA_KWH = 0.85; // Tarifa base para cálculo de custos
-
         let rawHistorico = [];
         let lancamentosProcessados = [];
+        let configEnergia = { qtd: 2, nomes: ["Medidor Principal", "Medidor Auxiliar"], custoKwh: 0 };
         let chartBarraInstance = null;
         let chartEntradaRoscaInstance = null;
         let chartConsumoRoscaInstance = null;
 
         document.addEventListener('DOMContentLoaded', () => {
+            carregarConfiguracao();
             carregarEProcessarDados();
             definirUltimos7Dias();
         });
 
+        function carregarConfiguracao() {
+            const saved = localStorage.getItem('mes_config_energia');
+            if (saved) {
+                configEnergia = JSON.parse(saved);
+            }
+        }
+
         function carregarEProcessarDados() {
             rawHistorico = JSON.parse(localStorage.getItem('mes_historico_energia') || localStorage.getItem('mes_lancamentos_energia') || '[]');
             lancamentosProcessados = [];
+            const custoUnitario = parseFloat(configEnergia.custoKwh) || 0;
 
             rawHistorico.forEach((reg, rawIdx) => {
                 const dataIso = reg.dataLeitura ? reg.dataLeitura.split('T')[0] : (reg.data || new Date().toISOString().split('T')[0]);
                 const operador = reg.operador || 'Operador';
 
-                // Processa Entradas/Fontes (Análogo a Poços no modelo)
                 if (reg.leiturasEntrada && Array.isArray(reg.leiturasEntrada)) {
                     reg.leiturasEntrada.forEach(p => {
                         lancamentosProcessados.push({
@@ -217,32 +224,38 @@
                     });
                 }
 
-                // Processa Pontos de Consumo Interno
                 if (reg.leiturasConsumo && Array.isArray(reg.leiturasConsumo)) {
                     reg.leiturasConsumo.forEach(c => {
                         const kwh = parseFloat(c.valor) || 0;
+                        const custo = (c.custo !== undefined && c.custo !== null && c.custo > 0)
+                            ? parseFloat(c.custo)
+                            : (kwh * custoUnitario);
+
                         lancamentosProcessados.push({
                             rawIndex: rawIdx,
                             data: dataIso,
                             tipo: 'CONSUMO',
                             localMedicao: c.nome,
                             consumo: kwh,
-                            custo: kwh * TARIFA_KWH,
+                            custo: custo,
                             obs: `Operador: ${operador}`
                         });
                     });
                 }
 
-                // Suporte para a estrutura em colunas (leitura_1, leitura_2, etc.)
                 if (!reg.leiturasEntrada && !reg.leiturasConsumo) {
                     const volTotal = parseFloat(reg.consumo_diario) || parseFloat(reg.consumo) || 0;
+                    const custo = (reg.custo !== undefined && reg.custo !== null && reg.custo > 0)
+                        ? parseFloat(reg.custo)
+                        : (volTotal * custoUnitario);
+
                     lancamentosProcessados.push({
                         rawIndex: rawIdx,
                         data: dataIso,
                         tipo: 'CONSUMO',
                         localMedicao: reg.localMedicao || reg.setor || 'Geral (Medidor Principal)',
                         consumo: volTotal,
-                        custo: reg.custo ? parseFloat(reg.custo) : volTotal * TARIFA_KWH,
+                        custo: custo,
                         obs: reg.observacao || reg.obs || `Operador: ${operador}`
                     });
                 }
@@ -330,7 +343,6 @@
             const totalEntrada = entrada.reduce((acc, d) => acc + d.consumo, 0);
             const totalConsumido = consumo.reduce((acc, d) => acc + d.consumo, 0);
 
-            // RENDERIZA ENTRADA / FONTES
             if (entrada.length === 0) {
                 tbodyEntrada.innerHTML = '<tr><td colspan="4" class="p-3 text-center italic text-slate-400">Sem registros de entrada/fonte.</td></tr>';
             } else {
@@ -354,7 +366,6 @@
                 }).join('');
             }
 
-            // RENDERIZA CONSUMO
             if (consumo.length === 0) {
                 tbodyConsumo.innerHTML = '<tr><td colspan="5" class="p-3 text-center italic text-slate-400">Sem registros de consumo.</td></tr>';
             } else {
@@ -464,7 +475,6 @@
 
             const cores = ['#f59e0b', '#d97706', '#2563eb', '#7c3aed', '#059669', '#0891b2'];
 
-            // ROSCA ENTRADA
             chartEntradaRoscaInstance = new Chart(ctxEntrada, {
                 type: 'doughnut',
                 data: {
@@ -474,7 +484,6 @@
                 options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right' } } }
             });
 
-            // ROSCA CONSUMO
             chartConsumoRoscaInstance = new Chart(ctxConsumo, {
                 type: 'doughnut',
                 data: {

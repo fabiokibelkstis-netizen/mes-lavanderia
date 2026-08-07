@@ -28,7 +28,7 @@
                 <a href="index.html" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl text-xs font-bold transition flex items-center gap-2 border border-slate-700">
                     <i class="fa-solid fa-arrow-left"></i> Menu Principal
                 </a>            
-	    </div>
+            </div>
         </div>
     </header>
 
@@ -151,7 +151,7 @@
     <script>
         let rawHistorico = [];
         let lancamentosFlat = [];
-        let configGas = { qtd: 2, nomes: ["Relógio 1", "Relógio 2"] };
+        let configGas = { qtd: 2, nomes: ["Relógio 1", "Relógio 2"], custoM3: 0 };
         let chartBarraInstance = null;
         let chartRoscaInstance = null;
 
@@ -171,6 +171,7 @@
         function carregarEProcessarDados() {
             rawHistorico = JSON.parse(localStorage.getItem('mes_historico_gas') || '[]');
             lancamentosFlat = [];
+            const custoUnitario = parseFloat(configGas.custoM3) || 0;
 
             rawHistorico.forEach((reg, rawIdx) => {
                 const dataIso = reg.dataLeitura || reg.data;
@@ -179,7 +180,10 @@
                 if (reg.leituras && Array.isArray(reg.leituras)) {
                     reg.leituras.forEach(m => {
                         const vol = parseFloat(m.valor) || 0;
-                        const custo = parseFloat(m.custo) || (vol * 12.50); // Valor de exemplo R$ 12,50/m³
+                        const custo = (m.custo !== undefined && m.custo !== null && m.custo > 0)
+                            ? parseFloat(m.custo)
+                            : (vol * custoUnitario);
+
                         lancamentosFlat.push({
                             rawIndex: rawIdx,
                             data: dataIso,
@@ -191,12 +195,16 @@
                     });
                 } else {
                     const vol = parseFloat(reg.consumo) || 0;
+                    const custo = (reg.custo !== undefined && reg.custo !== null && reg.custo > 0)
+                        ? parseFloat(reg.custo)
+                        : (vol * custoUnitario);
+
                     lancamentosFlat.push({
                         rawIndex: rawIdx,
                         data: dataIso,
                         medidor: reg.medidor || reg.localMedicao || 'Relógio 1',
                         consumo: vol,
-                        custo: parseFloat(reg.custo) || (vol * 12.50),
+                        custo: custo,
                         obs: reg.obs || `Op: ${operador}`
                     });
                 }

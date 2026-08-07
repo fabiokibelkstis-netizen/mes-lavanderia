@@ -293,36 +293,30 @@
         });
 
         function carregarTodasConfiguracoes() {
-            // 1. Químicos
             listaProdutosQuimicos = JSON.parse(localStorage.getItem('mes_config_quimicos')) || PRODUTOS_PADRAO;
             renderizarTabelaQuimicos();
 
-            // 2. Config Água
             const configAgua = JSON.parse(localStorage.getItem('mes_config_agua') || '{"qtdPocos": 2, "nomesPocos": ["Poço 1", "Poço 2"], "qtdConsumo": 3, "nomesConsumo": ["Túnel 1", "Túnel 2", "Extratoras"], "custoM3": 0}');
             document.getElementById('setQtdPocos').value = configAgua.qtdPocos;
             document.getElementById('setQtdPontosConsumo').value = configAgua.qtdConsumo;
             document.getElementById('setCustoM3Agua').value = configAgua.custoM3 || 0;
             gerarCamposAgua(configAgua.nomesPocos, configAgua.nomesConsumo);
 
-            // 3. Config Gás
             const configGas = JSON.parse(localStorage.getItem('mes_config_gas') || '{"qtd": 2, "nomes": ["Relógio 1", "Relógio 2"], "custoM3": 0}');
             document.getElementById('setQtdRelogiosGas').value = configGas.qtd;
             document.getElementById('setCustoM3Gas').value = configGas.custoM3 || 0;
             gerarCamposRelogiosGas(configGas.nomes);
 
-            // 4. Config Energia
             const configEnergia = JSON.parse(localStorage.getItem('mes_config_energia') || '{"qtd": 2, "nomes": ["Medidor Principal", "Medidor Auxiliar"], "custoKwh": 0}');
             document.getElementById('setQtdRelogiosEnergia').value = configEnergia.qtd;
             document.getElementById('setCustoKwhEnergia').value = configEnergia.custoKwh || 0;
             gerarCamposRelogiosEnergia(configEnergia.nomes);
 
-            // 5. Config Balança
             const configBalanca = JSON.parse(localStorage.getItem('mes_config_balanca') || '{"baudRate": "9600", "tolerancia": "0.05"}');
             document.getElementById('setBaudRate').value = configBalanca.baudRate;
             document.getElementById('setTolerancia').value = configBalanca.tolerancia;
         }
 
-        // --- GESTÃO DE PRODUTOS QUÍMICOS ---
         function renderizarTabelaQuimicos() {
             const tbody = document.getElementById('tabelaProdutosQuimicos');
             if (listaProdutosQuimicos.length === 0) {
@@ -408,7 +402,6 @@
             }
         }
 
-        // --- HIDRÔMETROS DE ÁGUA ---
         function gerarCamposAgua(nomesPocosExistentes = [], nomesConsumoExistentes = []) {
             const qtdPocos = parseInt(document.getElementById('setQtdPocos').value);
             const qtdConsumo = parseInt(document.getElementById('setQtdPontosConsumo').value);
@@ -460,7 +453,6 @@
             alert("Configurações dos hidrômetros e custo de água salvos com sucesso!");
         }
 
-        // --- RELÓGIOS DE GÁS ---
         function gerarCamposRelogiosGas(nomesExistentes = []) {
             const qtd = parseInt(document.getElementById('setQtdRelogiosGas').value);
             const container = document.getElementById('containerNomesGas');
@@ -491,7 +483,6 @@
             alert("Configurações dos medidores e custo de gás salvos com sucesso!");
         }
 
-        // --- RELÓGIOS DE ENERGIA ---
         function gerarCamposRelogiosEnergia(nomesExistentes = []) {
             const qtd = parseInt(document.getElementById('setQtdRelogiosEnergia').value);
             const container = document.getElementById('containerNomesEnergia');
@@ -522,7 +513,6 @@
             alert("Configurações dos medidores e custo de energia salvos com sucesso!");
         }
 
-        // --- BALANÇA E LIMPEZA ---
         function salvarConfigBalanca(e) {
             e.preventDefault();
             const baudRate = document.getElementById('setBaudRate').value;
