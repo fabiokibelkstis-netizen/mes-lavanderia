@@ -22,10 +22,10 @@
             </div>
             <div class="flex items-center gap-2">
                 <a href="configuracoes.html" class="bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold px-3 py-2 rounded-lg transition border border-slate-700">⚙️ Configurações</a>
-		<a href="gestaoquimica.html" class="bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold px-4 py-2 rounded-xl transition flex items-center gap-2 shadow">
-                <i class="fa-solid fa-chart-line"></i> Dashboard de Recebimento de Químicos
-            </a>            
-	    </div>
+                <a href="gestaoquimica.html" class="bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold px-4 py-2 rounded-xl transition flex items-center gap-2 shadow">
+                    <i class="fa-solid fa-chart-line"></i> Dashboard Químico
+                </a>            
+            </div>
         </div>
     </header>
 
@@ -78,7 +78,7 @@
                 </div>
 
                 <div id="containerProdutos" class="space-y-3">
-                    </div>
+                </div>
             </div>
 
             <div class="space-y-2">
@@ -104,18 +104,18 @@
 
     <script>
         const PRODUTOS_PADRAO = [
-            { id: "beiclean_cwt", nome: "BEICLEAN CWT", un: "L" },
-            { id: "beipur_msc", nome: "BEIPUR MSC", un: "L" },
-            { id: "beibleach_pe", nome: "BEIBLEACH PE", un: "L" },
-            { id: "beibleach_hc_liq", nome: "BEIBLEACH HC LIQ", un: "L" },
-            { id: "beibleach_net", nome: "BEIBLEACH NET", un: "L" },
-            { id: "beiplex_cab", nome: "BEIPLEX CAB", un: "L" },
-            { id: "beiblanc_had", nome: "BEIBLANC HAD", un: "L" },
-            { id: "beibleach_blue", nome: "BEIBLEACH BLUE ACTIVE", un: "L" },
-            { id: "beiacid_wsd", nome: "BEIACID WSD", un: "L" },
-            { id: "wp35", nome: "WP35", un: "L" },
-            { id: "beisoft_avra", nome: "BEISOFT AVRA", un: "L" },
-            { id: "sal_grosso", nome: "SAL GROSSO", un: "Kg" }
+            { id: "beiclean_cwt", nome: "BEICLEAN CWT", un: "L", custoPadrao: 12.50 },
+            { id: "beipur_msc", nome: "BEIPUR MSC", un: "L", custoPadrao: 15.00 },
+            { id: "beibleach_pe", nome: "BEIBLEACH PE", un: "L", custoPadrao: 18.20 },
+            { id: "beibleach_hc_liq", nome: "BEIBLEACH HC LIQ", un: "L", custoPadrao: 8.50 },
+            { id: "beibleach_net", nome: "BEIBLEACH NET", un: "L", custoPadrao: 10.00 },
+            { id: "beiplex_cab", nome: "BEIPLEX CAB", un: "L", custoPadrao: 22.00 },
+            { id: "beiblanc_had", nome: "BEIBLANC HAD", un: "L", custoPadrao: 35.00 },
+            { id: "beibleach_blue", nome: "BEIBLEACH BLUE ACTIVE", un: "L", custoPadrao: 28.00 },
+            { id: "beiacid_wsd", nome: "BEIACID WSD", un: "L", custoPadrao: 14.50 },
+            { id: "wp35", nome: "WP35", un: "L", custoPadrao: 16.00 },
+            { id: "beisoft_avra", nome: "BEISOFT AVRA", un: "L", custoPadrao: 9.80 },
+            { id: "sal_grosso", nome: "SAL GROSSO", un: "Kg", custoPadrao: 2.50 }
         ];
 
         let rawHistorico = [];
@@ -154,7 +154,6 @@
                 }
             }
 
-            // Modo Novo Lançamento
             definirDataHoraAtual();
             adicionarLinhaProduto();
         }
@@ -196,13 +195,14 @@
 
             const listaGeral = [...listaProdutos];
             if (nomeSelecionado && !listaGeral.some(p => p.nome === nomeSelecionado)) {
-                listaGeral.push({ nome: nomeSelecionado, un: 'L' });
+                listaGeral.push({ nome: nomeSelecionado, un: 'L', custoPadrao: 0 });
             }
 
             const optionsHtml = listaGeral.map(p => {
                 const un = p.un || p.unidade || 'L';
+                const custo = parseFloat(p.custoPadrao || 0).toFixed(2);
                 const selected = p.nome === nomeSelecionado ? 'selected' : '';
-                return `<option value="${p.nome}" data-un="${un}" ${selected}>${p.nome} (${un})</option>`;
+                return `<option value="${p.nome}" data-un="${un}" data-custo="${custo}" ${selected}>${p.nome} (${un}) - R$ ${custo}/${un}</option>`;
             }).join('');
 
             const rowId = 'prod_row_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4);
@@ -210,7 +210,7 @@
             const html = `
                 <div id="${rowId}" class="prod-item-row flex flex-wrap sm:flex-nowrap items-center gap-3 bg-slate-50 p-3 rounded-xl border border-slate-200">
                     <div class="w-full sm:w-7/12">
-                        <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Produto Químico</label>
+                        <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Produto Químico (Configurado)</label>
                         <select class="field-item-nome w-full p-2 border rounded-lg text-xs bg-white outline-none focus:ring-1 focus:ring-purple-500 font-semibold text-slate-800">
                             ${optionsHtml}
                         </select>
@@ -259,9 +259,16 @@
                 const nome = selectEl.value;
                 const valor = parseFloat(valEl.value) || 0;
                 const unidade = selectEl.options[selectEl.selectedIndex].getAttribute('data-un') || 'L';
+                const custoUnitario = parseFloat(selectEl.options[selectEl.selectedIndex].getAttribute('data-custo')) || 0;
 
                 if (valor > 0) {
-                    leiturasEntrada.push({ nome, unidade, valor });
+                    leiturasEntrada.push({ 
+                        nome, 
+                        unidade, 
+                        valor, 
+                        custoUnitario,
+                        custoTotal: valor * custoUnitario
+                    });
                 }
             });
 
@@ -280,11 +287,9 @@
             };
 
             if (editIndex !== null && !isNaN(editIndex)) {
-                // Atualização de registro existente
                 rawHistorico[editIndex] = registro;
                 alert("Lançamento atualizado com sucesso!");
             } else {
-                // Inclusão de novo registro
                 rawHistorico.push(registro);
                 alert("Novo recebimento gravado com sucesso!");
             }

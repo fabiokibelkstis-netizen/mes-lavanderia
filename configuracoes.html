@@ -20,7 +20,7 @@
                     <p class="text-xs text-slate-400">Produtos Químicos, Hidrômetros, Medidores e Balança</p>
                 </div>
             </div>
-            <a href="index.html" class="bg-slate-700 hover:bg-slate-600 text-xs font-bold px-4 py-2 rounded-lg transition">⬅️ Menu Principal</a>
+            <a href="gestaoquimica.html" class="bg-slate-700 hover:bg-slate-600 text-xs font-bold px-4 py-2 rounded-lg transition">⬅️ Dashboard Químico</a>
         </div>
     </header>
 
@@ -38,7 +38,7 @@
                 </button>
             </div>
             <p class="text-xs text-slate-500">
-                Gerencie a lista de insumos químicos, altere custos unitários padrões e defina unidades de medida (L ou Kg).
+                Gerencie a lista de insumos químicos, altere custos unitários padrões (R$/un) e defina unidades de medida (L ou Kg).
             </p>
 
             <div class="overflow-x-auto">
@@ -254,7 +254,7 @@
                     </div>
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 mb-1">Custo Unit. Padrão (R$)</label>
-                        <input type="number" step="0.01" min="0" id="prodCusto" placeholder="0.00" class="w-full p-2 border rounded-lg text-xs bg-slate-50 outline-none">
+                        <input type="number" step="0.01" min="0" id="prodCusto" placeholder="0.00" class="w-full p-2 border rounded-lg text-xs bg-slate-50 outline-none font-bold">
                     </div>
                 </div>
 
@@ -272,18 +272,18 @@
 
     <script>
         const PRODUTOS_PADRAO = [
-            { id: "beiclean_cwt", nome: "BEICLEAN CWT", desc: "Detergente concentrado", un: "L", custoPadrao: 0 },
-            { id: "beipur_msc", nome: "BEIPUR MSC", desc: "Alcalino concentrado - soda", un: "L", custoPadrao: 0 },
-            { id: "beibleach_pe", nome: "BEIBLEACH PE", desc: "Ácido Peracético", un: "L", custoPadrao: 0 },
-            { id: "beibleach_hc_liq", nome: "BEIBLEACH HC LIQ", desc: "Hipoclorito de Sódio", un: "L", custoPadrao: 0 },
-            { id: "beibleach_net", nome: "BEIBLEACH NET", desc: "Bissulfito", un: "L", custoPadrao: 0 },
-            { id: "beiplex_cab", nome: "BEIPLEX CAB", desc: "Complexante", un: "L", custoPadrao: 0 },
-            { id: "beiblanc_had", nome: "BEIBLANC HAD", desc: "Branqueador óptico", un: "L", custoPadrao: 0 },
-            { id: "beibleach_blue", nome: "BEIBLEACH BLUE ACTIVE", desc: "Ativador Peróxido", un: "L", custoPadrao: 0 },
-            { id: "beiacid_wsd", nome: "BEIACID WSD", desc: "Ácido fórmico", un: "L", custoPadrao: 0 },
-            { id: "wp35", nome: "WP35", desc: "Peróxido de Hidrogênio", un: "L", custoPadrao: 0 },
-            { id: "beisoft_avra", nome: "BEISOFT AVRA", desc: "Amaciante", un: "L", custoPadrao: 0 },
-            { id: "sal_grosso", nome: "SAL GROSSO", desc: "Pacote c/ 25kg", un: "Kg", custoPadrao: 0 }
+            { id: "beiclean_cwt", nome: "BEICLEAN CWT", desc: "Detergente concentrado", un: "L", custoPadrao: 12.50 },
+            { id: "beipur_msc", nome: "BEIPUR MSC", desc: "Alcalino concentrado - soda", un: "L", custoPadrao: 15.00 },
+            { id: "beibleach_pe", nome: "BEIBLEACH PE", desc: "Ácido Peracético", un: "L", custoPadrao: 18.20 },
+            { id: "beibleach_hc_liq", nome: "BEIBLEACH HC LIQ", desc: "Hipoclorito de Sódio", un: "L", custoPadrao: 8.50 },
+            { id: "beibleach_net", nome: "BEIBLEACH NET", desc: "Bissulfito", un: "L", custoPadrao: 10.00 },
+            { id: "beiplex_cab", nome: "BEIPLEX CAB", desc: "Complexante", un: "L", custoPadrao: 22.00 },
+            { id: "beiblanc_had", nome: "BEIBLANC HAD", desc: "Branqueador óptico", un: "L", custoPadrao: 35.00 },
+            { id: "beibleach_blue", nome: "BEIBLEACH BLUE ACTIVE", desc: "Ativador Peróxido", un: "L", custoPadrao: 28.00 },
+            { id: "beiacid_wsd", nome: "BEIACID WSD", desc: "Ácido fórmico", un: "L", custoPadrao: 14.50 },
+            { id: "wp35", nome: "WP35", desc: "Peróxido de Hidrogênio", un: "L", custoPadrao: 16.00 },
+            { id: "beisoft_avra", nome: "BEISOFT AVRA", desc: "Amaciante", un: "L", custoPadrao: 9.80 },
+            { id: "sal_grosso", nome: "SAL GROSSO", desc: "Pacote c/ 25kg", un: "Kg", custoPadrao: 2.50 }
         ];
 
         let listaProdutosQuimicos = [];
@@ -294,6 +294,7 @@
 
         function carregarTodasConfiguracoes() {
             listaProdutosQuimicos = JSON.parse(localStorage.getItem('mes_config_quimicos')) || PRODUTOS_PADRAO;
+            localStorage.setItem('mes_config_quimicos', JSON.stringify(listaProdutosQuimicos));
             renderizarTabelaQuimicos();
 
             const configAgua = JSON.parse(localStorage.getItem('mes_config_agua') || '{"qtdPocos": 2, "nomesPocos": ["Poço 1", "Poço 2"], "qtdConsumo": 3, "nomesConsumo": ["Túnel 1", "Túnel 2", "Extratoras"], "custoM3": 0}');
@@ -325,12 +326,12 @@
             }
 
             tbody.innerHTML = listaProdutosQuimicos.map((p, idx) => `
-                <tr class="hover:bg-slate-50 transition">
+                <tr class="hover:bg-slate-50 transition border-b">
                     <td class="p-2.5 border font-mono text-[11px] text-slate-600">${p.id}</td>
                     <td class="p-2.5 border font-bold text-slate-800">${p.nome}</td>
                     <td class="p-2.5 border text-slate-600">${p.desc || '-'}</td>
                     <td class="p-2.5 border text-center font-semibold text-purple-700">${p.un}</td>
-                    <td class="p-2.5 border text-right font-bold text-slate-800">R$ ${(p.custoPadrao || 0).toFixed(2)}</td>
+                    <td class="p-2.5 border text-right font-bold text-emerald-700 font-mono">R$ ${(parseFloat(p.custoPadrao) || 0).toFixed(2)}</td>
                     <td class="p-2.5 border text-center">
                         <button onclick="editarProdutoQuimico(${idx})" class="text-blue-600 hover:text-blue-800 font-bold px-1" title="Editar">✏️</button>
                         <button onclick="excluirProdutoQuimico(${idx})" class="text-red-600 hover:text-red-800 font-bold px-1" title="Excluir">❌</button>
