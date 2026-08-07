@@ -37,6 +37,7 @@
 
     <main class="max-w-7xl mx-auto w-full p-4 my-4 space-y-6">
 
+        <!-- FILTRO DE PERÍODO -->
         <div class="bg-white rounded-2xl shadow-md p-4 border border-slate-200 flex flex-wrap items-center justify-between gap-4">
             <div class="flex items-center gap-2 text-slate-800 font-bold text-sm">
                 <i class="fa-solid fa-filter text-purple-600"></i>
@@ -75,7 +76,7 @@
             <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
                 <span class="text-xs font-bold text-slate-500 uppercase">Consumo Estimado (Kg/L)</span>
                 <p id="kpiConsumoTotalQtd" class="text-2xl font-black text-indigo-600 mt-1">0.00</p>
-                <span class="text-[11px] text-slate-400 font-medium">Est. Inicial + Entradas - Est. Final</span>
+                <span class="text-[11px] text-slate-400 font-medium">(Est. Anterior + Entradas) - Est. Atual</span>
             </div>
             <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
                 <span class="text-xs font-bold text-slate-500 uppercase">Custo do Consumo (R$)</span>
@@ -84,13 +85,15 @@
             </div>
         </div>
 
+        <!-- SEÇÃO 1: ENTRADAS E CONSUMOS POR PRODUTO -->
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <!-- TABELA RESUMO POR PRODUTO -->
+            
+            <!-- GRID 1.1: ENTRADAS POR PRODUTO -->
             <div class="bg-white rounded-2xl shadow-md p-6 border border-slate-200">
                 <h3 class="text-sm font-bold text-slate-800 mb-4 border-b pb-2 flex items-center justify-between">
                     <span class="flex items-center gap-2">
-                        <i class="fa-solid fa-boxes-stacked text-purple-600"></i>
-                        Resumo de Entradas e Consumo por Produto
+                        <i class="fa-solid fa-arrow-down-to-bracket text-purple-600"></i>
+                        Lançamentos de Entradas (Recebimentos por Produto)
                     </span>
                     <a href="configuracoes.html" class="text-[11px] text-purple-600 hover:underline">Ajustar Preços ⚙️</a>
                 </h3>
@@ -102,39 +105,70 @@
                                 <th class="p-2.5 border border-purple-200 text-center">Un.</th>
                                 <th class="p-2.5 border border-purple-200 text-right">Custo Unit.</th>
                                 <th class="p-2.5 border border-purple-200 text-center">Qtd. Rec.</th>
-                                <th class="p-2.5 border border-purple-200 text-right">Custo Rec.</th>
-                                <th class="p-2.5 border border-purple-200 text-center">Consumo</th>
-                                <th class="p-2.5 border border-purple-200 text-right">Custo Cons.</th>
+                                <th class="p-2.5 border border-purple-200 text-right">Custo Rec. (R$)</th>
                             </tr>
                         </thead>
-                        <tbody id="tabelaResumoProdutos"></tbody>
+                        <tbody id="tabelaEntradasProdutos"></tbody>
                     </table>
                 </div>
             </div>
 
-            <!-- TABELA RESUMO POR FORNECEDOR -->
+            <!-- GRID 1.2: CONSUMO POR PRODUTO -->
             <div class="bg-white rounded-2xl shadow-md p-6 border border-slate-200">
                 <h3 class="text-sm font-bold text-slate-800 mb-4 border-b pb-2 flex items-center gap-2">
-                    <i class="fa-solid fa-truck text-indigo-600"></i>
-                    Resumo de Compras por Fornecedor
+                    <i class="fa-solid fa-fire-flame-simple text-amber-600"></i>
+                    Lançamentos de Consumo (Consumo por Produto)
                 </h3>
                 <div class="overflow-x-auto">
                     <table class="w-full text-left text-xs border-collapse">
-                        <thead class="bg-indigo-50 text-indigo-900 font-bold">
+                        <thead class="bg-amber-50 text-amber-900 font-bold">
                             <tr>
-                                <th class="p-2.5 border border-indigo-200">Fornecedor</th>
-                                <th class="p-2.5 border border-indigo-200 text-center">Entradas</th>
-                                <th class="p-2.5 border border-indigo-200 text-center">Volume Acum.</th>
-                                <th class="p-2.5 border border-indigo-200 text-right">Custo Total (R$)</th>
-                                <th class="p-2.5 border border-indigo-200 text-center">Rep. (%)</th>
+                                <th class="p-2.5 border border-amber-200">Produto</th>
+                                <th class="p-2.5 border border-amber-200 text-center">Un.</th>
+                                <th class="p-2.5 border border-amber-200 text-right">Custo Unit.</th>
+                                <th class="p-2.5 border border-amber-200 text-center">Qtd. Consumida</th>
+                                <th class="p-2.5 border border-amber-200 text-right">Custo Consumo (R$)</th>
                             </tr>
                         </thead>
-                        <tbody id="tabelaResumoFornecedores"></tbody>
+                        <tbody id="tabelaConsumoProdutos"></tbody>
                     </table>
                 </div>
             </div>
+
         </div>
 
+        <!-- SEÇÃO 2: AVALIAÇÃO DE CONSUMO DE QUÍMICOS (LARGURA COMPLETA) -->
+        <div class="bg-white rounded-2xl shadow-md p-6 border border-slate-200 w-full">
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-3 border-b pb-2">
+                <h3 class="text-sm font-bold text-slate-800 flex items-center gap-2">
+                    <i class="fa-solid fa-calculator text-indigo-600"></i>
+                    Avaliação de Consumo de Químicos (Balanço de Medição de Estoque)
+                </h3>
+                <span class="text-[11px] bg-slate-100 text-slate-600 font-medium px-2.5 py-1 rounded-md border border-slate-200">
+                    Consumo = (Estoque Anterior + Entrada) - Estoque Atual
+                </span>
+            </div>
+            
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-xs border-collapse">
+                    <thead class="bg-indigo-50 text-indigo-900 font-bold">
+                        <tr>
+                            <th class="p-2.5 border border-indigo-200">Produto</th>
+                            <th class="p-2.5 border border-indigo-200 text-center">Estoque Anterior</th>
+                            <th class="p-2.5 border border-indigo-200 text-center">(+) Entradas</th>
+                            <th class="p-2.5 border border-indigo-200 text-center">(-) Estoque Atual</th>
+                            <th class="p-2.5 border border-indigo-200 text-center font-black bg-indigo-100 border-indigo-300">(=) Consumo Avaliado</th>
+                            <th class="p-2.5 border border-indigo-200 text-center">Média Diária</th>
+                            <th class="p-2.5 border border-indigo-200 text-center">Autonomia (Dias)</th>
+                            <th class="p-2.5 border border-indigo-200 text-right">Custo Cons. (R$)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabelaAvaliacaoConsumo"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- GRÁFICOS DE RECEBIMENTOS -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div class="lg:col-span-2 bg-white p-6 rounded-2xl shadow-md border border-slate-200">
                 <h3 class="text-sm font-bold text-slate-800 mb-4 flex items-center gap-2">
@@ -157,10 +191,43 @@
             </div>
         </div>
 
+        <!-- GRÁFICO DE LINHAS - HISTÓRICO DE CONSUMO DIA A DIA COM FILTRO DE PRODUTOS -->
+        <div class="bg-white p-6 rounded-2xl shadow-md border border-slate-200 space-y-4">
+            <div class="flex flex-wrap items-center justify-between gap-2 border-b pb-3">
+                <div>
+                    <h3 class="text-sm font-bold text-slate-800 flex items-center gap-2">
+                        <i class="fa-solid fa-chart-line text-purple-600"></i>
+                        Histórico do Consumo Diário por Produto (Kg/L)
+                    </h3>
+                    <p class="text-xs text-slate-500 font-normal mt-0.5">Evolução dia a dia conforme o Período de Análise</p>
+                </div>
+                <div class="flex items-center gap-2 text-xs">
+                    <button onclick="selecionarTodosProdutosGrafico(true)" class="bg-purple-50 hover:bg-purple-100 text-purple-700 font-bold px-2.5 py-1 rounded-lg border border-purple-200 transition">
+                        Selecionar Todos
+                    </button>
+                    <button onclick="selecionarTodosProdutosGrafico(false)" class="bg-slate-100 hover:bg-slate-200 text-slate-600 font-semibold px-2.5 py-1 rounded-lg border border-slate-200 transition">
+                        Limpar Seleção
+                    </button>
+                </div>
+            </div>
+
+            <!-- FILTRO DE PRODUTOS EXIBIDOS -->
+            <div id="containerFiltroProdutosGrafico" class="flex flex-wrap items-center gap-2 pt-1 text-xs">
+                <!-- Inserido dinamicamente via JS -->
+            </div>
+
+            <div class="h-80">
+                <canvas id="chartConsumoLinhas"></canvas>
+            </div>
+        </div>
+
         <!-- TABELA DE HISTÓRICO DE RECEBIMENTOS -->
         <div class="bg-white rounded-2xl shadow-md p-6 border border-slate-200">
             <h3 class="text-sm font-bold text-slate-800 mb-4 border-b pb-2 flex justify-between items-center">
-                <span>Histórico de Recebimentos Registrados</span>
+                <span class="flex items-center gap-2">
+                    <i class="fa-solid fa-arrow-down-to-bracket text-purple-600"></i>
+                    Histórico de Recebimentos Registrados
+                </span>
                 <span id="qtdRegistros" class="text-xs text-slate-500 font-normal">0 registro(s)</span>
             </h3>
             
@@ -181,6 +248,33 @@
                         </tr>
                     </thead>
                     <tbody id="tabelaHistorico"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- TABELA DE HISTÓRICO DE ESTOQUES REGISTRADOS -->
+        <div class="bg-white rounded-2xl shadow-md p-6 border border-slate-200">
+            <h3 class="text-sm font-bold text-slate-800 mb-4 border-b pb-2 flex justify-between items-center">
+                <span class="flex items-center gap-2">
+                    <i class="fa-solid fa-boxes-stacked text-indigo-600"></i>
+                    Histórico de Estoques Registrados
+                </span>
+                <span id="qtdRegistrosEstoque" class="text-xs text-slate-500 font-normal">0 registro(s)</span>
+            </h3>
+            
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-xs border-collapse">
+                    <thead class="bg-slate-100 text-slate-700 font-bold">
+                        <tr>
+                            <th class="p-3 border text-center">Data / Hora</th>
+                            <th class="p-3 border text-center">Produto</th>
+                            <th class="p-3 border text-center">Qtd. Em Estoque</th>
+                            <th class="p-3 border text-center">Operador</th>
+                            <th class="p-3 border text-center">Observação</th>
+                            <th class="p-3 border text-center">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabelaHistoricoEstoque"></tbody>
                 </table>
             </div>
         </div>
@@ -210,10 +304,13 @@
         let rawHistorico = [];
         let rawEstoqueHistorico = [];
         let lancamentosProcessados = [];
+        let lancamentosEstoqueProcessados = [];
         let listaProdutosCadastrados = [];
         let mapaCustos = {};
+        let produtosSelecionadosGrafico = {};
         let chartBarraInstance = null;
         let chartRoscaInstance = null;
+        let chartLinhasInstance = null;
 
         document.addEventListener('DOMContentLoaded', () => {
             carregarProdutosEConfiguracoes();
@@ -228,6 +325,9 @@
             mapaCustos = {};
             listaProdutosCadastrados.forEach(p => {
                 mapaCustos[p.nome] = parseFloat(p.custoPadrao) || 0;
+                if (produtosSelecionadosGrafico[p.nome] === undefined) {
+                    produtosSelecionadosGrafico[p.nome] = true;
+                }
             });
         }
 
@@ -243,7 +343,6 @@
             );
 
             lancamentosProcessados = [];
-
             rawHistorico.forEach((reg, rawIdx) => {
                 const dataHoraIso = reg.dataLeitura || new Date().toISOString();
                 const dataIso = dataHoraIso.split('T')[0];
@@ -275,6 +374,31 @@
                     });
                 }
             });
+
+            lancamentosEstoqueProcessados = [];
+            rawEstoqueHistorico.forEach((reg, rawIdx) => {
+                const dataHoraIso = reg.dataLeitura || new Date().toISOString();
+                const dataIso = dataHoraIso.split('T')[0];
+                const operador = reg.operador || 'Operador';
+                const obs = reg.observacao || reg.obs || '-';
+
+                if (reg.itensEstoque && Array.isArray(reg.itensEstoque)) {
+                    reg.itensEstoque.forEach((p, subIdx) => {
+                        const qtd = parseFloat(p.valor) || 0;
+                        lancamentosEstoqueProcessados.push({
+                            rawIndex: rawIdx,
+                            subIndex: subIdx,
+                            dataHora: dataHoraIso,
+                            data: dataIso,
+                            produto: p.nome,
+                            unidade: p.unidade || p.un || 'L',
+                            quantidade: qtd,
+                            operador: operador,
+                            obs: obs
+                        });
+                    });
+                }
+            });
         }
 
         function definirUltimos7Dias() {
@@ -293,6 +417,17 @@
             const dtFim = document.getElementById('filtroDataFim').value;
 
             return lancamentosProcessados.filter(item => {
+                if (dtInicio && item.data < dtInicio) return false;
+                if (dtFim && item.data > dtFim) return false;
+                return true;
+            });
+        }
+
+        function obterLancamentosEstoqueFiltrados() {
+            const dtInicio = document.getElementById('filtroDataInicio').value;
+            const dtFim = document.getElementById('filtroDataFim').value;
+
+            return lancamentosEstoqueProcessados.filter(item => {
                 if (dtInicio && item.data < dtInicio) return false;
                 if (dtFim && item.data > dtFim) return false;
                 return true;
@@ -319,8 +454,31 @@
             }
         }
 
+        function editarRegistroEstoque(rawIdx) {
+            window.location.href = `lancamento_estoque_quimico.html?edit=${rawIdx}`;
+        }
+
+        function excluirRegistroEstoque(rawIdx) {
+            if (rawIdx !== undefined && confirm("Deseja realmente excluir esta medição de estoque?")) {
+                rawEstoqueHistorico.splice(rawIdx, 1);
+                localStorage.setItem('mes_historico_estoque_quimico', JSON.stringify(rawEstoqueHistorico));
+                carregarEProcessarDados();
+                atualizarTela();
+            }
+        }
+
         function calcularConsumoEEstoques(dtInicio, dtFim, lancamentosFiltrados) {
             const consumoPorProduto = {};
+
+            let diasNoPeriodo = 1;
+            if (dtInicio && dtFim) {
+                const d1 = new Date(dtInicio + 'T00:00:00');
+                const d2 = new Date(dtFim + 'T00:00:00');
+                const diffTime = Math.abs(d2 - d1);
+                diasNoPeriodo = Math.max(1, Math.round(diffTime / (1000 * 60 * 60 * 24)) + 1);
+            } else {
+                diasNoPeriodo = 7;
+            }
 
             const estoqueOrdenado = [...rawEstoqueHistorico].sort((a, b) => new Date(a.dataLeitura) - new Date(b.dataLeitura));
 
@@ -341,7 +499,7 @@
                     if (e.itensEstoque && Array.isArray(e.itensEstoque)) {
                         const itemMatch = e.itensEstoque.find(i => i.nome === pNome);
                         if (itemMatch) {
-                            if (!dtInicio || dtEst <= dtInicio) {
+                            if (!dtInicio || dtEst < dtInicio) {
                                 saldoInicial = parseFloat(itemMatch.valor) || 0;
                             }
                             if (!dtFim || dtEst <= dtFim) {
@@ -351,22 +509,33 @@
                     }
                 });
 
+                const estAnteriorVal = saldoInicial !== null ? saldoInicial : 0;
+                const estAtualVal = saldoFinal !== null ? saldoFinal : 0;
+
                 let consumoQtd = 0;
-                if (saldoInicial !== null && saldoFinal !== null) {
-                    consumoQtd = Math.max(0, (saldoInicial + qtdEntradas) - saldoFinal);
-                } else if (saldoFinal !== null) {
-                    consumoQtd = Math.max(0, qtdEntradas - saldoFinal);
+                if (saldoInicial !== null || saldoFinal !== null) {
+                    consumoQtd = Math.max(0, (estAnteriorVal + qtdEntradas) - estAtualVal);
                 } else {
-                    consumoQtd = qtdEntradas; 
+                    consumoQtd = qtdEntradas;
+                }
+
+                const mediaDiaria = consumoQtd / diasNoPeriodo;
+                let diasEstoque = null;
+                if (mediaDiaria > 0) {
+                    diasEstoque = estAtualVal / mediaDiaria;
                 }
 
                 consumoPorProduto[pNome] = {
                     unidade: un,
                     custoUnitario: custoUnit,
+                    estoqueAnterior: estAnteriorVal,
                     qtdEntradas: qtdEntradas,
                     custoEntradas: qtdEntradas * custoUnit,
+                    estoqueAtual: estAtualVal,
                     qtdConsumo: consumoQtd,
-                    custoConsumo: consumoQtd * custoUnit
+                    custoConsumo: consumoQtd * custoUnit,
+                    mediaDiaria: mediaDiaria,
+                    diasEstoque: diasEstoque
                 };
             });
 
@@ -376,16 +545,20 @@
         function atualizarTela() {
             carregarProdutosEConfiguracoes();
             const filtrados = obterLancamentosFiltrados();
+            const filtradosEstoque = obterLancamentosEstoqueFiltrados();
             const dtInicio = document.getElementById('filtroDataInicio').value;
             const dtFim = document.getElementById('filtroDataFim').value;
 
             const analiseConsumo = calcularConsumoEEstoques(dtInicio, dtFim, filtrados);
 
             renderizarKPIs(filtrados, analiseConsumo);
-            renderizarResumos(filtrados, analiseConsumo);
+            renderizarResumos(analiseConsumo);
             renderizarTabela(filtrados);
+            renderizarTabelaEstoque(filtradosEstoque);
             renderizarGraficoBarras(filtrados);
             renderizarGraficoRosca(filtrados);
+            renderizarControlesFiltroGrafico();
+            renderizarGraficoLinhasConsumo(dtInicio, dtFim, filtrados);
         }
 
         function renderizarKPIs(dadosEntrada, analiseConsumo) {
@@ -409,53 +582,75 @@
             document.getElementById('kpiConsumoTotalCusto').innerText = `R$ ${totalConsumoCusto.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
         }
 
-        function renderizarResumos(dadosEntrada, analiseConsumo) {
-            const tbodyProd = document.getElementById('tabelaResumoProdutos');
-            const tbodyForn = document.getElementById('tabelaResumoFornecedores');
+        function renderizarResumos(analiseConsumo) {
+            const tbodyEntradas = document.getElementById('tabelaEntradasProdutos');
+            const tbodyConsumo = document.getElementById('tabelaConsumoProdutos');
+            const tbodyAvaliacao = document.getElementById('tabelaAvaliacaoConsumo');
 
             const listaProds = Object.keys(analiseConsumo);
 
             if (listaProds.length === 0) {
-                tbodyProd.innerHTML = '<tr><td colspan="7" class="p-3 text-center italic text-slate-400">Sem dados cadastrados.</td></tr>';
+                tbodyEntradas.innerHTML = '<tr><td colspan="5" class="p-3 text-center italic text-slate-400">Sem dados cadastrados.</td></tr>';
+                tbodyConsumo.innerHTML = '<tr><td colspan="5" class="p-3 text-center italic text-slate-400">Sem dados cadastrados.</td></tr>';
+                tbodyAvaliacao.innerHTML = '<tr><td colspan="8" class="p-3 text-center italic text-slate-400">Sem dados cadastrados.</td></tr>';
             } else {
-                tbodyProd.innerHTML = listaProds.map(p => {
+                tbodyEntradas.innerHTML = listaProds.map(p => {
                     const item = analiseConsumo[p];
                     return `
-                        <tr class="hover:bg-slate-50 border-b">
+                        <tr class="hover:bg-purple-50/50 border-b">
                             <td class="p-2 font-semibold text-slate-800">${p}</td>
                             <td class="p-2 text-center text-slate-600">${item.unidade}</td>
                             <td class="p-2 text-right font-mono text-emerald-700">R$ ${item.custoUnitario.toFixed(2)}</td>
                             <td class="p-2 text-center font-bold text-purple-700">${item.qtdEntradas.toFixed(2)}</td>
-                            <td class="p-2 text-right font-bold text-slate-800 font-mono">R$ ${item.custoEntradas.toFixed(2)}</td>
-                            <td class="p-2 text-center font-bold text-indigo-700">${item.qtdConsumo.toFixed(2)}</td>
-                            <td class="p-2 text-right font-bold text-amber-600 font-mono">R$ ${item.custoConsumo.toFixed(2)}</td>
+                            <td class="p-2 text-right font-bold text-purple-900 font-mono">R$ ${item.custoEntradas.toFixed(2)}</td>
                         </tr>
                     `;
                 }).join('');
-            }
 
-            const totalCustoGeral = dadosEntrada.reduce((acc, d) => acc + d.custoTotal, 0);
-
-            if (dadosEntrada.length === 0) {
-                tbodyForn.innerHTML = '<tr><td colspan="5" class="p-3 text-center italic text-slate-400">Sem registros.</td></tr>';
-            } else {
-                const agForn = {};
-                dadosEntrada.forEach(i => {
-                    agForn[i.fornecedor] = agForn[i.fornecedor] || { entradas: 0, vol: 0, custo: 0 };
-                    agForn[i.fornecedor].entradas += 1;
-                    agForn[i.fornecedor].vol += i.quantidade;
-                    agForn[i.fornecedor].custo += i.custoTotal;
-                });
-
-                tbodyForn.innerHTML = Object.keys(agForn).map(f => {
-                    const pct = totalCustoGeral > 0 ? (agForn[f].custo / totalCustoGeral) * 100 : 0;
+                tbodyConsumo.innerHTML = listaProds.map(p => {
+                    const item = analiseConsumo[p];
                     return `
-                        <tr class="hover:bg-slate-50 border-b">
-                            <td class="p-2.5 font-semibold text-slate-800">${f}</td>
-                            <td class="p-2.5 text-center text-slate-600">${agForn[f].entradas}</td>
-                            <td class="p-2.5 text-center font-bold text-indigo-700">${agForn[f].vol.toFixed(2)}</td>
-                            <td class="p-2.5 text-right font-bold text-emerald-700 font-mono">R$ ${agForn[f].custo.toFixed(2)}</td>
-                            <td class="p-2.5 text-center font-semibold text-slate-700">${pct.toFixed(1)}%</td>
+                        <tr class="hover:bg-amber-50/50 border-b">
+                            <td class="p-2 font-semibold text-slate-800">${p}</td>
+                            <td class="p-2 text-center text-slate-600">${item.unidade}</td>
+                            <td class="p-2 text-right font-mono text-emerald-700">R$ ${item.custoUnitario.toFixed(2)}</td>
+                            <td class="p-2 text-center font-bold text-amber-600">${item.qtdConsumo.toFixed(2)}</td>
+                            <td class="p-2 text-right font-bold text-amber-800 font-mono">R$ ${item.custoConsumo.toFixed(2)}</td>
+                        </tr>
+                    `;
+                }).join('');
+
+                tbodyAvaliacao.innerHTML = listaProds.map(p => {
+                    const item = analiseConsumo[p];
+                    
+                    let badgeDias = '';
+                    if (item.diasEstoque === null) {
+                        if (item.estoqueAtual > 0) {
+                            badgeDias = `<span class="bg-emerald-100 text-emerald-800 border border-emerald-300 font-bold px-2 py-0.5 rounded-full text-[10px]"><i class="fa-solid fa-circle-check mr-1"></i>Estoque OK (S/ Consumo)</span>`;
+                        } else {
+                            badgeDias = `<span class="bg-slate-100 text-slate-500 border border-slate-300 font-medium px-2 py-0.5 rounded-full text-[10px]">0 dias</span>`;
+                        }
+                    } else {
+                        const diasVal = item.diasEstoque.toFixed(1);
+                        if (item.diasEstoque < 7) {
+                            badgeDias = `<span class="bg-red-100 text-red-800 border border-red-300 font-bold px-2 py-0.5 rounded-full text-[10px]"><i class="fa-solid fa-triangle-exclamation mr-1"></i>Crítico: ${diasVal} dias</span>`;
+                        } else if (item.diasEstoque <= 15) {
+                            badgeDias = `<span class="bg-amber-100 text-amber-800 border border-amber-300 font-bold px-2 py-0.5 rounded-full text-[10px]"><i class="fa-solid fa-circle-exclamation mr-1"></i>Atenção: ${diasVal} dias</span>`;
+                        } else {
+                            badgeDias = `<span class="bg-emerald-100 text-emerald-800 border border-emerald-300 font-bold px-2 py-0.5 rounded-full text-[10px]"><i class="fa-solid fa-circle-check mr-1"></i>Estoque OK (${diasVal} dias)</span>`;
+                        }
+                    }
+
+                    return `
+                        <tr class="hover:bg-indigo-50/50 border-b">
+                            <td class="p-2 font-semibold text-slate-800">${p}</td>
+                            <td class="p-2 text-center font-medium text-slate-600 bg-slate-50">${item.estoqueAnterior.toFixed(2)} ${item.unidade}</td>
+                            <td class="p-2 text-center font-bold text-purple-700">+${item.qtdEntradas.toFixed(2)}</td>
+                            <td class="p-2 text-center font-medium text-slate-600 bg-slate-50">${item.estoqueAtual.toFixed(2)} ${item.unidade}</td>
+                            <td class="p-2 text-center font-black text-indigo-700 bg-indigo-50/50">${item.qtdConsumo.toFixed(2)} ${item.unidade}</td>
+                            <td class="p-2 text-center font-bold text-slate-700">${item.mediaDiaria.toFixed(2)} ${item.unidade}/dia</td>
+                            <td class="p-2 text-center">${badgeDias}</td>
+                            <td class="p-2 text-right font-bold text-emerald-700 font-mono">R$ ${item.custoConsumo.toFixed(2)}</td>
                         </tr>
                     `;
                 }).join('');
@@ -490,6 +685,37 @@
                         <td class="p-2.5 text-center whitespace-nowrap">
                             <button onclick="editarRegistro(${item.rawIndex})" class="text-blue-600 hover:text-blue-800 font-bold px-1.5 py-1 transition" title="Editar Lançamento">✏️</button>
                             <button onclick="excluirRegistro(${item.rawIndex})" class="text-red-600 hover:text-red-800 font-bold px-1.5 py-1 transition" title="Excluir Lançamento">❌</button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function renderizarTabelaEstoque(dados) {
+            const tbody = document.getElementById('tabelaHistoricoEstoque');
+            const counter = document.getElementById('qtdRegistrosEstoque');
+            if (counter) counter.innerText = `${dados.length} registro(s)`;
+
+            if (dados.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="p-4 text-center italic text-slate-400">Nenhuma medição de estoque registrada no período.</td></tr>';
+                return;
+            }
+
+            const ordenadosInvertidos = [...dados].reverse();
+
+            tbody.innerHTML = ordenadosInvertidos.map((item) => {
+                const dataFmt = new Date(item.dataHora).toLocaleString('pt-BR');
+
+                return `
+                    <tr class="hover:bg-slate-50 transition border-b">
+                        <td class="p-2.5 text-center font-medium text-slate-800">${dataFmt}</td>
+                        <td class="p-2.5 text-center font-semibold text-slate-800">${item.produto}</td>
+                        <td class="p-2.5 text-center font-bold text-indigo-700">${item.quantidade.toFixed(2)} ${item.unidade}</td>
+                        <td class="p-2.5 text-center text-slate-600">${item.operador}</td>
+                        <td class="p-2.5 text-center text-slate-600">${item.obs}</td>
+                        <td class="p-2.5 text-center whitespace-nowrap">
+                            <button onclick="editarRegistroEstoque(${item.rawIndex})" class="text-blue-600 hover:text-blue-800 font-bold px-1.5 py-1 transition" title="Editar Medição de Estoque">✏️</button>
+                            <button onclick="excluirRegistroEstoque(${item.rawIndex})" class="text-red-600 hover:text-red-800 font-bold px-1.5 py-1 transition" title="Excluir Medição de Estoque">❌</button>
                         </td>
                     </tr>
                 `;
@@ -549,6 +775,198 @@
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: { legend: { position: 'right' } }
+                }
+            });
+        }
+
+        function renderizarControlesFiltroGrafico() {
+            const container = document.getElementById('containerFiltroProdutosGrafico');
+            if (!container) return;
+
+            container.innerHTML = listaProdutosCadastrados.map(p => {
+                const checked = produtosSelecionadosGrafico[p.nome] !== false;
+                return `
+                    <button onclick="alternarFiltroProdutoGrafico('${p.nome}')" class="flex items-center gap-1.5 px-2.5 py-1 rounded-lg border transition text-xs font-semibold select-none ${checked ? 'bg-purple-600 text-white border-purple-600 shadow-sm' : 'bg-slate-100 text-slate-600 border-slate-300 hover:bg-slate-200'}">
+                        <i class="fa-solid ${checked ? 'fa-square-check' : 'fa-square'}"></i>
+                        ${p.nome}
+                    </button>
+                `;
+            }).join('');
+        }
+
+        function alternarFiltroProdutoGrafico(nomeProduto) {
+            produtosSelecionadosGrafico[nomeProduto] = !produtosSelecionadosGrafico[nomeProduto];
+            renderizarControlesFiltroGrafico();
+            const filtrados = obterLancamentosFiltrados();
+            const dtInicio = document.getElementById('filtroDataInicio').value;
+            const dtFim = document.getElementById('filtroDataFim').value;
+            renderizarGraficoLinhasConsumo(dtInicio, dtFim, filtrados);
+        }
+
+        function selecionarTodosProdutosGrafico(status) {
+            listaProdutosCadastrados.forEach(p => {
+                produtosSelecionadosGrafico[p.nome] = status;
+            });
+            renderizarControlesFiltroGrafico();
+            const filtrados = obterLancamentosFiltrados();
+            const dtInicio = document.getElementById('filtroDataInicio').value;
+            const dtFim = document.getElementById('filtroDataFim').value;
+            renderizarGraficoLinhasConsumo(dtInicio, dtFim, filtrados);
+        }
+
+        function renderizarGraficoLinhasConsumo(dtInicio, dtFim, filtrados) {
+            const ctx = document.getElementById('chartConsumoLinhas');
+            if (!ctx) return;
+            if (chartLinhasInstance) chartLinhasInstance.destroy();
+
+            let dStart = dtInicio ? new Date(dtInicio + 'T00:00:00') : null;
+            let dEnd = dtFim ? new Date(dtFim + 'T00:00:00') : null;
+
+            if (!dStart || !dEnd) {
+                const todasDatas = [];
+                lancamentosProcessados.forEach(l => todasDatas.push(l.data));
+                rawEstoqueHistorico.forEach(e => {
+                    if (e.dataLeitura) todasDatas.push(e.dataLeitura.split('T')[0]);
+                });
+
+                if (todasDatas.length > 0) {
+                    todasDatas.sort();
+                    if (!dStart) dStart = new Date(todasDatas[0] + 'T00:00:00');
+                    if (!dEnd) dEnd = new Date(todasDatas[todasDatas.length - 1] + 'T00:00:00');
+                } else {
+                    dEnd = new Date();
+                    dStart = new Date();
+                    dStart.setDate(dEnd.getDate() - 6);
+                }
+            }
+
+            const listaDatas = [];
+            let cur = new Date(dStart);
+            while (cur <= dEnd) {
+                listaDatas.push(cur.toISOString().split('T')[0]);
+                cur.setDate(cur.getDate() + 1);
+            }
+
+            const labels = listaDatas.map(d => {
+                const parts = d.split('-');
+                return `${parts[2]}/${parts[1]}`;
+            });
+
+            const cores = [
+                '#9333ea', '#4f46e5', '#0284c7', '#059669', 
+                '#d97706', '#dc2626', '#14b8a6', '#6366f1',
+                '#ec4899', '#8b5cf6', '#3b82f6', '#10b981'
+            ];
+
+            const estoqueOrdenado = [...rawEstoqueHistorico].sort((a, b) => 
+                new Date(a.dataLeitura) - new Date(b.dataLeitura)
+            );
+
+            const datasets = [];
+
+            listaProdutosCadastrados.forEach((prod, index) => {
+                const pNome = prod.nome;
+
+                if (produtosSelecionadosGrafico[pNome] === false) return;
+
+                const dadosConsumoDiario = [];
+
+                const leiturasProd = {};
+                estoqueOrdenado.forEach(e => {
+                    const dtEst = e.dataLeitura ? e.dataLeitura.split('T')[0] : '';
+                    if (dtEst && e.itensEstoque && Array.isArray(e.itensEstoque)) {
+                        const itemMatch = e.itensEstoque.find(i => i.nome === pNome);
+                        if (itemMatch) {
+                            leiturasProd[dtEst] = parseFloat(itemMatch.valor) || 0;
+                        }
+                    }
+                });
+
+                const entradasProd = {};
+                lancamentosProcessados.forEach(l => {
+                    if (l.produto === pNome) {
+                        entradasProd[l.data] = (entradasProd[l.data] || 0) + l.quantidade;
+                    }
+                });
+
+                listaDatas.forEach(dataIso => {
+                    const qtdEntradaDia = entradasProd[dataIso] || 0;
+                    
+                    if (leiturasProd[dataIso] !== undefined) {
+                        const estAtual = leiturasProd[dataIso];
+                        
+                        const datasLeiturasAnteriores = Object.keys(leiturasProd)
+                            .filter(d => d < dataIso)
+                            .sort();
+                        
+                        let estAnterior = estAtual;
+                        if (datasLeiturasAnteriores.length > 0) {
+                            const ultimaDataAnt = datasLeiturasAnteriores[datasLeiturasAnteriores.length - 1];
+                            estAnterior = leiturasProd[ultimaDataAnt];
+                        }
+
+                        const cons = Math.max(0, (estAnterior + qtdEntradaDia) - estAtual);
+                        dadosConsumoDiario.push(parseFloat(cons.toFixed(2)));
+                    } else {
+                        dadosConsumoDiario.push(parseFloat(qtdEntradaDia.toFixed(2)));
+                    }
+                });
+
+                const cor = cores[index % cores.length];
+                datasets.push({
+                    label: `${pNome} (${prod.un || 'L'})`,
+                    data: dadosConsumoDiario,
+                    borderColor: cor,
+                    backgroundColor: cor,
+                    tension: 0.3,
+                    fill: false,
+                    borderWidth: 2,
+                    pointRadius: 3,
+                    pointHoverRadius: 6
+                });
+            });
+
+            chartLinhasInstance = new Chart(ctx.getContext('2d'), {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: datasets
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                boxWidth: 12,
+                                font: { size: 11 }
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `${context.dataset.label}: ${context.raw}`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: { display: false }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Quantidade Consumida'
+                            }
+                        }
+                    }
                 }
             });
         }
