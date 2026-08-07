@@ -126,6 +126,10 @@
             // Busca as configurações salvas no configuracoes.html
             const configAgua = JSON.parse(localStorage.getItem('mes_config_agua')) || configPadrao;
 
+	   // Exemplo para apuração de Água
+	   const configAgua = JSON.parse(localStorage.getItem('mes_config_agua')) || { custoM3: 0 };
+	   const custoTotalAgua = consumoM3 * configAgua.custoM3;
+
             // Renderiza Poços
             const containerPocos = document.getElementById('containerCamposPocos');
             if (configAgua.nomesPocos && configAgua.nomesPocos.length > 0) {

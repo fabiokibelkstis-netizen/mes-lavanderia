@@ -26,7 +26,6 @@
 
     <main class="max-w-7xl mx-auto w-full p-4 my-4 space-y-6">
 
-        <!-- 1. PRODUTOS QUÍMICOS -->
         <div class="bg-white p-6 rounded-2xl shadow-md border border-slate-200 space-y-4">
             <div class="flex justify-between items-center border-b pb-2">
                 <h3 class="text-sm font-bold text-slate-800 flex items-center gap-2">
@@ -54,21 +53,20 @@
                         </tr>
                     </thead>
                     <tbody id="tabelaProdutosQuimicos">
-                    </tbody>
+                        </tbody>
                 </table>
             </div>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 
-            <!-- 2. ÁGUA -->
             <div class="bg-white p-6 rounded-2xl shadow-md border border-slate-200 space-y-4">
                 <h3 class="text-sm font-bold text-slate-800 border-b pb-2 flex items-center gap-2">
                     <i class="fa-solid fa-droplet text-cyan-600"></i>
                     2. Cadastro de Hidrômetros / Relógios de Água
                 </h3>
                 <p class="text-xs text-slate-500">
-                    Defina a quantidade, nomeie os hidrômetros e informe o custo unitário por m³.
+                    Defina a quantidade e nomeie os hidrômetros de Captação (Poços) e Consumo.
                 </p>
 
                 <form onsubmit="salvarConfigAgua(event)" class="space-y-4">
@@ -92,13 +90,8 @@
                         </div>
                     </div>
 
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-1">Custo do m³ da Água (R$)</label>
-                        <input type="number" step="0.0001" min="0" id="setCustoM3Agua" placeholder="ex: 8.50" class="w-full p-2.5 border rounded-lg text-sm bg-slate-50 outline-none focus:ring-2 focus:ring-cyan-500">
-                    </div>
-
                     <div id="containerNomesAgua" class="space-y-3 pt-2 border-t border-slate-100">
-                    </div>
+                        </div>
 
                     <button type="submit" class="w-full bg-cyan-600 hover:bg-cyan-700 text-white font-bold py-2.5 rounded-lg text-xs transition shadow">
                         💾 SALVAR CONFIGURAÇÃO DE ÁGUA
@@ -106,35 +99,28 @@
                 </form>
             </div>
 
-            <!-- 3. GÁS -->
             <div class="bg-white p-6 rounded-2xl shadow-md border border-slate-200 space-y-4">
                 <h3 class="text-sm font-bold text-slate-800 border-b pb-2 flex items-center gap-2">
                     <i class="fa-solid fa-fire-flame-simple text-orange-600"></i>
                     3. Cadastro de Medidores de Gás (GLP/GN)
                 </h3>
                 <p class="text-xs text-slate-500">
-                    Defina a quantidade de relógios, personalize a identificação e informe o custo unitário por m³.
+                    Defina a quantidade de relógios e personalize a identificação de cada ponto de medição.
                 </p>
 
                 <form onsubmit="salvarConfigGas(event)" class="space-y-4">
-                    <div class="grid grid-cols-2 gap-3">
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-700 mb-1">Quantidade de Relógios</label>
-                            <select id="setQtdRelogiosGas" onchange="gerarCamposRelogiosGas()" class="w-full p-2.5 border rounded-lg text-sm bg-slate-50 outline-none focus:ring-2 focus:ring-orange-500">
-                                <option value="1">1 Relógio</option>
-                                <option value="2">2 Relógios</option>
-                                <option value="3">3 Relógios</option>
-                                <option value="4">4 Relógios</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-700 mb-1">Custo do m³ do Gás (R$)</label>
-                            <input type="number" step="0.0001" min="0" id="setCustoM3Gas" placeholder="ex: 12.00" class="w-full p-2.5 border rounded-lg text-sm bg-slate-50 outline-none focus:ring-2 focus:ring-orange-500">
-                        </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Quantidade de Relógios</label>
+                        <select id="setQtdRelogiosGas" onchange="gerarCamposRelogiosGas()" class="w-full p-2.5 border rounded-lg text-sm bg-slate-50 outline-none focus:ring-2 focus:ring-orange-500">
+                            <option value="1">1 Relógio</option>
+                            <option value="2">2 Relógios</option>
+                            <option value="3">3 Relógios</option>
+                            <option value="4">4 Relógios</option>
+                        </select>
                     </div>
 
                     <div id="containerNomesGas" class="space-y-2 pt-2 border-t border-slate-100">
-                    </div>
+                        </div>
 
                     <button type="submit" class="w-full bg-orange-600 hover:bg-orange-700 text-white font-bold py-2.5 rounded-lg text-xs transition shadow">
                         💾 SALVAR CONFIGURAÇÃO DE GÁS
@@ -142,35 +128,28 @@
                 </form>
             </div>
 
-            <!-- 4. ENERGIA -->
             <div class="bg-white p-6 rounded-2xl shadow-md border border-slate-200 space-y-4">
                 <h3 class="text-sm font-bold text-slate-800 border-b pb-2 flex items-center gap-2">
                     <i class="fa-solid fa-bolt text-yellow-500"></i>
                     4. Cadastro de Medidores de Energia Elétrica
                 </h3>
                 <p class="text-xs text-slate-500">
-                    Defina a quantidade de medidores, personalize os nomes e informe o custo unitário por kWh.
+                    Defina a quantidade de medidores e personalize os nomes das entradas de energia.
                 </p>
 
                 <form onsubmit="salvarConfigEnergia(event)" class="space-y-4">
-                    <div class="grid grid-cols-2 gap-3">
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-700 mb-1">Quantidade de Relógios</label>
-                            <select id="setQtdRelogiosEnergia" onchange="gerarCamposRelogiosEnergia()" class="w-full p-2.5 border rounded-lg text-sm bg-slate-50 outline-none focus:ring-2 focus:ring-yellow-500">
-                                <option value="1">1 Relógio</option>
-                                <option value="2">2 Relógios</option>
-                                <option value="3">3 Relógios</option>
-                                <option value="4">4 Relógios</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-700 mb-1">Custo do kWh (R$)</label>
-                            <input type="number" step="0.0001" min="0" id="setCustoKwhEnergia" placeholder="ex: 0.85" class="w-full p-2.5 border rounded-lg text-sm bg-slate-50 outline-none focus:ring-2 focus:ring-yellow-500">
-                        </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Quantidade de Relógios</label>
+                        <select id="setQtdRelogiosEnergia" onchange="gerarCamposRelogiosEnergia()" class="w-full p-2.5 border rounded-lg text-sm bg-slate-50 outline-none focus:ring-2 focus:ring-yellow-500">
+                            <option value="1">1 Relógio</option>
+                            <option value="2">2 Relógios</option>
+                            <option value="3">3 Relógios</option>
+                            <option value="4">4 Relógios</option>
+                        </select>
                     </div>
 
                     <div id="containerNomesEnergia" class="space-y-2 pt-2 border-t border-slate-100">
-                    </div>
+                        </div>
 
                     <button type="submit" class="w-full bg-yellow-500 hover:bg-yellow-600 text-slate-900 font-bold py-2.5 rounded-lg text-xs transition shadow">
                         💾 SALVAR CONFIGURAÇÃO DE ENERGIA
@@ -178,7 +157,6 @@
                 </form>
             </div>
 
-            <!-- 5. BALANÇA E LIMPEZA -->
             <div class="bg-white p-6 rounded-2xl shadow-md border border-slate-200 space-y-4">
                 <h3 class="text-sm font-bold text-slate-800 border-b pb-2 flex items-center gap-2">
                     <i class="fa-solid fa-scale-balanced text-blue-600"></i>
@@ -221,7 +199,6 @@
 
     </main>
 
-    <!-- MODAL PRODUTO QUÍMICO -->
     <div id="modalProduto" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
         <div class="bg-white rounded-2xl p-6 w-full max-w-md shadow-xl space-y-4">
             <h3 id="modalProdutoTitulo" class="text-sm font-bold text-slate-800 border-b pb-2 flex items-center gap-2">
@@ -271,6 +248,7 @@
     </footer>
 
     <script>
+        // PRODUTOS PADRÃO DE FÁBRICA
         const PRODUTOS_PADRAO = [
             { id: "beiclean_cwt", nome: "BEICLEAN CWT", desc: "Detergente concentrado", un: "L", custoPadrao: 0 },
             { id: "beipur_msc", nome: "BEIPUR MSC", desc: "Alcalino concentrado - soda", un: "L", custoPadrao: 0 },
@@ -298,22 +276,19 @@
             renderizarTabelaQuimicos();
 
             // 2. Config Água
-            const configAgua = JSON.parse(localStorage.getItem('mes_config_agua') || '{"qtdPocos": 2, "nomesPocos": ["Poço 1", "Poço 2"], "qtdConsumo": 3, "nomesConsumo": ["Túnel 1", "Túnel 2", "Extratoras"], "custoM3": 0}');
+            const configAgua = JSON.parse(localStorage.getItem('mes_config_agua') || '{"qtdPocos": 2, "nomesPocos": ["Poço 1", "Poço 2"], "qtdConsumo": 3, "nomesConsumo": ["Túnel 1", "Túnel 2", "Extratoras"]}');
             document.getElementById('setQtdPocos').value = configAgua.qtdPocos;
             document.getElementById('setQtdPontosConsumo').value = configAgua.qtdConsumo;
-            document.getElementById('setCustoM3Agua').value = configAgua.custoM3 || 0;
             gerarCamposAgua(configAgua.nomesPocos, configAgua.nomesConsumo);
 
             // 3. Config Gás
-            const configGas = JSON.parse(localStorage.getItem('mes_config_gas') || '{"qtd": 2, "nomes": ["Relógio 1", "Relógio 2"], "custoM3": 0}');
+            const configGas = JSON.parse(localStorage.getItem('mes_config_gas') || '{"qtd": 2, "nomes": ["Relógio 1", "Relógio 2"]}');
             document.getElementById('setQtdRelogiosGas').value = configGas.qtd;
-            document.getElementById('setCustoM3Gas').value = configGas.custoM3 || 0;
             gerarCamposRelogiosGas(configGas.nomes);
 
             // 4. Config Energia
-            const configEnergia = JSON.parse(localStorage.getItem('mes_config_energia') || '{"qtd": 2, "nomes": ["Medidor Principal", "Medidor Auxiliar"], "custoKwh": 0}');
+            const configEnergia = JSON.parse(localStorage.getItem('mes_config_energia') || '{"qtd": 2, "nomes": ["Medidor Principal", "Medidor Auxiliar"]}');
             document.getElementById('setQtdRelogiosEnergia').value = configEnergia.qtd;
-            document.getElementById('setCustoKwhEnergia').value = configEnergia.custoKwh || 0;
             gerarCamposRelogiosEnergia(configEnergia.nomes);
 
             // 5. Config Balança
@@ -444,7 +419,6 @@
             e.preventDefault();
             const qtdPocos = parseInt(document.getElementById('setQtdPocos').value);
             const qtdConsumo = parseInt(document.getElementById('setQtdPontosConsumo').value);
-            const custoM3 = parseFloat(document.getElementById('setCustoM3Agua').value) || 0;
 
             const nomesPocos = [];
             for (let i = 1; i <= qtdPocos; i++) {
@@ -456,8 +430,8 @@
                 nomesConsumo.push(document.getElementById(`nome_consumo_${i}`).value || `Ponto ${i}`);
             }
 
-            localStorage.setItem('mes_config_agua', JSON.stringify({ qtdPocos, nomesPocos, qtdConsumo, nomesConsumo, custoM3 }));
-            alert("Configurações dos hidrômetros e custo de água salvos com sucesso!");
+            localStorage.setItem('mes_config_agua', JSON.stringify({ qtdPocos, nomesPocos, qtdConsumo, nomesConsumo }));
+            alert("Configurações dos hidrômetros de água salvas com sucesso!");
         }
 
         // --- RELÓGIOS DE GÁS ---
@@ -480,15 +454,13 @@
         function salvarConfigGas(e) {
             e.preventDefault();
             const qtd = parseInt(document.getElementById('setQtdRelogiosGas').value);
-            const custoM3 = parseFloat(document.getElementById('setCustoM3Gas').value) || 0;
-
             const nomes = [];
             for (let i = 1; i <= qtd; i++) {
                 nomes.push(document.getElementById(`nome_gas_${i}`).value || `Relógio ${i}`);
             }
 
-            localStorage.setItem('mes_config_gas', JSON.stringify({ qtd, nomes, custoM3 }));
-            alert("Configurações dos medidores e custo de gás salvos com sucesso!");
+            localStorage.setItem('mes_config_gas', JSON.stringify({ qtd, nomes }));
+            alert("Configurações dos medidores de gás salvas com sucesso!");
         }
 
         // --- RELÓGIOS DE ENERGIA ---
@@ -511,15 +483,13 @@
         function salvarConfigEnergia(e) {
             e.preventDefault();
             const qtd = parseInt(document.getElementById('setQtdRelogiosEnergia').value);
-            const custoKwh = parseFloat(document.getElementById('setCustoKwhEnergia').value) || 0;
-
             const nomes = [];
             for (let i = 1; i <= qtd; i++) {
                 nomes.push(document.getElementById(`nome_energia_${i}`).value || `Medidor ${i}`);
             }
 
-            localStorage.setItem('mes_config_energia', JSON.stringify({ qtd, nomes, custoKwh }));
-            alert("Configurações dos medidores e custo de energia salvos com sucesso!");
+            localStorage.setItem('mes_config_energia', JSON.stringify({ qtd, nomes }));
+            alert("Configurações dos medidores de energia salvas com sucesso!");
         }
 
         // --- BALANÇA E LIMPEZA ---
