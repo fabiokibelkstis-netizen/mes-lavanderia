@@ -20,7 +20,10 @@
                     <p class="text-xs text-slate-400">Insumos Químicos, Utilidades, Balança e Equipe de Transporte</p>
                 </div>
             </div>
-            <a href="gestaoquimica.html" class="bg-slate-700 hover:bg-slate-600 text-xs font-bold px-4 py-2 rounded-lg transition">⬅️ Dashboard Químico</a>
+            <div class="flex items-center gap-2">
+                <a href="cadastro_clientes.html" class="bg-indigo-600 hover:bg-indigo-700 text-xs font-bold px-4 py-2 rounded-lg transition">👥 Cadastro de Clientes</a>
+                <a href="gestaoquimica.html" class="bg-slate-700 hover:bg-slate-600 text-xs font-bold px-4 py-2 rounded-lg transition">⬅️ Dashboard Químico</a>
+            </div>
         </div>
     </header>
 
@@ -53,8 +56,7 @@
                             <th class="p-2.5 border text-center">Ações</th>
                         </tr>
                     </thead>
-                    <tbody id="tabelaProdutosQuimicos">
-                    </tbody>
+                    <tbody id="tabelaProdutosQuimicos"></tbody>
                 </table>
             </div>
         </div>
@@ -68,10 +70,6 @@
                     <i class="fa-solid fa-droplet text-cyan-600"></i>
                     2. Cadastro de Hidrômetros / Relógios de Água
                 </h3>
-                <p class="text-xs text-slate-500">
-                    Defina a quantidade, nomeie os hidrômetros e informe o custo unitário por m³.
-                </p>
-
                 <form onsubmit="salvarConfigAgua(event)" class="space-y-4">
                     <div class="grid grid-cols-2 gap-3">
                         <div>
@@ -92,15 +90,11 @@
                             </select>
                         </div>
                     </div>
-
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 mb-1">Custo do m³ da Água (R$)</label>
                         <input type="number" step="0.0001" min="0" id="setCustoM3Agua" placeholder="ex: 8.50" class="w-full p-2.5 border rounded-lg text-sm bg-slate-50 outline-none focus:ring-2 focus:ring-cyan-500">
                     </div>
-
-                    <div id="containerNomesAgua" class="space-y-3 pt-2 border-t border-slate-100">
-                    </div>
-
+                    <div id="containerNomesAgua" class="space-y-3 pt-2 border-t border-slate-100"></div>
                     <button type="submit" class="w-full bg-cyan-600 hover:bg-cyan-700 text-white font-bold py-2.5 rounded-lg text-xs transition shadow">
                         💾 SALVAR CONFIGURAÇÃO DE ÁGUA
                     </button>
@@ -113,10 +107,6 @@
                     <i class="fa-solid fa-fire-flame-simple text-orange-600"></i>
                     3. Cadastro de Medidores de Gás (GLP/GN)
                 </h3>
-                <p class="text-xs text-slate-500">
-                    Defina a quantidade de relógios, personalize a identificação e informe o custo unitário por m³.
-                </p>
-
                 <form onsubmit="salvarConfigGas(event)" class="space-y-4">
                     <div class="grid grid-cols-2 gap-3">
                         <div>
@@ -125,7 +115,6 @@
                                 <option value="1">1 Relógio</option>
                                 <option value="2">2 Relógios</option>
                                 <option value="3">3 Relógios</option>
-                                <option value="4">4 Relógios</option>
                             </select>
                         </div>
                         <div>
@@ -133,10 +122,7 @@
                             <input type="number" step="0.0001" min="0" id="setCustoM3Gas" placeholder="ex: 12.00" class="w-full p-2.5 border rounded-lg text-sm bg-slate-50 outline-none focus:ring-2 focus:ring-orange-500">
                         </div>
                     </div>
-
-                    <div id="containerNomesGas" class="space-y-2 pt-2 border-t border-slate-100">
-                    </div>
-
+                    <div id="containerNomesGas" class="space-y-2 pt-2 border-t border-slate-100"></div>
                     <button type="submit" class="w-full bg-orange-600 hover:bg-orange-700 text-white font-bold py-2.5 rounded-lg text-xs transition shadow">
                         💾 SALVAR CONFIGURAÇÃO DE GÁS
                     </button>
@@ -149,10 +135,6 @@
                     <i class="fa-solid fa-bolt text-yellow-500"></i>
                     4. Cadastro de Medidores de Energia Elétrica
                 </h3>
-                <p class="text-xs text-slate-500">
-                    Defina a quantidade de medidores, personalize os nomes e informe o custo unitário por kWh.
-                </p>
-
                 <form onsubmit="salvarConfigEnergia(event)" class="space-y-4">
                     <div class="grid grid-cols-2 gap-3">
                         <div>
@@ -161,7 +143,6 @@
                                 <option value="1">1 Relógio</option>
                                 <option value="2">2 Relógios</option>
                                 <option value="3">3 Relógios</option>
-                                <option value="4">4 Relógios</option>
                             </select>
                         </div>
                         <div>
@@ -169,10 +150,7 @@
                             <input type="number" step="0.0001" min="0" id="setCustoKwhEnergia" placeholder="ex: 0.85" class="w-full p-2.5 border rounded-lg text-sm bg-slate-50 outline-none focus:ring-2 focus:ring-yellow-500">
                         </div>
                     </div>
-
-                    <div id="containerNomesEnergia" class="space-y-2 pt-2 border-t border-slate-100">
-                    </div>
-
+                    <div id="containerNomesEnergia" class="space-y-2 pt-2 border-t border-slate-100"></div>
                     <button type="submit" class="w-full bg-yellow-500 hover:bg-yellow-600 text-slate-900 font-bold py-2.5 rounded-lg text-xs transition shadow">
                         💾 SALVAR CONFIGURAÇÃO DE ENERGIA
                     </button>
@@ -185,7 +163,6 @@
                     <i class="fa-solid fa-scale-balanced text-blue-600"></i>
                     5. Parâmetros de Balança & Armazenamento
                 </h3>
-
                 <form onsubmit="salvarConfigBalanca(event)" class="space-y-3">
                     <div class="grid grid-cols-2 gap-3">
                         <div>
@@ -206,7 +183,6 @@
                         💾 SALVAR PARÂMETROS DA BALANÇA
                     </button>
                 </form>
-
                 <div class="bg-slate-50 p-3 rounded-xl border flex justify-between items-center pt-3">
                     <div>
                         <h4 class="text-xs font-bold text-slate-800">Limpar Dados Locais</h4>
@@ -221,13 +197,13 @@
         </div>
 
         <!-- 6. MOTORISTAS E AJUDANTES -->
-        <div class="bg-white p-6 rounded-2xl shadow-md border border-slate-200 space-y-4">
+        <div id="secao-equipe" class="bg-white p-6 rounded-2xl shadow-md border border-slate-200 space-y-4">
             <div class="flex justify-between items-center border-b pb-2">
                 <h3 class="text-sm font-bold text-slate-800 flex items-center gap-2">
                     <i class="fa-solid fa-truck-front text-indigo-600"></i>
                     6. Cadastro de Motoristas e Ajudantes
                 </h3>
-                <button type="button" onclick="abrirModalEquipe()" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition">
+                <button type="button" onclick="abrirModalEquipe()" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition shadow">
                     ➕ Novo Colaborador
                 </button>
             </div>
@@ -250,8 +226,7 @@
                             <th class="p-2.5 border text-center">Ações</th>
                         </tr>
                     </thead>
-                    <tbody id="tabelaEquipeLogistica">
-                    </tbody>
+                    <tbody id="tabelaEquipeLogistica"></tbody>
                 </table>
             </div>
         </div>
@@ -262,13 +237,10 @@
     <div id="modalProduto" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
         <div class="bg-white rounded-2xl p-6 w-full max-w-md shadow-xl space-y-4">
             <h3 id="modalProdutoTitulo" class="text-sm font-bold text-slate-800 border-b pb-2 flex items-center gap-2">
-                <i class="fa-solid fa-vial text-purple-600"></i>
-                Novo Produto Químico
+                <i class="fa-solid fa-vial text-purple-600"></i> Novo Produto Químico
             </h3>
-            
             <form onsubmit="salvarProdutoQuimico(event)" class="space-y-3">
                 <input type="hidden" id="prodEditId" value="">
-
                 <div>
                     <label class="block text-xs font-semibold text-slate-700 mb-1">Código / ID (único)</label>
                     <input type="text" id="prodId" required placeholder="ex: beiclean_cwt" class="w-full p-2 border rounded-lg text-xs bg-slate-50 outline-none focus:ring-1 focus:ring-purple-500">
@@ -294,7 +266,6 @@
                         <input type="number" step="0.01" min="0" id="prodCusto" placeholder="0.00" class="w-full p-2 border rounded-lg text-xs bg-slate-50 outline-none font-bold">
                     </div>
                 </div>
-
                 <div class="flex justify-end gap-2 pt-3">
                     <button type="button" onclick="fecharModalProduto()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-4 py-2 rounded-lg text-xs font-bold transition">Cancelar</button>
                     <button type="submit" class="bg-purple-600 hover:bg-purple-700 text-white font-bold px-5 py-2 rounded-lg text-xs transition shadow">Salvar Produto</button>
@@ -307,13 +278,10 @@
     <div id="modalEquipe" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
         <div class="bg-white rounded-2xl p-6 w-full max-w-lg shadow-xl space-y-4">
             <h3 id="modalEquipeTitulo" class="text-sm font-bold text-slate-800 border-b pb-2 flex items-center gap-2">
-                <i class="fa-solid fa-user-plus text-indigo-600"></i>
-                Novo Motorista / Ajudante
+                <i class="fa-solid fa-user-plus text-indigo-600"></i> Novo Motorista / Ajudante
             </h3>
-            
             <form onsubmit="salvarMembroEquipe(event)" class="space-y-3">
                 <input type="hidden" id="eqEditIdx" value="">
-
                 <div class="grid grid-cols-3 gap-3">
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 mb-1">ID / Matrícula</label>
@@ -324,7 +292,6 @@
                         <input type="text" id="eqNome" required placeholder="ex: João da Silva" class="w-full p-2 border rounded-lg text-xs bg-slate-50 outline-none focus:ring-1 focus:ring-indigo-500">
                     </div>
                 </div>
-
                 <div class="grid grid-cols-2 gap-3">
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 mb-1">Função</label>
@@ -339,7 +306,6 @@
                         <input type="text" id="eqContato" placeholder="(11) 99999-9999" class="w-full p-2 border rounded-lg text-xs bg-slate-50 outline-none focus:ring-1 focus:ring-indigo-500">
                     </div>
                 </div>
-
                 <div class="grid grid-cols-2 gap-3">
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 mb-1">CNH / Categoria / Doc</label>
@@ -353,7 +319,6 @@
                         </select>
                     </div>
                 </div>
-
                 <div class="grid grid-cols-3 gap-3 bg-slate-50 p-3 rounded-xl border border-slate-200">
                     <div>
                         <label class="block text-[11px] font-semibold text-slate-700 mb-1">Horário Entrada</label>
@@ -368,7 +333,6 @@
                         <input type="text" id="eqDias" placeholder="ex: Seg a Sex" value="Seg a Sex" required class="w-full p-1.5 border rounded-lg text-xs bg-white outline-none">
                     </div>
                 </div>
-
                 <div class="flex justify-end gap-2 pt-3 border-t">
                     <button type="button" onclick="fecharModalEquipe()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-4 py-2 rounded-lg text-xs font-bold transition">Cancelar</button>
                     <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-5 py-2 rounded-lg text-xs transition shadow">Salvar Colaborador</button>
@@ -407,6 +371,14 @@
 
         document.addEventListener('DOMContentLoaded', () => {
             carregarTodasConfiguracoes();
+
+            // Auto-abrir modal se parâmetro na URL for solicitado
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('action') === 'novo_colaborador' || urlParams.get('action') === 'novo_equipe') {
+                const secao = document.getElementById('secao-equipe');
+                if (secao) secao.scrollIntoView({ behavior: 'smooth' });
+                abrirModalEquipe();
+            }
         });
 
         function carregarTodasConfiguracoes() {
@@ -446,7 +418,6 @@
                 tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-center italic text-slate-400">Nenhum produto químico cadastrado.</td></tr>`;
                 return;
             }
-
             tbody.innerHTML = listaProdutosQuimicos.map((p, idx) => `
                 <tr class="hover:bg-slate-50 transition border-b">
                     <td class="p-2.5 border font-mono text-[11px] text-slate-600">${p.id}</td>
@@ -525,7 +496,7 @@
             }
         }
 
-        // --- EQUIPE LOGÍSTICA (MOTORISTAS E AJUDANTES) ---
+        // --- EQUIPE LOGÍSTICA ---
         function renderizarTabelaEquipe() {
             const tbody = document.getElementById('tabelaEquipeLogistica');
             if (listaEquipeLogistica.length === 0) {
@@ -662,7 +633,6 @@
                     </div>
                 `;
             }
-
             container.innerHTML = htmlPocos + htmlConsumo;
         }
 
@@ -683,14 +653,13 @@
             }
 
             localStorage.setItem('mes_config_agua', JSON.stringify({ qtdPocos, nomesPocos, qtdConsumo, nomesConsumo, custoM3 }));
-            alert("Configurações dos hidrômetros e custo de água salvos com sucesso!");
+            alert("Configurações de água salvas com sucesso!");
         }
 
         function gerarCamposRelogiosGas(nomesExistentes = []) {
             const qtd = parseInt(document.getElementById('setQtdRelogiosGas').value);
             const container = document.getElementById('containerNomesGas');
             container.innerHTML = '';
-
             for (let i = 1; i <= qtd; i++) {
                 const valor = nomesExistentes[i - 1] || `Relógio ${i}`;
                 container.innerHTML += `
@@ -713,14 +682,13 @@
             }
 
             localStorage.setItem('mes_config_gas', JSON.stringify({ qtd, nomes, custoM3 }));
-            alert("Configurações dos medidores e custo de gás salvos com sucesso!");
+            alert("Configurações de gás salvas com sucesso!");
         }
 
         function gerarCamposRelogiosEnergia(nomesExistentes = []) {
             const qtd = parseInt(document.getElementById('setQtdRelogiosEnergia').value);
             const container = document.getElementById('containerNomesEnergia');
             container.innerHTML = '';
-
             for (let i = 1; i <= qtd; i++) {
                 const valor = nomesExistentes[i - 1] || `Medidor ${i}`;
                 container.innerHTML += `
@@ -743,7 +711,7 @@
             }
 
             localStorage.setItem('mes_config_energia', JSON.stringify({ qtd, nomes, custoKwh }));
-            alert("Configurações dos medidores e custo de energia salvos com sucesso!");
+            alert("Configurações de energia salvas com sucesso!");
         }
 
         function salvarConfigBalanca(e) {

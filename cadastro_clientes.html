@@ -3,608 +3,547 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MES - Cadastro de Clientes e Logística | Dona Zara</title>
+    <title>MES - Cadastro de Clientes | Lavanderia Dona Zara</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Font Awesome Icons -->
+    <!-- FontAwesome 6.5.1 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 <body class="bg-slate-100 font-sans min-h-screen flex flex-col justify-between">
 
-    <!-- HEADER / CABEÇALHO DA DONA ZARA -->
+    <!-- CABEÇALHO PADRÃO MES -->
     <header class="bg-slate-900 text-white p-4 shadow-lg sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto flex flex-wrap justify-between items-center gap-4">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
             <div class="flex items-center gap-3">
-                <div class="bg-indigo-600 p-2.5 rounded-xl text-white shadow">
-                    <i class="fa-solid fa-hotel text-xl"></i>
+                <div class="bg-blue-600 p-2.5 rounded-xl text-white shadow">
+                    <i class="fa-solid fa-address-card text-xl"></i>
                 </div>
                 <div>
-                    <h1 class="text-xl font-bold tracking-wider">MES - Gestão & Cadastro de Clientes</h1>
-                    <p class="text-xs text-slate-400">Logística de Entradas, Rotas, Gaiolas e Horários de Entrega</p>
+                    <h1 class="text-xl font-bold tracking-wider">MES - Gestão de Clientes</h1>
+                    <p class="text-xs text-slate-400">Cadastro de Clientes, Endereços, Rotas e Status Operacional</p>
                 </div>
             </div>
-            <div class="flex items-center gap-2">
-                <button onclick="scrollParaFormulario()" class="bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold px-3 py-2 rounded-xl transition flex items-center gap-1.5 shadow">
-                    <i class="fa-solid fa-plus"></i> Novo Cliente
-                </button>
-                <a href="index.html" class="bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold px-3 py-2 rounded-xl transition border border-slate-700">
-                    ⬅ Menu Principal
+            
+            <!-- ATALHOS DE NAVEGAÇÃO E ABERTURA DE CADASTROS -->
+            <div class="flex items-center gap-2 flex-wrap">
+                <a href="/rotas" class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-3.5 py-2 rounded-lg transition flex items-center gap-2 shadow">
+                    <i class="fa-solid fa-route"></i> Cadastro de Rotas
+                </a>
+                <a href="/motoristas" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3.5 py-2 rounded-lg transition flex items-center gap-2 shadow">
+                    <i class="fa-solid fa-id-card"></i> Cadastro de Motoristas
+                </a>
+                <a href="index.html" class="bg-slate-700 hover:bg-slate-600 text-white text-xs font-bold px-3.5 py-2 rounded-lg transition flex items-center gap-2">
+                    <i class="fa-solid fa-arrow-left"></i> Menu Principal
                 </a>
             </div>
         </div>
     </header>
 
     <!-- CONTEÚDO PRINCIPAL -->
-    <main class="max-w-7xl mx-auto w-full p-4 my-4 space-y-6 flex-grow">
+    <main class="max-w-7xl mx-auto w-full p-4 my-4 space-y-6">
 
-        <!-- CARDS KPI DE RESUMO LOGÍSTICO -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 flex items-center gap-4">
-                <div class="bg-blue-100 text-blue-600 p-3 rounded-xl">
-                    <i class="fa-solid fa-building-user text-2xl"></i>
-                </div>
+        <!-- FORMULÁRIO DE CADASTRO / EDIÇÃO -->
+        <form action="/clientes/salvar" method="POST" enctype="multipart/form-data" id="formCadastroCliente">
+            <input type="hidden" name="cliente_id" id="cliente_id" value="{{ cliente.id }}">
+            
+            <div class="bg-white rounded-2xl shadow-md p-6 border border-slate-200 space-y-6">
+                
+                <!-- SEÇÃO 1: DADOS DE IDENTIFICAÇÃO E CONTATO -->
                 <div>
-                    <p class="text-xs text-slate-500 font-medium">Total de Clientes</p>
-                    <h3 id="kpiTotalClientes" class="text-2xl font-bold text-slate-800">0</h3>
-                </div>
-            </div>
-            <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 flex items-center gap-4">
-                <div class="bg-amber-100 text-amber-600 p-3 rounded-xl">
-                    <i class="fa-solid fa-dolly text-2xl"></i>
-                </div>
-                <div>
-                    <p class="text-xs text-slate-500 font-medium">Total de Gaiolas / Volumes</p>
-                    <h3 id="kpiTotalGaiolas" class="text-2xl font-bold text-slate-800">0</h3>
-                </div>
-            </div>
-            <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 flex items-center gap-4">
-                <div class="bg-emerald-100 text-emerald-600 p-3 rounded-xl">
-                    <i class="fa-solid fa-route text-2xl"></i>
-                </div>
-                <div>
-                    <p class="text-xs text-slate-500 font-medium">Rotas Ativas</p>
-                    <h3 id="kpiRotasAtivas" class="text-2xl font-bold text-slate-800">0</h3>
-                </div>
-            </div>
-            <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 flex items-center gap-4">
-                <div class="bg-purple-100 text-purple-600 p-3 rounded-xl">
-                    <i class="fa-solid fa-truck-fast text-2xl"></i>
-                </div>
-                <div>
-                    <p class="text-xs text-slate-500 font-medium">Motoristas Cadastrados</p>
-                    <h3 id="kpiMotoristas" class="text-2xl font-bold text-slate-800">0</h3>
-                </div>
-            </div>
-        </div>
-
-        <!-- FORMULÁRIO DE CADASTRO E EDIÇÃO -->
-        <div id="cardFormulario" class="bg-white rounded-2xl shadow-md border border-slate-200 overflow-hidden">
-            <div class="bg-slate-800 px-6 py-4 border-b border-slate-700 flex justify-between items-center text-white">
-                <div class="flex items-center gap-2">
-                    <i class="fa-solid fa-address-card text-indigo-400 text-lg"></i>
-                    <h2 id="tituloFormulario" class="text-base font-bold">Cadastrar Novo Cliente / Hotel</h2>
-                </div>
-                <button onclick="limparFormulario()" class="text-xs bg-slate-700 hover:bg-slate-600 text-slate-300 px-3 py-1.5 rounded-lg transition">
-                    <i class="fa-solid fa-eraser"></i> Limpar Campos
-                </button>
-            </div>
-
-            <form id="formCliente" onsubmit="salvarCliente(event)" class="p-6 space-y-6">
-                <input type="hidden" id="clienteId">
-
-                <!-- SEÇÃO 1: DADOS BÁSICOS & LOGO -->
-                <div>
-                    <h3 class="text-xs font-bold text-indigo-600 uppercase tracking-wider mb-4 border-b pb-2">
-                        1. Dados do Estabelecimento & Logo
-                    </h3>
-                    <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-start">
-                        <!-- Preview do Logo -->
-                        <div class="md:col-span-3 flex flex-col items-center justify-center border-2 border-dashed border-slate-300 rounded-xl p-4 bg-slate-50 text-center relative group">
-                            <img id="logoPreview" src="https://via.placeholder.com/120?text=Logo+Hotel" alt="Logo Preview" class="w-24 h-24 object-contain rounded-lg shadow-sm border border-slate-200 mb-2">
-                            <label class="cursor-pointer bg-white border border-slate-300 hover:bg-slate-100 text-slate-700 text-xs font-bold py-1.5 px-3 rounded-lg shadow-sm transition">
-                                <i class="fa-solid fa-upload"></i> Selecionar Logo
-                                <input type="file" id="inputLogo" accept="image/*" class="hidden" onchange="carregarPreviewLogo(event)">
-                            </label>
-                            <input type="hidden" id="logoBase64">
-                            <span class="text-[10px] text-slate-400 mt-1">PNG, JPG ou WEBP (Max 2MB)</span>
-                        </div>
-
-                        <!-- Campos Principais -->
-                        <div class="md:col-span-9 grid grid-cols-1 sm:grid-cols-3 gap-4">
-                            <div class="sm:col-span-2">
-                                <label class="block text-xs font-bold text-slate-700 mb-1">Nome do Cliente / Hotel <span class="text-rose-500">*</span></label>
-                                <input type="text" id="nomeHotel" required placeholder="Ex: Blue Tree Premium Alphaville" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-bold text-slate-700 mb-1">Rota <span class="text-rose-500">*</span></label>
-                                <input type="text" id="rota" required placeholder="Ex: 10, 8, B..." class="w-full border border-slate-300 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
-                            </div>
-                            <div class="sm:col-span-2">
-                                <label class="block text-xs font-bold text-slate-700 mb-1">Motorista(s) Responsável(is)</label>
-                                <input type="text" id="motoristas" placeholder="Ex: HAMILTON / KAUAN" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-bold text-slate-700 mb-1">Horário de Saída / Entrega</label>
-                                <input type="time" id="horarioSaida" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- SEÇÃO 2: ENDEREÇO SEPARADO -->
-                <div>
-                    <h3 class="text-xs font-bold text-indigo-600 uppercase tracking-wider mb-4 border-b pb-2">
-                        2. Endereço Completo (Campos Separados)
-                    </h3>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-6 gap-4">
-                        <div class="md:col-span-2">
-                            <label class="block text-xs font-bold text-slate-700 mb-1">CEP</label>
-                            <div class="relative">
-                                <input type="text" id="cep" placeholder="00000-000" onblur="buscarCEP(this.value)" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
-                                <button type="button" onclick="buscarCEP(document.getElementById('cep').value)" class="absolute right-2 top-2 text-slate-400 hover:text-indigo-600 text-xs">
-                                    <i class="fa-solid fa-magnifying-glass"></i>
-                                </button>
-                            </div>
-                        </div>
-                        <div class="md:col-span-3">
-                            <label class="block text-xs font-bold text-slate-700 mb-1">Logradouro / Rua <span class="text-rose-500">*</span></label>
-                            <input type="text" id="rua" required placeholder="Ex: Alameda Madeira" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
-                        </div>
-                        <div class="md:col-span-1">
-                            <label class="block text-xs font-bold text-slate-700 mb-1">Número <span class="text-rose-500">*</span></label>
-                            <input type="text" id="numero" required placeholder="Ex: 398" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
-                        </div>
-                        <div class="md:col-span-2">
-                            <label class="block text-xs font-bold text-slate-700 mb-1">Bairro <span class="text-rose-500">*</span></label>
-                            <input type="text" id="bairro" required placeholder="Ex: Alphaville" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
-                        </div>
-                        <div class="md:col-span-3">
-                            <label class="block text-xs font-bold text-slate-700 mb-1">Cidade <span class="text-rose-500">*</span></label>
-                            <input type="text" id="cidade" required placeholder="Ex: Barueri" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
-                        </div>
-                        <div class="md:col-span-1">
-                            <label class="block text-xs font-bold text-slate-700 mb-1">Estado (UF) <span class="text-rose-500">*</span></label>
-                            <input type="text" id="estado" maxlength="2" required placeholder="SP" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none uppercase">
-                        </div>
-                    </div>
-                </div>
-
-                <!-- SEÇÃO 3: LOGÍSTICA & CAPACIDADE DE TRANSPORTE -->
-                <div>
-                    <h3 class="text-xs font-bold text-indigo-600 uppercase tracking-wider mb-4 border-b pb-2">
-                        3. Capacidade de Carga & Observações
-                    </h3>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <h2 class="text-base font-bold text-slate-800 border-b pb-2 mb-4 flex items-center gap-2">
+                        <i class="fa-solid fa-building text-blue-600"></i>
+                        1. Dados de Identificação & Status
+                    </h2>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                         <div>
-                            <label class="block text-xs font-bold text-slate-700 mb-1">Qtd. de Gaiolas / Volumes</label>
-                            <input type="text" id="gaiolas" placeholder="Ex: 16 ou 60 SACOS" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">Razão Social <span class="text-red-500">*</span></label>
+                            <input type="text" name="razao_social" required placeholder="Ex: Lavanderia Comercial Ltda" value="{{ cliente.razao_social }}"
+                                   class="w-full p-2.5 border rounded-lg text-sm bg-slate-50 focus:bg-white outline-none focus:ring-2 focus:ring-blue-500">
                         </div>
-                        <div class="md:col-span-2">
-                            <label class="block text-xs font-bold text-slate-700 mb-1">Observação Logística</label>
-                            <input type="text" id="observacao" placeholder="Ex: Ver mudança de horário para noite / instrução especial de entrega" class="w-full border border-slate-300 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">Nome Fantasia <span class="text-red-500">*</span></label>
+                            <input type="text" name="nome_fantasia" required placeholder="Ex: Hotel Grand Central" value="{{ cliente.nome_fantasia }}"
+                                   class="w-full p-2.5 border rounded-lg text-sm bg-slate-50 focus:bg-white outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">CNPJ / CPF <span class="text-red-500">*</span></label>
+                            <input type="text" name="cnpj_cpf" required placeholder="00.000.000/0000-00" value="{{ cliente.cnpj_cpf }}"
+                                   class="w-full p-2.5 border rounded-lg text-sm bg-slate-50 focus:bg-white outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">Inscrição Estadual <span class="text-red-500">*</span></label>
+                            <input type="text" name="inscricao_estadual" required placeholder="Número ou Isento" value="{{ cliente.inscricao_estadual }}"
+                                   class="w-full p-2.5 border rounded-lg text-sm bg-slate-50 focus:bg-white outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">Telefone Comercial <span class="text-red-500">*</span></label>
+                            <input type="tel" name="telefone" required placeholder="(11) 3333-4444" value="{{ cliente.telefone }}"
+                                   class="w-full p-2.5 border rounded-lg text-sm bg-slate-50 focus:bg-white outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">E-mail Comercial <span class="text-red-500">*</span></label>
+                            <input type="email" name="email" required placeholder="comercial@empresa.com.br" value="{{ cliente.email }}"
+                                   class="w-full p-2.5 border rounded-lg text-sm bg-slate-50 focus:bg-white outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+
+                        <!-- CONTATO PRINCIPAL -->
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">Nome do Contato Principal <span class="text-red-500">*</span></label>
+                            <input type="text" name="nome_contato" required placeholder="Ex: João Silva" value="{{ cliente.nome_contato }}"
+                                   class="w-full p-2.5 border rounded-lg text-sm bg-slate-50 focus:bg-white outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">Telefone do Contato <span class="text-red-500">*</span></label>
+                            <input type="tel" name="telefone_contato" required placeholder="(11) 99999-9999" value="{{ cliente.telefone_contato }}"
+                                   class="w-full p-2.5 border rounded-lg text-sm bg-slate-50 focus:bg-white outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">E-mail do Contato <span class="text-red-500">*</span></label>
+                            <input type="email" name="email_contato" required placeholder="joao@empresa.com.br" value="{{ cliente.email_contato }}"
+                                   class="w-full p-2.5 border rounded-lg text-sm bg-slate-50 focus:bg-white outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+
+                        <!-- STATUS DO CLIENTE -->
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">Status do Cadastro <span class="text-red-500">*</span></label>
+                            <select name="status" required class="w-full p-2.5 border rounded-lg text-sm bg-slate-50 focus:bg-white outline-none focus:ring-2 focus:ring-blue-500">
+                                <option value="Ativo" {% if cliente.status == 'Ativo' or not cliente %}selected{% endif %}>Ativo</option>
+                                <option value="Inativo" {% if cliente.status == 'Inativo' %}selected{% endif %}>Inativo</option>
+                            </select>
+                        </div>
+
+                        <!-- LOGO DO CLIENTE -->
+                        <div class="lg:col-span-2">
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">Logo do Cliente <span class="text-red-500">*</span></label>
+                            <input type="file" name="logo_cliente" accept="image/*" {% if not cliente.logo_url %}required{% endif %} 
+                                   class="w-full p-2 border rounded-lg text-sm bg-slate-50 file:mr-4 file:py-1.5 file:px-4 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
                         </div>
                     </div>
                 </div>
 
-                <!-- BOTAO SUBMIT -->
-                <div class="flex justify-end gap-3 pt-4 border-t border-slate-200">
-                    <button type="button" onclick="limparFormulario()" class="px-5 py-2.5 rounded-xl border border-slate-300 text-slate-600 hover:bg-slate-100 text-xs font-bold transition">
+                <!-- SEÇÃO 2: ENDEREÇO DE COLETA E ENTREGA -->
+                <div>
+                    <h2 class="text-base font-bold text-slate-800 border-b pb-2 mb-4 flex items-center gap-2">
+                        <i class="fa-solid fa-location-dot text-blue-600"></i>
+                        2. Endereço de Coleta e Entrega
+                    </h2>
+
+                    <div class="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                        <div class="md:col-span-1 lg:col-span-1">
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">CEP <span class="text-red-500">*</span></label>
+                            <input type="text" name="cep" required placeholder="00000-000" value="{{ cliente.cep }}"
+                                   class="w-full p-2.5 border rounded-lg text-sm bg-slate-50 focus:bg-white outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+
+                        <div class="md:col-span-3 lg:col-span-4">
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">Logradouro <span class="text-red-500">*</span></label>
+                            <input type="text" name="logradouro" required placeholder="Rua, Avenida, Alameda..." value="{{ cliente.logradouro }}"
+                                   class="w-full p-2.5 border rounded-lg text-sm bg-slate-50 focus:bg-white outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+
+                        <div class="md:col-span-1 lg:col-span-1">
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">Número <span class="text-red-500">*</span></label>
+                            <input type="text" name="numero" required placeholder="123" value="{{ cliente.numero }}"
+                                   class="w-full p-2.5 border rounded-lg text-sm bg-slate-50 focus:bg-white outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+
+                        <div class="md:col-span-2 lg:col-span-2">
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">Bairro <span class="text-red-500">*</span></label>
+                            <input type="text" name="bairro" required placeholder="Bairro" value="{{ cliente.bairro }}"
+                                   class="w-full p-2.5 border rounded-lg text-sm bg-slate-50 focus:bg-white outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+
+                        <div class="md:col-span-2 lg:col-span-3">
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">Cidade <span class="text-red-500">*</span></label>
+                            <input type="text" name="cidade" required placeholder="Cidade" value="{{ cliente.cidade }}"
+                                   class="w-full p-2.5 border rounded-lg text-sm bg-slate-50 focus:bg-white outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+
+                        <div class="md:col-span-1 lg:col-span-1">
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">UF <span class="text-red-500">*</span></label>
+                            <select name="estado" required class="w-full p-2.5 border rounded-lg text-sm bg-slate-50 focus:bg-white outline-none focus:ring-2 focus:ring-blue-500">
+                                <option value="" disabled {% if not cliente.estado %}selected{% endif %}>UF...</option>
+                                <option value="SP" {% if cliente.estado == 'SP' %}selected{% endif %}>SP</option>
+                                <option value="RJ" {% if cliente.estado == 'RJ' %}selected{% endif %}>RJ</option>
+                                <option value="MG" {% if cliente.estado == 'MG' %}selected{% endif %}>MG</option>
+                                <option value="PR" {% if cliente.estado == 'PR' %}selected{% endif %}>PR</option>
+                                <option value="SC" {% if cliente.estado == 'SC' %}selected{% endif %}>SC</option>
+                                <option value="RS" {% if cliente.estado == 'RS' %}selected{% endif %}>RS</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SEÇÃO 3: LOGÍSTICA DE ROTAS E HORÁRIOS -->
+                <div>
+                    <h2 class="text-base font-bold text-slate-800 border-b pb-2 mb-4 flex items-center gap-2">
+                        <i class="fa-solid fa-truck-ramp-box text-blue-600"></i>
+                        3. Atribuição Logística & Equipe de Rota
+                    </h2>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                        <!-- Rota / Região + Botões de Atalho -->
+                        <div>
+                            <div class="flex justify-between items-center mb-1">
+                                <label class="block text-xs font-semibold text-slate-700">Rota / Região <span class="text-red-500">*</span></label>
+                                <div class="flex items-center gap-2">
+                                    <button type="button" onclick="abrirModalRota()" class="text-xs font-bold text-blue-600 hover:text-blue-800 transition flex items-center gap-1" title="Cadastro Rápido em Janela">
+                                        <i class="fa-solid fa-plus-circle"></i> Rápido
+                                    </button>
+                                    <span class="text-slate-300">|</span>
+                                    <a href="/rotas" target="_blank" class="text-xs font-bold text-slate-600 hover:text-slate-800 transition flex items-center gap-1" title="Abrir Página Completa de Rotas">
+                                        <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i> Abrir Cad.
+                                    </a>
+                                </div>
+                            </div>
+                            <select name="rota_id" id="rota_id" required class="w-full p-2.5 border rounded-lg text-sm bg-slate-50 focus:bg-white outline-none focus:ring-2 focus:ring-blue-500">
+                                <option value="" disabled selected>Selecione a rota...</option>
+                                {% for rota in rotas %}
+                                    <option value="{{ rota.id }}" {% if cliente.rota_id == rota.id %}selected{% endif %}>
+                                        {{ rota.nome_rota }} ({{ rota.regiao }})
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <!-- Motorista + Botões de Atalho -->
+                        <div>
+                            <div class="flex justify-between items-center mb-1">
+                                <label class="block text-xs font-semibold text-slate-700">Motorista Responsável <span class="text-red-500">*</span></label>
+                                <div class="flex items-center gap-2">
+                                    <button type="button" onclick="abrirModalEquipe('Motorista')" class="text-xs font-bold text-blue-600 hover:text-blue-800 transition flex items-center gap-1" title="Cadastro Rápido em Janela">
+                                        <i class="fa-solid fa-plus-circle"></i> Rápido
+                                    </button>
+                                    <span class="text-slate-300">|</span>
+                                    <a href="/motoristas" target="_blank" class="text-xs font-bold text-slate-600 hover:text-slate-800 transition flex items-center gap-1" title="Abrir Página Completa de Motoristas">
+                                        <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i> Abrir Cad.
+                                    </a>
+                                </div>
+                            </div>
+                            <select name="motorista_id" id="motorista_id" required class="w-full p-2.5 border rounded-lg text-sm bg-slate-50 focus:bg-white outline-none focus:ring-2 focus:ring-blue-500">
+                                <option value="" disabled selected>Selecione o motorista...</option>
+                                {% for equipe in equipe_logistica %}
+                                    {% if equipe.funcao in ['Motorista', 'Motorista/Ajudante'] and equipe.status == 'Ativo' %}
+                                        <option value="{{ equipe.matricula }}" {% if cliente.motorista_id == equipe.matricula %}selected{% endif %}>
+                                            {{ equipe.nome_completo }} ({{ equipe.matricula }})
+                                        </option>
+                                    {% endif %}
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <!-- Ajudante + Botões de Atalho -->
+                        <div>
+                            <div class="flex justify-between items-center mb-1">
+                                <label class="block text-xs font-semibold text-slate-700">Ajudante Responsável <span class="text-red-500">*</span></label>
+                                <div class="flex items-center gap-2">
+                                    <button type="button" onclick="abrirModalEquipe('Ajudante')" class="text-xs font-bold text-blue-600 hover:text-blue-800 transition flex items-center gap-1" title="Cadastro Rápido em Janela">
+                                        <i class="fa-solid fa-plus-circle"></i> Rápido
+                                    </button>
+                                    <span class="text-slate-300">|</span>
+                                    <a href="/motoristas" target="_blank" class="text-xs font-bold text-slate-600 hover:text-slate-800 transition flex items-center gap-1" title="Abrir Página Completa de Equipe Logística">
+                                        <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i> Abrir Cad.
+                                    </a>
+                                </div>
+                            </div>
+                            <select name="ajudante_id" id="ajudante_id" required class="w-full p-2.5 border rounded-lg text-sm bg-slate-50 focus:bg-white outline-none focus:ring-2 focus:ring-blue-500">
+                                <option value="" disabled selected>Selecione o ajudante...</option>
+                                {% for equipe in equipe_logistica %}
+                                    {% if equipe.funcao in ['Ajudante', 'Motorista/Ajudante'] and equipe.status == 'Ativo' %}
+                                        <option value="{{ equipe.matricula }}" {% if cliente.ajudante_id == equipe.matricula %}selected{% endif %}>
+                                            {{ equipe.nome_completo }} ({{ equipe.matricula }})
+                                        </option>
+                                    {% endif %}
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Horários -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">Horário Coleta (Início) <span class="text-red-500">*</span></label>
+                            <input type="time" name="horario_coleta_inicio" required value="{{ cliente.horario_coleta_inicio }}"
+                                   class="w-full p-2.5 border rounded-lg text-sm bg-slate-50 focus:bg-white outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">Horário Coleta (Fim) <span class="text-red-500">*</span></label>
+                            <input type="time" name="horario_coleta_fim" required value="{{ cliente.horario_coleta_fim }}"
+                                   class="w-full p-2.5 border rounded-lg text-sm bg-slate-50 focus:bg-white outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">Horário Entrega (Início) <span class="text-red-500">*</span></label>
+                            <input type="time" name="horario_entrega_inicio" required value="{{ cliente.horario_entrega_inicio }}"
+                                   class="w-full p-2.5 border rounded-lg text-sm bg-slate-50 focus:bg-white outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">Horário Entrega (Fim) <span class="text-red-500">*</span></label>
+                            <input type="time" name="horario_entrega_fim" required value="{{ cliente.horario_entrega_fim }}"
+                                   class="w-full p-2.5 border rounded-lg text-sm bg-slate-50 focus:bg-white outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                    </div>
+
+                    <!-- Observação Logística -->
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">
+                            Observação Logística <span class="text-slate-400 font-normal">(Opcional)</span>
+                        </label>
+                        <textarea name="observacao_logistica" rows="3" 
+                                  placeholder="Janelas de horário de recebimento, restrições de veículos, procedimentos de portaria, etc." 
+                                  class="w-full p-2.5 border rounded-lg text-sm bg-slate-50 focus:bg-white outline-none focus:ring-2 focus:ring-blue-500">{{ cliente.observacao_logistica }}</textarea>
+                    </div>
+                </div>
+
+                <!-- AÇÕES DO FORMULÁRIO -->
+                <div class="pt-4 border-t border-slate-200 flex justify-end gap-3">
+                    <a href="/clientes" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold py-2.5 px-6 rounded-lg text-sm transition">
                         Cancelar
+                    </a>
+                    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 px-6 rounded-lg text-sm transition shadow-md flex items-center gap-2">
+                        <i class="fa-solid fa-floppy-disk"></i> SALVAR CLIENTE
                     </button>
-                    <button type="submit" class="px-6 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-md transition flex items-center gap-2">
-                        <i class="fa-solid fa-floppy-disk"></i> Salvar Cliente
-                    </button>
-                </div>
-            </form>
-        </div>
-
-        <!-- TABELA E LISTA DE CLIENTES -->
-        <div class="bg-white rounded-2xl shadow-md border border-slate-200 overflow-hidden">
-            <div class="p-4 bg-slate-900 text-white flex flex-wrap justify-between items-center gap-4">
-                <div class="flex items-center gap-2">
-                    <i class="fa-solid fa-list-check text-indigo-400"></i>
-                    <h3 class="font-bold text-sm">Clientes Mapeados & Logística</h3>
                 </div>
 
-                <!-- FILTROS E BUSCA -->
-                <div class="flex flex-wrap items-center gap-2 w-full md:w-auto">
-                    <div class="relative flex-grow md:w-64">
-                        <input type="text" id="buscaTexto" onkeyup="filtrarClientes()" placeholder="Buscar por Hotel, Rua, Bairro..." class="w-full bg-slate-800 border border-slate-700 text-white rounded-xl pl-9 pr-3 py-1.5 text-xs focus:ring-2 focus:ring-indigo-500 focus:outline-none">
-                        <i class="fa-solid fa-magnifying-glass absolute left-3 top-2 text-slate-400 text-xs"></i>
-                    </div>
-                    <select id="filtroRota" onchange="filtrarClientes()" class="bg-slate-800 border border-slate-700 text-white rounded-xl px-3 py-1.5 text-xs focus:ring-2 focus:ring-indigo-500 focus:outline-none">
-                        <option value="">Todas as Rotas</option>
-                    </select>
-                </div>
+            </div>
+        </form>
+
+        <!-- SEÇÃO: RELAÇÃO DE CLIENTES CADASTRADOS -->
+        <div class="bg-white rounded-2xl shadow-md p-6 border border-slate-200">
+            <div class="flex justify-between items-center border-b pb-3 mb-4">
+                <h3 class="text-sm font-bold text-slate-800 flex items-center gap-2">
+                    <i class="fa-solid fa-list text-blue-600"></i>
+                    Relação de Clientes Cadastrados
+                </h3>
+                <span class="text-xs bg-slate-100 text-slate-600 font-bold px-3 py-1 rounded-full">
+                    Total: {{ clientes|length if clientes else 0 }} clientes
+                </span>
             </div>
 
-            <!-- TABELA DE RESULTADOS -->
             <div class="overflow-x-auto">
                 <table class="w-full text-left text-xs border-collapse">
-                    <thead>
-                        <tr class="bg-slate-100 text-slate-700 font-bold border-b border-slate-200 uppercase tracking-wider">
-                            <th class="p-3">Logo</th>
-                            <th class="p-3">Rota</th>
-                            <th class="p-3">Cliente / Hotel</th>
-                            <th class="p-3">Endereço Completo</th>
-                            <th class="p-3">Motoristas</th>
-                            <th class="p-3">Horário Saída</th>
-                            <th class="p-3">Gaiolas/Volumes</th>
-                            <th class="p-3">Obs. Logística</th>
-                            <th class="p-3 text-center">Ações</th>
+                    <thead class="bg-slate-100 text-slate-700 uppercase tracking-wider font-semibold">
+                        <tr>
+                            <th class="p-3 border">Logo / Cliente</th>
+                            <th class="p-3 border">CNPJ / Contato</th>
+                            <th class="p-3 border">Rota & Responsáveis</th>
+                            <th class="p-3 border">Horários (Coleta / Entrega)</th>
+                            <th class="p-3 border text-center">Status</th>
+                            <th class="p-3 border text-center">Ações</th>
                         </tr>
                     </thead>
-                    <tbody id="tabelaClientesCorpo" class="divide-y divide-slate-200 text-slate-700">
-                        <!-- Preenchido via JavaScript -->
+                    <tbody class="divide-y divide-slate-200">
+                        {% if clientes %}
+                            {% for c in clientes %}
+                            <tr class="hover:bg-slate-50 transition">
+                                <td class="p-3 border">
+                                    <div class="flex items-center gap-3">
+                                        {% if c.logo_url %}
+                                            <img src="{{ c.logo_url }}" alt="{{ c.nome_fantasia }}" class="w-9 h-9 object-cover rounded-lg border border-slate-200">
+                                        {% else %}
+                                            <div class="w-9 h-9 bg-blue-100 text-blue-700 flex items-center justify-center font-bold rounded-lg border border-blue-200">
+                                                {{ c.nome_fantasia[0]|upper }}
+                                            </div>
+                                        {% endif %}
+                                        <div>
+                                            <p class="font-bold text-slate-900 text-sm">{{ c.nome_fantasia }}</p>
+                                            <p class="text-[11px] text-slate-500">{{ c.razao_social }}</p>
+                                        </div>
+                                    </div>
+                                </td>
+
+                                <td class="p-3 border">
+                                    <p class="font-semibold text-slate-800">{{ c.cnpj_cpf }}</p>
+                                    <p class="text-[11px] text-slate-500"><i class="fa-solid fa-user text-slate-400 mr-1"></i>{{ c.nome_contato }} ({{ c.telefone_contato }})</p>
+                                </td>
+
+                                <td class="p-3 border">
+                                    <p class="font-bold text-blue-700 mb-0.5"><i class="fa-solid fa-route mr-1"></i>{{ c.rota.nome_rota }}</p>
+                                    <p class="text-[11px] text-slate-600">
+                                        <strong>Mot:</strong> {{ c.motorista.nome_completo if c.motorista else 'N/I' }} | 
+                                        <strong>Aju:</strong> {{ c.ajudante.nome_completo if c.ajudante else 'N/I' }}
+                                    </p>
+                                </td>
+
+                                <td class="p-3 border">
+                                    <p class="text-slate-700"><strong>Coleta:</strong> {{ c.horario_coleta_inicio }} às {{ c.horario_coleta_fim }}</p>
+                                    <p class="text-slate-700"><strong>Entrega:</strong> {{ c.horario_entrega_inicio }} às {{ c.horario_entrega_fim }}</p>
+                                </td>
+
+                                <td class="p-3 border text-center">
+                                    {% if c.status == 'Ativo' %}
+                                        <span class="inline-flex items-center gap-1 bg-emerald-100 text-emerald-800 text-[11px] font-bold px-2.5 py-1 rounded-full border border-emerald-300">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span> Ativo
+                                        </span>
+                                    {% else %}
+                                        <span class="inline-flex items-center gap-1 bg-rose-100 text-rose-800 text-[11px] font-bold px-2.5 py-1 rounded-full border border-rose-300">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-rose-600"></span> Inativo
+                                        </span>
+                                    {% endif %}
+                                </td>
+
+                                <td class="p-3 border text-center">
+                                    <div class="flex justify-center items-center gap-2">
+                                        <a href="/clientes/editar/{{ c.id }}" class="bg-amber-500 hover:bg-amber-600 text-white font-bold p-2 rounded-lg transition" title="Editar Cliente">
+                                            <i class="fa-solid fa-pen-to-square"></i>
+                                        </a>
+                                        <button onclick="confirmarExclusao('{{ c.id }}', '{{ c.nome_fantasia }}')" class="bg-rose-600 hover:bg-rose-700 text-white font-bold p-2 rounded-lg transition" title="Excluir Cliente">
+                                            <i class="fa-solid fa-trash-can"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="6" class="p-6 text-center italic text-slate-400">
+                                    Nenhum cliente cadastrado no sistema.
+                                </td>
+                            </tr>
+                        {% endif %}
                     </tbody>
                 </table>
             </div>
         </div>
+
     </main>
 
-    <!-- FOOTER -->
-    <footer class="bg-slate-900 text-slate-400 text-xs text-center py-4 border-t border-slate-800">
-        <p>Lavanderia Dona Zara © MES Logística e Operações. Todos os direitos reservados.</p>
+    <!-- MODAL 1: CADASTRO RÁPIDO DE ROTA -->
+    <div id="modalRota" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-2xl shadow-xl w-full max-w-md border border-slate-200 overflow-hidden">
+            <div class="bg-slate-900 text-white p-4 flex justify-between items-center">
+                <h3 class="font-bold text-sm flex items-center gap-2">
+                    <i class="fa-solid fa-route text-blue-400"></i> Cadastrar Nova Rota
+                </h3>
+                <button onclick="fecharModal('modalRota')" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <form action="/rotas/salvar-rapido" method="POST" class="p-4 space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Nome da Rota <span class="text-red-500">*</span></label>
+                    <input type="text" name="nome_rota" required placeholder="Ex: Rota 04 - Zona Norte" class="w-full p-2.5 border rounded-lg text-sm bg-slate-50 focus:bg-white outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Região / Zona <span class="text-red-500">*</span></label>
+                    <input type="text" name="regiao" required placeholder="Ex: Zona Norte" class="w-full p-2.5 border rounded-lg text-sm bg-slate-50 focus:bg-white outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div class="flex justify-between items-center pt-2 border-t">
+                    <a href="/rotas" target="_blank" class="text-xs font-bold text-blue-600 hover:underline flex items-center gap-1">
+                        <i class="fa-solid fa-arrow-up-right-from-square"></i> Gestão Completa de Rotas
+                    </a>
+                    <div class="flex gap-2">
+                        <button type="button" onclick="fecharModal('modalRota')" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold py-2 px-4 rounded-lg text-xs">Cancelar</button>
+                        <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg text-xs shadow">Salvar Rota</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL 2: CADASTRO RÁPIDO DE EQUIPE LOGÍSTICA (MOTORISTA / AJUDANTE) -->
+    <div id="modalEquipe" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-2xl shadow-xl w-full max-w-lg border border-slate-200 overflow-hidden">
+            <div class="bg-slate-900 text-white p-4 flex justify-between items-center">
+                <h3 class="font-bold text-sm flex items-center gap-2" id="modalEquipeTitulo">
+                    <i class="fa-solid fa-user-plus text-blue-400"></i> Cadastrar Membro da Equipe
+                </h3>
+                <button onclick="fecharModal('modalEquipe')" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <form action="/equipe/salvar-rapido" method="POST" class="p-4 space-y-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Matrícula <span class="text-red-500">*</span></label>
+                        <input type="text" name="matricula" id="modalMatricula" required placeholder="Ex: MOT-02" class="w-full p-2.5 border rounded-lg text-sm bg-slate-50 focus:bg-white outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Função <span class="text-red-500">*</span></label>
+                        <select name="funcao" id="modalFuncao" required class="w-full p-2.5 border rounded-lg text-sm bg-slate-50 focus:bg-white outline-none focus:ring-2 focus:ring-blue-500">
+                            <option value="Motorista">Motorista</option>
+                            <option value="Ajudante">Ajudante</option>
+                            <option value="Motorista/Ajudante">Motorista/Ajudante</option>
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Nome Completo <span class="text-red-500">*</span></label>
+                    <input type="text" name="nome_completo" required placeholder="Ex: Rodrigo Alves" class="w-full p-2.5 border rounded-lg text-sm bg-slate-50 focus:bg-white outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">WhatsApp <span class="text-red-500">*</span></label>
+                        <input type="text" name="contato_whatsapp" required placeholder="(11) 98888-7777" class="w-full p-2.5 border rounded-lg text-sm bg-slate-50 focus:bg-white outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">CNH / Documento</label>
+                        <input type="text" name="cnh_documento" placeholder="Cat D - 000000000" class="w-full p-2.5 border rounded-lg text-sm bg-slate-50 focus:bg-white outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                </div>
+                <div class="flex justify-between items-center pt-2 border-t">
+                    <a href="/motoristas" target="_blank" class="text-xs font-bold text-emerald-600 hover:underline flex items-center gap-1">
+                        <i class="fa-solid fa-arrow-up-right-from-square"></i> Gestão Completa de Motoristas
+                    </a>
+                    <div class="flex gap-2">
+                        <button type="button" onclick="fecharModal('modalEquipe')" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold py-2 px-4 rounded-lg text-xs">Cancelar</button>
+                        <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg text-xs shadow">Salvar Membro</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- RODAPÉ PADRÃO MES -->
+    <footer class="bg-white border-t border-slate-200 p-4 text-center text-xs text-slate-500">
+        MES Dona Zara &copy; 2026 - Módulo de Gestão de Clientes & Cadastros
     </footer>
 
-    <!-- JAVASCRIPT DINÂMICO -->
+    <!-- SCRIPTS JS -->
     <script>
-        // Dados de Clientes extraídos da planilha do cliente
-        let clientesData = [
-            {
-                id: 1,
-                rota: "10",
-                hotel: "Blue Tree Premium Alphaville",
-                logo: "",
-                rua: "Alameda Madeira",
-                numero: "398",
-                bairro: "Alphaville",
-                cidade: "Barueri",
-                estado: "SP",
-                cep: "06454-010",
-                motoristas: "HAMILTON/KAUAN",
-                horarioSaida: "00:00",
-                gaiolas: "16",
-                observacao: ""
-            },
-            {
-                id: 2,
-                rota: "12",
-                hotel: "Blue Tree Premium Anália Franco",
-                logo: "",
-                rua: "Rua Eleonora Cintra",
-                numero: "960",
-                bairro: "Jardim Anália Franco",
-                cidade: "São Paulo",
-                estado: "SP",
-                cep: "03337-000",
-                motoristas: "HAMILTON/KAUAN",
-                horarioSaida: "00:00",
-                gaiolas: "7",
-                observacao: ""
-            },
-            {
-                id: 3,
-                rota: "8",
-                hotel: "Blue Tree Premium Faria Lima",
-                logo: "",
-                rua: "Av. Brigadeiro Faria Lima",
-                numero: "3989",
-                bairro: "Itaim Bibi",
-                cidade: "São Paulo",
-                estado: "SP",
-                cep: "04538-133",
-                motoristas: "MARIO/RENAN",
-                horarioSaida: "23:00",
-                gaiolas: "10",
-                observacao: ""
-            },
-            {
-                id: 4,
-                rota: "5",
-                hotel: "Blue Tree Premium Morumbi",
-                logo: "",
-                rua: "Av. Roque Petroni Júnior",
-                numero: "1000",
-                bairro: "Morumbi",
-                cidade: "São Paulo",
-                estado: "SP",
-                cep: "04707-000",
-                motoristas: "ADILSON JABA",
-                horarioSaida: "20:00",
-                gaiolas: "14",
-                observacao: ""
-            },
-            {
-                id: 5,
-                rota: "20",
-                hotel: "GOOGLE PMA",
-                logo: "",
-                rua: "Av. Brigadeiro Faria Lima",
-                numero: "3477",
-                bairro: "Itaim Bibi",
-                cidade: "São Paulo",
-                estado: "SP",
-                cep: "04538-133",
-                motoristas: "AILTON",
-                horarioSaida: "07:00",
-                gaiolas: "7 SACOS",
-                observacao: ""
-            },
-            {
-                id: 6,
-                rota: "6",
-                hotel: "Sheraton WTC São Paulo",
-                logo: "",
-                rua: "Av. das Nações Unidas",
-                numero: "12559",
-                bairro: "Brooklin Novo",
-                cidade: "São Paulo",
-                estado: "SP",
-                cep: "01415-001",
-                motoristas: "ADILSON JABA",
-                horarioSaida: "02:00",
-                gaiolas: "22",
-                observacao: ""
-            },
-            {
-                id: 7,
-                rota: "19",
-                hotel: "Intercity Anhembi",
-                logo: "",
-                rua: "Rua Marambaia",
-                numero: "357",
-                bairro: "Casa Verde",
-                cidade: "São Paulo",
-                estado: "SP",
-                cep: "04716-003",
-                motoristas: "DITO",
-                horarioSaida: "07:00",
-                gaiolas: "5",
-                observacao: "Ver mudança de horário para noite para ir com o Intercity Tatuapé"
-            }
-        ];
-
-        // Inicializar aplicação ao carregar a página
-        document.addEventListener("DOMContentLoaded", () => {
-            renderizarTabela(clientesData);
-            atualizarKPIs();
-            preencherFiltroRotas();
-        });
-
-        // Renderizar Tabela
-        function renderizarTabela(lista) {
-            const tbody = document.getElementById("tabelaClientesCorpo");
-            tbody.innerHTML = "";
-
-            if (lista.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="9" class="text-center py-6 text-slate-400">Nenhum cliente encontrado.</td></tr>`;
-                return;
-            }
-
-            lista.forEach(item => {
-                const tr = document.createElement("tr");
-                tr.className = "hover:bg-slate-50 transition border-b border-slate-100";
-
-                const logoSrc = item.logo || `https://ui-avatars.com/api/?name=${encodeURIComponent(item.hotel)}&background=6366f1&color=fff`;
-
-                tr.innerHTML = `
-                    <td class="p-3">
-                        <img src="${logoSrc}" alt="Logo" class="w-9 h-9 object-cover rounded-lg border border-slate-200 bg-white">
-                    </td>
-                    <td class="p-3">
-                        <span class="inline-block bg-slate-800 text-white text-[11px] font-bold px-2.5 py-1 rounded-md">
-                            Rota ${item.rota}
-                        </span>
-                    </td>
-                    <td class="p-3 font-bold text-slate-800">${item.hotel}</td>
-                    <td class="p-3 text-slate-600">
-                        ${item.rua}, Nº ${item.numero} - ${item.bairro}<br>
-                        <span class="text-[10px] text-slate-400">${item.cidade}/${item.estado} • CEP: ${item.cep || 'N/I'}</span>
-                    </td>
-                    <td class="p-3">
-                        <span class="text-xs font-semibold text-slate-700 bg-slate-100 px-2 py-1 rounded border border-slate-200">
-                            ${item.motoristas || 'Não Atribuído'}
-                        </span>
-                    </td>
-                    <td class="p-3 font-medium text-slate-800">
-                        <i class="fa-regular fa-clock text-indigo-500 mr-1"></i>${item.horarioSaida || '--:--'}
-                    </td>
-                    <td class="p-3 font-bold text-slate-800">
-                        <span class="bg-amber-50 text-amber-700 border border-amber-200 px-2 py-0.5 rounded">
-                            ${item.gaiolas || '0'}
-                        </span>
-                    </td>
-                    <td class="p-3 text-slate-500 italic max-w-xs truncate" title="${item.observacao || ''}">
-                        ${item.observacao ? item.observacao : '<span class="text-slate-300">-</span>'}
-                    </td>
-                    <td class="p-3 text-center">
-                        <div class="flex items-center justify-center gap-1.5">
-                            <button onclick="editarCliente(${item.id})" class="text-indigo-600 hover:text-indigo-800 bg-indigo-50 hover:bg-indigo-100 p-1.5 rounded-lg transition" title="Editar">
-                                <i class="fa-solid fa-pen-to-square"></i>
-                            </button>
-                            <button onclick="excluirCliente(${item.id})" class="text-rose-600 hover:text-rose-800 bg-rose-50 hover:bg-rose-100 p-1.5 rounded-lg transition" title="Excluir">
-                                <i class="fa-solid fa-trash"></i>
-                            </button>
-                        </div>
-                    </td>
-                `;
-                tbody.appendChild(tr);
-            });
+        function abrirModalRota() {
+            document.getElementById('modalRota').classList.remove('hidden');
+            document.getElementById('modalRota').classList.add('flex');
         }
 
-        // Atualizar Indicadores (KPIs)
-        function atualizarKPIs() {
-            document.getElementById("kpiTotalClientes").innerText = clientesData.length;
-            
-            let totalGaiolas = 0;
-            clientesData.forEach(c => {
-                let num = parseInt(c.gaiolas);
-                if (!isNaN(num)) totalGaiolas += num;
-            });
-            document.getElementById("kpiTotalGaiolas").innerText = totalGaiolas;
+        function abrirModalEquipe(tipo) {
+            const modal = document.getElementById('modalEquipe');
+            const selectFuncao = document.getElementById('modalFuncao');
+            const titulo = document.getElementById('modalEquipeTitulo');
+            const matriculaInput = document.getElementById('modalMatricula');
 
-            const rotasUnicas = new Set(clientesData.map(c => c.rota).filter(Boolean));
-            document.getElementById("kpiRotasAtivas").innerText = rotasUnicas.size;
-
-            const motoristasUnicos = new Set(clientesData.map(c => c.motoristas).filter(Boolean));
-            document.getElementById("kpiMotoristas").innerText = motoristasUnicos.size;
-        }
-
-        // Popular Filtro de Rotas Dinamicamente
-        function preencherFiltroRotas() {
-            const select = document.getElementById("filtroRota");
-            select.innerHTML = '<option value="">Todas as Rotas</option>';
-            const rotas = [...new Set(clientesData.map(c => c.rota).filter(Boolean))].sort();
-            rotas.forEach(r => {
-                const opt = document.createElement("option");
-                opt.value = r;
-                opt.innerText = `Rota ${r}`;
-                select.appendChild(opt);
-            });
-        }
-
-        // Filtragem de Clientes
-        function filtrarClientes() {
-            const texto = document.getElementById("buscaTexto").value.toLowerCase();
-            const rotaFiltro = document.getElementById("filtroRota").value;
-
-            const resultado = clientesData.filter(item => {
-                const bateTexto = item.hotel.toLowerCase().includes(texto) ||
-                                 item.rua.toLowerCase().includes(texto) ||
-                                 item.bairro.toLowerCase().includes(texto) ||
-                                 item.cidade.toLowerCase().includes(texto) ||
-                                 (item.motoristas && item.motoristas.toLowerCase().includes(texto));
-                
-                const bateRota = rotaFiltro === "" || item.rota === rotaFiltro;
-
-                return bateTexto && bateRota;
-            });
-
-            renderizarTabela(resultado);
-        }
-
-        // Preview da Logo com FileReader
-        function carregarPreviewLogo(event) {
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    document.getElementById("logoPreview").src = e.target.result;
-                    document.getElementById("logoBase64").value = e.target.result;
-                }
-                reader.readAsDataURL(file);
-            }
-        }
-
-        // Preenchimento Automático via API ViaCEP
-        function buscarCEP(cep) {
-            const cepLimpo = cep.replace(/\D/g, '');
-            if (cepLimpo.length === 8) {
-                fetch(`https://viacep.com.br/ws/${cepLimpo}/json/`)
-                    .then(res => res.json())
-                    .then(data => {
-                        if (!data.erro) {
-                            document.getElementById("rua").value = data.logradouro || '';
-                            document.getElementById("bairro").value = data.bairro || '';
-                            document.getElementById("cidade").value = data.localidade || '';
-                            document.getElementById("estado").value = data.uf || '';
-                        }
-                    })
-                    .catch(err => console.error("Erro ao buscar CEP:", err));
-            }
-        }
-
-        // Salvar ou Atualizar Cliente
-        function salvarCliente(e) {
-            e.preventDefault();
-
-            const id = document.getElementById("clienteId").value;
-            const clienteObj = {
-                id: id ? parseInt(id) : Date.now(),
-                hotel: document.getElementById("nomeHotel").value,
-                rota: document.getElementById("rota").value,
-                logo: document.getElementById("logoBase64").value || document.getElementById("logoPreview").src,
-                rua: document.getElementById("rua").value,
-                numero: document.getElementById("numero").value,
-                bairro: document.getElementById("bairro").value,
-                cidade: document.getElementById("cidade").value,
-                estado: document.getElementById("estado").value.toUpperCase(),
-                cep: document.getElementById("cep").value,
-                motoristas: document.getElementById("motoristas").value,
-                horarioSaida: document.getElementById("horarioSaida").value,
-                gaiolas: document.getElementById("gaiolas").value,
-                observacao: document.getElementById("observacao").value
-            };
-
-            if (id) {
-                // Atualizar existente
-                const index = clientesData.findIndex(c => c.id === parseInt(id));
-                if (index !== -1) clientesData[index] = clienteObj;
+            if (tipo === 'Motorista') {
+                titulo.innerHTML = '<i class="fa-solid fa-id-card text-blue-400"></i> Cadastrar Novo Motorista';
+                selectFuncao.value = 'Motorista';
+                matriculaInput.placeholder = 'Ex: MOT-02';
             } else {
-                // Criar novo
-                clientesData.unshift(clienteObj);
+                titulo.innerHTML = '<i class="fa-solid fa-user-gear text-blue-400"></i> Cadastrar Novo Ajudante';
+                selectFuncao.value = 'Ajudante';
+                matriculaInput.placeholder = 'Ex: AJU-02';
             }
 
-            limparFormulario();
-            renderizarTabela(clientesData);
-            atualizarKPIs();
-            preencherFiltroRotas();
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
         }
 
-        // Editar Cliente
-        function editarCliente(id) {
-            const cliente = clientesData.find(c => c.id === id);
-            if (!cliente) return;
+        function fecharModal(idModal) {
+            const modal = document.getElementById(idModal);
+            modal.classList.remove('flex');
+            modal.classList.add('hidden');
+        }
 
-            document.getElementById("clienteId").value = cliente.id;
-            document.getElementById("nomeHotel").value = cliente.hotel;
-            document.getElementById("rota").value = cliente.rota;
-            document.getElementById("motoristas").value = cliente.motoristas || '';
-            document.getElementById("horarioSaida").value = cliente.horarioSaida || '';
-            document.getElementById("cep").value = cliente.cep || '';
-            document.getElementById("rua").value = cliente.rua;
-            document.getElementById("numero").value = cliente.numero;
-            document.getElementById("bairro").value = cliente.bairro;
-            document.getElementById("cidade").value = cliente.cidade;
-            document.getElementById("estado").value = cliente.estado;
-            document.getElementById("gaiolas").value = cliente.gaiolas || '';
-            document.getElementById("observacao").value = cliente.observacao || '';
-
-            if (cliente.logo) {
-                document.getElementById("logoPreview").src = cliente.logo;
-                document.getElementById("logoBase64").value = cliente.logo;
-            } else {
-                document.getElementById("logoPreview").src = `https://ui-avatars.com/api/?name=${encodeURIComponent(cliente.hotel)}&background=6366f1&color=fff`;
+        function confirmarExclusao(id, nome) {
+            if (confirm(`Tem certeza que deseja excluir o cliente "${nome}"? Esta ação não poderá ser desfeita.`)) {
+                window.location.href = `/clientes/excluir/${id}`;
             }
-
-            document.getElementById("tituloFormulario").innerText = "Editar Cliente: " + cliente.hotel;
-            scrollParaFormulario();
-        }
-
-        // Excluir Cliente
-        function excluirCliente(id) {
-            if (confirm("Tem certeza que deseja remover este cliente?")) {
-                clientesData = clientesData.filter(c => c.id !== id);
-                renderizarTabela(clientesData);
-                atualizarKPIs();
-                preencherFiltroRotas();
-            }
-        }
-
-        // Limpar Formulário
-        function limparFormulario() {
-            document.getElementById("formCliente").reset();
-            document.getElementById("clienteId").value = "";
-            document.getElementById("logoBase64").value = "";
-            document.getElementById("logoPreview").src = "https://via.placeholder.com/120?text=Logo+Hotel";
-            document.getElementById("tituloFormulario").innerText = "Cadastrar Novo Cliente / Hotel";
-        }
-
-        // Scroll Suave até o Formulário
-        function scrollParaFormulario() {
-            document.getElementById("cardFormulario").scrollIntoView({ behavior: "smooth" });
         }
     </script>
+
 </body>
 </html>
