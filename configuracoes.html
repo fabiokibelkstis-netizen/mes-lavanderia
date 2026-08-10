@@ -17,7 +17,7 @@
                 </div>
                 <div>
                     <h1 class="text-xl font-bold tracking-wider">MES - Configurações Gerais</h1>
-                    <p class="text-xs text-slate-400">Produtos Químicos, Hidrômetros, Medidores e Balança</p>
+                    <p class="text-xs text-slate-400">Insumos Químicos, Utilidades, Balança e Equipe de Transporte</p>
                 </div>
             </div>
             <a href="gestaoquimica.html" class="bg-slate-700 hover:bg-slate-600 text-xs font-bold px-4 py-2 rounded-lg transition">⬅️ Dashboard Químico</a>
@@ -59,6 +59,7 @@
             </div>
         </div>
 
+        <!-- 2, 3, 4, 5. UTILIDADES & PARÂMETROS DE BALANÇA -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 
             <!-- 2. ÁGUA -->
@@ -219,6 +220,42 @@
 
         </div>
 
+        <!-- 6. MOTORISTAS E AJUDANTES -->
+        <div class="bg-white p-6 rounded-2xl shadow-md border border-slate-200 space-y-4">
+            <div class="flex justify-between items-center border-b pb-2">
+                <h3 class="text-sm font-bold text-slate-800 flex items-center gap-2">
+                    <i class="fa-solid fa-truck-front text-indigo-600"></i>
+                    6. Cadastro de Motoristas e Ajudantes
+                </h3>
+                <button type="button" onclick="abrirModalEquipe()" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition">
+                    ➕ Novo Colaborador
+                </button>
+            </div>
+            <p class="text-xs text-slate-500">
+                Gerencie motoristas e ajudantes de logística, dados de contato, CNH, escala de trabalho e horários de entrada/saída.
+            </p>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-xs border-collapse">
+                    <thead class="bg-slate-100 text-slate-700">
+                        <tr>
+                            <th class="p-2.5 border">ID / Matrícula</th>
+                            <th class="p-2.5 border">Nome Completo</th>
+                            <th class="p-2.5 border text-center">Função</th>
+                            <th class="p-2.5 border">Contato / WhatsApp</th>
+                            <th class="p-2.5 border">CNH / Doc</th>
+                            <th class="p-2.5 border text-center">Horário de Trabalho</th>
+                            <th class="p-2.5 border text-center">Escala / Dias</th>
+                            <th class="p-2.5 border text-center">Status</th>
+                            <th class="p-2.5 border text-center">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabelaEquipeLogistica">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
     </main>
 
     <!-- MODAL PRODUTO QUÍMICO -->
@@ -266,6 +303,80 @@
         </div>
     </div>
 
+    <!-- MODAL MOTORISTA / AJUDANTE -->
+    <div id="modalEquipe" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-2xl p-6 w-full max-w-lg shadow-xl space-y-4">
+            <h3 id="modalEquipeTitulo" class="text-sm font-bold text-slate-800 border-b pb-2 flex items-center gap-2">
+                <i class="fa-solid fa-user-plus text-indigo-600"></i>
+                Novo Motorista / Ajudante
+            </h3>
+            
+            <form onsubmit="salvarMembroEquipe(event)" class="space-y-3">
+                <input type="hidden" id="eqEditIdx" value="">
+
+                <div class="grid grid-cols-3 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">ID / Matrícula</label>
+                        <input type="text" id="eqMatricula" required placeholder="ex: MOT-01" class="w-full p-2 border rounded-lg text-xs bg-slate-50 outline-none focus:ring-1 focus:ring-indigo-500">
+                    </div>
+                    <div class="col-span-2">
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Nome Completo</label>
+                        <input type="text" id="eqNome" required placeholder="ex: João da Silva" class="w-full p-2 border rounded-lg text-xs bg-slate-50 outline-none focus:ring-1 focus:ring-indigo-500">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Função</label>
+                        <select id="eqFuncao" class="w-full p-2 border rounded-lg text-xs bg-slate-50 outline-none focus:ring-1 focus:ring-indigo-500">
+                            <option value="Motorista">Motorista</option>
+                            <option value="Ajudante">Ajudante</option>
+                            <option value="Motorista/Ajudante">Motorista / Ajudante</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Contato / WhatsApp</label>
+                        <input type="text" id="eqContato" placeholder="(11) 99999-9999" class="w-full p-2 border rounded-lg text-xs bg-slate-50 outline-none focus:ring-1 focus:ring-indigo-500">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">CNH / Categoria / Doc</label>
+                        <input type="text" id="eqCnh" placeholder="ex: Cat D - 123456789" class="w-full p-2 border rounded-lg text-xs bg-slate-50 outline-none focus:ring-1 focus:ring-indigo-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Status</label>
+                        <select id="eqStatus" class="w-full p-2 border rounded-lg text-xs bg-slate-50 outline-none focus:ring-1 focus:ring-indigo-500">
+                            <option value="Ativo">Ativo</option>
+                            <option value="Inativo">Inativo</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-3 gap-3 bg-slate-50 p-3 rounded-xl border border-slate-200">
+                    <div>
+                        <label class="block text-[11px] font-semibold text-slate-700 mb-1">Horário Entrada</label>
+                        <input type="time" id="eqEntrada" value="07:00" required class="w-full p-1.5 border rounded-lg text-xs bg-white outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-semibold text-slate-700 mb-1">Horário Saída</label>
+                        <input type="time" id="eqSaida" value="17:00" required class="w-full p-1.5 border rounded-lg text-xs bg-white outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-semibold text-slate-700 mb-1">Escala / Dias</label>
+                        <input type="text" id="eqDias" placeholder="ex: Seg a Sex" value="Seg a Sex" required class="w-full p-1.5 border rounded-lg text-xs bg-white outline-none">
+                    </div>
+                </div>
+
+                <div class="flex justify-end gap-2 pt-3 border-t">
+                    <button type="button" onclick="fecharModalEquipe()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-4 py-2 rounded-lg text-xs font-bold transition">Cancelar</button>
+                    <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-5 py-2 rounded-lg text-xs transition shadow">Salvar Colaborador</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <footer class="bg-white border-t border-slate-200 p-4 text-center text-xs text-slate-500">
         MES Dona Zara &copy; 2026 - Módulo de Configurações do Sistema
     </footer>
@@ -286,7 +397,13 @@
             { id: "sal_grosso", nome: "SAL GROSSO", desc: "Pacote c/ 25kg", un: "Kg", custoPadrao: 2.50 }
         ];
 
+        const EQUIPE_PADRAO = [
+            { id: "MOT-01", nome: "Carlos Oliveira", funcao: "Motorista", contato: "(11) 98765-4321", cnh: "Cat D - 1234567890", entrada: "06:00", saida: "16:00", dias: "Seg a Sex", status: "Ativo" },
+            { id: "AJU-01", nome: "Marcos Souza", funcao: "Ajudante", contato: "(11) 91234-5678", cnh: "-", entrada: "06:00", saida: "16:00", dias: "Seg a Sex", status: "Ativo" }
+        ];
+
         let listaProdutosQuimicos = [];
+        let listaEquipeLogistica = [];
 
         document.addEventListener('DOMContentLoaded', () => {
             carregarTodasConfiguracoes();
@@ -296,6 +413,10 @@
             listaProdutosQuimicos = JSON.parse(localStorage.getItem('mes_config_quimicos')) || PRODUTOS_PADRAO;
             localStorage.setItem('mes_config_quimicos', JSON.stringify(listaProdutosQuimicos));
             renderizarTabelaQuimicos();
+
+            listaEquipeLogistica = JSON.parse(localStorage.getItem('mes_config_equipe')) || EQUIPE_PADRAO;
+            localStorage.setItem('mes_config_equipe', JSON.stringify(listaEquipeLogistica));
+            renderizarTabelaEquipe();
 
             const configAgua = JSON.parse(localStorage.getItem('mes_config_agua') || '{"qtdPocos": 2, "nomesPocos": ["Poço 1", "Poço 2"], "qtdConsumo": 3, "nomesConsumo": ["Túnel 1", "Túnel 2", "Extratoras"], "custoM3": 0}');
             document.getElementById('setQtdPocos').value = configAgua.qtdPocos;
@@ -318,6 +439,7 @@
             document.getElementById('setTolerancia').value = configBalanca.tolerancia;
         }
 
+        // --- PRODUTOS QUÍMICOS ---
         function renderizarTabelaQuimicos() {
             const tbody = document.getElementById('tabelaProdutosQuimicos');
             if (listaProdutosQuimicos.length === 0) {
@@ -403,6 +525,116 @@
             }
         }
 
+        // --- EQUIPE LOGÍSTICA (MOTORISTAS E AJUDANTES) ---
+        function renderizarTabelaEquipe() {
+            const tbody = document.getElementById('tabelaEquipeLogistica');
+            if (listaEquipeLogistica.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="9" class="p-4 text-center italic text-slate-400">Nenhum motorista ou ajudante cadastrado.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = listaEquipeLogistica.map((eq, idx) => `
+                <tr class="hover:bg-slate-50 transition border-b">
+                    <td class="p-2.5 border font-mono text-[11px] font-bold text-slate-700">${eq.id}</td>
+                    <td class="p-2.5 border font-bold text-slate-800">${eq.nome}</td>
+                    <td class="p-2.5 border text-center">
+                        <span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${eq.funcao === 'Motorista' ? 'bg-indigo-100 text-indigo-800' : eq.funcao === 'Ajudante' ? 'bg-emerald-100 text-emerald-800' : 'bg-purple-100 text-purple-800'}">
+                            ${eq.funcao}
+                        </span>
+                    </td>
+                    <td class="p-2.5 border font-mono text-[11px] text-slate-700">${eq.contato || '-'}</td>
+                    <td class="p-2.5 border text-slate-600 text-[11px]">${eq.cnh || '-'}</td>
+                    <td class="p-2.5 border text-center font-mono text-[11px] text-slate-800">${eq.entrada || '07:00'} às ${eq.saida || '17:00'}</td>
+                    <td class="p-2.5 border text-center text-slate-600">${eq.dias || 'Seg a Sex'}</td>
+                    <td class="p-2.5 border text-center">
+                        <span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${eq.status === 'Ativo' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">
+                            ${eq.status || 'Ativo'}
+                        </span>
+                    </td>
+                    <td class="p-2.5 border text-center">
+                        <button onclick="editarMembroEquipe(${idx})" class="text-blue-600 hover:text-blue-800 font-bold px-1" title="Editar">✏️</button>
+                        <button onclick="excluirMembroEquipe(${idx})" class="text-red-600 hover:text-red-800 font-bold px-1" title="Excluir">❌</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function abrirModalEquipe() {
+            document.getElementById('eqEditIdx').value = "";
+            document.getElementById('eqMatricula').value = "";
+            document.getElementById('eqMatricula').disabled = false;
+            document.getElementById('eqNome').value = "";
+            document.getElementById('eqFuncao').value = "Motorista";
+            document.getElementById('eqContato').value = "";
+            document.getElementById('eqCnh').value = "";
+            document.getElementById('eqStatus').value = "Ativo";
+            document.getElementById('eqEntrada').value = "07:00";
+            document.getElementById('eqSaida').value = "17:00";
+            document.getElementById('eqDias').value = "Seg a Sex";
+            document.getElementById('modalEquipeTitulo').innerHTML = `<i class="fa-solid fa-user-plus text-indigo-600"></i> Novo Motorista / Ajudante`;
+            document.getElementById('modalEquipe').classList.remove('hidden');
+        }
+
+        function fecharModalEquipe() {
+            document.getElementById('modalEquipe').classList.add('hidden');
+        }
+
+        function editarMembroEquipe(idx) {
+            const eq = listaEquipeLogistica[idx];
+            document.getElementById('eqEditIdx').value = idx;
+            document.getElementById('eqMatricula').value = eq.id;
+            document.getElementById('eqMatricula').disabled = true;
+            document.getElementById('eqNome').value = eq.nome;
+            document.getElementById('eqFuncao').value = eq.funcao || "Motorista";
+            document.getElementById('eqContato').value = eq.contato || "";
+            document.getElementById('eqCnh').value = eq.cnh || "";
+            document.getElementById('eqStatus').value = eq.status || "Ativo";
+            document.getElementById('eqEntrada').value = eq.entrada || "07:00";
+            document.getElementById('eqSaida').value = eq.saida || "17:00";
+            document.getElementById('eqDias').value = eq.dias || "Seg a Sex";
+            document.getElementById('modalEquipeTitulo').innerHTML = `<i class="fa-solid fa-user-pen text-indigo-600"></i> Editar Colaborador`;
+            document.getElementById('modalEquipe').classList.remove('hidden');
+        }
+
+        function salvarMembroEquipe(e) {
+            e.preventDefault();
+            const editIdx = document.getElementById('eqEditIdx').value;
+            const id = document.getElementById('eqMatricula').value.trim().toUpperCase();
+            const nome = document.getElementById('eqNome').value.trim();
+            const funcao = document.getElementById('eqFuncao').value;
+            const contato = document.getElementById('eqContato').value.trim();
+            const cnh = document.getElementById('eqCnh').value.trim();
+            const status = document.getElementById('eqStatus').value;
+            const entrada = document.getElementById('eqEntrada').value;
+            const saida = document.getElementById('eqSaida').value;
+            const dias = document.getElementById('eqDias').value.trim();
+
+            const colaborador = { id, nome, funcao, contato, cnh, status, entrada, saida, dias };
+
+            if (editIdx !== "") {
+                listaEquipeLogistica[parseInt(editIdx)] = colaborador;
+            } else {
+                if (listaEquipeLogistica.some(item => item.id === id)) {
+                    alert("Já existe um colaborador cadastrado com este ID / Matrícula!");
+                    return;
+                }
+                listaEquipeLogistica.push(colaborador);
+            }
+
+            localStorage.setItem('mes_config_equipe', JSON.stringify(listaEquipeLogistica));
+            fecharModalEquipe();
+            renderizarTabelaEquipe();
+        }
+
+        function excluirMembroEquipe(idx) {
+            if (confirm(`Deseja realmente remover "${listaEquipeLogistica[idx].nome}"?`)) {
+                listaEquipeLogistica.splice(idx, 1);
+                localStorage.setItem('mes_config_equipe', JSON.stringify(listaEquipeLogistica));
+                renderizarTabelaEquipe();
+            }
+        }
+
+        // --- UTILIDADES ---
         function gerarCamposAgua(nomesPocosExistentes = [], nomesConsumoExistentes = []) {
             const qtdPocos = parseInt(document.getElementById('setQtdPocos').value);
             const qtdConsumo = parseInt(document.getElementById('setQtdPontosConsumo').value);
