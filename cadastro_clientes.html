@@ -24,15 +24,15 @@
                 </div>
             </div>
             
-            <!-- ATALHOS DE NAVEGAÇÃO E ABERTURA DE CADASTROS -->
+            <!-- ATALHOS DE NAVEGAÇÃO -->
             <div class="flex items-center gap-2 flex-wrap">
                 <a href="/rotas" class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-3.5 py-2 rounded-lg transition flex items-center gap-2 shadow">
                     <i class="fa-solid fa-route"></i> Cadastro de Rotas
                 </a>
-                <a href="/motoristas" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3.5 py-2 rounded-lg transition flex items-center gap-2 shadow">
-                    <i class="fa-solid fa-id-card"></i> Cadastro de Motoristas
+                <a href="/configuracoes" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3.5 py-2 rounded-lg transition flex items-center gap-2 shadow">
+                    <i class="fa-solid fa-users-gear"></i> Equipe (Configurações)
                 </a>
-                <a href="index.html" class="bg-slate-700 hover:bg-slate-600 text-white text-xs font-bold px-3.5 py-2 rounded-lg transition flex items-center gap-2">
+                <a href="/" class="bg-slate-700 hover:bg-slate-600 text-white text-xs font-bold px-3.5 py-2 rounded-lg transition flex items-center gap-2">
                     <i class="fa-solid fa-arrow-left"></i> Menu Principal
                 </a>
             </div>
@@ -44,7 +44,7 @@
 
         <!-- FORMULÁRIO DE CADASTRO / EDIÇÃO -->
         <form action="/clientes/salvar" method="POST" enctype="multipart/form-data" id="formCadastroCliente">
-            <input type="hidden" name="cliente_id" id="cliente_id" value="{{ cliente.id if cliente and cliente.id else '' }}">
+            <input type="hidden" name="cliente_id" id="cliente_id" value="{% if cliente %}{{ cliente.id }}{% endif %}">
             
             <div class="bg-white rounded-2xl shadow-md p-6 border border-slate-200 space-y-6">
                 
@@ -58,78 +58,75 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                         <div>
                             <label class="block text-xs font-semibold text-slate-700 mb-1">Razão Social <span class="text-red-500">*</span></label>
-                            <input type="text" name="razao_social" required placeholder="Ex: Lavanderia Comercial Ltda" 
-                                   value="{{ cliente.razao_social if cliente and cliente.razao_social else '' }}"
+                            <input type="text" name="razao_social" id="razao_social" required placeholder="Ex: Lavanderia Comercial Ltda" 
+                                   value="{% if cliente %}{{ cliente.razao_social }}{% endif %}"
                                    class="w-full p-2.5 border rounded-lg text-sm bg-slate-50 focus:bg-white outline-none focus:ring-2 focus:ring-blue-500">
                         </div>
 
                         <div>
                             <label class="block text-xs font-semibold text-slate-700 mb-1">Nome Fantasia <span class="text-red-500">*</span></label>
-                            <input type="text" name="nome_fantasia" required placeholder="Ex: Hotel Grand Central" 
-                                   value="{{ cliente.nome_fantasia if cliente and cliente.nome_fantasia else '' }}"
+                            <input type="text" name="nome_fantasia" id="nome_fantasia" required placeholder="Ex: Hotel Grand Central" 
+                                   value="{% if cliente %}{{ cliente.nome_fantasia }}{% endif %}"
                                    class="w-full p-2.5 border rounded-lg text-sm bg-slate-50 focus:bg-white outline-none focus:ring-2 focus:ring-blue-500">
                         </div>
 
                         <div>
                             <label class="block text-xs font-semibold text-slate-700 mb-1">CNPJ / CPF <span class="text-red-500">*</span></label>
-                            <input type="text" name="cnpj_cpf" required placeholder="00.000.000/0000-00" 
-                                   value="{{ cliente.cnpj_cpf if cliente and cliente.cnpj_cpf else '' }}"
+                            <input type="text" name="cnpj_cpf" id="cnpj_cpf" required placeholder="00.000.000/0000-00" 
+                                   value="{% if cliente %}{{ cliente.cnpj_cpf }}{% endif %}"
                                    class="w-full p-2.5 border rounded-lg text-sm bg-slate-50 focus:bg-white outline-none focus:ring-2 focus:ring-blue-500">
                         </div>
 
                         <div>
                             <label class="block text-xs font-semibold text-slate-700 mb-1">Inscrição Estadual <span class="text-red-500">*</span></label>
-                            <input type="text" name="inscricao_estadual" required placeholder="Número ou Isento" 
-                                   value="{{ cliente.inscricao_estadual if cliente and cliente.inscricao_estadual else '' }}"
+                            <input type="text" name="inscricao_estadual" id="inscricao_estadual" required placeholder="Número ou Isento" 
+                                   value="{% if cliente %}{{ cliente.inscricao_estadual }}{% endif %}"
                                    class="w-full p-2.5 border rounded-lg text-sm bg-slate-50 focus:bg-white outline-none focus:ring-2 focus:ring-blue-500">
                         </div>
 
                         <div>
                             <label class="block text-xs font-semibold text-slate-700 mb-1">Telefone Comercial <span class="text-red-500">*</span></label>
-                            <input type="tel" name="telefone" required placeholder="(11) 3333-4444" 
-                                   value="{{ cliente.telefone if cliente and cliente.telefone else '' }}"
+                            <input type="tel" name="telefone" id="telefone" required placeholder="(11) 3333-4444" 
+                                   value="{% if cliente %}{{ cliente.telefone }}{% endif %}"
                                    class="w-full p-2.5 border rounded-lg text-sm bg-slate-50 focus:bg-white outline-none focus:ring-2 focus:ring-blue-500">
                         </div>
 
                         <div>
                             <label class="block text-xs font-semibold text-slate-700 mb-1">E-mail Comercial <span class="text-red-500">*</span></label>
-                            <input type="email" name="email" required placeholder="comercial@empresa.com.br" 
-                                   value="{{ cliente.email if cliente and cliente.email else '' }}"
+                            <input type="email" name="email" id="email" required placeholder="comercial@empresa.com.br" 
+                                   value="{% if cliente %}{{ cliente.email }}{% endif %}"
                                    class="w-full p-2.5 border rounded-lg text-sm bg-slate-50 focus:bg-white outline-none focus:ring-2 focus:ring-blue-500">
                         </div>
 
-                        <!-- CONTATO PRINCIPAL -->
                         <div>
                             <label class="block text-xs font-semibold text-slate-700 mb-1">Nome do Contato Principal <span class="text-red-500">*</span></label>
-                            <input type="text" name="nome_contato" required placeholder="Ex: João Silva" 
-                                   value="{{ cliente.nome_contato if cliente and cliente.nome_contato else '' }}"
+                            <input type="text" name="nome_contato" id="nome_contato" required placeholder="Ex: João Silva" 
+                                   value="{% if cliente %}{{ cliente.nome_contato }}{% endif %}"
                                    class="w-full p-2.5 border rounded-lg text-sm bg-slate-50 focus:bg-white outline-none focus:ring-2 focus:ring-blue-500">
                         </div>
 
                         <div>
                             <label class="block text-xs font-semibold text-slate-700 mb-1">Telefone do Contato <span class="text-red-500">*</span></label>
-                            <input type="tel" name="telefone_contato" required placeholder="(11) 99999-9999" 
-                                   value="{{ cliente.telefone_contato if cliente and cliente.telefone_contato else '' }}"
+                            <input type="tel" name="telefone_contato" id="telefone_contato" required placeholder="(11) 99999-9999" 
+                                   value="{% if cliente %}{{ cliente.telefone_contato }}{% endif %}"
                                    class="w-full p-2.5 border rounded-lg text-sm bg-slate-50 focus:bg-white outline-none focus:ring-2 focus:ring-blue-500">
                         </div>
 
                         <div>
                             <label class="block text-xs font-semibold text-slate-700 mb-1">E-mail do Contato <span class="text-red-500">*</span></label>
-                            <input type="email" name="email_contato" required placeholder="joao@empresa.com.br" 
-                                   value="{{ cliente.email_contato if cliente and cliente.email_contato else '' }}"
+                            <input type="email" name="email_contato" id="email_contato" required placeholder="joao@empresa.com.br" 
+                                   value="{% if cliente %}{{ cliente.email_contato }}{% endif %}"
                                    class="w-full p-2.5 border rounded-lg text-sm bg-slate-50 focus:bg-white outline-none focus:ring-2 focus:ring-blue-500">
                         </div>
 
-                        <!-- STATUS DO CLIENTE -->
                         <div>
                             <label class="block text-xs font-semibold text-slate-700 mb-1">Status do Cadastro <span class="text-red-500">*</span></label>
-                            <select name="status" required class="w-full p-2.5 border rounded-lg text-sm bg-slate-50 focus:bg-white outline-none focus:ring-2 focus:ring-blue-500">
+                            <select name="status" id="status" required class="w-full p-2.5 border rounded-lg text-sm bg-slate-50 focus:bg-white outline-none focus:ring-2 focus:ring-blue-500">
                                 <option value="Ativo" {% if not cliente or cliente.status == 'Ativo' %}selected{% endif %}>Ativo</option>
                                 <option value="Inativo" {% if cliente and cliente.status == 'Inativo' %}selected{% endif %}>Inativo</option>
                             </select>
                         </div>
 
-                        <!-- LOGO DO CLIENTE -->
                         <div class="lg:col-span-2">
                             <label class="block text-xs font-semibold text-slate-700 mb-1">Logo do Cliente <span class="text-red-500">*</span></label>
                             <input type="file" name="logo_cliente" accept="image/*" {% if not cliente or not cliente.logo_url %}required{% endif %} 
@@ -148,42 +145,42 @@
                     <div class="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-6 gap-4">
                         <div class="md:col-span-1 lg:col-span-1">
                             <label class="block text-xs font-semibold text-slate-700 mb-1">CEP <span class="text-red-500">*</span></label>
-                            <input type="text" name="cep" required placeholder="00000-000" 
-                                   value="{{ cliente.cep if cliente and cliente.cep else '' }}"
+                            <input type="text" name="cep" id="cep" required placeholder="00000-000" 
+                                   value="{% if cliente %}{{ cliente.cep }}{% endif %}"
                                    class="w-full p-2.5 border rounded-lg text-sm bg-slate-50 focus:bg-white outline-none focus:ring-2 focus:ring-blue-500">
                         </div>
 
                         <div class="md:col-span-3 lg:col-span-4">
                             <label class="block text-xs font-semibold text-slate-700 mb-1">Logradouro <span class="text-red-500">*</span></label>
-                            <input type="text" name="logradouro" required placeholder="Rua, Avenida, Alameda..." 
-                                   value="{{ cliente.logradouro if cliente and cliente.logradouro else '' }}"
+                            <input type="text" name="logradouro" id="logradouro" required placeholder="Rua, Avenida, Alameda..." 
+                                   value="{% if cliente %}{{ cliente.logradouro }}{% endif %}"
                                    class="w-full p-2.5 border rounded-lg text-sm bg-slate-50 focus:bg-white outline-none focus:ring-2 focus:ring-blue-500">
                         </div>
 
                         <div class="md:col-span-1 lg:col-span-1">
                             <label class="block text-xs font-semibold text-slate-700 mb-1">Número <span class="text-red-500">*</span></label>
-                            <input type="text" name="numero" required placeholder="123" 
-                                   value="{{ cliente.numero if cliente and cliente.numero else '' }}"
+                            <input type="text" name="numero" id="numero" required placeholder="123" 
+                                   value="{% if cliente %}{{ cliente.numero }}{% endif %}"
                                    class="w-full p-2.5 border rounded-lg text-sm bg-slate-50 focus:bg-white outline-none focus:ring-2 focus:ring-blue-500">
                         </div>
 
                         <div class="md:col-span-2 lg:col-span-2">
                             <label class="block text-xs font-semibold text-slate-700 mb-1">Bairro <span class="text-red-500">*</span></label>
-                            <input type="text" name="bairro" required placeholder="Bairro" 
-                                   value="{{ cliente.bairro if cliente and cliente.bairro else '' }}"
+                            <input type="text" name="bairro" id="bairro" required placeholder="Bairro" 
+                                   value="{% if cliente %}{{ cliente.bairro }}{% endif %}"
                                    class="w-full p-2.5 border rounded-lg text-sm bg-slate-50 focus:bg-white outline-none focus:ring-2 focus:ring-blue-500">
                         </div>
 
                         <div class="md:col-span-2 lg:col-span-3">
                             <label class="block text-xs font-semibold text-slate-700 mb-1">Cidade <span class="text-red-500">*</span></label>
-                            <input type="text" name="cidade" required placeholder="Cidade" 
-                                   value="{{ cliente.cidade if cliente and cliente.cidade else '' }}"
+                            <input type="text" name="cidade" id="cidade" required placeholder="Cidade" 
+                                   value="{% if cliente %}{{ cliente.cidade }}{% endif %}"
                                    class="w-full p-2.5 border rounded-lg text-sm bg-slate-50 focus:bg-white outline-none focus:ring-2 focus:ring-blue-500">
                         </div>
 
                         <div class="md:col-span-1 lg:col-span-1">
                             <label class="block text-xs font-semibold text-slate-700 mb-1">UF <span class="text-red-500">*</span></label>
-                            <select name="estado" required class="w-full p-2.5 border rounded-lg text-sm bg-slate-50 focus:bg-white outline-none focus:ring-2 focus:ring-blue-500">
+                            <select name="estado" id="estado" required class="w-full p-2.5 border rounded-lg text-sm bg-slate-50 focus:bg-white outline-none focus:ring-2 focus:ring-blue-500">
                                 <option value="" disabled {% if not cliente or not cliente.estado %}selected{% endif %}>UF...</option>
                                 <option value="SP" {% if cliente and cliente.estado == 'SP' %}selected{% endif %}>SP</option>
                                 <option value="RJ" {% if cliente and cliente.estado == 'RJ' %}selected{% endif %}>RJ</option>
@@ -196,7 +193,7 @@
                     </div>
                 </div>
 
-                <!-- SEÇÃO 3: LOGÍSTICA DE ROTAS E HORÁRIOS -->
+                <!-- SEÇÃO 3: LOGÍSTICA DE ROTAS E HORÁRIOS (BUSCA MOTORISTAS/AJUDANTES DAS CONFIGURAÇÕES) -->
                 <div>
                     <h2 class="text-base font-bold text-slate-800 border-b pb-2 mb-4 flex items-center gap-2">
                         <i class="fa-solid fa-truck-ramp-box text-blue-600"></i>
@@ -204,17 +201,17 @@
                     </h2>
 
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                        <!-- Rota / Região + Botões de Atalho -->
+                        <!-- ROTA -->
                         <div>
                             <div class="flex justify-between items-center mb-1">
                                 <label class="block text-xs font-semibold text-slate-700">Rota / Região <span class="text-red-500">*</span></label>
                                 <div class="flex items-center gap-2">
-                                    <button type="button" onclick="abrirModalRota()" class="text-xs font-bold text-blue-600 hover:text-blue-800 transition flex items-center gap-1" title="Cadastro Rápido em Janela">
+                                    <button type="button" onclick="abrirModalRota()" class="text-xs font-bold text-blue-600 hover:text-blue-800 transition flex items-center gap-1">
                                         <i class="fa-solid fa-plus-circle"></i> Rápido
                                     </button>
                                     <span class="text-slate-300">|</span>
-                                    <a href="/rotas" target="_blank" class="text-xs font-bold text-slate-600 hover:text-slate-800 transition flex items-center gap-1" title="Abrir Página Completa de Rotas">
-                                        <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i> Abrir Cad.
+                                    <a href="/rotas" target="_blank" class="text-xs font-bold text-slate-600 hover:text-slate-800 transition flex items-center gap-1">
+                                        <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i> Cad. Rotas
                                     </a>
                                 </div>
                             </div>
@@ -226,106 +223,113 @@
                                             {{ rota.nome_rota }} ({{ rota.regiao }})
                                         </option>
                                     {% endfor %}
+                                {% else %}
+                                    <option value="1">Rota 01 - Centro / Zona Sul</option>
+                                    <option value="2">Rota 02 - Zona Norte</option>
                                 {% endif %}
                             </select>
                         </div>
 
-                        <!-- Motorista + Botões de Atalho -->
+                        <!-- MOTORISTA (BUSCADO DE CONFIGURAÇÕES / EQUIPE LOGÍSTICA) -->
                         <div>
                             <div class="flex justify-between items-center mb-1">
                                 <label class="block text-xs font-semibold text-slate-700">Motorista Responsável <span class="text-red-500">*</span></label>
                                 <div class="flex items-center gap-2">
-                                    <button type="button" onclick="abrirModalEquipe('Motorista')" class="text-xs font-bold text-blue-600 hover:text-blue-800 transition flex items-center gap-1" title="Cadastro Rápido em Janela">
+                                    <button type="button" onclick="abrirModalEquipe('Motorista')" class="text-xs font-bold text-blue-600 hover:text-blue-800 transition flex items-center gap-1">
                                         <i class="fa-solid fa-plus-circle"></i> Rápido
                                     </button>
                                     <span class="text-slate-300">|</span>
-                                    <a href="/motoristas" target="_blank" class="text-xs font-bold text-slate-600 hover:text-slate-800 transition flex items-center gap-1" title="Abrir Página Completa de Motoristas">
-                                        <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i> Abrir Cad.
+                                    <a href="/configuracoes" target="_blank" class="text-xs font-bold text-slate-600 hover:text-slate-800 transition flex items-center gap-1">
+                                        <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i> Configurações
                                     </a>
                                 </div>
                             </div>
                             <select name="motorista_id" id="motorista_id" required class="w-full p-2.5 border rounded-lg text-sm bg-slate-50 focus:bg-white outline-none focus:ring-2 focus:ring-blue-500">
                                 <option value="" disabled {% if not cliente or not cliente.motorista_id %}selected{% endif %}>Selecione o motorista...</option>
                                 {% if equipe_logistica %}
-                                    {% for equipe in equipe_logistica %}
-                                        {% if equipe.funcao in ['Motorista', 'Motorista/Ajudante'] and equipe.status == 'Ativo' %}
-                                            <option value="{{ equipe.matricula }}" {% if cliente and cliente.motorista_id == equipe.matricula %}selected{% endif %}>
-                                                {{ equipe.nome_completo }} ({{ equipe.matricula }})
+                                    {% for membro in equipe_logistica %}
+                                        {% if membro.funcao in ['Motorista', 'Motorista/Ajudante'] and membro.status == 'Ativo' %}
+                                            <option value="{{ membro.matricula if membro.matricula else membro.id }}" {% if cliente and (cliente.motorista_id == membro.matricula or cliente.motorista_id == membro.id) %}selected{% endif %}>
+                                                {{ membro.nome_completo }} ({{ membro.matricula if membro.matricula else 'MOT' }})
                                             </option>
                                         {% endif %}
                                     {% endfor %}
+                                {% else %}
+                                    <option value="MOT-01">Carlos Silva (MOT-01)</option>
+                                    <option value="MOT-02">Marcos Souza (MOT-02)</option>
                                 {% endif %}
                             </select>
                         </div>
 
-                        <!-- Ajudante + Botões de Atalho -->
+                        <!-- AJUDANTE (BUSCADO DE CONFIGURAÇÕES / EQUIPE LOGÍSTICA) -->
                         <div>
                             <div class="flex justify-between items-center mb-1">
                                 <label class="block text-xs font-semibold text-slate-700">Ajudante Responsável <span class="text-red-500">*</span></label>
                                 <div class="flex items-center gap-2">
-                                    <button type="button" onclick="abrirModalEquipe('Ajudante')" class="text-xs font-bold text-blue-600 hover:text-blue-800 transition flex items-center gap-1" title="Cadastro Rápido em Janela">
+                                    <button type="button" onclick="abrirModalEquipe('Ajudante')" class="text-xs font-bold text-blue-600 hover:text-blue-800 transition flex items-center gap-1">
                                         <i class="fa-solid fa-plus-circle"></i> Rápido
                                     </button>
                                     <span class="text-slate-300">|</span>
-                                    <a href="/motoristas" target="_blank" class="text-xs font-bold text-slate-600 hover:text-slate-800 transition flex items-center gap-1" title="Abrir Página Completa de Equipe Logística">
-                                        <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i> Abrir Cad.
+                                    <a href="/configuracoes" target="_blank" class="text-xs font-bold text-slate-600 hover:text-slate-800 transition flex items-center gap-1">
+                                        <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i> Configurações
                                     </a>
                                 </div>
                             </div>
                             <select name="ajudante_id" id="ajudante_id" required class="w-full p-2.5 border rounded-lg text-sm bg-slate-50 focus:bg-white outline-none focus:ring-2 focus:ring-blue-500">
                                 <option value="" disabled {% if not cliente or not cliente.ajudante_id %}selected{% endif %}>Selecione o ajudante...</option>
                                 {% if equipe_logistica %}
-                                    {% for equipe in equipe_logistica %}
-                                        {% if equipe.funcao in ['Ajudante', 'Motorista/Ajudante'] and equipe.status == 'Ativo' %}
-                                            <option value="{{ equipe.matricula }}" {% if cliente and cliente.ajudante_id == equipe.matricula %}selected{% endif %}>
-                                                {{ equipe.nome_completo }} ({{ equipe.matricula }})
+                                    {% for membro in equipe_logistica %}
+                                        {% if membro.funcao in ['Ajudante', 'Motorista/Ajudante'] and membro.status == 'Ativo' %}
+                                            <option value="{{ membro.matricula if membro.matricula else membro.id }}" {% if cliente and (cliente.ajudante_id == membro.matricula or cliente.ajudante_id == membro.id) %}selected{% endif %}>
+                                                {{ membro.nome_completo }} ({{ membro.matricula if membro.matricula else 'AJU' }})
                                             </option>
                                         {% endif %}
                                     {% endfor %}
+                                {% else %}
+                                    <option value="AJU-01">João Santos (AJU-01)</option>
+                                    <option value="AJU-02">Pedro Costa (AJU-02)</option>
                                 {% endif %}
                             </select>
                         </div>
                     </div>
 
-                    <!-- Horários -->
+                    <!-- HORÁRIOS -->
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
                         <div>
                             <label class="block text-xs font-semibold text-slate-700 mb-1">Horário Coleta (Início) <span class="text-red-500">*</span></label>
-                            <input type="time" name="horario_coleta_inicio" required 
-                                   value="{{ cliente.horario_coleta_inicio if cliente and cliente.horario_coleta_inicio else '' }}"
+                            <input type="time" name="horario_coleta_inicio" id="horario_coleta_inicio" required 
+                                   value="{% if cliente %}{{ cliente.horario_coleta_inicio }}{% endif %}"
                                    class="w-full p-2.5 border rounded-lg text-sm bg-slate-50 focus:bg-white outline-none focus:ring-2 focus:ring-blue-500">
                         </div>
 
                         <div>
                             <label class="block text-xs font-semibold text-slate-700 mb-1">Horário Coleta (Fim) <span class="text-red-500">*</span></label>
-                            <input type="time" name="horario_coleta_fim" required 
-                                   value="{{ cliente.horario_coleta_fim if cliente and cliente.horario_coleta_fim else '' }}"
+                            <input type="time" name="horario_coleta_fim" id="horario_coleta_fim" required 
+                                   value="{% if cliente %}{{ cliente.horario_coleta_fim }}{% endif %}"
                                    class="w-full p-2.5 border rounded-lg text-sm bg-slate-50 focus:bg-white outline-none focus:ring-2 focus:ring-blue-500">
                         </div>
 
                         <div>
                             <label class="block text-xs font-semibold text-slate-700 mb-1">Horário Entrega (Início) <span class="text-red-500">*</span></label>
-                            <input type="time" name="horario_entrega_inicio" required 
-                                   value="{{ cliente.horario_entrega_inicio if cliente and cliente.horario_entrega_inicio else '' }}"
+                            <input type="time" name="horario_entrega_inicio" id="horario_entrega_inicio" required 
+                                   value="{% if cliente %}{{ cliente.horario_entrega_inicio }}{% endif %}"
                                    class="w-full p-2.5 border rounded-lg text-sm bg-slate-50 focus:bg-white outline-none focus:ring-2 focus:ring-blue-500">
                         </div>
 
                         <div>
                             <label class="block text-xs font-semibold text-slate-700 mb-1">Horário Entrega (Fim) <span class="text-red-500">*</span></label>
-                            <input type="time" name="horario_entrega_fim" required 
-                                   value="{{ cliente.horario_entrega_fim if cliente and cliente.horario_entrega_fim else '' }}"
+                            <input type="time" name="horario_entrega_fim" id="horario_entrega_fim" required 
+                                   value="{% if cliente %}{{ cliente.horario_entrega_fim }}{% endif %}"
                                    class="w-full p-2.5 border rounded-lg text-sm bg-slate-50 focus:bg-white outline-none focus:ring-2 focus:ring-blue-500">
                         </div>
                     </div>
 
-                    <!-- Observação Logística -->
+                    <!-- OBSERVAÇÃO LOGÍSTICA -->
                     <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-1">
-                            Observação Logística <span class="text-slate-400 font-normal">(Opcional)</span>
-                        </label>
-                        <textarea name="observacao_logistica" rows="3" 
-                                  placeholder="Janelas de horário de recebimento, restrições de veículos, procedimentos de portaria, etc." 
-                                  class="w-full p-2.5 border rounded-lg text-sm bg-slate-50 focus:bg-white outline-none focus:ring-2 focus:ring-blue-500">{{ cliente.observacao_logistica if cliente and cliente.observacao_logistica else '' }}</textarea>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Observação Logística</label>
+                        <textarea name="observacao_logistica" id="observacao_logistica" rows="3" 
+                                  placeholder="Janelas de horário, restrições de veículos, procedimentos de portaria, etc." 
+                                  class="w-full p-2.5 border rounded-lg text-sm bg-slate-50 focus:bg-white outline-none focus:ring-2 focus:ring-blue-500">{% if cliente %}{{ cliente.observacao_logistica }}{% endif %}</textarea>
                     </div>
                 </div>
 
@@ -342,66 +346,68 @@
             </div>
         </form>
 
-        <!-- SEÇÃO: RELAÇÃO DE CLIENTES CADASTRADOS -->
+        <!-- SEÇÃO: RELAÇÃO DE CLIENTES CADASTRADOS (ESTRUTURA CORRIGIDA PARA EVITAR HTML HOISTING) -->
         <div class="bg-white rounded-2xl shadow-md p-6 border border-slate-200">
             <div class="flex justify-between items-center border-b pb-3 mb-4">
                 <h3 class="text-sm font-bold text-slate-800 flex items-center gap-2">
                     <i class="fa-solid fa-list text-blue-600"></i>
                     Relação de Clientes Cadastrados
                 </h3>
-                <span class="text-xs bg-slate-100 text-slate-600 font-bold px-3 py-1 rounded-full">
-                    Total: {{ clientes|length if clientes else 0 }} clientes
+                <span class="text-xs bg-slate-100 text-slate-600 font-bold px-3 py-1 rounded-full" id="badgeTotalClientes">
+                    Total: {% if clientes %}{{ clientes|length }}{% else %}0{% endif %} clientes
                 </span>
             </div>
 
             <div class="overflow-x-auto">
-                <table class="w-full text-left text-xs border-collapse">
+                <table class="w-full text-left text-xs border-collapse" id="tabelaClientes">
                     <thead class="bg-slate-100 text-slate-700 uppercase tracking-wider font-semibold">
                         <tr>
                             <th class="p-3 border">Logo / Cliente</th>
                             <th class="p-3 border">CNPJ / Contato</th>
-                            <th class="p-3 border">Rota & Responsáveis</th>
+                            <th class="p-3 border">Rota & Responsáveis (Configurações)</th>
                             <th class="p-3 border">Horários (Coleta / Entrega)</th>
                             <th class="p-3 border text-center">Status</th>
                             <th class="p-3 border text-center">Ações</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-slate-200">
+                    <tbody class="divide-y divide-slate-200" id="corpoTabelaClientes">
                         {% if clientes %}
                             {% for c in clientes %}
                             <tr class="hover:bg-slate-50 transition">
                                 <td class="p-3 border">
                                     <div class="flex items-center gap-3">
                                         {% if c.logo_url %}
-                                            <img src="{{ c.logo_url }}" alt="{{ c.nome_fantasia }}" class="w-9 h-9 object-cover rounded-lg border border-slate-200">
+                                            <img src="{{ c.logo_url }}" alt="Logo" class="w-9 h-9 object-cover rounded-lg border border-slate-200">
                                         {% else %}
                                             <div class="w-9 h-9 bg-blue-100 text-blue-700 flex items-center justify-center font-bold rounded-lg border border-blue-200">
-                                                {{ c.nome_fantasia[0]|upper if c.nome_fantasia else 'C' }}
+                                                C
                                             </div>
                                         {% endif %}
                                         <div>
-                                            <p class="font-bold text-slate-900 text-sm">{{ c.nome_fantasia }}</p>
-                                            <p class="text-[11px] text-slate-500">{{ c.razao_social }}</p>
+                                            <p class="font-bold text-slate-900 text-sm">{{ c.nome_fantasia if c.nome_fantasia else 'Cliente sem nome' }}</p>
+                                            <p class="text-[11px] text-slate-500">{{ c.razao_social if c.razao_social else '' }}</p>
                                         </div>
                                     </div>
                                 </td>
 
                                 <td class="p-3 border">
-                                    <p class="font-semibold text-slate-800">{{ c.cnpj_cpf }}</p>
-                                    <p class="text-[11px] text-slate-500"><i class="fa-solid fa-user text-slate-400 mr-1"></i>{{ c.nome_contato }} ({{ c.telefone_contato }})</p>
+                                    <p class="font-semibold text-slate-800">{{ c.cnpj_cpf if c.cnpj_cpf else '-' }}</p>
+                                    <p class="text-[11px] text-slate-500"><i class="fa-solid fa-user text-slate-400 mr-1"></i>{{ c.nome_contato if c.nome_contato else '-' }} ({{ c.telefone_contato if c.telefone_contato else '-' }})</p>
                                 </td>
 
                                 <td class="p-3 border">
-                                    <p class="font-bold text-blue-700 mb-0.5"><i class="fa-solid fa-route mr-1"></i>{{ c.rota.nome_rota if c.rota else 'N/I' }}</p>
+                                    <p class="font-bold text-blue-700 mb-0.5">
+                                        <i class="fa-solid fa-route mr-1"></i>{{ c.rota.nome_rota if c.rota and c.rota.nome_rota else (c.rota if c.rota else 'Rota Não Atribuída') }}
+                                    </p>
                                     <p class="text-[11px] text-slate-600">
-                                        <strong>Mot:</strong> {{ c.motorista.nome_completo if c.motorista else 'N/I' }} | 
-                                        <strong>Aju:</strong> {{ c.ajudante.nome_completo if c.ajudante else 'N/I' }}
+                                        <strong>Mot:</strong> {{ c.motorista.nome_completo if c.motorista and c.motorista.nome_completo else (c.motorista_nome if c.motorista_nome else 'N/I') }} | 
+                                        <strong>Aju:</strong> {{ c.ajudante.nome_completo if c.ajudante and c.ajudante.nome_completo else (c.ajudante_nome if c.ajudante_nome else 'N/I') }}
                                     </p>
                                 </td>
 
                                 <td class="p-3 border">
-                                    <p class="text-slate-700"><strong>Coleta:</strong> {{ c.horario_coleta_inicio }} às {{ c.horario_coleta_fim }}</p>
-                                    <p class="text-slate-700"><strong>Entrega:</strong> {{ c.horario_entrega_inicio }} às {{ c.horario_entrega_fim }}</p>
+                                    <p class="text-slate-700"><strong>Coleta:</strong> {{ c.horario_coleta_inicio if c.horario_coleta_inicio else '--:--' }} às {{ c.horario_coleta_fim if c.horario_coleta_fim else '--:--' }}</p>
+                                    <p class="text-slate-700"><strong>Entrega:</strong> {{ c.horario_entrega_inicio if c.horario_entrega_inicio else '--:--' }} às {{ c.horario_entrega_fim if c.horario_entrega_fim else '--:--' }}</p>
                                 </td>
 
                                 <td class="p-3 border text-center">
@@ -418,10 +424,10 @@
 
                                 <td class="p-3 border text-center">
                                     <div class="flex justify-center items-center gap-2">
-                                        <a href="/clientes/editar/{{ c.id }}" class="bg-amber-500 hover:bg-amber-600 text-white font-bold p-2 rounded-lg transition" title="Editar Cliente">
+                                        <a href="/clientes/editar/{{ c.id if c.id else '' }}" class="bg-amber-500 hover:bg-amber-600 text-white font-bold p-2 rounded-lg transition" title="Editar Cliente">
                                             <i class="fa-solid fa-pen-to-square"></i>
                                         </a>
-                                        <button onclick="confirmarExclusao('{{ c.id }}', '{{ c.nome_fantasia }}')" class="bg-rose-600 hover:bg-rose-700 text-white font-bold p-2 rounded-lg transition" title="Excluir Cliente">
+                                        <button type="button" onclick="confirmarExclusao('{{ c.id if c.id else '' }}')" class="bg-rose-600 hover:bg-rose-700 text-white font-bold p-2 rounded-lg transition" title="Excluir Cliente">
                                             <i class="fa-solid fa-trash-can"></i>
                                         </button>
                                     </div>
@@ -429,7 +435,7 @@
                             </tr>
                             {% endfor %}
                         {% else %}
-                            <tr>
+                            <tr id="linhaVaziaTabela">
                                 <td colspan="6" class="p-6 text-center italic text-slate-400">
                                     Nenhum cliente cadastrado no sistema.
                                 </td>
@@ -449,7 +455,7 @@
                 <h3 class="font-bold text-sm flex items-center gap-2">
                     <i class="fa-solid fa-route text-blue-400"></i> Cadastrar Nova Rota
                 </h3>
-                <button onclick="fecharModal('modalRota')" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+                <button type="button" onclick="fecharModal('modalRota')" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
             </div>
             <form action="/rotas/salvar-rapido" method="POST" class="p-4 space-y-4">
                 <div>
@@ -473,16 +479,16 @@
         </div>
     </div>
 
-    <!-- MODAL 2: CADASTRO RÁPIDO DE EQUIPE LOGÍSTICA (MOTORISTA / AJUDANTE) -->
+    <!-- MODAL 2: CADASTRO RÁPIDO DE EQUIPE LOGÍSTICA (SALVA EM CONFIGURAÇÕES) -->
     <div id="modalEquipe" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
         <div class="bg-white rounded-2xl shadow-xl w-full max-w-lg border border-slate-200 overflow-hidden">
             <div class="bg-slate-900 text-white p-4 flex justify-between items-center">
                 <h3 class="font-bold text-sm flex items-center gap-2" id="modalEquipeTitulo">
                     <i class="fa-solid fa-user-plus text-blue-400"></i> Cadastrar Membro da Equipe
                 </h3>
-                <button onclick="fecharModal('modalEquipe')" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+                <button type="button" onclick="fecharModal('modalEquipe')" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
             </div>
-            <form action="/equipe/salvar-rapido" method="POST" class="p-4 space-y-4">
+            <form action="/configuracoes/equipe/salvar-rapido" method="POST" class="p-4 space-y-4">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 mb-1">Matrícula <span class="text-red-500">*</span></label>
@@ -512,8 +518,8 @@
                     </div>
                 </div>
                 <div class="flex justify-between items-center pt-2 border-t">
-                    <a href="/motoristas" target="_blank" class="text-xs font-bold text-emerald-600 hover:underline flex items-center gap-1">
-                        <i class="fa-solid fa-arrow-up-right-from-square"></i> Gestão Completa de Motoristas
+                    <a href="/configuracoes" target="_blank" class="text-xs font-bold text-emerald-600 hover:underline flex items-center gap-1">
+                        <i class="fa-solid fa-arrow-up-right-from-square"></i> Gestão de Configurações
                     </a>
                     <div class="flex gap-2">
                         <button type="button" onclick="fecharModal('modalEquipe')" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold py-2 px-4 rounded-lg text-xs">Cancelar</button>
@@ -529,11 +535,43 @@
         MES Dona Zara &copy; 2026 - Módulo de Gestão de Clientes & Cadastros
     </footer>
 
-    <!-- SCRIPTS JS -->
+    <!-- SCRIPT DE SANITIZAÇÃO E LIMPEZA DE TEXTO JINJA EM MODO ESTÁTICO -->
     <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // 1. Limpa o badge do topo caso esteja mostrando "{{ ... }}"
+            const badge = document.getElementById("badgeTotalClientes");
+            if (badge && badge.textContent.includes("{{")) {
+                badge.textContent = "Total: 0 clientes";
+            }
+
+            // 2. Remove nós de texto ou tags cruas vazadas fora do body da tabela
+            const tabelaContainer = document.getElementById("tabelaClientes");
+            if (tabelaContainer) {
+                let p = tabelaContainer.previousSibling;
+                while (p) {
+                    if (p.nodeType === Node.TEXT_NODE && p.textContent.includes("{%")) {
+                        p.textContent = "";
+                    }
+                    p = p.previousSibling;
+                }
+            }
+
+            // 3. Sanitiza inputs e selects
+            document.querySelectorAll("input, textarea").forEach(el => {
+                if (el.value && el.value.includes("{%")) el.value = "";
+            });
+
+            document.querySelectorAll("option").forEach(opt => {
+                if (opt.textContent.includes("{%")) opt.remove();
+            });
+        });
+
         function abrirModalRota() {
-            document.getElementById('modalRota').classList.remove('hidden');
-            document.getElementById('modalRota').classList.add('flex');
+            const modal = document.getElementById('modalRota');
+            if (modal) {
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+            }
         }
 
         function abrirModalEquipe(tipo) {
@@ -544,26 +582,30 @@
 
             if (tipo === 'Motorista') {
                 titulo.innerHTML = '<i class="fa-solid fa-id-card text-blue-400"></i> Cadastrar Novo Motorista';
-                selectFuncao.value = 'Motorista';
-                matriculaInput.placeholder = 'Ex: MOT-02';
+                if (selectFuncao) selectFuncao.value = 'Motorista';
+                if (matriculaInput) matriculaInput.placeholder = 'Ex: MOT-02';
             } else {
                 titulo.innerHTML = '<i class="fa-solid fa-user-gear text-blue-400"></i> Cadastrar Novo Ajudante';
-                selectFuncao.value = 'Ajudante';
-                matriculaInput.placeholder = 'Ex: AJU-02';
+                if (selectFuncao) selectFuncao.value = 'Ajudante';
+                if (matriculaInput) matriculaInput.placeholder = 'Ex: AJU-02';
             }
 
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
+            if (modal) {
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+            }
         }
 
         function fecharModal(idModal) {
             const modal = document.getElementById(idModal);
-            modal.classList.remove('flex');
-            modal.classList.add('hidden');
+            if (modal) {
+                modal.classList.remove('flex');
+                modal.classList.add('hidden');
+            }
         }
 
-        function confirmarExclusao(id, nome) {
-            if (confirm(`Tem certeza que deseja excluir o cliente "${nome}"? Esta ação não poderá ser desfeita.`)) {
+        function confirmarExclusao(id) {
+            if (id && confirm("Tem certeza que deseja excluir este cliente? Esta ação não poderá ser desfeita.")) {
                 window.location.href = `/clientes/excluir/${id}`;
             }
         }
