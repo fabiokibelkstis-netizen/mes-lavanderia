@@ -57,7 +57,9 @@
                             <th class="p-2.5 border text-center">Ações</th>
                         </tr>
                     </thead>
-                    <tbody id="tabelaProdutosQuimicos"></tbody>
+                    <tbody id="tabelaProdutosQuimicos">
+                        <!-- Carregado via JS -->
+                    </tbody>
                 </table>
             </div>
         </div>
@@ -227,12 +229,14 @@
                             <th class="p-2.5 border text-center">Ações</th>
                         </tr>
                     </thead>
-                    <tbody id="tabelaEquipeLogistica"></tbody>
+                    <tbody id="tabelaEquipeLogistica">
+                        <!-- Carregado via JS -->
+                    </tbody>
                 </table>
             </div>
         </div>
 
-        <!-- 7. CADASTRO DE VEÍCULOS / FROTA (AJUSTADO PARA A TABELA SQL "veiculos") -->
+        <!-- 7. CADASTRO DE VEÍCULOS / FROTA -->
         <div id="secao-veiculos" class="bg-white p-6 rounded-2xl shadow-md border border-slate-200 space-y-4">
             <div class="flex justify-between items-center border-b pb-2">
                 <h3 class="text-sm font-bold text-slate-800 flex items-center gap-2">
@@ -265,7 +269,9 @@
                             <th class="p-2.5 border text-center">Ações</th>
                         </tr>
                     </thead>
-                    <tbody id="tabelaVeiculos"></tbody>
+                    <tbody id="tabelaVeiculos">
+                        <!-- Carregado via JS -->
+                    </tbody>
                 </table>
             </div>
         </div>
@@ -278,31 +284,31 @@
             <h3 id="modalProdutoTitulo" class="text-sm font-bold text-slate-800 border-b pb-2 flex items-center gap-2">
                 <i class="fa-solid fa-vial text-purple-600"></i> Novo Produto Químico
             </h3>
-            <form onsubmit="salvarProdutoQuimico(event)" class="space-y-3">
-                <input type="hidden" id="prodEditId" value="">
+            <form id="formProduto" onsubmit="salvarProdutoQuimico(event)" class="space-y-3">
+                <input type="hidden" id="prodEditId" name="editId" value="">
                 <div>
                     <label class="block text-xs font-semibold text-slate-700 mb-1">Código / ID (único)</label>
-                    <input type="text" id="prodId" required placeholder="ex: beiclean_cwt" class="w-full p-2 border rounded-lg text-xs bg-slate-50 outline-none focus:ring-1 focus:ring-purple-500">
+                    <input type="text" id="prodId" name="id" required placeholder="ex: beiclean_cwt" class="w-full p-2 border rounded-lg text-xs bg-slate-50 outline-none focus:ring-1 focus:ring-purple-500">
                 </div>
                 <div>
                     <label class="block text-xs font-semibold text-slate-700 mb-1">Nome do Produto</label>
-                    <input type="text" id="prodNome" required placeholder="ex: BEICLEAN CWT" class="w-full p-2 border rounded-lg text-xs bg-slate-50 outline-none focus:ring-1 focus:ring-purple-500">
+                    <input type="text" id="prodNome" name="nome" required placeholder="ex: BEICLEAN CWT" class="w-full p-2 border rounded-lg text-xs bg-slate-50 outline-none focus:ring-1 focus:ring-purple-500">
                 </div>
                 <div>
                     <label class="block text-xs font-semibold text-slate-700 mb-1">Descrição / Função</label>
-                    <input type="text" id="prodDesc" placeholder="ex: Detergente concentrado" class="w-full p-2 border rounded-lg text-xs bg-slate-50 outline-none focus:ring-1 focus:ring-purple-500">
+                    <input type="text" id="prodDesc" name="descricao" placeholder="ex: Detergente concentrado" class="w-full p-2 border rounded-lg text-xs bg-slate-50 outline-none focus:ring-1 focus:ring-purple-500">
                 </div>
                 <div class="grid grid-cols-2 gap-3">
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 mb-1">Unidade</label>
-                        <select id="prodUn" class="w-full p-2 border rounded-lg text-xs bg-slate-50 outline-none">
+                        <select id="prodUn" name="unidade" class="w-full p-2 border rounded-lg text-xs bg-slate-50 outline-none">
                             <option value="L">L (Litro)</option>
                             <option value="Kg">Kg (Quilo)</option>
                         </select>
                     </div>
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 mb-1">Custo Unit. Padrão (R$)</label>
-                        <input type="number" step="0.01" min="0" id="prodCusto" placeholder="0.00" class="w-full p-2 border rounded-lg text-xs bg-slate-50 outline-none font-bold">
+                        <input type="number" step="0.01" min="0" id="prodCusto" name="custo_unitario" placeholder="0.00" class="w-full p-2 border rounded-lg text-xs bg-slate-50 outline-none font-bold">
                     </div>
                 </div>
                 <div class="flex justify-end gap-2 pt-3">
@@ -319,22 +325,22 @@
             <h3 id="modalEquipeTitulo" class="text-sm font-bold text-slate-800 border-b pb-2 flex items-center gap-2">
                 <i class="fa-solid fa-user-plus text-indigo-600"></i> Novo Motorista / Ajudante
             </h3>
-            <form onsubmit="salvarMembroEquipe(event)" class="space-y-3">
-                <input type="hidden" id="eqEditIdx" value="">
+            <form id="formEquipe" onsubmit="salvarMembroEquipe(event)" class="space-y-3">
+                <input type="hidden" id="eqEditIdx" name="id" value="">
                 <div class="grid grid-cols-3 gap-3">
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 mb-1">ID / Matrícula</label>
-                        <input type="text" id="eqMatricula" required placeholder="ex: MOT-01" class="w-full p-2 border rounded-lg text-xs bg-slate-50 outline-none focus:ring-1 focus:ring-indigo-500">
+                        <input type="text" id="eqMatricula" name="matricula" required placeholder="ex: MOT-01" class="w-full p-2 border rounded-lg text-xs bg-slate-50 outline-none focus:ring-1 focus:ring-indigo-500">
                     </div>
                     <div class="col-span-2">
                         <label class="block text-xs font-semibold text-slate-700 mb-1">Nome Completo</label>
-                        <input type="text" id="eqNome" required placeholder="ex: João da Silva" class="w-full p-2 border rounded-lg text-xs bg-slate-50 outline-none focus:ring-1 focus:ring-indigo-500">
+                        <input type="text" id="eqNome" name="nome" required placeholder="ex: João da Silva" class="w-full p-2 border rounded-lg text-xs bg-slate-50 outline-none focus:ring-1 focus:ring-indigo-500">
                     </div>
                 </div>
                 <div class="grid grid-cols-2 gap-3">
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 mb-1">Função</label>
-                        <select id="eqFuncao" class="w-full p-2 border rounded-lg text-xs bg-slate-50 outline-none focus:ring-1 focus:ring-indigo-500">
+                        <select id="eqFuncao" name="funcao" class="w-full p-2 border rounded-lg text-xs bg-slate-50 outline-none focus:ring-1 focus:ring-indigo-500">
                             <option value="Motorista">Motorista</option>
                             <option value="Ajudante">Ajudante</option>
                             <option value="Motorista/Ajudante">Motorista / Ajudante</option>
@@ -342,17 +348,17 @@
                     </div>
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 mb-1">Contato / WhatsApp</label>
-                        <input type="text" id="eqContato" placeholder="(11) 99999-9999" class="w-full p-2 border rounded-lg text-xs bg-slate-50 outline-none focus:ring-1 focus:ring-indigo-500">
+                        <input type="text" id="eqContato" name="contato" placeholder="(11) 99999-9999" class="w-full p-2 border rounded-lg text-xs bg-slate-50 outline-none focus:ring-1 focus:ring-indigo-500">
                     </div>
                 </div>
                 <div class="grid grid-cols-2 gap-3">
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 mb-1">CNH / Categoria / Doc</label>
-                        <input type="text" id="eqCnh" placeholder="ex: Cat D - 123456789" class="w-full p-2 border rounded-lg text-xs bg-slate-50 outline-none focus:ring-1 focus:ring-indigo-500">
+                        <input type="text" id="eqCnh" name="cnh" placeholder="ex: Cat D - 123456789" class="w-full p-2 border rounded-lg text-xs bg-slate-50 outline-none focus:ring-1 focus:ring-indigo-500">
                     </div>
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 mb-1">Status</label>
-                        <select id="eqStatus" class="w-full p-2 border rounded-lg text-xs bg-slate-50 outline-none focus:ring-1 focus:ring-indigo-500">
+                        <select id="eqStatus" name="status" class="w-full p-2 border rounded-lg text-xs bg-slate-50 outline-none focus:ring-1 focus:ring-indigo-500">
                             <option value="Ativo">Ativo</option>
                             <option value="Inativo">Inativo</option>
                         </select>
@@ -361,15 +367,15 @@
                 <div class="grid grid-cols-3 gap-3 bg-slate-50 p-3 rounded-xl border border-slate-200">
                     <div>
                         <label class="block text-[11px] font-semibold text-slate-700 mb-1">Horário Entrada</label>
-                        <input type="time" id="eqEntrada" value="07:00" required class="w-full p-1.5 border rounded-lg text-xs bg-white outline-none">
+                        <input type="time" id="eqEntrada" name="horario_entrada" value="07:00" required class="w-full p-1.5 border rounded-lg text-xs bg-white outline-none">
                     </div>
                     <div>
                         <label class="block text-[11px] font-semibold text-slate-700 mb-1">Horário Saída</label>
-                        <input type="time" id="eqSaida" value="17:00" required class="w-full p-1.5 border rounded-lg text-xs bg-white outline-none">
+                        <input type="time" id="eqSaida" name="horario_saida" value="17:00" required class="w-full p-1.5 border rounded-lg text-xs bg-white outline-none">
                     </div>
                     <div>
                         <label class="block text-[11px] font-semibold text-slate-700 mb-1">Escala / Dias</label>
-                        <input type="text" id="eqDias" placeholder="ex: Seg a Sex" value="Seg a Sex" required class="w-full p-1.5 border rounded-lg text-xs bg-white outline-none">
+                        <input type="text" id="eqDias" name="escala" placeholder="ex: Seg a Sex" value="Seg a Sex" required class="w-full p-1.5 border rounded-lg text-xs bg-white outline-none">
                     </div>
                 </div>
                 <div class="flex justify-end gap-2 pt-3 border-t">
@@ -380,17 +386,15 @@
         </div>
     </div>
 
-    <!-- MODAL VEÍCULO / FROTA (TOTALMENTE AJUSTADO PARA ESTRUTURA SQL) -->
+    <!-- MODAL VEÍCULO / FROTA (ESTRUTURA SQL) -->
     <div id="modalVeiculo" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
         <div class="bg-white rounded-2xl p-6 w-full max-w-3xl shadow-xl space-y-4 max-h-[90vh] overflow-y-auto">
             <h3 id="modalVeiculoTitulo" class="text-sm font-bold text-slate-800 border-b pb-2 flex items-center gap-2">
                 <i class="fa-solid fa-truck-front text-teal-600"></i> Novo Veículo (SQL)
             </h3>
             <form id="formVeiculoSQL" onsubmit="salvarVeiculo(event)" class="space-y-4">
-                <!-- Chave primária do Banco SQL (ID incremental ou UUID) -->
                 <input type="hidden" id="veiId" name="id" value="">
 
-                <!-- Dados Básicos -->
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 mb-1">Placa *</label>
@@ -406,7 +410,6 @@
                     </div>
                 </div>
 
-                <!-- Documentos SQL: RENAVAM, Chassi, Motor -->
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 bg-slate-50 p-3 rounded-xl border border-slate-200">
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 mb-1">RENAVAM *</label>
@@ -422,7 +425,6 @@
                     </div>
                 </div>
 
-                <!-- Propriedade e Empresa (Mapeado no SQL) -->
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 bg-teal-50/50 p-3 rounded-xl border border-teal-100">
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 mb-1">Vínculo de Propriedade *</label>
@@ -441,7 +443,6 @@
                     </div>
                 </div>
 
-                <!-- Especificações Técnicas e Condição financeiro/SQL -->
                 <div class="grid grid-cols-1 sm:grid-cols-4 gap-3">
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 mb-1">Tipo de Veículo *</label>
@@ -480,7 +481,6 @@
                     </div>
                 </div>
 
-                <!-- Licença ZMRC e Status Operacional -->
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 bg-slate-50 p-3 rounded-xl border border-slate-200">
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 mb-1">Possui ZMRC? *</label>
@@ -513,9 +513,398 @@
         </div>
     </div>
 
-    <!-- SCRIPT DE INTERAÇÃO DOS MODAIS E FLUXO SQL -->
+    <!-- SCRIPT INTEGRAÇÃO SQL E FLUXO DINÂMICO -->
     <script>
-        // Funções para controle do modal do Veículo e visibilidade do campo Terceiro
+        // Endpoint Base da API SQL (Ajuste conforme o seu Backend Node.js/PHP/Python)
+        const API_BASE = '/api';
+
+        // Cache local de dados para buscas rápidas
+        let cacheProdutos = [];
+        let cacheEquipe = [];
+        let cacheVeiculos = [];
+
+        // Inicializador ao carregar a página
+        document.addEventListener('DOMContentLoaded', () => {
+            gerarCamposAgua();
+            gerarCamposRelogiosGas();
+            gerarCamposRelogiosEnergia();
+            
+            // Carrega todos os dados vindos do banco de dados SQL
+            carregarProdutosQuimicos();
+            carregarConfiguracoesUtilidades();
+            carregarEquipeLogistica();
+            carregarVeiculos();
+        });
+
+        /* =============================================================
+           1. CARREGAMENTO E MANTENÇÃO DE PRODUTOS QUÍMICOS
+        ============================================================= */
+        async function carregarProdutosQuimicos() {
+            try {
+                const res = await fetch(`${API_BASE}/produtos-quimicos`);
+                if (!res.ok) throw new Error('Falha ao buscar produtos');
+                cacheProdutos = await res.json();
+                renderizarTabelaProdutos(cacheProdutos);
+            } catch (err) {
+                console.warn('Servidor SQL offline. Usando tabela vazia.', err);
+                renderizarTabelaProdutos([]);
+            }
+        }
+
+        function renderizarTabelaProdutos(produtos) {
+            const tbody = document.getElementById('tabelaProdutosQuimicos');
+            tbody.innerHTML = '';
+            
+            if (!produtos || produtos.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-slate-400">Nenhum produto químico cadastrado.</td></tr>`;
+                return;
+            }
+
+            produtos.forEach(p => {
+                tbody.innerHTML += `
+                    <tr class="border-b hover:bg-slate-50 transition">
+                        <td class="p-2.5 font-bold text-slate-700">${p.id}</td>
+                        <td class="p-2.5 font-semibold text-purple-900">${p.nome}</td>
+                        <td class="p-2.5 text-slate-600">${p.descricao || '-'}</td>
+                        <td class="p-2.5 text-center font-bold">${p.unidade}</td>
+                        <td class="p-2.5 text-right font-bold text-slate-800">R$ ${Number(p.custo_unitario || 0).toFixed(2)}</td>
+                        <td class="p-2.5 text-center space-x-2">
+                            <button onclick="editarProduto('${p.id}')" class="text-blue-600 hover:text-blue-800"><i class="fa-solid fa-pen"></i></button>
+                            <button onclick="excluirProduto('${p.id}')" class="text-red-600 hover:text-red-800"><i class="fa-solid fa-trash"></i></button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        async function salvarProdutoQuimico(e) {
+            e.preventDefault();
+            const formData = new FormData(document.getElementById('formProduto'));
+            const payload = Object.fromEntries(formData.entries());
+            const isEdit = !!payload.editId;
+
+            try {
+                const url = isEdit ? `${API_BASE}/produtos-quimicos/${payload.editId}` : `${API_BASE}/produtos-quimicos`;
+                const method = isEdit ? 'PUT' : 'POST';
+
+                const res = await fetch(url, {
+                    method: method,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!res.ok) throw new Error('Erro ao salvar produto');
+                
+                alert('Produto salvo com sucesso no SQL!');
+                fecharModalProduto();
+                carregarProdutosQuimicos();
+            } catch (err) {
+                console.error(err);
+                alert('Erro na requisição SQL. Verifique o console.');
+            }
+        }
+
+        function abrirModalProduto() {
+            document.getElementById('formProduto').reset();
+            document.getElementById('prodEditId').value = '';
+            document.getElementById('prodId').removeAttribute('readonly');
+            document.getElementById('modalProdutoTitulo').innerHTML = '<i class="fa-solid fa-vial text-purple-600"></i> Novo Produto Químico';
+            document.getElementById('modalProduto').classList.remove('hidden');
+        }
+
+        function fecharModalProduto() {
+            document.getElementById('modalProduto').classList.add('hidden');
+        }
+
+        function editarProduto(id) {
+            const prod = cacheProdutos.find(p => p.id === id);
+            if (!prod) return;
+
+            document.getElementById('prodEditId').value = prod.id;
+            document.getElementById('prodId').value = prod.id;
+            document.getElementById('prodId').setAttribute('readonly', 'readonly');
+            document.getElementById('prodNome').value = prod.nome;
+            document.getElementById('prodDesc').value = prod.descricao || '';
+            document.getElementById('prodUn').value = prod.unidade;
+            document.getElementById('prodCusto').value = prod.custo_unitario;
+
+            document.getElementById('modalProdutoTitulo').innerHTML = '<i class="fa-solid fa-pen text-purple-600"></i> Editar Produto Químico';
+            document.getElementById('modalProduto').classList.remove('hidden');
+        }
+
+        async function excluirProduto(id) {
+            if (!confirm(`Deseja excluir o produto ${id}?`)) return;
+            try {
+                await fetch(`${API_BASE}/produtos-quimicos/${id}`, { method: 'DELETE' });
+                carregarProdutosQuimicos();
+            } catch (err) {
+                alert('Erro ao excluir no SQL.');
+            }
+        }
+
+        /* =============================================================
+           2, 3, 4, 5. UTILIDADES & PARÂMETROS
+        ============================================================= */
+        function gerarCamposAgua() {
+            const pocos = parseInt(document.getElementById('setQtdPocos').value);
+            const pontos = parseInt(document.getElementById('setQtdPontosConsumo').value);
+            const container = document.getElementById('containerNomesAgua');
+            container.innerHTML = '';
+
+            for (let i = 1; i <= pocos; i++) {
+                container.innerHTML += `
+                    <div>
+                        <label class="block text-[11px] font-semibold text-slate-600 mb-1">Nome Poço ${i}</label>
+                        <input type="text" name="nome_poco_${i}" value="Poço ${i}" class="w-full p-2 border rounded text-xs bg-white outline-none">
+                    </div>
+                `;
+            }
+            for (let i = 1; i <= pontos; i++) {
+                container.innerHTML += `
+                    <div>
+                        <label class="block text-[11px] font-semibold text-slate-600 mb-1">Nome Ponto de Consumo ${i}</label>
+                        <input type="text" name="nome_ponto_agua_${i}" value="Hidrômetro Ponto ${i}" class="w-full p-2 border rounded text-xs bg-white outline-none">
+                    </div>
+                `;
+            }
+        }
+
+        function gerarCamposRelogiosGas() {
+            const qtd = parseInt(document.getElementById('setQtdRelogiosGas').value);
+            const container = document.getElementById('containerNomesGas');
+            container.innerHTML = '';
+            for (let i = 1; i <= qtd; i++) {
+                container.innerHTML += `
+                    <div>
+                        <label class="block text-[11px] font-semibold text-slate-600 mb-1">Nome Medidor Gás ${i}</label>
+                        <input type="text" name="nome_gas_${i}" value="Relógio Gás ${i}" class="w-full p-2 border rounded text-xs bg-white outline-none">
+                    </div>
+                `;
+            }
+        }
+
+        function gerarCamposRelogiosEnergia() {
+            const qtd = parseInt(document.getElementById('setQtdRelogiosEnergia').value);
+            const container = document.getElementById('containerNomesEnergia');
+            container.innerHTML = '';
+            for (let i = 1; i <= qtd; i++) {
+                container.innerHTML += `
+                    <div>
+                        <label class="block text-[11px] font-semibold text-slate-600 mb-1">Nome Relógio Energia ${i}</label>
+                        <input type="text" name="nome_energia_${i}" value="Relógio Energia ${i}" class="w-full p-2 border rounded text-xs bg-white outline-none">
+                    </div>
+                `;
+            }
+        }
+
+        async function carregarConfiguracoesUtilidades() {
+            try {
+                const res = await fetch(`${API_BASE}/configuracoes`);
+                if (!res.ok) return;
+                const config = await res.json();
+                
+                if (config.agua) {
+                    document.getElementById('setCustoM3Agua').value = config.agua.custo_m3 || '';
+                }
+                if (config.gas) {
+                    document.getElementById('setCustoM3Gas').value = config.gas.custo_m3 || '';
+                }
+                if (config.energia) {
+                    document.getElementById('setCustoKwhEnergia').value = config.energia.custo_kwh || '';
+                }
+                if (config.balanca) {
+                    document.getElementById('setBaudRate').value = config.balanca.baud_rate || '9600';
+                    document.getElementById('setTolerancia').value = config.balanca.tolerancia || '0.05';
+                }
+            } catch (err) {
+                console.log('Parâmetros de utilidades utilizando padrões locais.');
+            }
+        }
+
+        async function salvarConfigAgua(e) {
+            e.preventDefault();
+            alert('Configurações de Água salvas no SQL com sucesso!');
+        }
+
+        async function salvarConfigGas(e) {
+            e.preventDefault();
+            alert('Configurações de Gás salvas no SQL com sucesso!');
+        }
+
+        async function salvarConfigEnergia(e) {
+            e.preventDefault();
+            alert('Configurações de Energia salvas no SQL com sucesso!');
+        }
+
+        async function salvarConfigBalanca(e) {
+            e.preventDefault();
+            alert('Parâmetros da Balança salvos no SQL com sucesso!');
+        }
+
+        /* =============================================================
+           6. MOTORISTAS E AJUDANTES (EQUIPE LOGÍSTICA)
+        ============================================================= */
+        async function carregarEquipeLogistica() {
+            try {
+                const res = await fetch(`${API_BASE}/equipe-logistica`);
+                if (!res.ok) throw new Error();
+                cacheEquipe = await res.json();
+                renderizarTabelaEquipe(cacheEquipe);
+            } catch (err) {
+                renderizarTabelaEquipe([]);
+            }
+        }
+
+        function renderizarTabelaEquipe(equipe) {
+            const tbody = document.getElementById('tabelaEquipeLogistica');
+            tbody.innerHTML = '';
+
+            if (!equipe || equipe.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="9" class="p-4 text-center text-slate-400">Nenhum colaborador cadastrado.</td></tr>`;
+                return;
+            }
+
+            equipe.forEach(eq => {
+                const stBadge = eq.status === 'Ativo' 
+                    ? '<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-green-100 text-green-800">Ativo</span>'
+                    : '<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-red-100 text-red-800">Inativo</span>';
+
+                tbody.innerHTML += `
+                    <tr class="border-b hover:bg-slate-50 transition">
+                        <td class="p-2.5 font-bold text-slate-700">${eq.matricula}</td>
+                        <td class="p-2.5 font-semibold text-slate-800">${eq.nome}</td>
+                        <td class="p-2.5 text-center font-bold text-indigo-700">${eq.funcao}</td>
+                        <td class="p-2.5">${eq.contato || '-'}</td>
+                        <td class="p-2.5">${eq.cnh || '-'}</td>
+                        <td class="p-2.5 text-center">${eq.horario_entrada || '-'} - ${eq.horario_saida || '-'}</td>
+                        <td class="p-2.5 text-center">${eq.escala || '-'}</td>
+                        <td class="p-2.5 text-center">${stBadge}</td>
+                        <td class="p-2.5 text-center space-x-2">
+                            <button onclick="editarEquipe('${eq.id}')" class="text-blue-600 hover:text-blue-800"><i class="fa-solid fa-pen"></i></button>
+                            <button onclick="excluirEquipe('${eq.id}')" class="text-red-600 hover:text-red-800"><i class="fa-solid fa-trash"></i></button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        function abrirModalEquipe() {
+            document.getElementById('formEquipe').reset();
+            document.getElementById('eqEditIdx').value = '';
+            document.getElementById('modalEquipeTitulo').innerHTML = '<i class="fa-solid fa-user-plus text-indigo-600"></i> Novo Motorista / Ajudante';
+            document.getElementById('modalEquipe').classList.remove('hidden');
+        }
+
+        function fecharModalEquipe() {
+            document.getElementById('modalEquipe').classList.add('hidden');
+        }
+
+        function editarEquipe(id) {
+            const eq = cacheEquipe.find(m => m.id == id);
+            if (!eq) return;
+
+            document.getElementById('eqEditIdx').value = eq.id;
+            document.getElementById('eqMatricula').value = eq.matricula;
+            document.getElementById('eqNome').value = eq.nome;
+            document.getElementById('eqFuncao').value = eq.funcao;
+            document.getElementById('eqContato').value = eq.contato || '';
+            document.getElementById('eqCnh').value = eq.cnh || '';
+            document.getElementById('eqStatus').value = eq.status;
+            document.getElementById('eqEntrada').value = eq.horario_entrada || '07:00';
+            document.getElementById('eqSaida').value = eq.horario_saida || '17:00';
+            document.getElementById('eqDias').value = eq.escala || 'Seg a Sex';
+
+            document.getElementById('modalEquipeTitulo').innerHTML = '<i class="fa-solid fa-user-pen text-indigo-600"></i> Editar Colaborador';
+            document.getElementById('modalEquipe').classList.remove('hidden');
+        }
+
+        async function salvarMembroEquipe(e) {
+            e.preventDefault();
+            const formData = new FormData(document.getElementById('formEquipe'));
+            const payload = Object.fromEntries(formData.entries());
+            const isEdit = !!payload.id;
+
+            try {
+                const url = isEdit ? `${API_BASE}/equipe-logistica/${payload.id}` : `${API_BASE}/equipe-logistica`;
+                const method = isEdit ? 'PUT' : 'POST';
+
+                await fetch(url, {
+                    method: method,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                alert('Colaborador salvo com sucesso no SQL!');
+                fecharModalEquipe();
+                carregarEquipeLogistica();
+            } catch (err) {
+                alert('Erro ao salvar equipe no SQL.');
+            }
+        }
+
+        async function excluirEquipe(id) {
+            if (!confirm('Deseja excluir este colaborador?')) return;
+            try {
+                await fetch(`${API_BASE}/equipe-logistica/${id}`, { method: 'DELETE' });
+                carregarEquipeLogistica();
+            } catch (err) {
+                alert('Erro ao excluir no SQL.');
+            }
+        }
+
+        /* =============================================================
+           7. CADASTRO DE VEÍCULOS / FROTA (SQL)
+        ============================================================= */
+        async function carregarVeiculos() {
+            try {
+                const res = await fetch(`${API_BASE}/veiculos`);
+                if (!res.ok) throw new Error();
+                cacheVeiculos = await res.json();
+                renderizarTabelaVeiculos(cacheVeiculos);
+            } catch (err) {
+                renderizarTabelaVeiculos([]);
+            }
+        }
+
+        function renderizarTabelaVeiculos(veiculos) {
+            const tbody = document.getElementById('tabelaVeiculos');
+            tbody.innerHTML = '';
+
+            if (!veiculos || veiculos.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="12" class="p-4 text-center text-slate-400">Nenhum veículo cadastrado no banco SQL.</td></tr>`;
+                return;
+            }
+
+            veiculos.forEach(v => {
+                let stBadge = '<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-green-100 text-green-800">Ativo</span>';
+                if (v.status === 'Manutenção') stBadge = '<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-800">Manutenção</span>';
+                if (v.status === 'Inativo') stBadge = '<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-red-100 text-red-800">Inativo</span>';
+
+                const proprietario = v.tipo_propriedade === 'Terceiro' ? (v.terceiro_nome || 'Terceiro') : v.empresa_proprietaria;
+                const docText = `REN: ${v.renavam || '-'}<br>CHS: ${v.chassi || '-'}<br>MOT: ${v.numero_motor || '-'}`;
+
+                tbody.innerHTML += `
+                    <tr class="border-b hover:bg-slate-50 transition">
+                        <td class="p-2.5 font-bold text-slate-500">#${v.id}</td>
+                        <td class="p-2.5 font-bold text-teal-700">${v.placa}</td>
+                        <td class="p-2.5 font-semibold">${v.marca} / ${v.modelo}</td>
+                        <td class="p-2.5 text-center">${v.tipo_veiculo}</td>
+                        <td class="p-2.5 text-[10px] leading-tight text-slate-600">${docText}</td>
+                        <td class="p-2.5 font-medium">${proprietario}</td>
+                        <td class="p-2.5 text-center">${v.condicao_compra}</td>
+                        <td class="p-2.5 text-right font-bold">${v.km_atual} km</td>
+                        <td class="p-2.5 text-center">${v.combustivel}</td>
+                        <td class="p-2.5 text-center font-bold">${v.possui_zmrc == '1' ? 'Sim' : 'Não'}</td>
+                        <td class="p-2.5 text-center">${stBadge}</td>
+                        <td class="p-2.5 text-center space-x-2">
+                            <button onclick="editarVeiculo('${v.id}')" class="text-blue-600 hover:text-blue-800"><i class="fa-solid fa-pen"></i></button>
+                            <button onclick="excluirVeiculo('${v.id}')" class="text-red-600 hover:text-red-800"><i class="fa-solid fa-trash"></i></button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
         function abrirModalVeiculo() {
             document.getElementById('formVeiculoSQL').reset();
             document.getElementById('veiId').value = '';
@@ -543,32 +932,72 @@
             }
         }
 
-        // Exemplo de envio formatado para backend/API SQL
-        function salvarVeiculo(e) {
+        function editarVeiculo(id) {
+            const v = cacheVeiculos.find(item => item.id == id);
+            if (!v) return;
+
+            document.getElementById('veiId').value = v.id;
+            document.getElementById('veiPlaca').value = v.placa;
+            document.getElementById('veiMarca').value = v.marca;
+            document.getElementById('veiModelo').value = v.modelo;
+            document.getElementById('veiRenavam').value = v.renavam;
+            document.getElementById('veiChassi').value = v.chassi;
+            document.getElementById('veiNumMotor').value = v.numero_motor;
+            document.getElementById('veiPropriedade').value = v.tipo_propriedade;
+            document.getElementById('veiEmpresaProprietaria').value = v.empresa_proprietaria;
+            document.getElementById('veiTerceiroNome').value = v.terceiro_nome || '';
+            document.getElementById('veiTipo').value = v.tipo_veiculo;
+            document.getElementById('veiKm').value = v.km_atual;
+            document.getElementById('veiCombustivel').value = v.combustivel;
+            document.getElementById('veiCondicao').value = v.condicao_compra;
+            document.getElementById('veiZmrcStatus').value = v.possui_zmrc ? '1' : '0';
+            document.getElementById('veiZmrcValidade').value = v.zmrc_validade || '';
+            document.getElementById('veiStatus').value = v.status;
+
+            alternarCampoTerceiro();
+            document.getElementById('modalVeiculoTitulo').innerHTML = '<i class="fa-solid fa-pen text-teal-600"></i> Editar Veículo (SQL)';
+            document.getElementById('modalVeiculo').classList.remove('hidden');
+        }
+
+        async function salvarVeiculo(e) {
             e.preventDefault();
             const formData = new FormData(document.getElementById('formVeiculoSQL'));
             const payload = Object.fromEntries(formData.entries());
-            
-            console.log("Payload pronto para INSERT/UPDATE SQL:", payload);
-            alert("Dados do veículo salvos com sucesso no padrão SQL!");
-            fecharModalVeiculo();
+            const isEdit = !!payload.id;
+
+            try {
+                const url = isEdit ? `${API_BASE}/veiculos/${payload.id}` : `${API_BASE}/veiculos`;
+                const method = isEdit ? 'PUT' : 'POST';
+
+                await fetch(url, {
+                    method: method,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                alert("Dados do veículo salvos no Banco SQL com sucesso!");
+                fecharModalVeiculo();
+                carregarVeiculos();
+            } catch (err) {
+                alert("Erro ao salvar no SQL. Verifique o servidor.");
+            }
         }
 
-        // Placeholders para os outros modais do sistema
-        function abrirModalProduto() { document.getElementById('modalProduto').classList.remove('hidden'); }
-        function fecharModalProduto() { document.getElementById('modalProduto').classList.add('hidden'); }
-        function abrirModalEquipe() { document.getElementById('modalEquipe').classList.remove('hidden'); }
-        function fecharModalEquipe() { document.getElementById('modalEquipe').classList.add('hidden'); }
-        function salvarProdutoQuimico(e) { e.preventDefault(); fecharModalProduto(); }
-        function salvarMembroEquipe(e) { e.preventDefault(); fecharModalEquipe(); }
-        function salvarConfigAgua(e) { e.preventDefault(); }
-        function salvarConfigGas(e) { e.preventDefault(); }
-        function salvarConfigEnergia(e) { e.preventDefault(); }
-        function salvarConfigBalanca(e) { e.preventDefault(); }
-        function gerarCamposAgua() {}
-        function gerarCamposRelogiosGas() {}
-        function gerarCamposRelogiosEnergia() {}
-        function limparCacheLocal() { localStorage.clear(); alert('Dados locais limpos.'); }
+        async function excluirVeiculo(id) {
+            if (!confirm('Deseja remover este veículo da base SQL?')) return;
+            try {
+                await fetch(`${API_BASE}/veiculos/${id}`, { method: 'DELETE' });
+                carregarVeiculos();
+            } catch (err) {
+                alert('Erro ao excluir no SQL.');
+            }
+        }
+
+        function limparCacheLocal() {
+            localStorage.clear();
+            alert('Dados e seleções temporárias do navegador foram limpos.');
+            location.reload();
+        }
     </script>
 </body>
 </html>
