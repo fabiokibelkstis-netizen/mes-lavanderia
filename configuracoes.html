@@ -118,6 +118,7 @@
                                 <option value="1">1 Relógio</option>
                                 <option value="2">2 Relógios</option>
                                 <option value="3">3 Relógios</option>
+                                <option value="4">4 Relógios</option>
                             </select>
                         </div>
                         <div>
@@ -146,6 +147,7 @@
                                 <option value="1">1 Relógio</option>
                                 <option value="2">2 Relógios</option>
                                 <option value="3">3 Relógios</option>
+                                <option value="4">4 Relógios</option>
                             </select>
                         </div>
                         <div>
@@ -506,30 +508,38 @@
                 <div class="flex justify-end gap-2 pt-3 border-t">
                     <button type="button" onclick="fecharModalVeiculo()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-4 py-2 rounded-lg text-xs font-bold transition">Cancelar</button>
                     <button type="submit" class="bg-teal-600 hover:bg-teal-700 text-white font-bold px-5 py-2 rounded-lg text-xs transition shadow flex items-center gap-2">
-                        <i class="fa-solid fa-database"></i> Salvar no SQL
+                        <i class="fa-solid fa-database"></i> Salvar Registro
                     </button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- SCRIPT INTEGRAÇÃO SQL E FLUXO DINÂMICO -->
+    <!-- SCRIPT INTEGRAÇÃO HÍBRIDA (SQL / LOCALSTORAGE) -->
     <script>
-        // Endpoint Base da API SQL (Ajuste conforme o seu Backend Node.js/PHP/Python)
         const API_BASE = '/api';
 
-        // Cache local de dados para buscas rápidas
+        // Produtos Padrão de Fábrica caso a base esteja vazia
+        const PRODUTOS_PADRAO = [
+            { id: "beiclean_cwt", nome: "BEICLEAN CWT", descricao: "Detergente concentrado", unidade: "L", custo_unitario: 0 },
+            { id: "beipur_msc", nome: "BEIPUR MSC", descricao: "Alcalino concentrado - soda", unidade: "L", custo_unitario: 0 },
+            { id: "beibleach_pe", nome: "BEIBLEACH PE", descricao: "Ácido Peracético", unidade: "L", custo_unitario: 0 },
+            { id: "beibleach_hc_liq", nome: "BEIBLEACH HC LIQ", descricao: "Hipoclorito de Sódio", unidade: "L", custo_unitario: 0 },
+            { id: "beibleach_net", nome: "BEIBLEACH NET", descricao: "Bissulfito", unidade: "L", custo_unitario: 0 },
+            { id: "beiplex_cab", nome: "BEIPLEX CAB", descricao: "Complexante", unidade: "L", custo_unitario: 0 },
+            { id: "beiblanc_had", nome: "BEIBLANC HAD", descricao: "Branqueador óptico", unidade: "L", custo_unitario: 0 },
+            { id: "beibleach_blue", nome: "BEIBLEACH BLUE ACTIVE", descricao: "Ativador Peróxido", unidade: "L", custo_unitario: 0 },
+            { id: "beiacid_wsd", nome: "BEIACID WSD", descricao: "Ácido fórmico", unidade: "L", custo_unitario: 0 },
+            { id: "wp35", nome: "WP35", descricao: "Peróxido de Hidrogênio", unidade: "L", custo_unitario: 0 },
+            { id: "beisoft_avra", nome: "BEISOFT AVRA", descricao: "Amaciante", unidade: "L", custo_unitario: 0 },
+            { id: "sal_grosso", nome: "SAL GROSSO", descricao: "Pacote c/ 25kg", unidade: "Kg", custo_unitario: 0 }
+        ];
+
         let cacheProdutos = [];
         let cacheEquipe = [];
         let cacheVeiculos = [];
 
-        // Inicializador ao carregar a página
         document.addEventListener('DOMContentLoaded', () => {
-            gerarCamposAgua();
-            gerarCamposRelogiosGas();
-            gerarCamposRelogiosEnergia();
-            
-            // Carrega todos os dados vindos do banco de dados SQL
             carregarProdutosQuimicos();
             carregarConfiguracoesUtilidades();
             carregarEquipeLogistica();
@@ -537,18 +547,17 @@
         });
 
         /* =============================================================
-           1. CARREGAMENTO E MANTENÇÃO DE PRODUTOS QUÍMICOS
+           1. PRODUTOS QUÍMICOS
         ============================================================= */
         async function carregarProdutosQuimicos() {
             try {
                 const res = await fetch(`${API_BASE}/produtos-quimicos`);
-                if (!res.ok) throw new Error('Falha ao buscar produtos');
+                if (!res.ok) throw new Error();
                 cacheProdutos = await res.json();
-                renderizarTabelaProdutos(cacheProdutos);
             } catch (err) {
-                console.warn('Servidor SQL offline. Usando tabela vazia.', err);
-                renderizarTabelaProdutos([]);
+                cacheProdutos = JSON.parse(localStorage.getItem('mes_config_quimicos')) || PRODUTOS_PADRAO;
             }
+            renderizarTabelaProdutos(cacheProdutos);
         }
 
         function renderizarTabelaProdutos(produtos) {
@@ -561,16 +570,22 @@
             }
 
             produtos.forEach(p => {
+                const id = p.id;
+                const nome = p.nome;
+                const desc = p.descricao || p.desc || '-';
+                const un = p.unidade || p.un || 'L';
+                const custo = Number(p.custo_unitario !== undefined ? p.custo_unitario : p.custoPadrao || 0).toFixed(2);
+
                 tbody.innerHTML += `
                     <tr class="border-b hover:bg-slate-50 transition">
-                        <td class="p-2.5 font-bold text-slate-700">${p.id}</td>
-                        <td class="p-2.5 font-semibold text-purple-900">${p.nome}</td>
-                        <td class="p-2.5 text-slate-600">${p.descricao || '-'}</td>
-                        <td class="p-2.5 text-center font-bold">${p.unidade}</td>
-                        <td class="p-2.5 text-right font-bold text-slate-800">R$ ${Number(p.custo_unitario || 0).toFixed(2)}</td>
+                        <td class="p-2.5 font-bold font-mono text-slate-700">${id}</td>
+                        <td class="p-2.5 font-semibold text-purple-900">${nome}</td>
+                        <td class="p-2.5 text-slate-600">${desc}</td>
+                        <td class="p-2.5 text-center font-bold text-purple-700">${un}</td>
+                        <td class="p-2.5 text-right font-bold text-slate-800">R$ ${custo}</td>
                         <td class="p-2.5 text-center space-x-2">
-                            <button onclick="editarProduto('${p.id}')" class="text-blue-600 hover:text-blue-800"><i class="fa-solid fa-pen"></i></button>
-                            <button onclick="excluirProduto('${p.id}')" class="text-red-600 hover:text-red-800"><i class="fa-solid fa-trash"></i></button>
+                            <button onclick="editarProduto('${id}')" class="text-blue-600 hover:text-blue-800" title="Editar"><i class="fa-solid fa-pen"></i></button>
+                            <button onclick="excluirProduto('${id}')" class="text-red-600 hover:text-red-800" title="Excluir"><i class="fa-solid fa-trash"></i></button>
                         </td>
                     </tr>
                 `;
@@ -583,25 +598,33 @@
             const payload = Object.fromEntries(formData.entries());
             const isEdit = !!payload.editId;
 
+            payload.id = payload.id.trim().toLowerCase().replace(/\s+/g, '_');
+            payload.custo_unitario = parseFloat(payload.custo_unitario) || 0;
+
             try {
                 const url = isEdit ? `${API_BASE}/produtos-quimicos/${payload.editId}` : `${API_BASE}/produtos-quimicos`;
-                const method = isEdit ? 'PUT' : 'POST';
-
-                const res = await fetch(url, {
-                    method: method,
+                await fetch(url, {
+                    method: isEdit ? 'PUT' : 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
                 });
+            } catch (err) {}
 
-                if (!res.ok) throw new Error('Erro ao salvar produto');
-                
-                alert('Produto salvo com sucesso no SQL!');
-                fecharModalProduto();
-                carregarProdutosQuimicos();
-            } catch (err) {
-                console.error(err);
-                alert('Erro na requisição SQL. Verifique o console.');
+            if (isEdit) {
+                const idx = cacheProdutos.findIndex(p => p.id === payload.editId);
+                if (idx !== -1) cacheProdutos[idx] = { ...cacheProdutos[idx], ...payload };
+            } else {
+                if (cacheProdutos.some(p => p.id === payload.id)) {
+                    alert('Já existe um produto cadastrado com este Código / ID!');
+                    return;
+                }
+                cacheProdutos.push(payload);
             }
+            localStorage.setItem('mes_config_quimicos', JSON.stringify(cacheProdutos));
+
+            alert('Produto salvo com sucesso!');
+            fecharModalProduto();
+            renderizarTabelaProdutos(cacheProdutos);
         }
 
         function abrirModalProduto() {
@@ -624,9 +647,9 @@
             document.getElementById('prodId').value = prod.id;
             document.getElementById('prodId').setAttribute('readonly', 'readonly');
             document.getElementById('prodNome').value = prod.nome;
-            document.getElementById('prodDesc').value = prod.descricao || '';
-            document.getElementById('prodUn').value = prod.unidade;
-            document.getElementById('prodCusto').value = prod.custo_unitario;
+            document.getElementById('prodDesc').value = prod.descricao || prod.desc || '';
+            document.getElementById('prodUn').value = prod.unidade || prod.un || 'L';
+            document.getElementById('prodCusto').value = prod.custo_unitario !== undefined ? prod.custo_unitario : (prod.custoPadrao || 0);
 
             document.getElementById('modalProdutoTitulo').innerHTML = '<i class="fa-solid fa-pen text-purple-600"></i> Editar Produto Químico';
             document.getElementById('modalProduto').classList.remove('hidden');
@@ -636,109 +659,207 @@
             if (!confirm(`Deseja excluir o produto ${id}?`)) return;
             try {
                 await fetch(`${API_BASE}/produtos-quimicos/${id}`, { method: 'DELETE' });
-                carregarProdutosQuimicos();
-            } catch (err) {
-                alert('Erro ao excluir no SQL.');
-            }
+            } catch (err) {}
+
+            cacheProdutos = cacheProdutos.filter(p => p.id !== id);
+            localStorage.setItem('mes_config_quimicos', JSON.stringify(cacheProdutos));
+            renderizarTabelaProdutos(cacheProdutos);
         }
 
         /* =============================================================
            2, 3, 4, 5. UTILIDADES & PARÂMETROS
         ============================================================= */
-        function gerarCamposAgua() {
-            const pocos = parseInt(document.getElementById('setQtdPocos').value);
-            const pontos = parseInt(document.getElementById('setQtdPontosConsumo').value);
+        function gerarCamposAgua(nomesPocos = [], nomesConsumo = []) {
+            const pocos = parseInt(document.getElementById('setQtdPocos').value) || 1;
+            const pontos = parseInt(document.getElementById('setQtdPontosConsumo').value) || 1;
             const container = document.getElementById('containerNomesAgua');
             container.innerHTML = '';
 
+            let htmlPocos = `<h4 class="text-[11px] font-bold text-cyan-800 uppercase tracking-wider">Captação (Poços)</h4>`;
             for (let i = 1; i <= pocos; i++) {
-                container.innerHTML += `
+                const val = (nomesPocos && nomesPocos[i - 1]) ? nomesPocos[i - 1] : `Poço ${i}`;
+                htmlPocos += `
                     <div>
                         <label class="block text-[11px] font-semibold text-slate-600 mb-1">Nome Poço ${i}</label>
-                        <input type="text" name="nome_poco_${i}" value="Poço ${i}" class="w-full p-2 border rounded text-xs bg-white outline-none">
+                        <input type="text" id="nome_poco_${i}" value="${val}" class="w-full p-2 border rounded text-xs bg-white outline-none focus:ring-1 focus:ring-cyan-500">
                     </div>
                 `;
             }
+
+            let htmlPontos = `<h4 class="text-[11px] font-bold text-blue-800 uppercase tracking-wider pt-2">Pontos de Consumo (Equipamentos)</h4>`;
             for (let i = 1; i <= pontos; i++) {
-                container.innerHTML += `
+                const val = (nomesConsumo && nomesConsumo[i - 1]) ? nomesConsumo[i - 1] : (i === 1 ? "Túnel 1" : i === 2 ? "Túnel 2" : i === 3 ? "Extratoras" : `Hidrômetro Ponto ${i}`);
+                htmlPontos += `
                     <div>
                         <label class="block text-[11px] font-semibold text-slate-600 mb-1">Nome Ponto de Consumo ${i}</label>
-                        <input type="text" name="nome_ponto_agua_${i}" value="Hidrômetro Ponto ${i}" class="w-full p-2 border rounded text-xs bg-white outline-none">
+                        <input type="text" id="nome_consumo_${i}" value="${val}" class="w-full p-2 border rounded text-xs bg-white outline-none focus:ring-1 focus:ring-cyan-500">
                     </div>
                 `;
             }
+            container.innerHTML = htmlPocos + htmlPontos;
         }
 
-        function gerarCamposRelogiosGas() {
-            const qtd = parseInt(document.getElementById('setQtdRelogiosGas').value);
+        function gerarCamposRelogiosGas(nomesGas = []) {
+            const qtd = parseInt(document.getElementById('setQtdRelogiosGas').value) || 1;
             const container = document.getElementById('containerNomesGas');
             container.innerHTML = '';
             for (let i = 1; i <= qtd; i++) {
+                const val = (nomesGas && nomesGas[i - 1]) ? nomesGas[i - 1] : `Relógio Gás ${i}`;
                 container.innerHTML += `
                     <div>
                         <label class="block text-[11px] font-semibold text-slate-600 mb-1">Nome Medidor Gás ${i}</label>
-                        <input type="text" name="nome_gas_${i}" value="Relógio Gás ${i}" class="w-full p-2 border rounded text-xs bg-white outline-none">
+                        <input type="text" id="nome_gas_${i}" value="${val}" class="w-full p-2 border rounded text-xs bg-white outline-none focus:ring-1 focus:ring-orange-500">
                     </div>
                 `;
             }
         }
 
-        function gerarCamposRelogiosEnergia() {
-            const qtd = parseInt(document.getElementById('setQtdRelogiosEnergia').value);
+        function gerarCamposRelogiosEnergia(nomesEnergia = []) {
+            const qtd = parseInt(document.getElementById('setQtdRelogiosEnergia').value) || 1;
             const container = document.getElementById('containerNomesEnergia');
             container.innerHTML = '';
             for (let i = 1; i <= qtd; i++) {
+                const val = (nomesEnergia && nomesEnergia[i - 1]) ? nomesEnergia[i - 1] : (i === 1 ? "Medidor Principal" : i === 2 ? "Medidor Auxiliar" : `Relógio Energia ${i}`);
                 container.innerHTML += `
                     <div>
                         <label class="block text-[11px] font-semibold text-slate-600 mb-1">Nome Relógio Energia ${i}</label>
-                        <input type="text" name="nome_energia_${i}" value="Relógio Energia ${i}" class="w-full p-2 border rounded text-xs bg-white outline-none">
+                        <input type="text" id="nome_energia_${i}" value="${val}" class="w-full p-2 border rounded text-xs bg-white outline-none focus:ring-1 focus:ring-yellow-500">
                     </div>
                 `;
             }
         }
 
         async function carregarConfiguracoesUtilidades() {
+            let config = null;
             try {
                 const res = await fetch(`${API_BASE}/configuracoes`);
-                if (!res.ok) return;
-                const config = await res.json();
-                
-                if (config.agua) {
-                    document.getElementById('setCustoM3Agua').value = config.agua.custo_m3 || '';
-                }
-                if (config.gas) {
-                    document.getElementById('setCustoM3Gas').value = config.gas.custo_m3 || '';
-                }
-                if (config.energia) {
-                    document.getElementById('setCustoKwhEnergia').value = config.energia.custo_kwh || '';
-                }
-                if (config.balanca) {
-                    document.getElementById('setBaudRate').value = config.balanca.baud_rate || '9600';
-                    document.getElementById('setTolerancia').value = config.balanca.tolerancia || '0.05';
-                }
-            } catch (err) {
-                console.log('Parâmetros de utilidades utilizando padrões locais.');
-            }
+                if (res.ok) config = await res.json();
+            } catch (err) {}
+
+            // Água
+            const configAgua = (config && config.agua) ? config.agua : JSON.parse(localStorage.getItem('mes_config_agua') || '{"qtdPocos": 2, "nomesPocos": ["Poço 1", "Poço 2"], "qtdConsumo": 3, "nomesConsumo": ["Túnel 1", "Túnel 2", "Extratoras"], "custoM3": 8.50}');
+            document.getElementById('setQtdPocos').value = configAgua.qtdPocos || configAgua.qtd_pocos || 2;
+            document.getElementById('setQtdPontosConsumo').value = configAgua.qtdConsumo || configAgua.qtd_pontos || 3;
+            document.getElementById('setCustoM3Agua').value = configAgua.custoM3 || configAgua.custo_m3 || '';
+            gerarCamposAgua(configAgua.nomesPocos || configAgua.nomes_pocos, configAgua.nomesConsumo || configAgua.nomes_pontos);
+
+            // Gás
+            const configGas = (config && config.gas) ? config.gas : JSON.parse(localStorage.getItem('mes_config_gas') || '{"qtd": 2, "nomes": ["Relógio Gás 1", "Relógio Gás 2"], "custoM3": 12.00}');
+            document.getElementById('setQtdRelogiosGas').value = configGas.qtd || configGas.qtd_relogios || 2;
+            document.getElementById('setCustoM3Gas').value = configGas.custoM3 || configGas.custo_m3 || '';
+            gerarCamposRelogiosGas(configGas.nomes || configGas.nomes_relogios);
+
+            // Energia
+            const configEnergia = (config && config.energia) ? config.energia : JSON.parse(localStorage.getItem('mes_config_energia') || '{"qtd": 2, "nomes": ["Medidor Principal", "Medidor Auxiliar"], "custoKwh": 0.85}');
+            document.getElementById('setQtdRelogiosEnergia').value = configEnergia.qtd || configEnergia.qtd_relogios || 2;
+            document.getElementById('setCustoKwhEnergia').value = configEnergia.custoKwh || configEnergia.custo_kwh || '';
+            gerarCamposRelogiosEnergia(configEnergia.nomes || configEnergia.nomes_relogios);
+
+            // Balança
+            const configBalanca = (config && config.balanca) ? config.balanca : JSON.parse(localStorage.getItem('mes_config_balanca') || '{"baudRate": "9600", "tolerancia": "0.05"}');
+            document.getElementById('setBaudRate').value = configBalanca.baudRate || configBalanca.baud_rate || '9600';
+            document.getElementById('setTolerancia').value = configBalanca.tolerancia || '0.05';
         }
 
         async function salvarConfigAgua(e) {
             e.preventDefault();
-            alert('Configurações de Água salvas no SQL com sucesso!');
+            const qtdPocos = parseInt(document.getElementById('setQtdPocos').value);
+            const qtdConsumo = parseInt(document.getElementById('setQtdPontosConsumo').value);
+            const custoM3 = parseFloat(document.getElementById('setCustoM3Agua').value) || 0;
+
+            const nomesPocos = [];
+            for (let i = 1; i <= qtdPocos; i++) {
+                const el = document.getElementById(`nome_poco_${i}`);
+                nomesPocos.push(el ? el.value : `Poço ${i}`);
+            }
+
+            const nomesConsumo = [];
+            for (let i = 1; i <= qtdConsumo; i++) {
+                const el = document.getElementById(`nome_consumo_${i}`);
+                nomesConsumo.push(el ? el.value : `Ponto ${i}`);
+            }
+
+            const payload = { qtdPocos, qtdConsumo, custoM3, nomesPocos, nomesConsumo };
+            localStorage.setItem('mes_config_agua', JSON.stringify(payload));
+
+            try {
+                await fetch(`${API_BASE}/configuracoes/agua`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+            } catch (err) {}
+
+            alert('Configurações de Água salvas com sucesso!');
         }
 
         async function salvarConfigGas(e) {
             e.preventDefault();
-            alert('Configurações de Gás salvas no SQL com sucesso!');
+            const qtd = parseInt(document.getElementById('setQtdRelogiosGas').value);
+            const custoM3 = parseFloat(document.getElementById('setCustoM3Gas').value) || 0;
+
+            const nomes = [];
+            for (let i = 1; i <= qtd; i++) {
+                const el = document.getElementById(`nome_gas_${i}`);
+                nomes.push(el ? el.value : `Relógio Gás ${i}`);
+            }
+
+            const payload = { qtd, custoM3, nomes };
+            localStorage.setItem('mes_config_gas', JSON.stringify(payload));
+
+            try {
+                await fetch(`${API_BASE}/configuracoes/gas`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+            } catch (err) {}
+
+            alert('Configurações de Gás salvas com sucesso!');
         }
 
         async function salvarConfigEnergia(e) {
             e.preventDefault();
-            alert('Configurações de Energia salvas no SQL com sucesso!');
+            const qtd = parseInt(document.getElementById('setQtdRelogiosEnergia').value);
+            const custoKwh = parseFloat(document.getElementById('setCustoKwhEnergia').value) || 0;
+
+            const nomes = [];
+            for (let i = 1; i <= qtd; i++) {
+                const el = document.getElementById(`nome_energia_${i}`);
+                nomes.push(el ? el.value : `Relógio Energia ${i}`);
+            }
+
+            const payload = { qtd, custoKwh, nomes };
+            localStorage.setItem('mes_config_energia', JSON.stringify(payload));
+
+            try {
+                await fetch(`${API_BASE}/configuracoes/energia`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+            } catch (err) {}
+
+            alert('Configurações de Energia salvas com sucesso!');
         }
 
         async function salvarConfigBalanca(e) {
             e.preventDefault();
-            alert('Parâmetros da Balança salvos no SQL com sucesso!');
+            const baudRate = document.getElementById('setBaudRate').value;
+            const tolerancia = document.getElementById('setTolerancia').value;
+
+            const payload = { baudRate, tolerancia };
+            localStorage.setItem('mes_config_balanca', JSON.stringify(payload));
+
+            try {
+                await fetch(`${API_BASE}/configuracoes/balanca`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+            } catch (err) {}
+
+            alert('Parâmetros da Balança salvos com sucesso!');
         }
 
         /* =============================================================
@@ -749,10 +870,10 @@
                 const res = await fetch(`${API_BASE}/equipe-logistica`);
                 if (!res.ok) throw new Error();
                 cacheEquipe = await res.json();
-                renderizarTabelaEquipe(cacheEquipe);
             } catch (err) {
-                renderizarTabelaEquipe([]);
+                cacheEquipe = JSON.parse(localStorage.getItem('mes_config_equipe')) || [];
             }
+            renderizarTabelaEquipe(cacheEquipe);
         }
 
         function renderizarTabelaEquipe(equipe) {
@@ -780,8 +901,8 @@
                         <td class="p-2.5 text-center">${eq.escala || '-'}</td>
                         <td class="p-2.5 text-center">${stBadge}</td>
                         <td class="p-2.5 text-center space-x-2">
-                            <button onclick="editarEquipe('${eq.id}')" class="text-blue-600 hover:text-blue-800"><i class="fa-solid fa-pen"></i></button>
-                            <button onclick="excluirEquipe('${eq.id}')" class="text-red-600 hover:text-red-800"><i class="fa-solid fa-trash"></i></button>
+                            <button onclick="editarEquipe('${eq.id}')" class="text-blue-600 hover:text-blue-800" title="Editar"><i class="fa-solid fa-pen"></i></button>
+                            <button onclick="excluirEquipe('${eq.id}')" class="text-red-600 hover:text-red-800" title="Excluir"><i class="fa-solid fa-trash"></i></button>
                         </td>
                     </tr>
                 `;
@@ -826,30 +947,36 @@
 
             try {
                 const url = isEdit ? `${API_BASE}/equipe-logistica/${payload.id}` : `${API_BASE}/equipe-logistica`;
-                const method = isEdit ? 'PUT' : 'POST';
-
                 await fetch(url, {
-                    method: method,
+                    method: isEdit ? 'PUT' : 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
                 });
+            } catch (err) {}
 
-                alert('Colaborador salvo com sucesso no SQL!');
-                fecharModalEquipe();
-                carregarEquipeLogistica();
-            } catch (err) {
-                alert('Erro ao salvar equipe no SQL.');
+            if (isEdit) {
+                const idx = cacheEquipe.findIndex(m => m.id == payload.id);
+                if (idx !== -1) cacheEquipe[idx] = { ...cacheEquipe[idx], ...payload };
+            } else {
+                payload.id = Date.now();
+                cacheEquipe.push(payload);
             }
+            localStorage.setItem('mes_config_equipe', JSON.stringify(cacheEquipe));
+
+            alert('Colaborador salvo com sucesso!');
+            fecharModalEquipe();
+            renderizarTabelaEquipe(cacheEquipe);
         }
 
         async function excluirEquipe(id) {
             if (!confirm('Deseja excluir este colaborador?')) return;
             try {
                 await fetch(`${API_BASE}/equipe-logistica/${id}`, { method: 'DELETE' });
-                carregarEquipeLogistica();
-            } catch (err) {
-                alert('Erro ao excluir no SQL.');
-            }
+            } catch (err) {}
+
+            cacheEquipe = cacheEquipe.filter(m => m.id != id);
+            localStorage.setItem('mes_config_equipe', JSON.stringify(cacheEquipe));
+            renderizarTabelaEquipe(cacheEquipe);
         }
 
         /* =============================================================
@@ -860,10 +987,10 @@
                 const res = await fetch(`${API_BASE}/veiculos`);
                 if (!res.ok) throw new Error();
                 cacheVeiculos = await res.json();
-                renderizarTabelaVeiculos(cacheVeiculos);
             } catch (err) {
-                renderizarTabelaVeiculos([]);
+                cacheVeiculos = JSON.parse(localStorage.getItem('mes_config_veiculos')) || [];
             }
+            renderizarTabelaVeiculos(cacheVeiculos);
         }
 
         function renderizarTabelaVeiculos(veiculos) {
@@ -871,7 +998,7 @@
             tbody.innerHTML = '';
 
             if (!veiculos || veiculos.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="12" class="p-4 text-center text-slate-400">Nenhum veículo cadastrado no banco SQL.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="12" class="p-4 text-center text-slate-400">Nenhum veículo cadastrado.</td></tr>`;
                 return;
             }
 
@@ -894,11 +1021,11 @@
                         <td class="p-2.5 text-center">${v.condicao_compra}</td>
                         <td class="p-2.5 text-right font-bold">${v.km_atual} km</td>
                         <td class="p-2.5 text-center">${v.combustivel}</td>
-                        <td class="p-2.5 text-center font-bold">${v.possui_zmrc == '1' ? 'Sim' : 'Não'}</td>
+                        <td class="p-2.5 text-center font-bold">${(v.possui_zmrc == '1' || v.possui_zmrc === true) ? 'Sim' : 'Não'}</td>
                         <td class="p-2.5 text-center">${stBadge}</td>
                         <td class="p-2.5 text-center space-x-2">
-                            <button onclick="editarVeiculo('${v.id}')" class="text-blue-600 hover:text-blue-800"><i class="fa-solid fa-pen"></i></button>
-                            <button onclick="excluirVeiculo('${v.id}')" class="text-red-600 hover:text-red-800"><i class="fa-solid fa-trash"></i></button>
+                            <button onclick="editarVeiculo('${v.id}')" class="text-blue-600 hover:text-blue-800" title="Editar"><i class="fa-solid fa-pen"></i></button>
+                            <button onclick="excluirVeiculo('${v.id}')" class="text-red-600 hover:text-red-800" title="Excluir"><i class="fa-solid fa-trash"></i></button>
                         </td>
                     </tr>
                 `;
@@ -967,36 +1094,44 @@
 
             try {
                 const url = isEdit ? `${API_BASE}/veiculos/${payload.id}` : `${API_BASE}/veiculos`;
-                const method = isEdit ? 'PUT' : 'POST';
-
                 await fetch(url, {
-                    method: method,
+                    method: isEdit ? 'PUT' : 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
                 });
+            } catch (err) {}
 
-                alert("Dados do veículo salvos no Banco SQL com sucesso!");
-                fecharModalVeiculo();
-                carregarVeiculos();
-            } catch (err) {
-                alert("Erro ao salvar no SQL. Verifique o servidor.");
+            if (isEdit) {
+                const idx = cacheVeiculos.findIndex(item => item.id == payload.id);
+                if (idx !== -1) cacheVeiculos[idx] = { ...cacheVeiculos[idx], ...payload };
+            } else {
+                payload.id = Date.now();
+                cacheVeiculos.push(payload);
             }
+            localStorage.setItem('mes_config_veiculos', JSON.stringify(cacheVeiculos));
+
+            alert("Dados do veículo salvos com sucesso!");
+            fecharModalVeiculo();
+            renderizarTabelaVeiculos(cacheVeiculos);
         }
 
         async function excluirVeiculo(id) {
-            if (!confirm('Deseja remover este veículo da base SQL?')) return;
+            if (!confirm('Deseja remover este veículo?')) return;
             try {
                 await fetch(`${API_BASE}/veiculos/${id}`, { method: 'DELETE' });
-                carregarVeiculos();
-            } catch (err) {
-                alert('Erro ao excluir no SQL.');
-            }
+            } catch (err) {}
+
+            cacheVeiculos = cacheVeiculos.filter(v => v.id != id);
+            localStorage.setItem('mes_config_veiculos', JSON.stringify(cacheVeiculos));
+            renderizarTabelaVeiculos(cacheVeiculos);
         }
 
         function limparCacheLocal() {
-            localStorage.clear();
-            alert('Dados e seleções temporárias do navegador foram limpos.');
-            location.reload();
+            if (confirm('Deseja redefinir todas as configurações salvas neste navegador?')) {
+                localStorage.clear();
+                alert('Configurações locais restauradas com sucesso!');
+                location.reload();
+            }
         }
     </script>
 </body>
