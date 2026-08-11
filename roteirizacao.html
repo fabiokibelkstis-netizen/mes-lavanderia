@@ -151,7 +151,7 @@
         <!-- PAINEL DIREITO: VISUALIZAÇÃO EM TEMPO REAL E ROTAS SALVAS -->
         <section class="lg:col-span-7 space-y-6">
             
-            <!-- PRÉ-VISUALIZAÇÃO DO MODELO EM ANEXO -->
+            <!-- PRÉ-VISUALIZAÇÃO DO MODELO ENVIADO -->
             <div class="bg-white p-6 rounded-2xl shadow-md border border-slate-200 space-y-4">
                 <div class="flex justify-between items-center border-b pb-2">
                     <h3 class="text-sm font-bold text-slate-800 flex items-center gap-2">
@@ -304,16 +304,19 @@
             });
         });
 
-        /* 1. CARREGAR CLIENTES DE cadastro_clientes.html */
+        /* 1. CARREGAR CLIENTES (SUPORTE MULTI-CHAVES E FORMATOS) */
         async function carregarClientesCadastrados() {
             try {
                 const res = await fetch(`${API_BASE}/clientes`);
                 if (!res.ok) throw new Error();
                 cacheClientes = await res.json();
             } catch (err) {
-                // Tenta buscar no localStorage do cadastro_clientes.html
+                // Busca em todas as possíveis chaves do LocalStorage utilizadas pelo sistema
                 cacheClientes = JSON.parse(localStorage.getItem('mes_config_clientes')) || 
-                                JSON.parse(localStorage.getItem('mes_clientes')) || [
+                                JSON.parse(localStorage.getItem('mes_clientes')) || 
+                                JSON.parse(localStorage.getItem('mes_cadastro_clientes')) || 
+                                JSON.parse(localStorage.getItem('clientes')) || 
+                                JSON.parse(localStorage.getItem('cad_clientes')) || [
                     { id: 1, nomeFantasia: "Hospital São Luiz", razaoSocial: "Hospital São Luiz S.A." },
                     { id: 2, nomeFantasia: "Hotel Unique", razaoSocial: "Hotel Unique Ltda" },
                     { id: 3, nomeFantasia: "Restaurante Fasano", razaoSocial: "Fasano Gastronomia Ltda" },
@@ -323,20 +326,23 @@
             }
         }
 
-        /* 2. ADICIONAR LINHA DE CLIENTE COM DROPDOWN DOS CLIENTES CADASTRADOS */
+        /* 2. ADICIONAR LINHA DE CLIENTE COM SUPORTE A DIVERSOS NOMES DE CAMPOS (camelCase / snake_case) */
         function adicionarLinhaCliente(nomeClienteSelecionado = '', qtdGaiolas = 1) {
             const container = document.getElementById('containerClientes');
             const idLinha = Date.now() + Math.random().toString(36).substring(2, 5);
 
-            // Monta as opções do <select> dinamicamente a partir de cacheClientes
             let optionsHTML = '<option value="">-- Selecione o Cliente --</option>';
             
-            if (cacheClientes.length === 0) {
-                optionsHTML = '<option value="">Nenhum cliente cadastrado em cadastro_clientes.html</option>';
+            if (!cacheClientes || cacheClientes.length === 0) {
+                optionsHTML = '<option value="">Nenhum cliente cadastrado</option>';
             } else {
                 cacheClientes.forEach(c => {
-                    const nomeExibicao = c.nomeFantasia || c.nome || c.razaoSocial;
-                    const isSelected = (nomeExibicao === nomeClienteSelecionado) ? 'selected' : '';
+                    // Extração robusta de nome suportando tanto API SQL (snake_case) quanto LocalStorage (camelCase) ou String simples
+                    const nomeExibicao = typeof c === 'string' 
+                        ? c 
+                        : (c.nomeFantasia || c.nome_fantasia || c.nome || c.razaoSocial || c.razao_social || c.cliente || `Cliente #${c.id}`);
+
+                    const isSelected = (nomeExibicao.trim() === nomeClienteSelecionado.trim()) ? 'selected' : '';
                     optionsHTML += `<option value="${nomeExibicao}" ${isSelected}>${nomeExibicao}</option>`;
                 });
             }
@@ -384,7 +390,7 @@
             select.innerHTML = '<option value="">-- Selecione o Veículo --</option>';
 
             cacheVeiculos.forEach(v => {
-                const capGaiolas = v.capacidade_gaiolas || (v.tipo_veiculo === 'Fiorino' ? 6 : v.tipo_veiculo === 'VUC' ? 12 : 10);
+                const capGaiolas = v.qtd_gaiolas || v.capacidade_gaiolas || (v.tipo_veiculo === 'Fiorino' ? 6 : v.tipo_veiculo === 'VUC' ? 12 : 10);
                 v.capacidade_gaiolas = capGaiolas;
 
                 const dono = v.tipo_propriedade === 'Terceiro' ? (v.terceiro_nome || 'Terceiro') : v.empresa_proprietaria;
