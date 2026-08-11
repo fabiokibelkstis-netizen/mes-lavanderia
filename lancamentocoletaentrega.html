@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Apontamento de Campo - Coleta e Entrega</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body class="bg-slate-900 text-slate-800 font-sans min-h-screen flex flex-col justify-between">
+
+    <!-- CABEÇALHO MOBILE -->
+    <header class="bg-slate-800 text-white p-4 shadow-md sticky top-0 z-50 border-b border-slate-700">
+        <div class="max-w-md mx-auto flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="bg-emerald-500 text-slate-900 p-2 rounded-xl text-lg font-bold">
+                    <i class="fa-solid fa-truck-ramp-box"></i>
+                </div>
+                <div>
+                    <h1 class="text-base font-bold leading-tight">Apontamento de Campo</h1>
+                    <p class="text-[11px] text-slate-400">Lavanderia Dona Zara - Logística</p>
+                </div>
+            </div>
+            <button type="button" onclick="resetFormulario()" class="text-xs bg-slate-700 hover:bg-slate-600 text-slate-300 px-2.5 py-1.5 rounded-lg border border-slate-600 transition">
+                <i class="fa-solid fa-rotate-left"></i> Limpar
+            </button>
+        </div>
+    </header>
+
+    <!-- CONTEÚDO PRINCIPAL (CONTAINER MOBILE) -->
+    <main class="max-w-md mx-auto w-full p-4 space-y-4">
+
+        <form id="formApontamento" onsubmit="enviarApontamentoWhatsApp(event)" class="space-y-4">
+            
+            <!-- IDENTIFICAÇÃO DA EQUIPE E CLIENTE -->
+            <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 space-y-3">
+                <h2 class="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-2 border-b pb-2">
+                    <i class="fa-solid fa-users text-emerald-600"></i> Equipe e Local
+                </h2>
+
+                <!-- SELEÇÃO DE CLIENTE CADASTRADO -->
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Cliente *</label>
+                    <select id="cliente" required class="w-full p-3 border rounded-xl text-xs bg-slate-50 outline-none focus:ring-2 focus:ring-emerald-500 font-bold text-slate-800">
+                        <option value="">Carregando clientes...</option>
+                    </select>
+                </div>
+
+                <!-- SELEÇÃO DE MOTORISTA E AJUDANTE CADASTRADOS -->
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Motorista *</label>
+                        <select id="motorista" required class="w-full p-2.5 border rounded-xl text-xs bg-slate-50 outline-none focus:ring-2 focus:ring-emerald-500 font-semibold text-slate-800">
+                            <option value="">Carregando...</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Ajudante</label>
+                        <select id="ajudante" class="w-full p-2.5 border rounded-xl text-xs bg-slate-50 outline-none focus:ring-2 focus:ring-emerald-500 font-semibold text-slate-800">
+                            <option value="">Carregando...</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- REGISTRO DE HORÁRIOS -->
+            <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 space-y-3">
+                <h2 class="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-2 border-b pb-2">
+                    <i class="fa-solid fa-clock text-emerald-600"></i> Horários no Cliente
+                </h2>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Chegada *</label>
+                        <div class="flex gap-1">
+                            <input type="time" id="horaChegada" required class="w-full p-2.5 border rounded-xl text-xs bg-slate-50 font-bold outline-none focus:ring-2 focus:ring-emerald-500">
+                            <button type="button" onclick="preencherHora('horaChegada')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-2 rounded-xl text-xs border" title="Hora Atual">
+                                <i class="fa-solid fa-stopwatch"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Saída *</label>
+                        <div class="flex gap-1">
+                            <input type="time" id="horaSaida" required class="w-full p-2.5 border rounded-xl text-xs bg-slate-50 font-bold outline-none focus:ring-2 focus:ring-emerald-500">
+                            <button type="button" onclick="preencherHora('horaSaida')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-2 rounded-xl text-xs border" title="Hora Atual">
+                                <i class="fa-solid fa-stopwatch"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- DADOS DE ENTREGA -->
+            <div class="bg-white p-4 rounded-2xl shadow-sm border border-emerald-200 space-y-3">
+                <h2 class="text-xs font-bold text-emerald-700 uppercase tracking-wider flex items-center gap-2 border-b border-emerald-100 pb-2">
+                    <i class="fa-solid fa-truck-ramp-box"></i> Entrega de Roupa Limpa
+                </h2>
+
+                <div class="grid grid-cols-3 gap-2">
+                    <div class="col-span-1">
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Gaiolas *</label>
+                        <input type="number" id="gaiolasEntregues" min="0" required value="0" class="w-full p-2.5 border rounded-xl text-sm font-bold text-center bg-slate-50 outline-none focus:ring-2 focus:ring-emerald-500">
+                    </div>
+                    <div class="col-span-2">
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Nº OS(s) Entregues *</label>
+                        <input type="text" id="osEntregues" required placeholder="ex: 1024, 1025" class="w-full p-2.5 border rounded-xl text-xs bg-slate-50 outline-none focus:ring-2 focus:ring-emerald-500">
+                    </div>
+                </div>
+            </div>
+
+            <!-- DADOS DE COLETA -->
+            <div class="bg-white p-4 rounded-2xl shadow-sm border border-blue-200 space-y-3">
+                <h2 class="text-xs font-bold text-blue-700 uppercase tracking-wider flex items-center gap-2 border-b border-blue-100 pb-2">
+                    <i class="fa-solid fa-basket-shopping"></i> Coleta de Roupa Suja
+                </h2>
+
+                <div class="grid grid-cols-3 gap-2">
+                    <div class="col-span-1">
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Gaiolas *</label>
+                        <input type="number" id="gaiolasColetadas" min="0" required value="0" class="w-full p-2.5 border rounded-xl text-sm font-bold text-center bg-slate-50 outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div class="col-span-2">
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Nº OS(s) Coletadas *</label>
+                        <input type="text" id="osColetadas" required placeholder="ex: 8501, 8502" class="w-full p-2.5 border rounded-xl text-xs bg-slate-50 outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                </div>
+            </div>
+
+            <!-- OBSERVAÇÕES -->
+            <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 space-y-2">
+                <label class="block text-xs font-bold text-slate-700">Observações do Atendimento</label>
+                <textarea id="observacoes" rows="2" placeholder="Ocorrências, recusa de peças, atrasos ou avisos do cliente..." class="w-full p-2.5 border rounded-xl text-xs bg-slate-50 outline-none focus:ring-2 focus:ring-slate-400"></textarea>
+            </div>
+
+            <!-- BOTÃO DE AÇÃO PRINCIPAL -->
+            <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-bold py-3.5 px-4 rounded-2xl shadow-lg transition flex items-center justify-center gap-2 text-sm">
+                <i class="fa-brands fa-whatsapp text-lg"></i> Finalizar e Enviar no WhatsApp
+            </button>
+
+        </form>
+
+    </main>
+
+    <footer class="bg-slate-900 text-slate-500 text-[10px] text-center p-3">
+        Dona Zara Logística &copy; 2026 - Apontamento de Campo
+    </footer>
+
+    <!-- SCRIPT DE LÓGICA, CARREGAMENTO E WHATSAPP -->
+    <script>
+        const API_BASE = '/api';
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            await carregarClientesCadastrados();
+            await carregarEquipeConfigurada();
+        });
+
+        /* 1. CARREGAR CLIENTES CADASTRADOS NOS DIVERSOS BANCOS / LOCALSTORAGE */
+        async function carregarClientesCadastrados() {
+            let listaClientes = [];
+
+            try {
+                const res = await fetch(`${API_BASE}/clientes`);
+                if (res.ok) listaClientes = await res.json();
+            } catch (err) {}
+
+            if (!listaClientes || listaClientes.length === 0) {
+                listaClientes = JSON.parse(localStorage.getItem('mes_config_clientes')) || 
+                                JSON.parse(localStorage.getItem('mes_clientes')) || 
+                                JSON.parse(localStorage.getItem('mes_cadastro_clientes')) || 
+                                JSON.parse(localStorage.getItem('clientes')) || 
+                                JSON.parse(localStorage.getItem('cad_clientes')) || [
+                    { id: 1, nomeFantasia: "Hospital São Luiz" },
+                    { id: 2, nomeFantasia: "Hotel Unique" },
+                    { id: 3, nomeFantasia: "Restaurante Fasano" },
+                    { id: 4, nomeFantasia: "Hospital Albert Einstein" },
+                    { id: 5, nomeFantasia: "Maternidade Pro Matre" }
+                ];
+            }
+
+            const selectCliente = document.getElementById('cliente');
+            selectCliente.innerHTML = '<option value="">-- Selecione o Cliente --</option>';
+
+            listaClientes.forEach(c => {
+                const nomeExibicao = typeof c === 'string' 
+                    ? c 
+                    : (c.nomeFantasia || c.nome_fantasia || c.nome || c.razaoSocial || c.razao_social || c.cliente || `Cliente #${c.id}`);
+
+                selectCliente.innerHTML += `<option value="${nomeExibicao}">${nomeExibicao}</option>`;
+            });
+        }
+
+        /* 2. CARREGAR EQUIPE (MOTORISTAS E AJUDANTES) DAS CONFIGURAÇÕES */
+        async function carregarEquipeConfigurada() {
+            let listaEquipe = [];
+
+            try {
+                const res = await fetch(`${API_BASE}/equipe-logistica`);
+                if (res.ok) listaEquipe = await res.json();
+            } catch (err) {}
+
+            if (!listaEquipe || listaEquipe.length === 0) {
+                listaEquipe = JSON.parse(localStorage.getItem('mes_config_equipe')) || 
+                              JSON.parse(localStorage.getItem('mes_equipe')) || [
+                    { id: 1, nome: 'João da Silva', funcao: 'Motorista', status: 'Ativo' },
+                    { id: 2, nome: 'Carlos Souza', funcao: 'Ajudante', status: 'Ativo' },
+                    { id: 3, nome: 'Marcos Oliveira', funcao: 'Motorista/Ajudante', status: 'Ativo' }
+                ];
+            }
+
+            const selectMotorista = document.getElementById('motorista');
+            const selectAjudante = document.getElementById('ajudante');
+
+            selectMotorista.innerHTML = '<option value="">-- Selecione Motorista --</option>';
+            selectAjudante.innerHTML = '<option value="">-- Sem Ajudante --</option>';
+
+            listaEquipe.filter(e => e.status === 'Ativo' || !e.status).forEach(m => {
+                const nome = m.nome || m.nomeCompleto || m.funcionario;
+                const funcao = m.funcao || 'Motorista';
+
+                if (funcao.includes('Motorista') || !m.funcao) {
+                    selectMotorista.innerHTML += `<option value="${nome}">${nome}</option>`;
+                }
+                if (funcao.includes('Ajudante') || funcao.includes('Motorista') || !m.funcao) {
+                    selectAjudante.innerHTML += `<option value="${nome}">${nome}</option>`;
+                }
+            });
+
+            // Restaura últimas seleções gravadas no dispositivo
+            const mSalvo = localStorage.getItem('ultimo_motorista');
+            const aSalvo = localStorage.getItem('ultimo_ajudante');
+            if (mSalvo) selectMotorista.value = mSalvo;
+            if (aSalvo) selectAjudante.value = aSalvo;
+        }
+
+        function preencherHora(idCampo) {
+            const agora = new Date();
+            const hh = String(agora.getHours()).padStart(2, '0');
+            const mm = String(agora.getMinutes()).padStart(2, '0');
+            document.getElementById(idCampo).value = `${hh}:${mm}`;
+        }
+
+        function enviarApontamentoWhatsApp(e) {
+            e.preventDefault();
+
+            const cliente = document.getElementById('cliente').value;
+            const motorista = document.getElementById('motorista').value;
+            const ajudante = document.getElementById('ajudante').value || 'NENHUM';
+
+            if (!cliente) {
+                alert('Selecione um cliente cadastrado!');
+                return;
+            }
+            if (!motorista) {
+                alert('Selecione o motorista!');
+                return;
+            }
+
+            const horaChegada = document.getElementById('horaChegada').value;
+            const horaSaida = document.getElementById('horaSaida').value;
+            const gaiolasEntregues = document.getElementById('gaiolasEntregues').value;
+            const osEntregues = document.getElementById('osEntregues').value.trim();
+            const gaiolasColetadas = document.getElementById('gaiolasColetadas').value;
+            const osColetadas = document.getElementById('osColetadas').value.trim();
+            const obs = document.getElementById('observacoes').value.trim() || 'Nenhuma.';
+
+            // Armazena motorista e ajudante no dispositivo
+            localStorage.setItem('ultimo_motorista', motorista);
+            localStorage.setItem('ultimo_ajudante', ajudante);
+
+            // Montagem da mensagem estruturada para o WhatsApp
+            const textoMensagem = 
+`🚚 *APONTAMENTO LOGÍSTICA - DONA ZARA*
+--------------------------------
+🏢 *Cliente:* ${cliente}
+👤 *Motorista:* ${motorista}
+🤝 *Ajudante:* ${ajudante}
+--------------------------------
+⏱️ *Horário Chegada:* ${horaChegada}
+⏱️ *Horário Saída:* ${horaSaida}
+--------------------------------
+📦 *ENTREGA (ROUPA LIMPA)*
+• Gaiolas Entregues: *${gaiolasEntregues}*
+• OS(s) Entregues: *${osEntregues}*
+
+🧺 *COLETA (ROUPA SUJA)*
+• Gaiolas Coletadas: *${gaiolasColetadas}*
+• OS(s) Coletadas: *${osColetadas}*
+--------------------------------
+📝 *Observações:* ${obs}`;
+
+            const urlWhatsApp = `https://api.whatsapp.com/send?text=${encodeURIComponent(textoMensagem)}`;
+            window.open(urlWhatsApp, '_blank');
+        }
+
+        function resetFormulario() {
+            if (confirm('Deseja limpar os dados do atendimento atual?')) {
+                const motoristaAtual = document.getElementById('motorista').value;
+                const ajudanteAtual = document.getElementById('ajudante').value;
+                document.getElementById('formApontamento').reset();
+                document.getElementById('motorista').value = motoristaAtual;
+                document.getElementById('ajudante').value = ajudanteAtual;
+            }
+        }
+    </script>
+</body>
+</html>
