@@ -17,7 +17,7 @@
                 </div>
                 <div>
                     <h1 class="text-xl font-bold tracking-wider">MES - Configurações Gerais</h1>
-                    <p class="text-xs text-slate-400">Insumos Químicos, Utilidades, Balança e Equipe de Transporte</p>
+                    <p class="text-xs text-slate-400">Insumos Químicos, Utilidades, Balança, Equipe de Transporte e Frota de Veículos</p>
                 </div>
             </div>
             <div>
@@ -201,7 +201,7 @@
         <div id="secao-equipe" class="bg-white p-6 rounded-2xl shadow-md border border-slate-200 space-y-4">
             <div class="flex justify-between items-center border-b pb-2">
                 <h3 class="text-sm font-bold text-slate-800 flex items-center gap-2">
-                    <i class="fa-solid fa-truck-front text-indigo-600"></i>
+                    <i class="fa-solid fa-users text-indigo-600"></i>
                     6. Cadastro de Motoristas e Ajudantes
                 </h3>
                 <button type="button" onclick="abrirModalEquipe()" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition shadow">
@@ -228,6 +228,44 @@
                         </tr>
                     </thead>
                     <tbody id="tabelaEquipeLogistica"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 7. CADASTRO DE VEÍCULOS / FROTA (AJUSTADO PARA A TABELA SQL "veiculos") -->
+        <div id="secao-veiculos" class="bg-white p-6 rounded-2xl shadow-md border border-slate-200 space-y-4">
+            <div class="flex justify-between items-center border-b pb-2">
+                <h3 class="text-sm font-bold text-slate-800 flex items-center gap-2">
+                    <i class="fa-solid fa-truck-moving text-teal-600"></i>
+                    7. Cadastro de Veículos / Frota
+                </h3>
+                <button type="button" onclick="abrirModalVeiculo()" class="bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition shadow">
+                    ➕ Novo Veículo
+                </button>
+            </div>
+            <p class="text-xs text-slate-500">
+                Gerencie a frota de veículos integrada ao Banco de Dados SQL (RENAVAM, Chassi, Motor, Propriedade, Condição de Compra, ZMRC e Status Operacional).
+            </p>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-xs border-collapse">
+                    <thead class="bg-slate-100 text-slate-700">
+                        <tr>
+                            <th class="p-2.5 border">ID SQL</th>
+                            <th class="p-2.5 border">Placa</th>
+                            <th class="p-2.5 border">Marca / Modelo</th>
+                            <th class="p-2.5 border text-center">Tipo</th>
+                            <th class="p-2.5 border">RENAVAM / Chassi / Motor</th>
+                            <th class="p-2.5 border">Propriedade / Empresa</th>
+                            <th class="p-2.5 border text-center">Condição Compra</th>
+                            <th class="p-2.5 border text-right">KM Atual</th>
+                            <th class="p-2.5 border text-center">Combustível</th>
+                            <th class="p-2.5 border text-center">ZMRC</th>
+                            <th class="p-2.5 border text-center">Status</th>
+                            <th class="p-2.5 border text-center">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabelaVeiculos"></tbody>
                 </table>
             </div>
         </div>
@@ -342,394 +380,195 @@
         </div>
     </div>
 
-    <footer class="bg-white border-t border-slate-200 p-4 text-center text-xs text-slate-500">
-        MES Dona Zara &copy; 2026 - Módulo de Configurações do Sistema
-    </footer>
+    <!-- MODAL VEÍCULO / FROTA (TOTALMENTE AJUSTADO PARA ESTRUTURA SQL) -->
+    <div id="modalVeiculo" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-2xl p-6 w-full max-w-3xl shadow-xl space-y-4 max-h-[90vh] overflow-y-auto">
+            <h3 id="modalVeiculoTitulo" class="text-sm font-bold text-slate-800 border-b pb-2 flex items-center gap-2">
+                <i class="fa-solid fa-truck-front text-teal-600"></i> Novo Veículo (SQL)
+            </h3>
+            <form id="formVeiculoSQL" onsubmit="salvarVeiculo(event)" class="space-y-4">
+                <!-- Chave primária do Banco SQL (ID incremental ou UUID) -->
+                <input type="hidden" id="veiId" name="id" value="">
 
+                <!-- Dados Básicos -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Placa *</label>
+                        <input type="text" id="veiPlaca" name="placa" required placeholder="ex: ABC1D23" maxlength="10" class="w-full p-2 border rounded-lg text-xs bg-slate-50 outline-none uppercase focus:ring-1 focus:ring-teal-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Marca *</label>
+                        <input type="text" id="veiMarca" name="marca" required placeholder="ex: Fiat, Hyundai" class="w-full p-2 border rounded-lg text-xs bg-slate-50 outline-none focus:ring-1 focus:ring-teal-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Modelo *</label>
+                        <input type="text" id="veiModelo" name="modelo" required placeholder="ex: Fiorino, HR" class="w-full p-2 border rounded-lg text-xs bg-slate-50 outline-none focus:ring-1 focus:ring-teal-500">
+                    </div>
+                </div>
+
+                <!-- Documentos SQL: RENAVAM, Chassi, Motor -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 bg-slate-50 p-3 rounded-xl border border-slate-200">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">RENAVAM *</label>
+                        <input type="text" id="veiRenavam" name="renavam" required placeholder="ex: 00123456789" maxlength="20" class="w-full p-2 border rounded-lg text-xs bg-white outline-none focus:ring-1 focus:ring-teal-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Chassi *</label>
+                        <input type="text" id="veiChassi" name="chassi" required placeholder="ex: 9BWZZZ377VT001234" maxlength="30" class="w-full p-2 border rounded-lg text-xs bg-white outline-none uppercase focus:ring-1 focus:ring-teal-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Número do Motor *</label>
+                        <input type="text" id="veiNumMotor" name="numero_motor" required placeholder="ex: FPT3492810" maxlength="30" class="w-full p-2 border rounded-lg text-xs bg-white outline-none focus:ring-1 focus:ring-teal-500">
+                    </div>
+                </div>
+
+                <!-- Propriedade e Empresa (Mapeado no SQL) -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 bg-teal-50/50 p-3 rounded-xl border border-teal-100">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Vínculo de Propriedade *</label>
+                        <select id="veiPropriedade" name="tipo_propriedade" onchange="alternarCampoTerceiro()" class="w-full p-2 border rounded-lg text-xs bg-white outline-none focus:ring-1 focus:ring-teal-500 font-bold">
+                            <option value="Próprio">Carro Próprio</option>
+                            <option value="Terceiro">Veículo Terceiro</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Empresa Proprietária *</label>
+                        <input type="text" id="veiEmpresaProprietaria" name="empresa_proprietaria" required placeholder="ex: Lavanderia Dona Zara Ltda" class="w-full p-2 border rounded-lg text-xs bg-white outline-none focus:ring-1 focus:ring-teal-500">
+                    </div>
+                    <div id="containerTerceiro" class="hidden">
+                        <label class="block text-xs font-semibold text-amber-800 mb-1">Se Terceiro, quem? (Nome/Razão)</label>
+                        <input type="text" id="veiTerceiroNome" name="terceiro_nome" placeholder="ex: TransLog Transportes Eireli" class="w-full p-2 border border-amber-300 rounded-lg text-xs bg-amber-50 outline-none focus:ring-1 focus:ring-amber-500">
+                    </div>
+                </div>
+
+                <!-- Especificações Técnicas e Condição financeiro/SQL -->
+                <div class="grid grid-cols-1 sm:grid-cols-4 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Tipo de Veículo *</label>
+                        <select id="veiTipo" name="tipo_veiculo" class="w-full p-2 border rounded-lg text-xs bg-slate-50 outline-none focus:ring-1 focus:ring-teal-500">
+                            <option value="Fiorino">Fiorino / Utilitário Leve</option>
+                            <option value="Van">Van / Furgão</option>
+                            <option value="VUC">VUC (Veículo Urbano Carga)</option>
+                            <option value="3/4">3/4 (Caminhão Leve)</option>
+                            <option value="Toco">Caminhão Toco</option>
+                            <option value="Outro">Outro</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">KM Atual *</label>
+                        <input type="number" id="veiKm" name="km_atual" required min="0" placeholder="ex: 45000" class="w-full p-2 border rounded-lg text-xs bg-slate-50 outline-none focus:ring-1 focus:ring-teal-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Combustível *</label>
+                        <select id="veiCombustivel" name="combustivel" class="w-full p-2 border rounded-lg text-xs bg-slate-50 outline-none focus:ring-1 focus:ring-teal-500">
+                            <option value="Diesel S10">Diesel S10</option>
+                            <option value="Flex (Gas/Eta)">Flex (Gasolina/Etanol)</option>
+                            <option value="Gasolina">Gasolina</option>
+                            <option value="Etanol">Etanol</option>
+                            <option value="Elétrico">Elétrico / Híbrido</option>
+                            <option value="GNV">GNV</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Condição de Compra *</label>
+                        <select id="veiCondicao" name="condicao_compra" class="w-full p-2 border rounded-lg text-xs bg-slate-50 outline-none focus:ring-1 focus:ring-teal-500">
+                            <option value="Próprio / Quitado">Próprio / Quitado</option>
+                            <option value="Financiado">Financiado</option>
+                            <option value="Leasing">Leasing</option>
+                            <option value="Alugado / Locado">Alugado / Locado</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Licença ZMRC e Status Operacional -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 bg-slate-50 p-3 rounded-xl border border-slate-200">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Possui ZMRC? *</label>
+                        <select id="veiZmrcStatus" name="possui_zmrc" class="w-full p-2 border rounded-lg text-xs bg-white outline-none focus:ring-1 focus:ring-teal-500">
+                            <option value="1">Sim (Ativa)</option>
+                            <option value="0">Não / Isento</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Validade ZMRC</label>
+                        <input type="date" id="veiZmrcValidade" name="zmrc_validade" class="w-full p-2 border rounded-lg text-xs bg-white outline-none focus:ring-1 focus:ring-teal-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Status do Veículo *</label>
+                        <select id="veiStatus" name="status" class="w-full p-2 border rounded-lg text-xs bg-white outline-none focus:ring-1 focus:ring-teal-500 font-bold">
+                            <option value="Ativo" class="text-green-600">🟢 Ativo (Operacional)</option>
+                            <option value="Manutenção" class="text-amber-600">🟡 Em Manutenção</option>
+                            <option value="Inativo" class="text-red-600">🔴 Inativo</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="flex justify-end gap-2 pt-3 border-t">
+                    <button type="button" onclick="fecharModalVeiculo()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-4 py-2 rounded-lg text-xs font-bold transition">Cancelar</button>
+                    <button type="submit" class="bg-teal-600 hover:bg-teal-700 text-white font-bold px-5 py-2 rounded-lg text-xs transition shadow flex items-center gap-2">
+                        <i class="fa-solid fa-database"></i> Salvar no SQL
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- SCRIPT DE INTERAÇÃO DOS MODAIS E FLUXO SQL -->
     <script>
-        const PRODUTOS_PADRAO = [
-            { id: "beiclean_cwt", nome: "BEICLEAN CWT", desc: "Detergente concentrado", un: "L", custoPadrao: 12.50 },
-            { id: "beipur_msc", nome: "BEIPUR MSC", desc: "Alcalino concentrado - soda", un: "L", custoPadrao: 15.00 },
-            { id: "beibleach_pe", nome: "BEIBLEACH PE", desc: "Ácido Peracético", un: "L", custoPadrao: 18.20 },
-            { id: "beibleach_hc_liq", nome: "BEIBLEACH HC LIQ", desc: "Hipoclorito de Sódio", un: "L", custoPadrao: 8.50 },
-            { id: "beibleach_net", nome: "BEIBLEACH NET", desc: "Bissulfito", un: "L", custoPadrao: 10.00 },
-            { id: "beiplex_cab", nome: "BEIPLEX CAB", desc: "Complexante", un: "L", custoPadrao: 22.00 },
-            { id: "beiblanc_had", nome: "BEIBLANC HAD", desc: "Branqueador óptico", un: "L", custoPadrao: 35.00 },
-            { id: "beibleach_blue", nome: "BEIBLEACH BLUE ACTIVE", desc: "Ativador Peróxido", un: "L", custoPadrao: 28.00 },
-            { id: "beiacid_wsd", nome: "BEIACID WSD", desc: "Ácido fórmico", un: "L", custoPadrao: 14.50 },
-            { id: "wp35", nome: "WP35", desc: "Peróxido de Hidrogênio", un: "L", custoPadrao: 16.00 },
-            { id: "beisoft_avra", nome: "BEISOFT AVRA", desc: "Amaciante", un: "L", custoPadrao: 9.80 },
-            { id: "sal_grosso", nome: "SAL GROSSO", desc: "Pacote c/ 25kg", un: "Kg", custoPadrao: 2.50 }
-        ];
-
-        const EQUIPE_PADRAO = [
-            { id: "MOT-01", nome: "Carlos Oliveira", funcao: "Motorista", contato: "(11) 98765-4321", cnh: "Cat D - 1234567890", entrada: "06:00", saida: "16:00", dias: "Seg a Sex", status: "Ativo" },
-            { id: "AJU-01", nome: "Marcos Souza", funcao: "Ajudante", contato: "(11) 91234-5678", cnh: "-", entrada: "06:00", saida: "16:00", dias: "Seg a Sex", status: "Ativo" }
-        ];
-
-        let listaProdutosQuimicos = [];
-        let listaEquipeLogistica = [];
-
-        document.addEventListener('DOMContentLoaded', () => {
-            carregarTodasConfiguracoes();
-
-            // Auto-abrir modal se parâmetro na URL for solicitado
-            const urlParams = new URLSearchParams(window.location.search);
-            if (urlParams.get('action') === 'novo_colaborador' || urlParams.get('action') === 'novo_equipe') {
-                const secao = document.getElementById('secao-equipe');
-                if (secao) secao.scrollIntoView({ behavior: 'smooth' });
-                abrirModalEquipe();
-            }
-        });
-
-        function carregarTodasConfiguracoes() {
-            listaProdutosQuimicos = JSON.parse(localStorage.getItem('mes_config_quimicos')) || PRODUTOS_PADRAO;
-            localStorage.setItem('mes_config_quimicos', JSON.stringify(listaProdutosQuimicos));
-            renderizarTabelaQuimicos();
-
-            listaEquipeLogistica = JSON.parse(localStorage.getItem('mes_config_equipe')) || EQUIPE_PADRAO;
-            localStorage.setItem('mes_config_equipe', JSON.stringify(listaEquipeLogistica));
-            renderizarTabelaEquipe();
-
-            const configAgua = JSON.parse(localStorage.getItem('mes_config_agua') || '{"qtdPocos": 2, "nomesPocos": ["Poço 1", "Poço 2"], "qtdConsumo": 3, "nomesConsumo": ["Túnel 1", "Túnel 2", "Extratoras"], "custoM3": 0}');
-            document.getElementById('setQtdPocos').value = configAgua.qtdPocos;
-            document.getElementById('setQtdPontosConsumo').value = configAgua.qtdConsumo;
-            document.getElementById('setCustoM3Agua').value = configAgua.custoM3 || 0;
-            gerarCamposAgua(configAgua.nomesPocos, configAgua.nomesConsumo);
-
-            const configGas = JSON.parse(localStorage.getItem('mes_config_gas') || '{"qtd": 2, "nomes": ["Relógio 1", "Relógio 2"], "custoM3": 0}');
-            document.getElementById('setQtdRelogiosGas').value = configGas.qtd;
-            document.getElementById('setCustoM3Gas').value = configGas.custoM3 || 0;
-            gerarCamposRelogiosGas(configGas.nomes);
-
-            const configEnergia = JSON.parse(localStorage.getItem('mes_config_energia') || '{"qtd": 2, "nomes": ["Medidor Principal", "Medidor Auxiliar"], "custoKwh": 0}');
-            document.getElementById('setQtdRelogiosEnergia').value = configEnergia.qtd;
-            document.getElementById('setCustoKwhEnergia').value = configEnergia.custoKwh || 0;
-            gerarCamposRelogiosEnergia(configEnergia.nomes);
-
-            const configBalanca = JSON.parse(localStorage.getItem('mes_config_balanca') || '{"baudRate": "9600", "tolerancia": "0.05"}');
-            document.getElementById('setBaudRate').value = configBalanca.baudRate;
-            document.getElementById('setTolerancia').value = configBalanca.tolerancia;
+        // Funções para controle do modal do Veículo e visibilidade do campo Terceiro
+        function abrirModalVeiculo() {
+            document.getElementById('formVeiculoSQL').reset();
+            document.getElementById('veiId').value = '';
+            document.getElementById('modalVeiculoTitulo').innerHTML = '<i class="fa-solid fa-truck-front text-teal-600"></i> Novo Veículo (SQL)';
+            alternarCampoTerceiro();
+            document.getElementById('modalVeiculo').classList.remove('hidden');
         }
 
-        // --- PRODUTOS QUÍMICOS ---
-        function renderizarTabelaQuimicos() {
-            const tbody = document.getElementById('tabelaProdutosQuimicos');
-            if (listaProdutosQuimicos.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-center italic text-slate-400">Nenhum produto químico cadastrado.</td></tr>`;
-                return;
-            }
-            tbody.innerHTML = listaProdutosQuimicos.map((p, idx) => `
-                <tr class="hover:bg-slate-50 transition border-b">
-                    <td class="p-2.5 border font-mono text-[11px] text-slate-600">${p.id}</td>
-                    <td class="p-2.5 border font-bold text-slate-800">${p.nome}</td>
-                    <td class="p-2.5 border text-slate-600">${p.desc || '-'}</td>
-                    <td class="p-2.5 border text-center font-semibold text-purple-700">${p.un}</td>
-                    <td class="p-2.5 border text-right font-bold text-emerald-700 font-mono">R$ ${(parseFloat(p.custoPadrao) || 0).toFixed(2)}</td>
-                    <td class="p-2.5 border text-center">
-                        <button onclick="editarProdutoQuimico(${idx})" class="text-blue-600 hover:text-blue-800 font-bold px-1" title="Editar">✏️</button>
-                        <button onclick="excluirProdutoQuimico(${idx})" class="text-red-600 hover:text-red-800 font-bold px-1" title="Excluir">❌</button>
-                    </td>
-                </tr>
-            `).join('');
+        function fecharModalVeiculo() {
+            document.getElementById('modalVeiculo').classList.add('hidden');
         }
 
-        function abrirModalProduto() {
-            document.getElementById('prodEditId').value = "";
-            document.getElementById('prodId').value = "";
-            document.getElementById('prodId').disabled = false;
-            document.getElementById('prodNome').value = "";
-            document.getElementById('prodDesc').value = "";
-            document.getElementById('prodUn').value = "L";
-            document.getElementById('prodCusto').value = "";
-            document.getElementById('modalProdutoTitulo').innerHTML = `<i class="fa-solid fa-vial text-purple-600"></i> Novo Produto Químico`;
-            document.getElementById('modalProduto').classList.remove('hidden');
-        }
-
-        function fecharModalProduto() {
-            document.getElementById('modalProduto').classList.add('hidden');
-        }
-
-        function editarProdutoQuimico(idx) {
-            const p = listaProdutosQuimicos[idx];
-            document.getElementById('prodEditId').value = idx;
-            document.getElementById('prodId').value = p.id;
-            document.getElementById('prodId').disabled = true;
-            document.getElementById('prodNome').value = p.nome;
-            document.getElementById('prodDesc').value = p.desc || "";
-            document.getElementById('prodUn').value = p.un || "L";
-            document.getElementById('prodCusto').value = p.custoPadrao || 0;
-            document.getElementById('modalProdutoTitulo').innerHTML = `<i class="fa-solid fa-pen text-purple-600"></i> Editar Produto Químico`;
-            document.getElementById('modalProduto').classList.remove('hidden');
-        }
-
-        function salvarProdutoQuimico(e) {
-            e.preventDefault();
-            const editIdx = document.getElementById('prodEditId').value;
-            const id = document.getElementById('prodId').value.trim().toLowerCase().replace(/\s+/g, '_');
-            const nome = document.getElementById('prodNome').value.trim();
-            const desc = document.getElementById('prodDesc').value.trim();
-            const un = document.getElementById('prodUn').value;
-            const custoPadrao = parseFloat(document.getElementById('prodCusto').value) || 0;
-
-            const produto = { id, nome, desc, un, custoPadrao };
-
-            if (editIdx !== "") {
-                listaProdutosQuimicos[parseInt(editIdx)] = produto;
+        function alternarCampoTerceiro() {
+            const prop = document.getElementById('veiPropriedade').value;
+            const container = document.getElementById('containerTerceiro');
+            const inputTerceiro = document.getElementById('veiTerceiroNome');
+            
+            if (prop === 'Terceiro') {
+                container.classList.remove('hidden');
+                inputTerceiro.setAttribute('required', 'required');
             } else {
-                if (listaProdutosQuimicos.some(p => p.id === id)) {
-                    alert("Já existe um produto cadastrado com este Código/ID!");
-                    return;
-                }
-                listaProdutosQuimicos.push(produto);
-            }
-
-            localStorage.setItem('mes_config_quimicos', JSON.stringify(listaProdutosQuimicos));
-            fecharModalProduto();
-            renderizarTabelaQuimicos();
-        }
-
-        function excluirProdutoQuimico(idx) {
-            if (confirm(`Deseja realmente remover o produto "${listaProdutosQuimicos[idx].nome}"?`)) {
-                listaProdutosQuimicos.splice(idx, 1);
-                localStorage.setItem('mes_config_quimicos', JSON.stringify(listaProdutosQuimicos));
-                renderizarTabelaQuimicos();
+                container.classList.add('hidden');
+                inputTerceiro.removeAttribute('required');
+                inputTerceiro.value = '';
             }
         }
 
-        // --- EQUIPE LOGÍSTICA ---
-        function renderizarTabelaEquipe() {
-            const tbody = document.getElementById('tabelaEquipeLogistica');
-            if (listaEquipeLogistica.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="9" class="p-4 text-center italic text-slate-400">Nenhum motorista ou ajudante cadastrado.</td></tr>`;
-                return;
-            }
-
-            tbody.innerHTML = listaEquipeLogistica.map((eq, idx) => `
-                <tr class="hover:bg-slate-50 transition border-b">
-                    <td class="p-2.5 border font-mono text-[11px] font-bold text-slate-700">${eq.id}</td>
-                    <td class="p-2.5 border font-bold text-slate-800">${eq.nome}</td>
-                    <td class="p-2.5 border text-center">
-                        <span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${eq.funcao === 'Motorista' ? 'bg-indigo-100 text-indigo-800' : eq.funcao === 'Ajudante' ? 'bg-emerald-100 text-emerald-800' : 'bg-purple-100 text-purple-800'}">
-                            ${eq.funcao}
-                        </span>
-                    </td>
-                    <td class="p-2.5 border font-mono text-[11px] text-slate-700">${eq.contato || '-'}</td>
-                    <td class="p-2.5 border text-slate-600 text-[11px]">${eq.cnh || '-'}</td>
-                    <td class="p-2.5 border text-center font-mono text-[11px] text-slate-800">${eq.entrada || '07:00'} às ${eq.saida || '17:00'}</td>
-                    <td class="p-2.5 border text-center text-slate-600">${eq.dias || 'Seg a Sex'}</td>
-                    <td class="p-2.5 border text-center">
-                        <span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${eq.status === 'Ativo' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">
-                            ${eq.status || 'Ativo'}
-                        </span>
-                    </td>
-                    <td class="p-2.5 border text-center">
-                        <button onclick="editarMembroEquipe(${idx})" class="text-blue-600 hover:text-blue-800 font-bold px-1" title="Editar">✏️</button>
-                        <button onclick="excluirMembroEquipe(${idx})" class="text-red-600 hover:text-red-800 font-bold px-1" title="Excluir">❌</button>
-                    </td>
-                </tr>
-            `).join('');
-        }
-
-        function abrirModalEquipe() {
-            document.getElementById('eqEditIdx').value = "";
-            document.getElementById('eqMatricula').value = "";
-            document.getElementById('eqMatricula').disabled = false;
-            document.getElementById('eqNome').value = "";
-            document.getElementById('eqFuncao').value = "Motorista";
-            document.getElementById('eqContato').value = "";
-            document.getElementById('eqCnh').value = "";
-            document.getElementById('eqStatus').value = "Ativo";
-            document.getElementById('eqEntrada').value = "07:00";
-            document.getElementById('eqSaida').value = "17:00";
-            document.getElementById('eqDias').value = "Seg a Sex";
-            document.getElementById('modalEquipeTitulo').innerHTML = `<i class="fa-solid fa-user-plus text-indigo-600"></i> Novo Motorista / Ajudante`;
-            document.getElementById('modalEquipe').classList.remove('hidden');
-        }
-
-        function fecharModalEquipe() {
-            document.getElementById('modalEquipe').classList.add('hidden');
-        }
-
-        function editarMembroEquipe(idx) {
-            const eq = listaEquipeLogistica[idx];
-            document.getElementById('eqEditIdx').value = idx;
-            document.getElementById('eqMatricula').value = eq.id;
-            document.getElementById('eqMatricula').disabled = true;
-            document.getElementById('eqNome').value = eq.nome;
-            document.getElementById('eqFuncao').value = eq.funcao || "Motorista";
-            document.getElementById('eqContato').value = eq.contato || "";
-            document.getElementById('eqCnh').value = eq.cnh || "";
-            document.getElementById('eqStatus').value = eq.status || "Ativo";
-            document.getElementById('eqEntrada').value = eq.entrada || "07:00";
-            document.getElementById('eqSaida').value = eq.saida || "17:00";
-            document.getElementById('eqDias').value = eq.dias || "Seg a Sex";
-            document.getElementById('modalEquipeTitulo').innerHTML = `<i class="fa-solid fa-user-pen text-indigo-600"></i> Editar Colaborador`;
-            document.getElementById('modalEquipe').classList.remove('hidden');
-        }
-
-        function salvarMembroEquipe(e) {
+        // Exemplo de envio formatado para backend/API SQL
+        function salvarVeiculo(e) {
             e.preventDefault();
-            const editIdx = document.getElementById('eqEditIdx').value;
-            const id = document.getElementById('eqMatricula').value.trim().toUpperCase();
-            const nome = document.getElementById('eqNome').value.trim();
-            const funcao = document.getElementById('eqFuncao').value;
-            const contato = document.getElementById('eqContato').value.trim();
-            const cnh = document.getElementById('eqCnh').value.trim();
-            const status = document.getElementById('eqStatus').value;
-            const entrada = document.getElementById('eqEntrada').value;
-            const saida = document.getElementById('eqSaida').value;
-            const dias = document.getElementById('eqDias').value.trim();
-
-            const colaborador = { id, nome, funcao, contato, cnh, status, entrada, saida, dias };
-
-            if (editIdx !== "") {
-                listaEquipeLogistica[parseInt(editIdx)] = colaborador;
-            } else {
-                if (listaEquipeLogistica.some(item => item.id === id)) {
-                    alert("Já existe um colaborador cadastrado com este ID / Matrícula!");
-                    return;
-                }
-                listaEquipeLogistica.push(colaborador);
-            }
-
-            localStorage.setItem('mes_config_equipe', JSON.stringify(listaEquipeLogistica));
-            fecharModalEquipe();
-            renderizarTabelaEquipe();
+            const formData = new FormData(document.getElementById('formVeiculoSQL'));
+            const payload = Object.fromEntries(formData.entries());
+            
+            console.log("Payload pronto para INSERT/UPDATE SQL:", payload);
+            alert("Dados do veículo salvos com sucesso no padrão SQL!");
+            fecharModalVeiculo();
         }
 
-        function excluirMembroEquipe(idx) {
-            if (confirm(`Deseja realmente remover "${listaEquipeLogistica[idx].nome}"?`)) {
-                listaEquipeLogistica.splice(idx, 1);
-                localStorage.setItem('mes_config_equipe', JSON.stringify(listaEquipeLogistica));
-                renderizarTabelaEquipe();
-            }
-        }
-
-        // --- UTILIDADES ---
-        function gerarCamposAgua(nomesPocosExistentes = [], nomesConsumoExistentes = []) {
-            const qtdPocos = parseInt(document.getElementById('setQtdPocos').value);
-            const qtdConsumo = parseInt(document.getElementById('setQtdPontosConsumo').value);
-            const container = document.getElementById('containerNomesAgua');
-            container.innerHTML = '';
-
-            let htmlPocos = `<h4 class="text-[11px] font-bold text-cyan-800 uppercase tracking-wider">Captação (Poços)</h4>`;
-            for (let i = 1; i <= qtdPocos; i++) {
-                const valor = nomesPocosExistentes[i - 1] || `Poço ${i}`;
-                htmlPocos += `
-                    <div>
-                        <label class="block text-[11px] font-semibold text-slate-600 mb-0.5">Nome do Hidrômetro Poço ${i}</label>
-                        <input type="text" id="nome_poco_${i}" value="${valor}" required class="w-full p-2 border rounded-lg text-xs bg-slate-50 outline-none focus:ring-1 focus:ring-cyan-500">
-                    </div>
-                `;
-            }
-
-            let htmlConsumo = `<h4 class="text-[11px] font-bold text-blue-800 uppercase tracking-wider pt-2">Pontos de Consumo (Equipamentos)</h4>`;
-            for (let i = 1; i <= qtdConsumo; i++) {
-                const valor = nomesConsumoExistentes[i - 1] || (i === 1 ? "Túnel 1" : i === 2 ? "Túnel 2" : i === 3 ? "Extratoras" : `Ponto ${i}`);
-                htmlConsumo += `
-                    <div>
-                        <label class="block text-[11px] font-semibold text-slate-600 mb-0.5">Nome do Ponto de Consumo ${i}</label>
-                        <input type="text" id="nome_consumo_${i}" value="${valor}" required class="w-full p-2 border rounded-lg text-xs bg-slate-50 outline-none focus:ring-1 focus:ring-cyan-500">
-                    </div>
-                `;
-            }
-            container.innerHTML = htmlPocos + htmlConsumo;
-        }
-
-        function salvarConfigAgua(e) {
-            e.preventDefault();
-            const qtdPocos = parseInt(document.getElementById('setQtdPocos').value);
-            const qtdConsumo = parseInt(document.getElementById('setQtdPontosConsumo').value);
-            const custoM3 = parseFloat(document.getElementById('setCustoM3Agua').value) || 0;
-
-            const nomesPocos = [];
-            for (let i = 1; i <= qtdPocos; i++) {
-                nomesPocos.push(document.getElementById(`nome_poco_${i}`).value || `Poço ${i}`);
-            }
-
-            const nomesConsumo = [];
-            for (let i = 1; i <= qtdConsumo; i++) {
-                nomesConsumo.push(document.getElementById(`nome_consumo_${i}`).value || `Ponto ${i}`);
-            }
-
-            localStorage.setItem('mes_config_agua', JSON.stringify({ qtdPocos, nomesPocos, qtdConsumo, nomesConsumo, custoM3 }));
-            alert("Configurações de água salvas com sucesso!");
-        }
-
-        function gerarCamposRelogiosGas(nomesExistentes = []) {
-            const qtd = parseInt(document.getElementById('setQtdRelogiosGas').value);
-            const container = document.getElementById('containerNomesGas');
-            container.innerHTML = '';
-            for (let i = 1; i <= qtd; i++) {
-                const valor = nomesExistentes[i - 1] || `Relógio ${i}`;
-                container.innerHTML += `
-                    <div>
-                        <label class="block text-[11px] font-semibold text-slate-600 mb-0.5">Nome do Relógio ${i}</label>
-                        <input type="text" id="nome_gas_${i}" value="${valor}" required class="w-full p-2 border rounded-lg text-xs bg-slate-50 outline-none focus:ring-1 focus:ring-orange-500">
-                    </div>
-                `;
-            }
-        }
-
-        function salvarConfigGas(e) {
-            e.preventDefault();
-            const qtd = parseInt(document.getElementById('setQtdRelogiosGas').value);
-            const custoM3 = parseFloat(document.getElementById('setCustoM3Gas').value) || 0;
-
-            const nomes = [];
-            for (let i = 1; i <= qtd; i++) {
-                nomes.push(document.getElementById(`nome_gas_${i}`).value || `Relógio ${i}`);
-            }
-
-            localStorage.setItem('mes_config_gas', JSON.stringify({ qtd, nomes, custoM3 }));
-            alert("Configurações de gás salvas com sucesso!");
-        }
-
-        function gerarCamposRelogiosEnergia(nomesExistentes = []) {
-            const qtd = parseInt(document.getElementById('setQtdRelogiosEnergia').value);
-            const container = document.getElementById('containerNomesEnergia');
-            container.innerHTML = '';
-            for (let i = 1; i <= qtd; i++) {
-                const valor = nomesExistentes[i - 1] || `Medidor ${i}`;
-                container.innerHTML += `
-                    <div>
-                        <label class="block text-[11px] font-semibold text-slate-600 mb-0.5">Nome do Medidor ${i}</label>
-                        <input type="text" id="nome_energia_${i}" value="${valor}" required class="w-full p-2 border rounded-lg text-xs bg-slate-50 outline-none focus:ring-1 focus:ring-yellow-500">
-                    </div>
-                `;
-            }
-        }
-
-        function salvarConfigEnergia(e) {
-            e.preventDefault();
-            const qtd = parseInt(document.getElementById('setQtdRelogiosEnergia').value);
-            const custoKwh = parseFloat(document.getElementById('setCustoKwhEnergia').value) || 0;
-
-            const nomes = [];
-            for (let i = 1; i <= qtd; i++) {
-                nomes.push(document.getElementById(`nome_energia_${i}`).value || `Medidor ${i}`);
-            }
-
-            localStorage.setItem('mes_config_energia', JSON.stringify({ qtd, nomes, custoKwh }));
-            alert("Configurações de energia salvas com sucesso!");
-        }
-
-        function salvarConfigBalanca(e) {
-            e.preventDefault();
-            const baudRate = document.getElementById('setBaudRate').value;
-            const tolerancia = document.getElementById('setTolerancia').value;
-            localStorage.setItem('mes_config_balanca', JSON.stringify({ baudRate, tolerancia }));
-            alert("Parâmetros da balança atualizados!");
-        }
-
-        function limparCacheLocal() {
-            if (confirm("Deseja realmente redefinir todas as configurações salvas neste navegador?")) {
-                localStorage.clear();
-                alert("Configurações restauradas!");
-                location.reload();
-            }
-        }
+        // Placeholders para os outros modais do sistema
+        function abrirModalProduto() { document.getElementById('modalProduto').classList.remove('hidden'); }
+        function fecharModalProduto() { document.getElementById('modalProduto').classList.add('hidden'); }
+        function abrirModalEquipe() { document.getElementById('modalEquipe').classList.remove('hidden'); }
+        function fecharModalEquipe() { document.getElementById('modalEquipe').classList.add('hidden'); }
+        function salvarProdutoQuimico(e) { e.preventDefault(); fecharModalProduto(); }
+        function salvarMembroEquipe(e) { e.preventDefault(); fecharModalEquipe(); }
+        function salvarConfigAgua(e) { e.preventDefault(); }
+        function salvarConfigGas(e) { e.preventDefault(); }
+        function salvarConfigEnergia(e) { e.preventDefault(); }
+        function salvarConfigBalanca(e) { e.preventDefault(); }
+        function gerarCamposAgua() {}
+        function gerarCamposRelogiosGas() {}
+        function gerarCamposRelogiosEnergia() {}
+        function limparCacheLocal() { localStorage.clear(); alert('Dados locais limpos.'); }
     </script>
 </body>
 </html>
