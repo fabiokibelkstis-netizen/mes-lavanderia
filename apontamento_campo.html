@@ -27,7 +27,7 @@
         </div>
     </header>
 
-    <!-- CONTEÚDO PRINCIPAL (CONTAINER MOBILE) -->
+    <!-- CONTEÚDO PRINCIPAL -->
     <main class="max-w-md mx-auto w-full p-4 space-y-4">
 
         <form id="formApontamento" onsubmit="enviarApontamentoWhatsApp(event)" class="space-y-4">
@@ -38,15 +38,15 @@
                     <i class="fa-solid fa-users text-emerald-600"></i> Equipe e Local
                 </h2>
 
-                <!-- SELEÇÃO DE CLIENTE CADASTRADO -->
+                <!-- CLIENTE PRÉ-CADASTRADO -->
                 <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1">Cliente *</label>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Cliente (Pré-cadastrado) *</label>
                     <select id="cliente" required class="w-full p-3 border rounded-xl text-xs bg-slate-50 outline-none focus:ring-2 focus:ring-emerald-500 font-bold text-slate-800">
                         <option value="">Carregando clientes...</option>
                     </select>
                 </div>
 
-                <!-- SELEÇÃO DE MOTORISTA E AJUDANTE CADASTRADOS -->
+                <!-- MOTORISTA E AJUDANTE PRÉ-CADASTRADOS -->
                 <div class="grid grid-cols-2 gap-2">
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 mb-1">Motorista *</label>
@@ -146,91 +146,125 @@
         Dona Zara Logística &copy; 2026 - Apontamento de Campo
     </footer>
 
-    <!-- SCRIPT DE LÓGICA, CARREGAMENTO E WHATSAPP -->
+    <!-- SCRIPT CORRIGIDO DE CARREGAMENTO RESILIENTE -->
     <script>
-        const API_BASE = '/api';
-
         document.addEventListener('DOMContentLoaded', async () => {
             await carregarClientesCadastrados();
             await carregarEquipeConfigurada();
         });
 
-        /* 1. CARREGAR CLIENTES CADASTRADOS NOS DIVERSOS BANCOS / LOCALSTORAGE */
+        // Função auxiliar para procurar dados em múltiplos locais de localStorage
+        function obterDadosStorage(chaves) {
+            for (let chave of chaves) {
+                try {
+                    const item = localStorage.getItem(chave);
+                    if (item) {
+                        const parsed = JSON.parse(item);
+                        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+                    }
+                } catch (e) {}
+            }
+            return null;
+        }
+
+        /* 1. CARREGAR CLIENTES */
         async function carregarClientesCadastrados() {
-            let listaClientes = [];
+            let lista = null;
 
+            // Tentativa via API backend com Timeout
             try {
-                const res = await fetch(`${API_BASE}/clientes`);
-                if (res.ok) listaClientes = await res.json();
-            } catch (err) {}
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 1000);
+                const res = await fetch('/api/clientes', { signal: controller.signal });
+                if (res.ok) lista = await res.json();
+                clearTimeout(timeoutId);
+            } catch (e) {}
 
-            if (!listaClientes || listaClientes.length === 0) {
-                listaClientes = JSON.parse(localStorage.getItem('mes_config_clientes')) || 
-                                JSON.parse(localStorage.getItem('mes_clientes')) || 
-                                JSON.parse(localStorage.getItem('mes_cadastro_clientes')) || 
-                                JSON.parse(localStorage.getItem('clientes')) || 
-                                JSON.parse(localStorage.getItem('cad_clientes')) || [
-                    { id: 1, nomeFantasia: "Hospital São Luiz" },
-                    { id: 2, nomeFantasia: "Hotel Unique" },
-                    { id: 3, nomeFantasia: "Restaurante Fasano" },
-                    { id: 4, nomeFantasia: "Hospital Albert Einstein" },
-                    { id: 5, nomeFantasia: "Maternidade Pro Matre" }
+            // Se API não responder, busca em todas as chaves comuns de localStorage
+            if (!lista || !Array.isArray(lista) || lista.length === 0) {
+                lista = obterDadosStorage([
+                    'mes_config_clientes', 'mes_clientes', 'mes_cadastro_clientes',
+                    'clientes', 'cad_clientes', 'lista_clientes'
+                ]) || [
+                    { id: 1, nome: "Hospital São Luiz" },
+                    { id: 2, nome: "Hotel Unique" },
+                    { id: 3, nome: "Restaurante Fasano" },
+                    { id: 4, nome: "Hospital Albert Einstein" },
+                    { id: 5, nome: "Maternidade Pro Matre" }
                 ];
             }
 
-            const selectCliente = document.getElementById('cliente');
-            selectCliente.innerHTML = '<option value="">-- Selecione o Cliente --</option>';
+            const select = document.getElementById('cliente');
+            select.innerHTML = '<option value="">-- Selecione o Cliente --</option>';
 
-            listaClientes.forEach(c => {
-                const nomeExibicao = typeof c === 'string' 
+            lista.forEach(c => {
+                const nome = typeof c === 'string' 
                     ? c 
-                    : (c.nomeFantasia || c.nome_fantasia || c.nome || c.razaoSocial || c.razao_social || c.cliente || `Cliente #${c.id}`);
+                    : (c.nomeFantasia || c.nome_fantasia || c.nome || c.razaoSocial || c.razao_social || c.cliente || c.descricao || '');
 
-                selectCliente.innerHTML += `<option value="${nomeExibicao}">${nomeExibicao}</option>`;
+                if (nome) {
+                    select.innerHTML += `<option value="${nome}">${nome}</option>`;
+                }
             });
         }
 
-        /* 2. CARREGAR EQUIPE (MOTORISTAS E AJUDANTES) DAS CONFIGURAÇÕES */
+        /* 2. CARREGAR MOTORISTAS E AJUDANTES */
         async function carregarEquipeConfigurada() {
-            let listaEquipe = [];
+            let lista = null;
 
+            // Tentativa via API backend com Timeout
             try {
-                const res = await fetch(`${API_BASE}/equipe-logistica`);
-                if (res.ok) listaEquipe = await res.json();
-            } catch (err) {}
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 1000);
+                const res = await fetch('/api/equipe-logistica', { signal: controller.signal });
+                if (res.ok) lista = await res.json();
+                clearTimeout(timeoutId);
+            } catch (e) {}
 
-            if (!listaEquipe || listaEquipe.length === 0) {
-                listaEquipe = JSON.parse(localStorage.getItem('mes_config_equipe')) || 
-                              JSON.parse(localStorage.getItem('mes_equipe')) || [
-                    { id: 1, nome: 'João da Silva', funcao: 'Motorista', status: 'Ativo' },
-                    { id: 2, nome: 'Carlos Souza', funcao: 'Ajudante', status: 'Ativo' },
-                    { id: 3, nome: 'Marcos Oliveira', funcao: 'Motorista/Ajudante', status: 'Ativo' }
+            // Se API não responder, busca em todas as chaves comuns de localStorage
+            if (!lista || !Array.isArray(lista) || lista.length === 0) {
+                lista = obterDadosStorage([
+                    'mes_config_equipe', 'mes_equipe', 'equipe',
+                    'mes_funcionarios', 'funcionarios', 'motoristas'
+                ]) || [
+                    { id: 1, nome: 'João da Silva', funcao: 'Motorista' },
+                    { id: 2, nome: 'Carlos Souza', funcao: 'Ajudante' },
+                    { id: 3, nome: 'Marcos Oliveira', funcao: 'Motorista' }
                 ];
             }
 
-            const selectMotorista = document.getElementById('motorista');
-            const selectAjudante = document.getElementById('ajudante');
+            const selMot = document.getElementById('motorista');
+            const selAjud = document.getElementById('ajudante');
 
-            selectMotorista.innerHTML = '<option value="">-- Selecione Motorista --</option>';
-            selectAjudante.innerHTML = '<option value="">-- Sem Ajudante --</option>';
+            selMot.innerHTML = '<option value="">-- Selecione Motorista --</option>';
+            selAjud.innerHTML = '<option value="">-- Sem Ajudante --</option>';
 
-            listaEquipe.filter(e => e.status === 'Ativo' || !e.status).forEach(m => {
-                const nome = m.nome || m.nomeCompleto || m.funcionario;
-                const funcao = m.funcao || 'Motorista';
+            lista.forEach(e => {
+                const nome = typeof e === 'string' 
+                    ? e 
+                    : (e.nome || e.nomeCompleto || e.nome_completo || e.funcionario || e.motorista || e.ajudante || '');
 
-                if (funcao.includes('Motorista') || !m.funcao) {
-                    selectMotorista.innerHTML += `<option value="${nome}">${nome}</option>`;
+                if (!nome) return;
+
+                const func = typeof e === 'object' ? (e.funcao || e.cargo || e.tipo || '').toLowerCase() : '';
+                const status = typeof e === 'object' ? (e.status || e.situacao || 'ativo').toLowerCase() : 'ativo';
+
+                if (status.includes('inativ')) return; // Filtra inativos
+
+                // Se não houver função definida, inclui em ambos para garantir exibição
+                if (!func || func.includes('motorista') || func.includes('ambos') || func.includes('geral')) {
+                    selMot.innerHTML += `<option value="${nome}">${nome}</option>`;
                 }
-                if (funcao.includes('Ajudante') || funcao.includes('Motorista') || !m.funcao) {
-                    selectAjudante.innerHTML += `<option value="${nome}">${nome}</option>`;
+                if (!func || func.includes('ajudante') || func.includes('motorista') || func.includes('ambos') || func.includes('geral')) {
+                    selAjud.innerHTML += `<option value="${nome}">${nome}</option>`;
                 }
             });
 
-            // Restaura últimas seleções gravadas no dispositivo
+            // Restaura últimas escolhas salvas no dispositivo
             const mSalvo = localStorage.getItem('ultimo_motorista');
             const aSalvo = localStorage.getItem('ultimo_ajudante');
-            if (mSalvo) selectMotorista.value = mSalvo;
-            if (aSalvo) selectAjudante.value = aSalvo;
+            if (mSalvo && selMot.querySelector(`option[value="${mSalvo}"]`)) selMot.value = mSalvo;
+            if (aSalvo && selAjud.querySelector(`option[value="${aSalvo}"]`)) selAjud.value = aSalvo;
         }
 
         function preencherHora(idCampo) {
@@ -264,11 +298,29 @@
             const osColetadas = document.getElementById('osColetadas').value.trim();
             const obs = document.getElementById('observacoes').value.trim() || 'Nenhuma.';
 
-            // Armazena motorista e ajudante no dispositivo
+            // Salva último motorista e ajudante no dispositivo
             localStorage.setItem('ultimo_motorista', motorista);
             localStorage.setItem('ultimo_ajudante', ajudante);
 
-            // Montagem da mensagem estruturada para o WhatsApp
+            // Grava o lançamento no histórico local para alimentar a tela index.html
+            const historico = JSON.parse(localStorage.getItem('mes_historico_coleta_entrega') || '[]');
+            const novoLancamento = {
+                data: new Date().toISOString().split('T')[0],
+                cliente,
+                motorista,
+                ajudante,
+                horaChegada,
+                horaSaida,
+                gaiolasEntregues: parseInt(gaiolasEntregues) || 0,
+                osEntregues,
+                gaiolasColetadas: parseInt(gaiolasColetadas) || 0,
+                osColetadas,
+                obs
+            };
+            historico.push(novoLancamento);
+            localStorage.setItem('mes_historico_coleta_entrega', JSON.stringify(historico));
+
+            // Envio formatado para WhatsApp
             const textoMensagem = 
 `🚚 *APONTAMENTO LOGÍSTICA - DONA ZARA*
 --------------------------------
