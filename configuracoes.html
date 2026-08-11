@@ -250,7 +250,7 @@
                 </button>
             </div>
             <p class="text-xs text-slate-500">
-                Gerencie a frota de veículos integrada ao Banco de Dados SQL (RENAVAM, Chassi, Motor, Propriedade, Condição de Compra, ZMRC e Status Operacional).
+                Gerencie a frota de veículos integrada ao Banco de Dados SQL (RENAVAM, Chassi, Motor, Propriedade, Condição de Compra, Capacidade de Gaiolas/Sacos, ZMRC e Status Operacional).
             </p>
 
             <div class="overflow-x-auto">
@@ -266,6 +266,7 @@
                             <th class="p-2.5 border text-center">Condição Compra</th>
                             <th class="p-2.5 border text-right">KM Atual</th>
                             <th class="p-2.5 border text-center">Combustível</th>
+                            <th class="p-2.5 border text-center">Capacidade (Gaiolas / Sacos)</th>
                             <th class="p-2.5 border text-center">ZMRC</th>
                             <th class="p-2.5 border text-center">Status</th>
                             <th class="p-2.5 border text-center">Ações</th>
@@ -480,6 +481,22 @@
                             <option value="Leasing">Leasing</option>
                             <option value="Alugado / Locado">Alugado / Locado</option>
                         </select>
+                    </div>
+                </div>
+
+                <!-- CAMPO ACRESCENTADO: CAPACIDADE DE GAIOLAS E SACOS -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 bg-teal-50/30 p-3 rounded-xl border border-teal-200">
+                    <div>
+                        <label class="block text-xs font-semibold text-teal-900 mb-1">
+                            <i class="fa-solid fa-boxes-stacked mr-1"></i> Qtd. Gaiolas
+                        </label>
+                        <input type="number" id="veiQtdGaiolas" name="qtd_gaiolas" min="0" placeholder="ex: 8" class="w-full p-2 border rounded-lg text-xs bg-white outline-none focus:ring-1 focus:ring-teal-500 font-bold">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-teal-900 mb-1">
+                            <i class="fa-solid fa-bag-shopping mr-1"></i> Qtd. Sacos
+                        </label>
+                        <input type="number" id="veiQtdSacos" name="qtd_sacos" min="0" placeholder="ex: 50" class="w-full p-2 border rounded-lg text-xs bg-white outline-none focus:ring-1 focus:ring-teal-500 font-bold">
                     </div>
                 </div>
 
@@ -998,7 +1015,7 @@
             tbody.innerHTML = '';
 
             if (!veiculos || veiculos.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="12" class="p-4 text-center text-slate-400">Nenhum veículo cadastrado.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="13" class="p-4 text-center text-slate-400">Nenhum veículo cadastrado.</td></tr>`;
                 return;
             }
 
@@ -1009,6 +1026,9 @@
 
                 const proprietario = v.tipo_propriedade === 'Terceiro' ? (v.terceiro_nome || 'Terceiro') : v.empresa_proprietaria;
                 const docText = `REN: ${v.renavam || '-'}<br>CHS: ${v.chassi || '-'}<br>MOT: ${v.numero_motor || '-'}`;
+
+                const gaiolas = v.qtd_gaiolas !== undefined && v.qtd_gaiolas !== '' ? v.qtd_gaiolas : 0;
+                const sacos = v.qtd_sacos !== undefined && v.qtd_sacos !== '' ? v.qtd_sacos : 0;
 
                 tbody.innerHTML += `
                     <tr class="border-b hover:bg-slate-50 transition">
@@ -1021,6 +1041,7 @@
                         <td class="p-2.5 text-center">${v.condicao_compra}</td>
                         <td class="p-2.5 text-right font-bold">${v.km_atual} km</td>
                         <td class="p-2.5 text-center">${v.combustivel}</td>
+                        <td class="p-2.5 text-center font-bold text-teal-900">${gaiolas} g / ${sacos} s</td>
                         <td class="p-2.5 text-center font-bold">${(v.possui_zmrc == '1' || v.possui_zmrc === true) ? 'Sim' : 'Não'}</td>
                         <td class="p-2.5 text-center">${stBadge}</td>
                         <td class="p-2.5 text-center space-x-2">
@@ -1035,6 +1056,8 @@
         function abrirModalVeiculo() {
             document.getElementById('formVeiculoSQL').reset();
             document.getElementById('veiId').value = '';
+            document.getElementById('veiQtdGaiolas').value = '';
+            document.getElementById('veiQtdSacos').value = '';
             document.getElementById('modalVeiculoTitulo').innerHTML = '<i class="fa-solid fa-truck-front text-teal-600"></i> Novo Veículo (SQL)';
             alternarCampoTerceiro();
             document.getElementById('modalVeiculo').classList.remove('hidden');
@@ -1077,6 +1100,8 @@
             document.getElementById('veiKm').value = v.km_atual;
             document.getElementById('veiCombustivel').value = v.combustivel;
             document.getElementById('veiCondicao').value = v.condicao_compra;
+            document.getElementById('veiQtdGaiolas').value = v.qtd_gaiolas !== undefined ? v.qtd_gaiolas : '';
+            document.getElementById('veiQtdSacos').value = v.qtd_sacos !== undefined ? v.qtd_sacos : '';
             document.getElementById('veiZmrcStatus').value = v.possui_zmrc ? '1' : '0';
             document.getElementById('veiZmrcValidade').value = v.zmrc_validade || '';
             document.getElementById('veiStatus').value = v.status;
