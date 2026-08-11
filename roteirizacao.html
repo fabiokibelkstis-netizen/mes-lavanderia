@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MES - Plano de Roteirização | Lavanderia Dona Zara</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body class="bg-slate-100 font-sans min-h-screen flex flex-col justify-between">
+
+    <!-- CABEÇALHO -->
+    <header class="bg-slate-900 text-white p-4 shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto flex flex-wrap justify-between items-center gap-4">
+            <div class="flex items-center gap-3">
+                <div class="bg-slate-800 border border-slate-700 p-2.5 rounded-xl text-amber-400 shadow">
+                    <i class="fa-solid fa-route text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold tracking-wider">MES - Plano de Roteirização</h1>
+                    <p class="text-xs text-slate-400">Montagem de Rotas, Capacidade de Gaiolas e Ocupação da Frota</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-2">
+                <a href="cadastro_clientes.html" class="bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold px-3 py-2 rounded-xl border border-slate-700 transition flex items-center gap-2">
+                    <i class="fa-solid fa-users text-amber-400"></i> Cadastrar Clientes
+                </a>
+                <a href="configuracoes.html" class="bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold px-3 py-2 rounded-xl border border-slate-700 transition flex items-center gap-2">
+                    <i class="fa-solid fa-gear"></i> Configurações
+                </a>
+                <a href="index.html" class="bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs font-bold px-4 py-2 rounded-xl transition flex items-center gap-2">
+                    <i class="fa-solid fa-arrow-left"></i> Dashboard
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- CONTEÚDO PRINCIPAL -->
+    <main class="max-w-7xl mx-auto w-full p-4 my-4 grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+        <!-- PAINEL ESQUERDO: FORMULÁRIO DE CRIAÇÃO DA ROTA -->
+        <section class="lg:col-span-5 bg-white p-6 rounded-2xl shadow-md border border-slate-200 space-y-5">
+            <div class="border-b pb-3 flex justify-between items-center">
+                <h2 class="text-sm font-bold text-slate-800 flex items-center gap-2">
+                    <i class="fa-solid fa-pen-to-square text-indigo-600"></i>
+                    Montar Rota de Logística
+                </h2>
+                <span id="badgeModoForm" class="text-[10px] font-bold px-2 py-0.5 rounded bg-blue-100 text-blue-800">Nova Rota</span>
+            </div>
+
+            <form id="formRoteirizacao" onsubmit="salvarPlanoRota(event)" class="space-y-4">
+                <input type="hidden" id="rotaId" value="">
+
+                <!-- NÚMERO DA ROTA E ESCALA -->
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Nº da Rota *</label>
+                        <input type="text" id="numRota" required placeholder="ex: ROTA 01 - ZONA SUL" class="w-full p-2 border rounded-lg text-xs bg-slate-50 outline-none focus:ring-1 focus:ring-indigo-500 font-bold">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Escala *</label>
+                        <input type="text" id="escalaRota" required placeholder="ex: Seg a Sáb / Diário" class="w-full p-2 border rounded-lg text-xs bg-slate-50 outline-none focus:ring-1 focus:ring-indigo-500">
+                    </div>
+                </div>
+
+                <!-- SELEÇÃO DE VEÍCULO -->
+                <div class="bg-indigo-50/50 p-3 rounded-xl border border-indigo-100 space-y-2">
+                    <label class="block text-xs font-bold text-indigo-900 flex items-center gap-1">
+                        <i class="fa-solid fa-truck"></i> Seleção de Veículo (Configurações)
+                    </label>
+                    <select id="selectVeiculo" onchange="atualizarDadosVeiculo()" required class="w-full p-2 border rounded-lg text-xs bg-white outline-none focus:ring-1 focus:ring-indigo-500 font-semibold">
+                        <option value="">-- Selecione o Veículo --</option>
+                    </select>
+                    
+                    <!-- DADOS AUTOMÁTICOS DO CARRO -->
+                    <div class="grid grid-cols-3 gap-2 text-[11px] pt-1 text-slate-600">
+                        <div><span class="block text-[10px] font-bold text-slate-400">DONO:</span> <span id="infoDonoCarro" class="font-semibold text-slate-800">-</span></div>
+                        <div><span class="block text-[10px] font-bold text-slate-400">PLACA:</span> <span id="infoPlacaCarro" class="font-bold text-indigo-700">-</span></div>
+                        <div><span class="block text-[10px] font-bold text-slate-400">CAPAC. GAIOLAS:</span> <span id="infoCapacidadeCarro" class="font-bold text-slate-800">0</span></div>
+                    </div>
+                </div>
+
+                <!-- MOTORISTA E AJUDANTE -->
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Motorista *</label>
+                        <select id="selectMotorista" required class="w-full p-2 border rounded-lg text-xs bg-slate-50 outline-none focus:ring-1 focus:ring-indigo-500">
+                            <option value="">-- Selecione --</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Ajudante</label>
+                        <select id="selectAjudante" class="w-full p-2 border rounded-lg text-xs bg-slate-50 outline-none focus:ring-1 focus:ring-indigo-500">
+                            <option value="">-- Sem Ajudante --</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- HORÁRIOS -->
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Saída da Planta *</label>
+                        <input type="time" id="horaSaida" required value="06:00" class="w-full p-2 border rounded-lg text-xs bg-slate-50 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Horário Retorno *</label>
+                        <input type="time" id="horaRetorno" required value="16:00" class="w-full p-2 border rounded-lg text-xs bg-slate-50 outline-none">
+                    </div>
+                </div>
+
+                <!-- DIAS DE COLETA E ENTREGA -->
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Dias de Coleta e Entrega *</label>
+                    <input type="text" id="diasColetaEntrega" required placeholder="ex: Seg / Qua / Sex" class="w-full p-2 border rounded-lg text-xs bg-slate-50 outline-none">
+                </div>
+
+                <!-- SELEÇÃO DINÂMICA DE CLIENTES DO CADASTRO E GAIOLAS -->
+                <div class="border-t pt-3 space-y-3">
+                    <div class="flex justify-between items-center">
+                        <label class="text-xs font-bold text-slate-800 flex items-center gap-1">
+                            <i class="fa-solid fa-users text-slate-600"></i> Seleção de Clientes (Cadastro) e Gaiolas
+                        </label>
+                        <button type="button" onclick="adicionarLinhaCliente()" class="bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-[11px] font-bold px-2.5 py-1 rounded-lg border border-indigo-200 transition">
+                            ➕ Cliente
+                        </button>
+                    </div>
+
+                    <div id="containerClientes" class="space-y-2 max-h-48 overflow-y-auto pr-1">
+                        <!-- Linhas dinâmicas carregadas com os clientes cadastrados -->
+                    </div>
+                </div>
+
+                <!-- OBSERVAÇÕES -->
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Observações da Rota</label>
+                    <textarea id="obsRota" rows="2" placeholder="Informações adicionais, janelas de atendimento ou restrições de ZMRC..." class="w-full p-2 border rounded-lg text-xs bg-slate-50 outline-none"></textarea>
+                </div>
+
+                <!-- BOTÕES DE AÇÃO -->
+                <div class="flex gap-2 pt-2 border-t">
+                    <button type="button" onclick="limparFormulario()" class="w-1/3 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold py-2.5 rounded-xl text-xs transition">
+                        Limpar
+                    </button>
+                    <button type="submit" class="w-2/3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 rounded-xl text-xs transition shadow flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-floppy-disk"></i> Salvar Plano de Rota
+                    </button>
+                </div>
+            </form>
+        </section>
+
+        <!-- PAINEL DIREITO: VISUALIZAÇÃO EM TEMPO REAL E ROTAS SALVAS -->
+        <section class="lg:col-span-7 space-y-6">
+            
+            <!-- PRÉ-VISUALIZAÇÃO DO MODELO EM ANEXO -->
+            <div class="bg-white p-6 rounded-2xl shadow-md border border-slate-200 space-y-4">
+                <div class="flex justify-between items-center border-b pb-2">
+                    <h3 class="text-sm font-bold text-slate-800 flex items-center gap-2">
+                        <i class="fa-solid fa-eye text-cyan-600"></i>
+                        Pré-visualização do Plano de Rota
+                    </h3>
+                    <span class="text-[11px] text-slate-400 italic">Layout Padrão Operacional</span>
+                </div>
+
+                <!-- MODELO ESTRUTURADO VERTICAL -->
+                <div class="max-w-md mx-auto border-2 border-slate-800 rounded-lg overflow-hidden bg-slate-50 text-xs shadow-md">
+                    
+                    <div class="bg-slate-200 border-b border-slate-800 p-2 text-center font-bold text-slate-900 uppercase">
+                        <span class="text-[10px] block text-slate-500 font-normal">DONO DO CARRO</span>
+                        <span id="pvDonoCarro" class="text-xs">--</span>
+                    </div>
+
+                    <div class="border-b border-slate-800 p-2 text-center font-bold text-slate-900 uppercase bg-white">
+                        <span class="text-[10px] block text-slate-500 font-normal">MOTORISTA</span>
+                        <span id="pvMotorista" class="text-xs text-indigo-900">--</span>
+                    </div>
+
+                    <div class="bg-slate-200 border-b border-slate-800 p-2 text-center font-bold text-slate-900 uppercase">
+                        <span class="text-[10px] block text-slate-500 font-normal">AJUDANTE</span>
+                        <span id="pvAjudante" class="text-xs">--</span>
+                    </div>
+
+                    <div class="border-b border-slate-800 p-2 text-center font-bold text-slate-900 uppercase bg-white">
+                        <span class="text-[10px] block text-slate-500 font-normal">ESCALA</span>
+                        <span id="pvEscala" class="text-xs">--</span>
+                    </div>
+
+                    <div class="bg-slate-200 border-b border-slate-800 p-2 text-center font-bold text-slate-900 uppercase">
+                        <span class="text-[10px] block text-slate-500 font-normal">QUANTIDADE DE GAIOLAS CARRO</span>
+                        <span id="pvCapacidadeCarro" class="text-sm text-blue-900 font-black">0</span>
+                    </div>
+
+                    <div class="border-b border-slate-800 p-2 text-center font-bold text-slate-900 uppercase bg-white">
+                        <span class="text-[10px] block text-slate-500 font-normal">PLACAS</span>
+                        <span id="pvPlaca" class="text-xs font-mono font-bold tracking-wider">--</span>
+                    </div>
+
+                    <div class="bg-slate-200 border-b border-slate-800 p-2 text-center font-bold text-slate-900 uppercase">
+                        <span class="text-[10px] block text-slate-500 font-normal">HORÁRIO DE SAÍDA DA PLANTA</span>
+                        <span id="pvSaida" class="text-xs">--:--</span>
+                    </div>
+
+                    <div class="border-b border-slate-800 p-2 text-center font-bold text-slate-900 uppercase bg-white">
+                        <span class="text-[10px] block text-slate-500 font-normal">HORÁRIO DE RETORNO</span>
+                        <span id="pvRetorno" class="text-xs">--:--</span>
+                    </div>
+
+                    <div class="bg-slate-200 border-b border-slate-800 p-2 text-center font-bold text-slate-900 uppercase">
+                        <span class="text-[10px] block text-slate-500 font-normal">QUANTIDADE DE GAIOLAS ROTA</span>
+                        <span id="pvGaiolasRota" class="text-sm text-purple-900 font-black">0</span>
+                    </div>
+
+                    <div class="border-b border-slate-800 p-2 text-center font-bold uppercase bg-white flex flex-col items-center">
+                        <span class="text-[10px] block text-slate-500 font-normal">TAXA DE OCUPAÇÃO ROTA</span>
+                        <div class="flex items-center gap-2 mt-0.5">
+                            <span id="pvTaxaOcupacao" class="text-sm font-black text-slate-800">0%</span>
+                            <div class="w-24 bg-slate-200 h-2 rounded-full overflow-hidden border">
+                                <div id="pvBarraOcupacao" class="bg-indigo-600 h-full w-0 transition-all duration-300"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-200 border-b border-slate-800 p-2 text-center font-bold text-slate-900 uppercase">
+                        <span class="text-[10px] block text-slate-500 font-normal">DIAS DE COLETA E ENTREGA</span>
+                        <span id="pvDias" class="text-xs">--</span>
+                    </div>
+
+                    <div class="border-b border-slate-800 p-2 text-center font-bold text-slate-900 bg-white min-h-[40px]">
+                        <span class="text-[10px] block text-slate-500 font-normal uppercase">OBSERVAÇÕES</span>
+                        <span id="pvObs" class="text-[11px] font-normal normal-case italic text-slate-600">--</span>
+                    </div>
+
+                    <!-- BLOCO DE CLIENTES DA ROTA -->
+                    <div class="p-3 bg-indigo-50/40 text-center">
+                        <span class="text-xs font-bold text-indigo-950 uppercase tracking-wider block border-b border-indigo-200 pb-1 mb-2">Clientes da Rota</span>
+                        <div id="pvListaClientes" class="space-y-1 text-left text-[11px]">
+                            <p class="text-center text-slate-400 italic">Nenhum cliente adicionado</p>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- TABELA DE PLANOS DE ROTEIRIZAÇÃO SALVOS -->
+            <div class="bg-white p-6 rounded-2xl shadow-md border border-slate-200 space-y-4">
+                <div class="flex justify-between items-center border-b pb-2">
+                    <h3 class="text-sm font-bold text-slate-800 flex items-center gap-2">
+                        <i class="fa-solid fa-list-check text-indigo-600"></i>
+                        Planos de Roteirização Cadastrados
+                    </h3>
+                    <span id="totalRotasBadge" class="bg-slate-100 text-slate-700 text-xs font-bold px-2.5 py-0.5 rounded-full border">0 Rotas</span>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs border-collapse">
+                        <thead class="bg-slate-100 text-slate-700">
+                            <tr>
+                                <th class="p-2.5 border">Rota / Escala</th>
+                                <th class="p-2.5 border">Veículo / Placa</th>
+                                <th class="p-2.5 border">Equipe (Mot / Ajud)</th>
+                                <th class="p-2.5 border text-center">Horários</th>
+                                <th class="p-2.5 border text-center">Gaiolas (Carro / Rota)</th>
+                                <th class="p-2.5 border text-center">Ocupação</th>
+                                <th class="p-2.5 border text-center">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabelaPlanosRotas">
+                            <!-- Inserido dinamicamente -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </section>
+
+    </main>
+
+    <footer class="bg-slate-900 text-slate-400 text-xs text-center p-4 border-t border-slate-800">
+        Lavanderia Dona Zara &copy; 2026 - Módulo MES de Roteirização e Logística
+    </footer>
+
+    <!-- SCRIPT DE INTEGRAÇÃO COM CONFIGURAÇÕES E CLIENTES -->
+    <script>
+        const API_BASE = '/api';
+
+        let cacheClientes = [];
+        let cacheVeiculos = [];
+        let cacheEquipe = [];
+        let cachePlanos = [];
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Carrega em ordem os cadastros necessários
+            await carregarClientesCadastrados();
+            await carregarVeiculosConfigurados();
+            await carregarEquipeConfigurada();
+            await carregarPlanosRoteirizacao();
+
+            // Adiciona a primeira linha de cliente por padrão
+            adicionarLinhaCliente();
+
+            // Event Listeners para atualizar a pré-visualização em tempo real
+            document.querySelectorAll('#formRoteirizacao input, #formRoteirizacao select, #formRoteirizacao textarea').forEach(elem => {
+                elem.addEventListener('input', atualizarPreVisualizacao);
+                elem.addEventListener('change', atualizarPreVisualizacao);
+            });
+        });
+
+        /* 1. CARREGAR CLIENTES DE cadastro_clientes.html */
+        async function carregarClientesCadastrados() {
+            try {
+                const res = await fetch(`${API_BASE}/clientes`);
+                if (!res.ok) throw new Error();
+                cacheClientes = await res.json();
+            } catch (err) {
+                // Tenta buscar no localStorage do cadastro_clientes.html
+                cacheClientes = JSON.parse(localStorage.getItem('mes_config_clientes')) || 
+                                JSON.parse(localStorage.getItem('mes_clientes')) || [
+                    { id: 1, nomeFantasia: "Hospital São Luiz", razaoSocial: "Hospital São Luiz S.A." },
+                    { id: 2, nomeFantasia: "Hotel Unique", razaoSocial: "Hotel Unique Ltda" },
+                    { id: 3, nomeFantasia: "Restaurante Fasano", razaoSocial: "Fasano Gastronomia Ltda" },
+                    { id: 4, nomeFantasia: "Hospital Albert Einstein", razaoSocial: "Sociedade Beneficente Israelita" },
+                    { id: 5, nomeFantasia: "Maternidade Pro Matre", razaoSocial: "Pro Matre Paulista" }
+                ];
+            }
+        }
+
+        /* 2. ADICIONAR LINHA DE CLIENTE COM DROPDOWN DOS CLIENTES CADASTRADOS */
+        function adicionarLinhaCliente(nomeClienteSelecionado = '', qtdGaiolas = 1) {
+            const container = document.getElementById('containerClientes');
+            const idLinha = Date.now() + Math.random().toString(36).substring(2, 5);
+
+            // Monta as opções do <select> dinamicamente a partir de cacheClientes
+            let optionsHTML = '<option value="">-- Selecione o Cliente --</option>';
+            
+            if (cacheClientes.length === 0) {
+                optionsHTML = '<option value="">Nenhum cliente cadastrado em cadastro_clientes.html</option>';
+            } else {
+                cacheClientes.forEach(c => {
+                    const nomeExibicao = c.nomeFantasia || c.nome || c.razaoSocial;
+                    const isSelected = (nomeExibicao === nomeClienteSelecionado) ? 'selected' : '';
+                    optionsHTML += `<option value="${nomeExibicao}" ${isSelected}>${nomeExibicao}</option>`;
+                });
+            }
+
+            const html = `
+                <div id="linha_cliente_${idLinha}" class="flex items-center gap-2 bg-slate-50 p-2 rounded-lg border border-slate-200">
+                    <div class="flex-1">
+                        <select class="input-cliente-nome w-full p-1.5 border rounded text-xs bg-white outline-none font-semibold text-slate-800 focus:ring-1 focus:ring-indigo-500" onchange="atualizarPreVisualizacao()">
+                            ${optionsHTML}
+                        </select>
+                    </div>
+                    <div class="w-24 flex items-center gap-1">
+                        <input type="number" min="1" class="input-cliente-gaiolas w-full p-1.5 border rounded text-xs font-bold text-center bg-white outline-none focus:ring-1 focus:ring-indigo-500" value="${qtdGaiolas}" oninput="atualizarPreVisualizacao()" placeholder="Gaiolas">
+                        <span class="text-[10px] font-bold text-slate-400">G</span>
+                    </div>
+                    <button type="button" onclick="removerLinhaCliente('linha_cliente_${idLinha}')" class="text-red-500 hover:text-red-700 p-1" title="Remover Cliente">
+                        <i class="fa-solid fa-trash-can"></i>
+                    </button>
+                </div>
+            `;
+            container.insertAdjacentHTML('beforeend', html);
+            atualizarPreVisualizacao();
+        }
+
+        function removerLinhaCliente(id) {
+            const elem = document.getElementById(id);
+            if (elem) elem.remove();
+            atualizarPreVisualizacao();
+        }
+
+        /* 3. CARREGAR VEÍCULOS DAS CONFIGURAÇÕES */
+        async function carregarVeiculosConfigurados() {
+            try {
+                const res = await fetch(`${API_BASE}/veiculos`);
+                if (!res.ok) throw new Error();
+                cacheVeiculos = await res.json();
+            } catch (err) {
+                cacheVeiculos = JSON.parse(localStorage.getItem('mes_config_veiculos')) || [
+                    { id: 1, placa: 'ABC-1234', marca: 'Fiat', modelo: 'Fiorino', empresa_proprietaria: 'Dona Zara', tipo_propriedade: 'Próprio', capacidade_gaiolas: 6 },
+                    { id: 2, placa: 'XYZ-5678', marca: 'Hyundai', modelo: 'HR', empresa_proprietaria: 'TransLog Eireli', tipo_propriedade: 'Terceiro', terceiro_nome: 'TransLog', capacidade_gaiolas: 12 }
+                ];
+            }
+
+            const select = document.getElementById('selectVeiculo');
+            select.innerHTML = '<option value="">-- Selecione o Veículo --</option>';
+
+            cacheVeiculos.forEach(v => {
+                const capGaiolas = v.capacidade_gaiolas || (v.tipo_veiculo === 'Fiorino' ? 6 : v.tipo_veiculo === 'VUC' ? 12 : 10);
+                v.capacidade_gaiolas = capGaiolas;
+
+                const dono = v.tipo_propriedade === 'Terceiro' ? (v.terceiro_nome || 'Terceiro') : v.empresa_proprietaria;
+                select.innerHTML += `<option value="${v.id}">${v.placa} - ${v.modelo} (${dono}) [Capac: ${capGaiolas} G]</option>`;
+            });
+        }
+
+        function atualizarDadosVeiculo() {
+            const veiculoId = document.getElementById('selectVeiculo').value;
+            const veiculo = cacheVeiculos.find(v => v.id == veiculoId);
+
+            if (veiculo) {
+                const dono = veiculo.tipo_propriedade === 'Terceiro' ? (veiculo.terceiro_nome || 'Terceiro') : veiculo.empresa_proprietaria;
+                document.getElementById('infoDonoCarro').innerText = dono;
+                document.getElementById('infoPlacaCarro').innerText = veiculo.placa;
+                document.getElementById('infoCapacidadeCarro').innerText = veiculo.capacidade_gaiolas || 0;
+            } else {
+                document.getElementById('infoDonoCarro').innerText = '-';
+                document.getElementById('infoPlacaCarro').innerText = '-';
+                document.getElementById('infoCapacidadeCarro').innerText = '0';
+            }
+            atualizarPreVisualizacao();
+        }
+
+        /* 4. CARREGAR EQUIPE DAS CONFIGURAÇÕES */
+        async function carregarEquipeConfigurada() {
+            try {
+                const res = await fetch(`${API_BASE}/equipe-logistica`);
+                if (!res.ok) throw new Error();
+                cacheEquipe = await res.json();
+            } catch (err) {
+                cacheEquipe = JSON.parse(localStorage.getItem('mes_config_equipe')) || [
+                    { id: 1, nome: 'João da Silva', funcao: 'Motorista', status: 'Ativo' },
+                    { id: 2, nome: 'Carlos Souza', funcao: 'Ajudante', status: 'Ativo' },
+                    { id: 3, nome: 'Marcos Oliveira', funcao: 'Motorista/Ajudante', status: 'Ativo' }
+                ];
+            }
+
+            const selectMotorista = document.getElementById('selectMotorista');
+            const selectAjudante = document.getElementById('selectAjudante');
+
+            selectMotorista.innerHTML = '<option value="">-- Selecione --</option>';
+            selectAjudante.innerHTML = '<option value="">-- Sem Ajudante --</option>';
+
+            cacheEquipe.filter(e => e.status === 'Ativo').forEach(m => {
+                if (m.funcao.includes('Motorista')) {
+                    selectMotorista.innerHTML += `<option value="${m.nome}">${m.nome} (${m.funcao})</option>`;
+                }
+                if (m.funcao.includes('Ajudante') || m.funcao.includes('Motorista')) {
+                    selectAjudante.innerHTML += `<option value="${m.nome}">${m.nome} (${m.funcao})</option>`;
+                }
+            });
+        }
+
+        /* 5. ATUALIZAR PRÉ-VISUALIZAÇÃO EM TEMPO REAL */
+        function atualizarPreVisualizacao() {
+            const numRota = document.getElementById('numRota').value || '--';
+            const escala = document.getElementById('escalaRota').value || '--';
+            const motorista = document.getElementById('selectMotorista').value || '--';
+            const ajudante = document.getElementById('selectAjudante').value || 'NENHUM';
+            const horaSaida = document.getElementById('horaSaida').value || '--:--';
+            const horaRetorno = document.getElementById('horaRetorno').value || '--:--';
+            const dias = document.getElementById('diasColetaEntrega').value || '--';
+            const obs = document.getElementById('obsRota').value || 'Sem observações registradas.';
+
+            const veiculoId = document.getElementById('selectVeiculo').value;
+            const veiculo = cacheVeiculos.find(v => v.id == veiculoId);
+
+            const donoCarro = veiculo ? (veiculo.tipo_propriedade === 'Terceiro' ? (veiculo.terceiro_nome || 'Terceiro') : veiculo.empresa_proprietaria) : '--';
+            const placaCarro = veiculo ? veiculo.placa : '--';
+            const capacCarro = veiculo ? parseInt(veiculo.capacidade_gaiolas || 0) : 0;
+
+            // Calcular Gaiolas da Rota
+            let totalGaiolasRota = 0;
+            const listaClientes = [];
+
+            document.querySelectorAll('#containerClientes > div').forEach(row => {
+                const selectElem = row.querySelector('.input-cliente-nome');
+                const nome = selectElem ? selectElem.value.trim() : '';
+                const gaiolas = parseInt(row.querySelector('.input-cliente-gaiolas').value) || 0;
+
+                if (nome !== '') {
+                    listaClientes.push({ nome, gaiolas });
+                    totalGaiolasRota += gaiolas;
+                }
+            });
+
+            // Taxa de Ocupação
+            let taxaOcupacao = 0;
+            if (capacCarro > 0) {
+                taxaOcupacao = Math.round((totalGaiolasRota / capacCarro) * 100);
+            }
+
+            // Atualizar Card Visual
+            document.getElementById('pvDonoCarro').innerText = donoCarro;
+            document.getElementById('pvMotorista').innerText = motorista;
+            document.getElementById('pvAjudante').innerText = ajudante;
+            document.getElementById('pvEscala').innerText = escala;
+            document.getElementById('pvCapacidadeCarro').innerText = capacCarro;
+            document.getElementById('pvPlaca').innerText = placaCarro;
+            document.getElementById('pvSaida').innerText = horaSaida;
+            document.getElementById('pvRetorno').innerText = horaRetorno;
+            document.getElementById('pvGaiolasRota').innerText = totalGaiolasRota;
+            document.getElementById('pvTaxaOcupacao').innerText = `${taxaOcupacao}%`;
+            document.getElementById('pvDias').innerText = dias;
+            document.getElementById('pvObs').innerText = obs;
+
+            // Barra de Progresso da Taxa de Ocupação
+            const barra = document.getElementById('pvBarraOcupacao');
+            barra.style.width = `${Math.min(taxaOcupacao, 100)}%`;
+            if (taxaOcupacao > 100) {
+                barra.className = "bg-red-600 h-full transition-all duration-300";
+            } else if (taxaOcupacao >= 80) {
+                barra.className = "bg-green-600 h-full transition-all duration-300";
+            } else {
+                barra.className = "bg-indigo-600 h-full transition-all duration-300";
+            }
+
+            // Renderizar Lista de Clientes Selecionados no Card Visual
+            const divClientes = document.getElementById('pvListaClientes');
+            if (listaClientes.length === 0) {
+                divClientes.innerHTML = '<p class="text-center text-slate-400 italic">Nenhum cliente selecionado</p>';
+            } else {
+                divClientes.innerHTML = listaClientes.map(c => `
+                    <div class="flex justify-between items-center bg-white p-1.5 rounded border border-indigo-100 shadow-sm">
+                        <span class="font-bold text-slate-800"><i class="fa-solid fa-building text-[9px] text-indigo-500 mr-1"></i>${c.nome}</span>
+                        <span class="font-black text-indigo-900 bg-indigo-50 px-2 py-0.5 rounded text-[10px]">${c.gaiolas} Gaiolas</span>
+                    </div>
+                `).join('');
+            }
+        }
+
+        /* 6. SALVAR PLANO DE ROTEIRIZAÇÃO */
+        async function salvarPlanoRota(e) {
+            e.preventDefault();
+
+            const veiculoId = document.getElementById('selectVeiculo').value;
+            const veiculo = cacheVeiculos.find(v => v.id == veiculoId);
+            if (!veiculo) {
+                alert('Selecione um veículo válido!');
+                return;
+            }
+
+            const listaClientes = [];
+            let totalGaiolas = 0;
+            document.querySelectorAll('#containerClientes > div').forEach(row => {
+                const selectElem = row.querySelector('.input-cliente-nome');
+                const nome = selectElem ? selectElem.value.trim() : '';
+                const gaiolas = parseInt(row.querySelector('.input-cliente-gaiolas').value) || 0;
+                if (nome !== '') {
+                    listaClientes.push({ nome, gaiolas });
+                    totalGaiolas += gaiolas;
+                }
+            });
+
+            if (listaClientes.length === 0) {
+                alert('Selecione pelo menos um cliente cadastrado para montar a rota!');
+                return;
+            }
+
+            const capacCarro = parseInt(veiculo.capacidade_gaiolas || 0);
+            const taxaOcupacao = capacCarro > 0 ? Math.round((totalGaiolas / capacCarro) * 100) : 0;
+
+            const editId = document.getElementById('rotaId').value;
+            const payload = {
+                id: editId ? editId : Date.now().toString(),
+                numRota: document.getElementById('numRota').value.trim(),
+                escala: document.getElementById('escalaRota').value.trim(),
+                veiculoId: veiculo.id,
+                placa: veiculo.placa,
+                donoCarro: veiculo.tipo_propriedade === 'Terceiro' ? (veiculo.terceiro_nome || 'Terceiro') : veiculo.empresa_proprietaria,
+                capacidadeCarro: capacCarro,
+                motorista: document.getElementById('selectMotorista').value,
+                ajudante: document.getElementById('selectAjudante').value || 'NENHUM',
+                horaSaida: document.getElementById('horaSaida').value,
+                horaRetorno: document.getElementById('horaRetorno').value,
+                diasColetaEntrega: document.getElementById('diasColetaEntrega').value,
+                obs: document.getElementById('obsRota').value,
+                clientes: listaClientes,
+                totalGaiolasRota: totalGaiolas,
+                taxaOcupacao: taxaOcupacao
+            };
+
+            try {
+                await fetch(`${API_BASE}/roteirizacao`, {
+                    method: editId ? 'PUT' : 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+            } catch (err) {}
+
+            if (editId) {
+                const idx = cachePlanos.findIndex(p => p.id == editId);
+                if (idx !== -1) cachePlanos[idx] = payload;
+            } else {
+                cachePlanos.push(payload);
+            }
+
+            localStorage.setItem('mes_planos_roteirizacao', JSON.stringify(cachePlanos));
+
+            alert('Plano de Roteirização salvo com sucesso!');
+            limparFormulario();
+            renderizarTabelaPlanos();
+        }
+
+        /* 7. CARREGAR E RENDERIZAR PLANOS SALVOS */
+        async function carregarPlanosRoteirizacao() {
+            try {
+                const res = await fetch(`${API_BASE}/roteirizacao`);
+                if (!res.ok) throw new Error();
+                cachePlanos = await res.json();
+            } catch (err) {
+                cachePlanos = JSON.parse(localStorage.getItem('mes_planos_roteirizacao')) || [];
+            }
+            renderizarTabelaPlanos();
+        }
+
+        function renderizarTabelaPlanos() {
+            const tbody = document.getElementById('tabelaPlanosRotas');
+            tbody.innerHTML = '';
+
+            document.getElementById('totalRotasBadge').innerText = `${cachePlanos.length} Rota(s)`;
+
+            if (cachePlanos.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" class="p-4 text-center text-slate-400 italic">Nenhuma rota cadastrada até o momento.</td></tr>`;
+                return;
+            }
+
+            cachePlanos.forEach(p => {
+                let badgeClass = "bg-indigo-100 text-indigo-800";
+                if (p.taxaOcupacao > 100) badgeClass = "bg-red-100 text-red-800 font-bold";
+                else if (p.taxaOcupacao >= 80) badgeClass = "bg-green-100 text-green-800 font-bold";
+
+                tbody.innerHTML += `
+                    <tr class="border-b hover:bg-slate-50 transition">
+                        <td class="p-2.5">
+                            <span class="font-bold text-slate-800 block">${p.numRota}</span>
+                            <span class="text-[10px] text-slate-500">${p.escala}</span>
+                        </td>
+                        <td class="p-2.5">
+                            <span class="font-bold text-indigo-900 block">${p.placa}</span>
+                            <span class="text-[10px] text-slate-500">${p.donoCarro}</span>
+                        </td>
+                        <td class="p-2.5">
+                            <span class="font-semibold block text-slate-700">M: ${p.motorista}</span>
+                            <span class="text-[10px] text-slate-500">A: ${p.ajudante}</span>
+                        </td>
+                        <td class="p-2.5 text-center font-mono text-[11px]">
+                            ${p.horaSaida} ➔ ${p.horaRetorno}
+                        </td>
+                        <td class="p-2.5 text-center font-bold">
+                            <span class="text-slate-500">${p.capacidadeCarro}</span> / <span class="text-purple-900 font-black">${p.totalGaiolasRota} G</span>
+                        </td>
+                        <td class="p-2.5 text-center">
+                            <span class="px-2 py-0.5 rounded text-[10px] ${badgeClass}">${p.taxaOcupacao}%</span>
+                        </td>
+                        <td class="p-2.5 text-center space-x-1">
+                            <button onclick="editarPlano('${p.id}')" class="text-blue-600 hover:text-blue-800 p-1" title="Editar"><i class="fa-solid fa-pen"></i></button>
+                            <button onclick="excluirPlano('${p.id}')" class="text-red-600 hover:text-red-800 p-1" title="Excluir"><i class="fa-solid fa-trash"></i></button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        /* 8. EDIÇÃO E LIMPEZA */
+        function editarPlano(id) {
+            const p = cachePlanos.find(item => item.id == id);
+            if (!p) return;
+
+            document.getElementById('rotaId').value = p.id;
+            document.getElementById('numRota').value = p.numRota;
+            document.getElementById('escalaRota').value = p.escala;
+            document.getElementById('selectVeiculo').value = p.veiculoId;
+            atualizarDadosVeiculo();
+
+            document.getElementById('selectMotorista').value = p.motorista;
+            document.getElementById('selectAjudante').value = p.ajudante;
+            document.getElementById('horaSaida').value = p.horaSaida;
+            document.getElementById('horaRetorno').value = p.horaRetorno;
+            document.getElementById('diasColetaEntrega').value = p.diasColetaEntrega;
+            document.getElementById('obsRota').value = p.obs;
+
+            // Reconstruir clientes selecionados
+            document.getElementById('containerClientes').innerHTML = '';
+            if (p.clientes && p.clientes.length > 0) {
+                p.clientes.forEach(c => adicionarLinhaCliente(c.nome, c.gaiolas));
+            } else {
+                adicionarLinhaCliente();
+            }
+
+            document.getElementById('badgeModoForm').innerText = "Editando Rota";
+            document.getElementById('badgeModoForm').className = "text-[10px] font-bold px-2 py-0.5 rounded bg-amber-100 text-amber-800";
+            atualizarPreVisualizacao();
+        }
+
+        async function excluirPlano(id) {
+            if (!confirm('Deseja realmente remover esta rota?')) return;
+            try {
+                await fetch(`${API_BASE}/roteirizacao/${id}`, { method: 'DELETE' });
+            } catch (err) {}
+
+            cachePlanos = cachePlanos.filter(p => p.id != id);
+            localStorage.setItem('mes_planos_roteirizacao', JSON.stringify(cachePlanos));
+            renderizarTabelaPlanos();
+        }
+
+        function limparFormulario() {
+            document.getElementById('formRoteirizacao').reset();
+            document.getElementById('rotaId').value = '';
+            document.getElementById('containerClientes').innerHTML = '';
+            document.getElementById('badgeModoForm').innerText = "Nova Rota";
+            document.getElementById('badgeModoForm').className = "text-[10px] font-bold px-2 py-0.5 rounded bg-blue-100 text-blue-800";
+            atualizarDadosVeiculo();
+            adicionarLinhaCliente();
+        }
+    </script>
+</body>
+</html>
