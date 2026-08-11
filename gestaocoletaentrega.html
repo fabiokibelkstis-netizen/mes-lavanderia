@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MES - Gestão de Coletas e Entregas | Lavanderia Dona Zara</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body class="bg-slate-100 font-sans min-h-screen flex flex-col justify-between">
+
+    <!-- CABEÇALHO DA TELA -->
+    <header class="bg-slate-900 text-white p-4 shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto flex flex-wrap justify-between items-center gap-4">
+            <div class="flex items-center gap-3">
+                <div class="bg-emerald-600 p-2.5 rounded-xl text-white shadow">
+                    <i class="fa-solid fa-truck-ramp-box text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold tracking-wider">MES - Gestão de Coletas e Entregas</h1>
+                    <p class="text-xs text-slate-400">Acompanhamento de Atendimentos, Gaiolas e OSs de Campo</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-2">
+                <a href="apontamento_campo.html" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold px-4 py-2 rounded-xl transition flex items-center gap-2 shadow">
+                    <i class="fa-solid fa-plus-circle"></i> Novo Lançamento de Campo
+                </a>
+                <a href="index.html" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl text-xs font-bold transition flex items-center gap-2 border border-slate-700">
+                    <i class="fa-solid fa-arrow-left"></i> Menu Principal
+                </a>            
+            </div>
+        </div>
+    </header>
+
+    <!-- CONTEÚDO PRINCIPAL -->
+    <main class="max-w-7xl mx-auto w-full p-4 my-4 space-y-6">
+
+        <!-- PAINEL DE FILTROS -->
+        <div class="bg-white rounded-2xl shadow-md p-4 border border-slate-200 flex flex-wrap items-center justify-between gap-4">
+            <div class="flex items-center gap-2 text-slate-800 font-bold text-sm">
+                <i class="fa-solid fa-filter text-emerald-600"></i>
+                <span class="text-xs font-bold text-slate-700 uppercase tracking-wider">Período de Análise:</span>
+            </div>
+            <div class="flex flex-wrap items-center gap-3 text-xs w-full sm:w-auto">
+                <div class="flex items-center gap-2">
+                    <label class="text-slate-600 font-semibold">De:</label>
+                    <input type="date" id="filtroDataInicio" onchange="atualizarTela()" class="p-2 border rounded-lg bg-slate-50 outline-none focus:ring-2 focus:ring-emerald-500 font-medium">
+                </div>
+                <div class="flex items-center gap-2">
+                    <label class="text-slate-600 font-semibold">Até:</label>
+                    <input type="date" id="filtroDataFim" onchange="atualizarTela()" class="p-2 border rounded-lg bg-slate-50 outline-none focus:ring-2 focus:ring-emerald-500 font-medium">
+                </div>
+                <button onclick="definirUltimos7Dias()" class="bg-emerald-100 hover:bg-emerald-200 text-emerald-800 font-bold px-3 py-2 rounded-lg transition">
+                    Últimos 7 Dias
+                </button>
+                <button onclick="limparFiltroData()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold px-3 py-2 rounded-lg transition" title="Exibir todo o histórico">
+                    Exibir Todos
+                </button>
+            </div>
+        </div>
+
+        <!-- CARDS DE KPIS -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
+                <span class="text-xs font-bold text-slate-500 uppercase">Atendimentos Realizados</span>
+                <p id="kpiTotalAtendimentos" class="text-2xl font-black text-slate-800 mt-2">0</p>
+            </div>
+            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
+                <span class="text-xs font-bold text-slate-500 uppercase">Gaiolas Entregues (Limpa)</span>
+                <p id="kpiGaiolasEntregues" class="text-2xl font-black text-emerald-600 mt-2">0</p>
+            </div>
+            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
+                <span class="text-xs font-bold text-slate-500 uppercase">Gaiolas Coletadas (Suja)</span>
+                <p id="kpiGaiolasColetadas" class="text-2xl font-black text-blue-600 mt-2">0</p>
+            </div>
+            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
+                <span class="text-xs font-bold text-slate-500 uppercase">Balanço de Gaiolas (E / C)</span>
+                <p id="kpiBalancoGaiolas" class="text-2xl font-black text-slate-800 mt-2">0 / 0</p>
+            </div>
+        </div>
+
+        <!-- RESUMO POR MOTORISTA / EQUIPE -->
+        <div class="bg-white rounded-2xl shadow-md p-6 border border-slate-200">
+            <h3 class="text-sm font-bold text-slate-800 mb-4 border-b pb-2 flex items-center gap-2">
+                <i class="fa-solid fa-id-card-clip text-emerald-600"></i>
+                Resumo Operacional por Motorista
+            </h3>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-xs border-collapse">
+                    <thead class="bg-emerald-50 text-emerald-900">
+                        <tr>
+                            <th class="p-3 border border-emerald-200">Motorista</th>
+                            <th class="p-3 border border-emerald-200 text-center">Clientes Atendidos</th>
+                            <th class="p-3 border border-emerald-200 text-center">Gaiolas Entregues</th>
+                            <th class="p-3 border border-emerald-200 text-center">Gaiolas Coletadas</th>
+                            <th class="p-3 border border-emerald-200 text-center">Representatividade (% Atend.)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabelaResumoMotoristas"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- GRÁFICOS -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div class="lg:col-span-2 bg-white p-6 rounded-2xl shadow-md border border-slate-200">
+                <h3 class="text-sm font-bold text-slate-800 mb-4 flex items-center gap-2">
+                    <i class="fa-solid fa-chart-column text-emerald-600"></i>
+                    Evolução Diária de Movimentação de Gaiolas
+                </h3>
+                <div class="h-72">
+                    <canvas id="chartGaiolasBarra"></canvas>
+                </div>
+            </div>
+
+            <div class="bg-white p-6 rounded-2xl shadow-md border border-slate-200 flex flex-col justify-between">
+                <h3 class="text-sm font-bold text-slate-800 border-b pb-2 flex items-center gap-2">
+                    <i class="fa-solid fa-chart-pie text-emerald-600"></i>
+                    Atendimentos por Cliente (%)
+                </h3>
+                <div class="h-64 flex items-center justify-center my-auto">
+                    <canvas id="chartClientesRosca"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- HISTÓRICO COMPLETO DE LANÇAMENTOS -->
+        <div class="bg-white rounded-2xl shadow-md p-6 border border-slate-200">
+            <h3 class="text-sm font-bold text-slate-800 mb-4 border-b pb-2 flex justify-between items-center">
+                <span>Histórico de Lançamentos de Coleta e Entrega</span>
+                <span id="qtdRegistros" class="text-xs text-slate-500 font-normal">0 registro(s)</span>
+            </h3>
+            
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-xs border-collapse">
+                    <thead class="bg-slate-100 text-slate-700">
+                        <tr>
+                            <th class="p-3 border text-center">Data / Horário</th>
+                            <th class="p-3 border text-center">Cliente</th>
+                            <th class="p-3 border text-center">Equipe (Mot / Ajud)</th>
+                            <th class="p-3 border text-center">Entrega (Gaiolas / OS)</th>
+                            <th class="p-3 border text-center">Coleta (Gaiolas / OS)</th>
+                            <th class="p-3 border text-center">Observações</th>
+                            <th class="p-3 border text-center">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabelaHistoricoLogistica"></tbody>
+                </table>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- RODAPÉ -->
+    <footer class="bg-white border-t border-slate-200 p-4 text-center text-xs text-slate-500">
+        MES Dona Zara &copy; 2026 - Módulo de Gestão de Coletas e Entregas
+    </footer>
+
+    <!-- SCRIPT DE PROCESSAMENTO DOS DADOS -->
+    <script>
+        let rawHistorico = [];
+        let chartBarraInstance = null;
+        let chartRoscaInstance = null;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            carregarEProcessarDados();
+            definirUltimos7Dias();
+        });
+
+        /* CARREGA DADOS DO LOCALSTORAGE (OU MOCK INICIAL SE VAZIO) */
+        function carregarEProcessarDados() {
+            const saved = localStorage.getItem('mes_historico_coleta_entrega');
+            if (saved) {
+                rawHistorico = JSON.parse(saved);
+            } else {
+                // Dados demonstrativos padrão para a interface inicial
+                rawHistorico = [
+                    {
+                        data: '2026-08-10',
+                        cliente: 'Hospital São Luiz',
+                        motorista: 'João da Silva',
+                        ajudante: 'Carlos Souza',
+                        horaChegada: '08:15',
+                        horaSaida: '09:00',
+                        gaiolasEntregues: 4,
+                        osEntregues: '1024, 1025',
+                        gaiolasColetadas: 3,
+                        osColetadas: '8501, 8502',
+                        obs: 'Entrega efetuada com sucesso.'
+                    },
+                    {
+                        data: '2026-08-10',
+                        cliente: 'Hotel Unique',
+                        motorista: 'João da Silva',
+                        ajudante: 'Carlos Souza',
+                        horaChegada: '09:30',
+                        horaSaida: '10:10',
+                        gaiolasEntregues: 2,
+                        osEntregues: '1026',
+                        gaiolasColetadas: 2,
+                        osColetadas: '8503',
+                        obs: 'Sem ocorrências.'
+                    },
+                    {
+                        data: '2026-08-11',
+                        cliente: 'Restaurante Fasano',
+                        motorista: 'Marcos Oliveira',
+                        ajudante: 'NENHUM',
+                        horaChegada: '07:45',
+                        horaSaida: '08:20',
+                        gaiolasEntregues: 1,
+                        osEntregues: '1027',
+                        gaiolasColetadas: 1,
+                        osColetadas: '8504',
+                        obs: 'Aguardou liberação da doca por 10 min.'
+                    }
+                ];
+                localStorage.setItem('mes_historico_coleta_entrega', JSON.stringify(rawHistorico));
+            }
+        }
+
+        function definirUltimos7Dias() {
+            const hoje = new Date();
+            const seteDiasAtras = new Date();
+            seteDiasAtras.setDate(hoje.getDate() - 6);
+
+            document.getElementById('filtroDataFim').value = hoje.toISOString().split('T')[0];
+            document.getElementById('filtroDataInicio').value = seteDiasAtras.toISOString().split('T')[0];
+
+            atualizarTela();
+        }
+
+        function limparFiltroData() {
+            document.getElementById('filtroDataInicio').value = '';
+            document.getElementById('filtroDataFim').value = '';
+            atualizarTela();
+        }
+
+        function obterLancamentosFiltrados() {
+            const dtInicio = document.getElementById('filtroDataInicio').value;
+            const dtFim = document.getElementById('filtroDataFim').value;
+
+            return rawHistorico.filter(item => {
+                const dataItem = item.data;
+                if (dtInicio && dataItem < dtInicio) return false;
+                if (dtFim && dataItem > dtFim) return false;
+                return true;
+            });
+        }
+
+        function atualizarTela() {
+            const filtrados = obterLancamentosFiltrados();
+            renderizarKPIs(filtrados);
+            renderizarResumoMotoristas(filtrados);
+            renderizarTabelaHistorico(filtrados);
+            renderizarGraficoBarras(filtrados);
+            renderizarGraficoRosca(filtrados);
+        }
+
+        function renderizarKPIs(dados) {
+            const totalAtendimentos = dados.length;
+            const totalEntregues = dados.reduce((acc, l) => acc + (parseInt(l.gaiolasEntregues) || 0), 0);
+            const totalColetadas = dados.reduce((acc, l) => acc + (parseInt(l.gaiolasColetadas) || 0), 0);
+
+            document.getElementById('kpiTotalAtendimentos').innerText = totalAtendimentos;
+            document.getElementById('kpiGaiolasEntregues').innerText = `${totalEntregues} un`;
+            document.getElementById('kpiGaiolasColetadas').innerText = `${totalColetadas} un`;
+            document.getElementById('kpiBalancoGaiolas').innerText = `${totalEntregues} / ${totalColetadas}`;
+        }
+
+        function renderizarResumoMotoristas(dados) {
+            const tbody = document.getElementById('tabelaResumoMotoristas');
+            const totalAtendimentosGeral = dados.length;
+
+            const ag = {};
+
+            dados.forEach(i => {
+                const mot = i.motorista || 'Não Identificado';
+                if (!ag[mot]) ag[mot] = { qtd: 0, entregues: 0, coletadas: 0 };
+                ag[mot].qtd += 1;
+                ag[mot].entregues += (parseInt(i.gaiolasEntregues) || 0);
+                ag[mot].coletadas += (parseInt(i.gaiolasColetadas) || 0);
+            });
+
+            const keys = Object.keys(ag);
+            if (keys.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" class="p-3 text-center italic text-slate-400">Nenhum atendimento registrado no período.</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = keys.map(m => {
+                const item = ag[m];
+                const pct = totalAtendimentosGeral > 0 ? (item.qtd / totalAtendimentosGeral) * 100 : 0;
+                return `
+                    <tr class="hover:bg-slate-50 border-b">
+                        <td class="p-2.5 font-semibold text-slate-800">${m}</td>
+                        <td class="p-2.5 text-center text-slate-600 font-bold">${item.qtd}</td>
+                        <td class="p-2.5 text-center font-bold text-emerald-600">${item.entregues} un</td>
+                        <td class="p-2.5 text-center font-bold text-blue-600">${item.coletadas} un</td>
+                        <td class="p-2.5 text-center font-semibold text-slate-700">${pct.toFixed(1)}%</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function renderizarTabelaHistorico(dados) {
+            const tbody = document.getElementById('tabelaHistoricoLogistica');
+            document.getElementById('qtdRegistros').innerText = `${dados.length} registro(s)`;
+
+            if (dados.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" class="p-4 text-center italic text-slate-400">Nenhum lançamento no período selecionado.</td></tr>';
+                return;
+            }
+
+            const ordenadosInvertidos = [...dados].reverse();
+
+            tbody.innerHTML = ordenadosInvertidos.map((item, idx) => {
+                const indexOriginal = dados.indexOf(item);
+                const dataFmt = new Date(item.data + 'T00:00:00').toLocaleDateString('pt-BR');
+                const horarioFmt = `${item.horaChegada || '--:--'} às ${item.horaSaida || '--:--'}`;
+
+                return `
+                    <tr class="hover:bg-slate-50 transition border-b">
+                        <td class="p-3 text-center font-medium text-slate-800">
+                            <div>${dataFmt}</div>
+                            <div class="text-[10px] text-slate-400 font-normal">${horarioFmt}</div>
+                        </td>
+                        <td class="p-3 text-center font-bold text-slate-800">${item.cliente}</td>
+                        <td class="p-3 text-center text-slate-600">
+                            <div class="font-semibold text-slate-700">${item.motorista}</div>
+                            <div class="text-[10px] text-slate-400">Ajudante: ${item.ajudante || 'Nenhum'}</div>
+                        </td>
+                        <td class="p-3 text-center">
+                            <span class="font-bold text-emerald-600">${item.gaiolasEntregues || 0} Gaiola(s)</span>
+                            <div class="text-[10px] text-slate-500">OS: ${item.osEntregues || '-'}</div>
+                        </td>
+                        <td class="p-3 text-center">
+                            <span class="font-bold text-blue-600">${item.gaiolasColetadas || 0} Gaiola(s)</span>
+                            <div class="text-[10px] text-slate-500">OS: ${item.osColetadas || '-'}</div>
+                        </td>
+                        <td class="p-3 text-center text-slate-600 max-w-xs truncate" title="${item.obs || ''}">${item.obs || '-'}</td>
+                        <td class="p-3 text-center">
+                            <button onclick="recompartilharWhatsApp(${indexOriginal})" class="text-emerald-600 font-bold px-1.5 py-1" title="Reenviar no WhatsApp"><i class="fa-brands fa-whatsapp text-base"></i></button>
+                            <button onclick="excluirRegistro(${indexOriginal})" class="text-red-600 font-bold px-1.5 py-1" title="Excluir">❌</button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function renderizarGraficoBarras(dados) {
+            const ctx = document.getElementById('chartGaiolasBarra').getContext('2d');
+            if (chartBarraInstance) chartBarraInstance.destroy();
+
+            const datas = [...new Set(dados.map(d => d.data))].sort();
+
+            const gaiolasEntregues = datas.map(dt => {
+                return dados.filter(d => d.data === dt).reduce((acc, curr) => acc + (parseInt(curr.gaiolasEntregues) || 0), 0);
+            });
+
+            const gaiolasColetadas = datas.map(dt => {
+                return dados.filter(d => d.data === dt).reduce((acc, curr) => acc + (parseInt(curr.gaiolasColetadas) || 0), 0);
+            });
+
+            const labels = datas.map(d => new Date(d + 'T00:00:00').toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }));
+
+            chartBarraInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels,
+                    datasets: [
+                        {
+                            label: 'Gaiolas Entregues (Limpa)',
+                            backgroundColor: '#059669',
+                            borderRadius: 4,
+                            data: gaiolasEntregues
+                        },
+                        {
+                            label: 'Gaiolas Coletadas (Suja)',
+                            backgroundColor: '#2563eb',
+                            borderRadius: 4,
+                            data: gaiolasColetadas
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: { stacked: false },
+                        y: { beginAtZero: true }
+                    }
+                }
+            });
+        }
+
+        function renderizarGraficoRosca(dados) {
+            const ctx = document.getElementById('chartClientesRosca').getContext('2d');
+            if (chartRoscaInstance) chartRoscaInstance.destroy();
+
+            const ag = {};
+            dados.forEach(i => {
+                ag[i.cliente] = (ag[i.cliente] || 0) + 1;
+            });
+
+            const cores = ['#059669', '#2563eb', '#d97706', '#7c3aed', '#db2777', '#0284c7'];
+
+            chartRoscaInstance = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(ag),
+                    datasets: [{ data: Object.values(ag), backgroundColor: cores }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { position: 'bottom' } }
+                }
+            });
+        }
+
+        function recompartilharWhatsApp(index) {
+            const item = rawHistorico[index];
+            if (!item) return;
+
+            const textoMensagem = 
+`🚚 *APONTAMENTO LOGÍSTICA - DONA ZARA*
+--------------------------------
+🏢 *Cliente:* ${item.cliente}
+👤 *Motorista:* ${item.motorista}
+🤝 *Ajudante:* ${item.ajudante || 'NENHUM'}
+--------------------------------
+⏱️ *Horário Chegada:* ${item.horaChegada || '--:--'}
+⏱️ *Horário Saída:* ${item.horaSaida || '--:--'}
+--------------------------------
+📦 *ENTREGA (ROUPA LIMPA)*
+• Gaiolas Entregues: *${item.gaiolasEntregues || 0}*
+• OS(s) Entregues: *${item.osEntregues || '-'}*
+
+🧺 *COLETA (ROUPA SUJA)*
+• Gaiolas Coletadas: *${item.gaiolasColetadas || 0}*
+• OS(s) Coletadas: *${item.osColetadas || '-'}*
+--------------------------------
+📝 *Observações:* ${item.obs || 'Nenhuma.'}`;
+
+            const urlWhatsApp = `https://api.whatsapp.com/send?text=${encodeURIComponent(textoMensagem)}`;
+            window.open(urlWhatsApp, '_blank');
+        }
+
+        function excluirRegistro(index) {
+            if (confirm("Deseja realmente excluir este apontamento de campo?")) {
+                rawHistorico.splice(index, 1);
+                localStorage.setItem('mes_historico_coleta_entrega', JSON.stringify(rawHistorico));
+                carregarEProcessarDados();
+                atualizarTela();
+            }
+        }
+    </script>
+</body>
+</html>
