@@ -9,26 +9,30 @@
     <!-- FontAwesome 6.5.1 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
-<body class="bg-slate-100 font-sans min-h-screen text-slate-800">
+<body class="bg-slate-100 font-sans min-h-screen flex flex-col justify-between">
 
-    <!-- CONTEÚDO PRINCIPAL -->
-    <main class="max-w-7xl mx-auto p-6 space-y-6">
-
-        <!-- CABEÇALHO DA TELA -->
-        <header class="flex justify-between items-center pb-4 border-b border-slate-200">
-            <div>
-                <h2 class="text-xl font-bold text-slate-900 flex items-center gap-2">
-                    <i class="fa-solid fa-address-card text-blue-600"></i>
-                    MES - Gestão de Clientes
-                </h2>
-                <p class="text-xs text-slate-500">Cadastro de Clientes, Endereços, Rotas, Equipe e Logística de Coleta/Entrega</p>
+    <!-- CABEÇALHO DA TELA (PADRÃO DO SISTEMA) -->
+    <header class="bg-slate-900 text-white p-4 shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto flex flex-wrap justify-between items-center gap-4">
+            <div class="flex items-center gap-3">
+                <div class="bg-blue-600 p-2.5 rounded-xl text-white shadow">
+                    <i class="fa-solid fa-address-card text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold tracking-wider">MES - Gestão de Clientes</h1>
+                    <p class="text-xs text-slate-400">Cadastro de Clientes, Endereços, Rotas, Equipe e Logística de Coleta/Entrega</p>
+                </div>
             </div>
-            <div>
-                <a href="index.html" class="bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs font-bold px-4 py-2 rounded-xl transition flex items-center gap-2">
-                    <i class="fa-solid fa-arrow-left"></i> Voltar ao Dashboard
+            <div class="flex items-center gap-2">
+                <a href="index.html" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl text-xs font-bold transition flex items-center gap-2 border border-slate-700">
+                    <i class="fa-solid fa-arrow-left"></i> Menu Principal
                 </a>
             </div>
-        </header>
+        </div>
+    </header>
+
+    <!-- CONTEÚDO PRINCIPAL -->
+    <main class="max-w-7xl mx-auto w-full p-6 space-y-6">
 
         <!-- FORMULÁRIO DE CADASTRO / EDIÇÃO -->
         <form id="formCadastroCliente" onsubmit="salvarCliente(event)">
@@ -54,6 +58,12 @@
                         <div>
                             <label class="block text-xs font-bold text-slate-600 mb-1">Nome Fantasia <span class="text-rose-500">*</span></label>
                             <input type="text" id="nome_fantasia" required placeholder="Ex: Hotel Grand Central" 
+                                   class="w-full bg-slate-50 border border-slate-300 text-slate-800 text-xs rounded-xl p-2.5 outline-none focus:ring-2 focus:ring-blue-500 font-semibold">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-slate-600 mb-1">Rede / Grupo Hotelaria</label>
+                            <input type="text" id="rede" placeholder="Ex: Accor, Atlantica, etc." 
                                    class="w-full bg-slate-50 border border-slate-300 text-slate-800 text-xs rounded-xl p-2.5 outline-none focus:ring-2 focus:ring-blue-500 font-semibold">
                         </div>
 
@@ -107,7 +117,7 @@
                             </select>
                         </div>
 
-                        <div class="lg:col-span-2">
+                        <div>
                             <label class="block text-xs font-bold text-slate-600 mb-1">Logo do Cliente</label>
                             <input type="file" id="input_logo" accept="image/*" onchange="converterLogoParaBase64(event)"
                                    class="w-full p-2 border border-slate-300 text-xs rounded-xl bg-slate-50 file:mr-4 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
@@ -213,38 +223,18 @@
                         </div>
                     </div>
 
-                    <!-- HORÁRIOS -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
-                        <div>
-                            <label class="block text-xs font-bold text-slate-600 mb-1">Horário Coleta (Início) <span class="text-rose-500">*</span></label>
-                            <input type="time" id="horario_coleta_inicio" required 
-                                   class="w-full bg-slate-50 border border-slate-300 text-slate-800 text-xs rounded-xl p-2.5 outline-none focus:ring-2 focus:ring-blue-500 font-semibold">
-                        </div>
-
-                        <div>
-                            <label class="block text-xs font-bold text-slate-600 mb-1">Horário Coleta (Fim) <span class="text-rose-500">*</span></label>
-                            <input type="time" id="horario_coleta_fim" required 
-                                   class="w-full bg-slate-50 border border-slate-300 text-slate-800 text-xs rounded-xl p-2.5 outline-none focus:ring-2 focus:ring-blue-500 font-semibold">
-                        </div>
-
-                        <div>
-                            <label class="block text-xs font-bold text-slate-600 mb-1">Horário Entrega (Início) <span class="text-rose-500">*</span></label>
-                            <input type="time" id="horario_entrega_inicio" required 
-                                   class="w-full bg-slate-50 border border-slate-300 text-slate-800 text-xs rounded-xl p-2.5 outline-none focus:ring-2 focus:ring-blue-500 font-semibold">
-                        </div>
-
-                        <div>
-                            <label class="block text-xs font-bold text-slate-600 mb-1">Horário Entrega (Fim) <span class="text-rose-500">*</span></label>
-                            <input type="time" id="horario_entrega_fim" required 
-                                   class="w-full bg-slate-50 border border-slate-300 text-slate-800 text-xs rounded-xl p-2.5 outline-none focus:ring-2 focus:ring-blue-500 font-semibold">
-                        </div>
+                    <!-- JANELA DE HORÁRIO DE ENTREGA -->
+                    <div class="mb-4">
+                        <label class="block text-xs font-bold text-slate-600 mb-1">Janela de Horário de Entrega <span class="text-rose-500">*</span></label>
+                        <input type="text" id="janela_entrega" required placeholder="Ex: 08:00 às 12:00 / 14:00 às 17:00" 
+                               class="w-full bg-slate-50 border border-slate-300 text-slate-800 text-xs rounded-xl p-2.5 outline-none focus:ring-2 focus:ring-blue-500 font-semibold">
                     </div>
 
                     <!-- OBSERVAÇÃO LOGÍSTICA -->
                     <div>
                         <label class="block text-xs font-bold text-slate-600 mb-1">Observação Logística</label>
                         <textarea id="observacao_logistica" rows="3" 
-                                  placeholder="Janelas de horário, restrições de veículos, procedimentos de portaria, etc." 
+                                  placeholder="Janelas de horário específicas, restrições de veículos, procedimentos de portaria, etc." 
                                   class="w-full bg-slate-50 border border-slate-300 text-slate-800 text-xs rounded-xl p-2.5 outline-none focus:ring-2 focus:ring-blue-500 font-semibold"></textarea>
                     </div>
                 </div>
@@ -281,7 +271,7 @@
                             <th class="p-3 border">Logo / Cliente</th>
                             <th class="p-3 border">CNPJ / Contato</th>
                             <th class="p-3 border">Rota & Responsáveis</th>
-                            <th class="p-3 border">Horários (Coleta / Entrega)</th>
+                            <th class="p-3 border">Janela de Horário</th>
                             <th class="p-3 border text-center">Status</th>
                             <th class="p-3 border text-center">Ações</th>
                         </tr>
@@ -296,6 +286,10 @@
         </div>
 
     </main>
+
+    <footer class="bg-white border-t border-slate-200 p-4 text-center text-xs text-slate-500">
+        MES Dona Zara &copy; 2026 - Módulo de Gestão de Clientes
+    </footer>
 
     <!-- MODAL 1: CADASTRO RÁPIDO DE ROTA -->
     <div id="modalRota" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
@@ -373,7 +367,7 @@
     <script>
         const STORAGE_CLIENTES = 'mes_clientes';
         const STORAGE_ROTAS = 'mes_rotas';
-        const STORAGE_EQUIPE = 'mes_equipe';
+        const STORAGE_EQUIPE = 'mes_config_equipe'; // Unificado com configuracoes.html
 
         // Carregamento Inicial
         document.addEventListener('DOMContentLoaded', () => {
@@ -394,10 +388,8 @@
 
             if (!localStorage.getItem(STORAGE_EQUIPE)) {
                 const equipePadrao = [
-                    { id: '1', matricula: 'MOT-01', nome_completo: 'Carlos Silva', funcao: 'Motorista' },
-                    { id: '2', matricula: 'MOT-02', nome_completo: 'Marcos Souza', funcao: 'Motorista' },
-                    { id: '3', matricula: 'AJU-01', nome_completo: 'João Santos', funcao: 'Ajudante' },
-                    { id: '4', matricula: 'AJU-02', nome_completo: 'Pedro Costa', funcao: 'Ajudante' }
+                    { id: "MOT-01", nome: "Carlos Oliveira", funcao: "Motorista", contato: "(11) 98765-4321", cnh: "Cat D - 1234567890", entrada: "06:00", saida: "16:00", dias: "Seg a Sex", status: "Ativo" },
+                    { id: "AJU-01", nome: "Marcos Souza", funcao: "Ajudante", contato: "(11) 91234-5678", cnh: "-", entrada: "06:00", saida: "16:00", dias: "Seg a Sex", status: "Ativo" }
                 ];
                 localStorage.setItem(STORAGE_EQUIPE, JSON.stringify(equipePadrao));
             }
@@ -415,13 +407,23 @@
             selectRota.innerHTML = '<option value="" disabled selected>Selecione a rota...</option>' +
                 rotas.map(r => `<option value="${r.id}">${r.nome_rota}</option>`).join('');
 
-            const motoristas = equipe.filter(e => e.funcao === 'Motorista' || e.funcao === 'Motorista/Ajudante');
+            // Filtra motoristas ativos suportando padronização 'nome' ou 'nome_completo'
+            const motoristas = equipe.filter(e => (e.funcao === 'Motorista' || e.funcao === 'Motorista/Ajudante' || e.funcao === 'Motorista / Ajudante') && e.status !== 'Inativo');
             selectMotorista.innerHTML = '<option value="" disabled selected>Selecione o motorista...</option>' +
-                motoristas.map(m => `<option value="${m.id}">${m.nome_completo} (${m.matricula || 'MOT'})</option>`).join('');
+                motoristas.map(m => {
+                    const nome = m.nome || m.nome_completo || 'Sem Nome';
+                    const mat = m.id || m.matricula || 'MOT';
+                    return `<option value="${m.id}">${nome} (${mat})</option>`;
+                }).join('');
 
-            const ajudantes = equipe.filter(e => e.funcao === 'Ajudante' || e.funcao === 'Motorista/Ajudante');
+            // Filtra ajudantes ativos suportando padronização 'nome' ou 'nome_completo'
+            const ajudantes = equipe.filter(e => (e.funcao === 'Ajudante' || e.funcao === 'Motorista/Ajudante' || e.funcao === 'Motorista / Ajudante') && e.status !== 'Inativo');
             selectAjudante.innerHTML = '<option value="" disabled selected>Selecione o ajudante...</option>' +
-                ajudantes.map(a => `<option value="${a.id}">${a.nome_completo} (${a.matricula || 'AJU'})</option>`).join('');
+                ajudantes.map(a => {
+                    const nome = a.nome || a.nome_completo || 'Sem Nome';
+                    const mat = a.id || a.matricula || 'AJU';
+                    return `<option value="${a.id}">${nome} (${mat})</option>`;
+                }).join('');
         }
 
         // Converte imagem enviada em base64 para gravar no localStorage
@@ -447,6 +449,7 @@
                 id: clienteId || Date.now().toString(),
                 razao_social: document.getElementById('razao_social').value,
                 nome_fantasia: document.getElementById('nome_fantasia').value,
+                rede: document.getElementById('rede').value,
                 cnpj_cpf: document.getElementById('cnpj_cpf').value,
                 inscricao_estadual: document.getElementById('inscricao_estadual').value,
                 telefone: document.getElementById('telefone').value,
@@ -467,10 +470,7 @@
                 rota_id: document.getElementById('rota_id').value,
                 motorista_id: document.getElementById('motorista_id').value,
                 ajudante_id: document.getElementById('ajudante_id').value,
-                horario_coleta_inicio: document.getElementById('horario_coleta_inicio').value,
-                horario_coleta_fim: document.getElementById('horario_coleta_fim').value,
-                horario_entrega_inicio: document.getElementById('horario_entrega_inicio').value,
-                horario_entrega_fim: document.getElementById('horario_entrega_fim').value,
+                janela_entrega: document.getElementById('janela_entrega').value,
                 observacao_logistica: document.getElementById('observacao_logistica').value
             };
 
@@ -520,8 +520,8 @@
                 const objAjudante = equipe.find(e => e.id === c.ajudante_id);
 
                 const nomeRota = objRota ? objRota.nome_rota : 'Sem Rota';
-                const nomeMotorista = objMotorista ? objMotorista.nome_completo : 'N/I';
-                const nomeAjudante = objAjudante ? objAjudante.nome_completo : 'N/I';
+                const nomeMotorista = objMotorista ? (objMotorista.nome || objMotorista.nome_completo) : 'N/I';
+                const nomeAjudante = objAjudante ? (objAjudante.nome || objAjudante.nome_completo) : 'N/I';
 
                 const statusBadge = c.status === 'Ativo'
                     ? `<span class="inline-flex items-center gap-1 bg-emerald-100 text-emerald-800 text-[11px] font-bold px-2.5 py-1 rounded-full border border-emerald-300"><span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span> Ativo</span>`
@@ -531,13 +531,17 @@
                     ? `<img src="${c.logo_url}" alt="Logo" class="w-9 h-9 object-cover rounded-lg border border-slate-200">`
                     : `<div class="w-9 h-9 bg-blue-100 text-blue-700 flex items-center justify-center font-bold rounded-lg border border-blue-200">C</div>`;
 
+                const badgeRede = c.rede ? `<span class="text-[10px] bg-slate-200 text-slate-700 px-1.5 py-0.5 rounded font-medium ml-1">${c.rede}</span>` : '';
+
                 return `
                     <tr class="hover:bg-slate-50 transition border-b">
                         <td class="p-3 border">
                             <div class="flex items-center gap-3">
                                 ${logoElement}
                                 <div>
-                                    <p class="font-bold text-slate-900 text-xs">${c.nome_fantasia}</p>
+                                    <p class="font-bold text-slate-900 text-xs flex items-center gap-1">
+                                        ${c.nome_fantasia} ${badgeRede}
+                                    </p>
                                     <p class="text-[11px] text-slate-500">${c.razao_social}</p>
                                 </div>
                             </div>
@@ -558,8 +562,7 @@
                             </p>
                         </td>
                         <td class="p-3 border">
-                            <p class="text-slate-700"><strong>Coleta:</strong> ${c.horario_coleta_inicio || '--:--'} às ${c.horario_coleta_fim || '--:--'}</p>
-                            <p class="text-slate-700"><strong>Entrega:</strong> ${c.horario_entrega_inicio || '--:--'} às ${c.horario_entrega_fim || '--:--'}</p>
+                            <p class="text-slate-700 font-semibold">${c.janela_entrega || 'N/I'}</p>
                         </td>
                         <td class="p-3 border text-center">
                             ${statusBadge}
@@ -591,6 +594,7 @@
 
             document.getElementById('razao_social').value = cliente.razao_social;
             document.getElementById('nome_fantasia').value = cliente.nome_fantasia;
+            document.getElementById('rede').value = cliente.rede || '';
             document.getElementById('cnpj_cpf').value = cliente.cnpj_cpf;
             document.getElementById('inscricao_estadual').value = cliente.inscricao_estadual;
             document.getElementById('telefone').value = cliente.telefone;
@@ -610,10 +614,7 @@
             document.getElementById('rota_id').value = cliente.rota_id;
             document.getElementById('motorista_id').value = cliente.motorista_id;
             document.getElementById('ajudante_id').value = cliente.ajudante_id;
-            document.getElementById('horario_coleta_inicio').value = cliente.horario_coleta_inicio;
-            document.getElementById('horario_coleta_fim').value = cliente.horario_coleta_fim;
-            document.getElementById('horario_entrega_inicio').value = cliente.horario_entrega_inicio;
-            document.getElementById('horario_entrega_fim').value = cliente.horario_entrega_fim;
+            document.getElementById('janela_entrega').value = cliente.janela_entrega || '';
             document.getElementById('observacao_logistica').value = cliente.observacao_logistica;
 
             document.getElementById('btnSalvarCliente').innerHTML = '<i class="fa-solid fa-floppy-disk"></i> ATUALIZAR CLIENTE';
@@ -681,18 +682,33 @@
 
         function salvarEquipeRapida(e) {
             e.preventDefault();
-            const matricula = document.getElementById('modalMatricula').value;
+            const matricula = document.getElementById('modalMatricula').value.trim().toUpperCase();
             const funcao = document.getElementById('modalFuncao').value;
-            const nome = document.getElementById('modalNomeCompleto').value;
+            const nome = document.getElementById('modalNomeCompleto').value.trim();
+            const contato = document.getElementById('modalWhatsapp').value.trim();
+            const cnh = document.getElementById('modalDocumento').value.trim();
 
             let equipe = JSON.parse(localStorage.getItem(STORAGE_EQUIPE) || '[]');
-            const novoMembro = { id: Date.now().toString(), matricula, funcao, nome_completo: nome };
+            
+            // Salva na mesma estrutura de configuracoes.html
+            const novoMembro = { 
+                id: matricula || Date.now().toString(), 
+                nome: nome, 
+                funcao: funcao, 
+                contato: contato, 
+                cnh: cnh, 
+                status: 'Ativo', 
+                entrada: '07:00', 
+                saida: '17:00', 
+                dias: 'Seg a Sex' 
+            };
+            
             equipe.push(novoMembro);
 
             localStorage.setItem(STORAGE_EQUIPE, JSON.stringify(equipe));
             carregarSelectsLogistica();
 
-            if (funcao === 'Motorista' || funcao === 'Motorista/Ajudante') {
+            if (funcao === 'Motorista' || funcao === 'Motorista/Ajudante' || funcao === 'Motorista / Ajudante') {
                 document.getElementById('motorista_id').value = novoMembro.id;
             } else {
                 document.getElementById('ajudante_id').value = novoMembro.id;
