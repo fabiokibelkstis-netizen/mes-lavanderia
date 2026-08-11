@@ -174,7 +174,7 @@
             // Tentativa via API backend com Timeout
             try {
                 const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 1000);
+                const timeoutId = setTimeout(() => controller.abort(), 10000);
                 const res = await fetch('/api/clientes', { signal: controller.signal });
                 if (res.ok) lista = await res.json();
                 clearTimeout(timeoutId);
