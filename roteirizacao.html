@@ -7,14 +7,15 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
+
 <body class="bg-slate-100 font-sans min-h-screen flex flex-col justify-between">
 
-    <!-- CABEÇALHO -->
     <header class="bg-slate-900 text-white p-4 shadow-lg sticky top-0 z-50">
         <div class="max-w-7xl mx-auto flex flex-wrap justify-between items-center gap-4">
             <div class="flex items-center gap-3">
-                <div class="bg-slate-800 border border-slate-700 p-2.5 rounded-xl text-amber-400 shadow">
+                <div class="bg-amber-600 p-2.5 rounded-xl text-white shadow">
                     <i class="fa-solid fa-route text-xl"></i>
+
                 </div>
                 <div>
                     <h1 class="text-xl font-bold tracking-wider">MES - Plano de Roteirização</h1>
@@ -28,8 +29,8 @@
                 <a href="configuracoes.html" class="bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold px-3 py-2 rounded-xl border border-slate-700 transition flex items-center gap-2">
                     <i class="fa-solid fa-gear"></i> Configurações
                 </a>
-                <a href="index.html" class="bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs font-bold px-4 py-2 rounded-xl transition flex items-center gap-2">
-                    <i class="fa-solid fa-arrow-left"></i> Dashboard
+                <a href="index.html" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl text-xs font-bold transition flex items-center gap-2 border border-slate-700">
+                    <i class="fa-solid fa-arrow-left"></i> Menu Principal
                 </a>
             </div>
         </div>
@@ -45,10 +46,10 @@
             <section class="lg:col-span-6 bg-white p-6 rounded-2xl shadow-md border border-slate-200 space-y-5">
                 <div class="border-b pb-3 flex justify-between items-center">
                     <h2 class="text-sm font-bold text-slate-800 flex items-center gap-2">
-                        <i class="fa-solid fa-pen-to-square text-indigo-600"></i>
+                        <i class="fa-solid fa-pen-to-square text-amber-600"></i>
                         Montar Rota de Logística
                     </h2>
-                    <span id="badgeModoForm" class="text-[10px] font-bold px-2 py-0.5 rounded bg-blue-100 text-blue-800">Nova Rota</span>
+                    <span id="badgeModoForm" class="text-[10px] font-bold px-2 py-0.5 rounded bg-amber-100 text-amber-800">Nova Rota</span>
                 </div>
 
                 <form id="formRoteirizacao" onsubmit="salvarPlanoRota(event)" class="space-y-4">
@@ -58,27 +59,27 @@
                     <div class="grid grid-cols-2 gap-3">
                         <div>
                             <label class="block text-xs font-semibold text-slate-700 mb-1">Nº da Rota *</label>
-                            <input type="text" id="numRota" required placeholder="ex: ROTA 01 - ZONA SUL" class="w-full p-2 border rounded-lg text-xs bg-slate-50 outline-none focus:ring-1 focus:ring-indigo-500 font-bold">
+                            <input type="text" id="numRota" required placeholder="ex: ROTA 01 - ZONA SUL" class="w-full p-2 border rounded-lg text-xs bg-slate-50 outline-none focus:ring-1 focus:ring-amber-500 font-bold">
                         </div>
                         <div>
                             <label class="block text-xs font-semibold text-slate-700 mb-1">Escala *</label>
-                            <input type="text" id="escalaRota" required placeholder="ex: Seg a Sáb / Diário" class="w-full p-2 border rounded-lg text-xs bg-slate-50 outline-none focus:ring-1 focus:ring-indigo-500">
+                            <input type="text" id="escalaRota" required placeholder="ex: Seg a Sáb / Diário" class="w-full p-2 border rounded-lg text-xs bg-slate-50 outline-none focus:ring-1 focus:ring-amber-500">
                         </div>
                     </div>
 
                     <!-- SELEÇÃO DE VEÍCULO -->
-                    <div class="bg-indigo-50/50 p-3 rounded-xl border border-indigo-100 space-y-2">
-                        <label class="block text-xs font-bold text-indigo-900 flex items-center gap-1">
+                    <div class="bg-amber-50/50 p-3 rounded-xl border border-amber-100 space-y-2">
+                        <label class="block text-xs font-bold text-amber-900 flex items-center gap-1">
                             <i class="fa-solid fa-truck"></i> Seleção de Veículo (Configurações)
                         </label>
-                        <select id="selectVeiculo" onchange="atualizarDadosVeiculo()" required class="w-full p-2 border rounded-lg text-xs bg-white outline-none focus:ring-1 focus:ring-indigo-500 font-semibold">
+                        <select id="selectVeiculo" onchange="atualizarDadosVeiculo()" required class="w-full p-2 border rounded-lg text-xs bg-white outline-none focus:ring-1 focus:ring-amber-500 font-semibold">
                             <option value="">-- Selecione o Veículo --</option>
                         </select>
                         
                         <!-- DADOS AUTOMÁTICOS DO CARRO -->
                         <div class="grid grid-cols-3 gap-2 text-[11px] pt-1 text-slate-600">
                             <div><span class="block text-[10px] font-bold text-slate-400">DONO:</span> <span id="infoDonoCarro" class="font-semibold text-slate-800">-</span></div>
-                            <div><span class="block text-[10px] font-bold text-slate-400">PLACA:</span> <span id="infoPlacaCarro" class="font-bold text-indigo-700">-</span></div>
+                            <div><span class="block text-[10px] font-bold text-slate-400">PLACA:</span> <span id="infoPlacaCarro" class="font-bold text-amber-700">-</span></div>
                             <div><span class="block text-[10px] font-bold text-slate-400">CAPAC. GAIOLAS:</span> <span id="infoCapacidadeCarro" class="font-bold text-slate-800">0</span></div>
                         </div>
                     </div>
@@ -87,13 +88,13 @@
                     <div class="grid grid-cols-2 gap-3">
                         <div>
                             <label class="block text-xs font-semibold text-slate-700 mb-1">Motorista *</label>
-                            <select id="selectMotorista" required class="w-full p-2 border rounded-lg text-xs bg-slate-50 outline-none focus:ring-1 focus:ring-indigo-500">
+                            <select id="selectMotorista" required class="w-full p-2 border rounded-lg text-xs bg-slate-50 outline-none focus:ring-1 focus:ring-amber-500">
                                 <option value="">-- Selecione --</option>
                             </select>
                         </div>
                         <div>
                             <label class="block text-xs font-semibold text-slate-700 mb-1">Ajudante</label>
-                            <select id="selectAjudante" class="w-full p-2 border rounded-lg text-xs bg-slate-50 outline-none focus:ring-1 focus:ring-indigo-500">
+                            <select id="selectAjudante" class="w-full p-2 border rounded-lg text-xs bg-slate-50 outline-none focus:ring-1 focus:ring-amber-500">
                                 <option value="">-- Sem Ajudante --</option>
                             </select>
                         </div>
@@ -123,7 +124,7 @@
                             <label class="text-xs font-bold text-slate-800 flex items-center gap-1">
                                 <i class="fa-solid fa-users text-slate-600"></i> Seleção de Clientes (Cadastro) e Gaiolas
                             </label>
-                            <button type="button" onclick="adicionarLinhaCliente()" class="bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-[11px] font-bold px-2.5 py-1 rounded-lg border border-indigo-200 transition">
+                            <button type="button" onclick="adicionarLinhaCliente()" class="bg-amber-50 hover:bg-amber-100 text-amber-700 text-[11px] font-bold px-2.5 py-1 rounded-lg border border-amber-200 transition">
                                 ➕ Cliente
                             </button>
                         </div>
@@ -144,7 +145,7 @@
                         <button type="button" onclick="limparFormulario()" class="w-1/3 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold py-2.5 rounded-xl text-xs transition">
                             Limpar
                         </button>
-                        <button type="submit" class="w-2/3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 rounded-xl text-xs transition shadow flex items-center justify-center gap-2">
+                        <button type="submit" class="w-2/3 bg-amber-600 hover:bg-amber-700 text-white font-bold py-2.5 rounded-xl text-xs transition shadow flex items-center justify-center gap-2">
                             <i class="fa-solid fa-floppy-disk"></i> Salvar Plano de Rota
                         </button>
                     </div>
@@ -155,7 +156,7 @@
             <section class="lg:col-span-6 bg-white p-6 rounded-2xl shadow-md border border-slate-200 space-y-4">
                 <div class="flex justify-between items-center border-b pb-2">
                     <h3 class="text-sm font-bold text-slate-800 flex items-center gap-2">
-                        <i class="fa-solid fa-eye text-cyan-600"></i>
+                        <i class="fa-solid fa-eye text-amber-600"></i>
                         Pré-visualização do Plano de Rota
                     </h3>
                     <span class="text-[11px] text-slate-400 italic">Layout Padrão Operacional</span>
@@ -171,7 +172,7 @@
 
                     <div class="border-b border-slate-800 p-2 text-center font-bold text-slate-900 uppercase bg-white">
                         <span class="text-[10px] block text-slate-500 font-normal">MOTORISTA</span>
-                        <span id="pvMotorista" class="text-xs text-indigo-900">--</span>
+                        <span id="pvMotorista" class="text-xs text-amber-900">--</span>
                     </div>
 
                     <div class="bg-slate-200 border-b border-slate-800 p-2 text-center font-bold text-slate-900 uppercase">
@@ -214,7 +215,7 @@
                         <div class="flex items-center gap-2 mt-0.5">
                             <span id="pvTaxaOcupacao" class="text-sm font-black text-slate-800">0%</span>
                             <div class="w-24 bg-slate-200 h-2 rounded-full overflow-hidden border">
-                                <div id="pvBarraOcupacao" class="bg-indigo-600 h-full w-0 transition-all duration-300"></div>
+                                <div id="pvBarraOcupacao" class="bg-amber-600 h-full w-0 transition-all duration-300"></div>
                             </div>
                         </div>
                     </div>
@@ -230,8 +231,8 @@
                     </div>
 
                     <!-- BLOCO DE CLIENTES DA ROTA -->
-                    <div class="p-3 bg-indigo-50/40 text-center">
-                        <span class="text-xs font-bold text-indigo-950 uppercase tracking-wider block border-b border-indigo-200 pb-1 mb-2">Clientes da Rota</span>
+                    <div class="p-3 bg-amber-50/40 text-center">
+                        <span class="text-xs font-bold text-amber-950 uppercase tracking-wider block border-b border-amber-200 pb-1 mb-2">Clientes da Rota</span>
                         <div id="pvListaClientes" class="space-y-1 text-left text-[11px]">
                             <p class="text-center text-slate-400 italic">Nenhum cliente adicionado</p>
                         </div>
@@ -245,7 +246,7 @@
         <section class="bg-white p-6 rounded-2xl shadow-md border border-slate-200 space-y-4 w-full">
             <div class="flex justify-between items-center border-b pb-3">
                 <h3 class="text-base font-bold text-slate-800 flex items-center gap-2">
-                    <i class="fa-solid fa-list-check text-indigo-600"></i>
+                    <i class="fa-solid fa-list-check text-amber-600"></i>
                     Planos de Roteirização Cadastrados
                 </h3>
                 <span id="totalRotasBadge" class="bg-slate-100 text-slate-700 text-xs font-bold px-3 py-1 rounded-full border">0 Rotas</span>
@@ -345,12 +346,12 @@
             const html = `
                 <div id="linha_cliente_${idLinha}" class="flex items-center gap-2 bg-slate-50 p-2 rounded-lg border border-slate-200">
                     <div class="flex-1">
-                        <select class="input-cliente-nome w-full p-1.5 border rounded text-xs bg-white outline-none font-semibold text-slate-800 focus:ring-1 focus:ring-indigo-500" onchange="atualizarPreVisualizacao()">
+                        <select class="input-cliente-nome w-full p-1.5 border rounded text-xs bg-white outline-none font-semibold text-slate-800 focus:ring-1 focus:ring-amber-500" onchange="atualizarPreVisualizacao()">
                             ${optionsHTML}
                         </select>
                     </div>
                     <div class="w-24 flex items-center gap-1">
-                        <input type="number" min="1" class="input-cliente-gaiolas w-full p-1.5 border rounded text-xs font-bold text-center bg-white outline-none focus:ring-1 focus:ring-indigo-500" value="${qtdGaiolas}" oninput="atualizarPreVisualizacao()" placeholder="Gaiolas">
+                        <input type="number" min="1" class="input-cliente-gaiolas w-full p-1.5 border rounded text-xs font-bold text-center bg-white outline-none focus:ring-1 focus:ring-amber-500" value="${qtdGaiolas}" oninput="atualizarPreVisualizacao()" placeholder="Gaiolas">
                         <span class="text-[10px] font-bold text-slate-400">G</span>
                     </div>
                     <button type="button" onclick="removerLinhaCliente('linha_cliente_${idLinha}')" class="text-red-500 hover:text-red-700 p-1" title="Remover Cliente">
@@ -497,7 +498,7 @@
             } else if (taxaOcupacao >= 80) {
                 barra.className = "bg-green-600 h-full transition-all duration-300";
             } else {
-                barra.className = "bg-indigo-600 h-full transition-all duration-300";
+                barra.className = "bg-amber-600 h-full transition-all duration-300";
             }
 
             const divClientes = document.getElementById('pvListaClientes');
@@ -505,9 +506,9 @@
                 divClientes.innerHTML = '<p class="text-center text-slate-400 italic">Nenhum cliente selecionado</p>';
             } else {
                 divClientes.innerHTML = listaClientes.map(c => `
-                    <div class="flex justify-between items-center bg-white p-1.5 rounded border border-indigo-100 shadow-sm">
-                        <span class="font-bold text-slate-800"><i class="fa-solid fa-building text-[9px] text-indigo-500 mr-1"></i>${c.nome}</span>
-                        <span class="font-black text-indigo-900 bg-indigo-50 px-2 py-0.5 rounded text-[10px]">${c.gaiolas} Gaiolas</span>
+                    <div class="flex justify-between items-center bg-white p-1.5 rounded border border-amber-100 shadow-sm">
+                        <span class="font-bold text-slate-800"><i class="fa-solid fa-building text-[9px] text-amber-500 mr-1"></i>${c.nome}</span>
+                        <span class="font-black text-amber-900 bg-amber-50 px-2 py-0.5 rounded text-[10px]">${c.gaiolas} Gaiolas</span>
                     </div>
                 `).join('');
             }
@@ -610,12 +611,12 @@
             }
 
             cachePlanos.forEach(p => {
-                let badgeClass = "bg-indigo-100 text-indigo-800";
+                let badgeClass = "bg-amber-100 text-amber-800";
                 if (p.taxaOcupacao > 100) badgeClass = "bg-red-100 text-red-800 font-bold";
                 else if (p.taxaOcupacao >= 80) badgeClass = "bg-green-100 text-green-800 font-bold";
 
                 const clientesHTML = (p.clientes && p.clientes.length > 0)
-                    ? p.clientes.map(c => `<span class="inline-flex items-center gap-1 bg-slate-100 text-slate-700 text-[10px] px-2 py-0.5 rounded border border-slate-200 font-semibold mb-0.5 mr-0.5"><i class="fa-solid fa-building text-[8px] text-indigo-500"></i> ${c.nome} <span class="text-indigo-700 font-bold">(${c.gaiolas}G)</span></span>`).join(' ')
+                    ? p.clientes.map(c => `<span class="inline-flex items-center gap-1 bg-slate-100 text-slate-700 text-[10px] px-2 py-0.5 rounded border border-slate-200 font-semibold mb-0.5 mr-0.5"><i class="fa-solid fa-building text-[8px] text-amber-500"></i> ${c.nome} <span class="text-amber-700 font-bold">(${c.gaiolas}G)</span></span>`).join(' ')
                     : '<span class="text-slate-400 italic text-[11px]">Nenhum cliente</span>';
 
                 tbody.innerHTML += `
@@ -625,7 +626,7 @@
                             <span class="text-[10px] text-slate-500">${p.escala}</span>
                         </td>
                         <td class="p-3">
-                            <span class="font-bold text-indigo-900 block text-xs">${p.placa}</span>
+                            <span class="font-bold text-amber-900 block text-xs">${p.placa}</span>
                             <span class="text-[10px] text-slate-500">${p.donoCarro}</span>
                         </td>
                         <td class="p-3">
