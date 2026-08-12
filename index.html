@@ -49,71 +49,117 @@
             </button>
         </div>
 
-        <!-- Links do Menu -->
-        <nav class="p-3 space-y-1 text-xs font-semibold overflow-y-auto flex-1">
+        <!-- Links do Menu AGRUPADOS POR SEGMENTOS -->
+        <nav class="p-3 space-y-3 text-xs font-semibold overflow-y-auto flex-1">
             
-            <a href="index.html" class="menu-item w-full flex items-center gap-3 px-3 py-2 rounded-xl transition bg-blue-600 text-white font-bold">
-                <i class="fa-solid fa-chart-pie w-5 text-center text-sm"></i>
-                <span>Dashboard Geral</span>
-            </a>
+            <!-- GRUPO: VISÃO GERAL & CADASTROS -->
+            <div>
+                <div class="px-3 pb-1 text-[10px] font-black tracking-wider text-slate-500 uppercase">Visão Geral & Cadastros</div>
+                <div class="space-y-1">
+                    <a href="index.html" class="menu-item w-full flex items-center gap-3 px-3 py-2 rounded-xl transition bg-blue-600 text-white font-bold">
+                        <i class="fa-solid fa-chart-pie w-5 text-center text-sm"></i>
+                        <span>Dashboard Geral</span>
+                    </a>
+                    <a href="cadastro_clientes.html" class="menu-item w-full flex items-center gap-3 px-3 py-2 rounded-xl transition hover:bg-slate-800 hover:text-white text-slate-300">
+                        <i class="fa-solid fa-address-card text-blue-400 w-5 text-center text-sm"></i>
+                        <span>Cadastro de Clientes</span>
+                    </a>
+                </div>
+            </div>
 
-            <!-- NOVO LINK: CADASTRO DE CLIENTES -->
-            <a href="cadastro_clientes.html" class="menu-item w-full flex items-center gap-3 px-3 py-2 rounded-xl transition hover:bg-slate-800 hover:text-white text-slate-300">
-                <i class="fa-solid fa-address-card text-blue-400 w-5 text-center text-sm"></i>
-                <span>Cadastro de Clientes</span>
-            </a>
+            <!-- GRUPO: PRODUÇÃO & OPERAÇÕES -->
+            <div>
+                <div class="px-3 pb-1 text-[10px] font-black tracking-wider text-slate-500 uppercase">Produção & Pesagens</div>
+                <div class="space-y-1">
+                    <a href="pesagemrecebimento.html" class="menu-item w-full flex items-center gap-3 px-3 py-2 rounded-xl transition hover:bg-slate-800 hover:text-white text-slate-300">
+                        <i class="fa-solid fa-truck-ramp-box text-blue-400 w-5 text-center text-sm"></i>
+                        <span>Pesagem Recebimento</span>
+                    </a>
+                    <a href="pesagemexpedicao.html" class="menu-item w-full flex items-center gap-3 px-3 py-2 rounded-xl transition hover:bg-slate-800 hover:text-white text-slate-300">
+                        <i class="fa-solid fa-truck-fast text-emerald-400 w-5 text-center text-sm"></i>
+                        <span>Pesagem Expedição</span>
+                    </a>
+                </div>
+            </div>
 
-            <a href="pesagemrecebimento.html" class="menu-item w-full flex items-center gap-3 px-3 py-2 rounded-xl transition hover:bg-slate-800 hover:text-white text-slate-300">
-                <i class="fa-solid fa-truck-ramp-box text-blue-400 w-5 text-center text-sm"></i>
-                <span>Pesagem Recebimento</span>
-            </a>
-            
-            <a href="pesagemexpedicao.html" class="menu-item w-full flex items-center gap-3 px-3 py-2 rounded-xl transition hover:bg-slate-800 hover:text-white text-slate-300">
-                <i class="fa-solid fa-truck-fast text-emerald-400 w-5 text-center text-sm"></i>
-                <span>Pesagem Expedição</span>
-            </a>
+            <!-- GRUPO: LOGÍSTICA & FROTA (NOVO SEGMENTO) -->
+            <div>
+                <div class="px-3 pb-1 text-[10px] font-black tracking-wider text-slate-500 uppercase">Logística & Frota</div>
+                <div class="space-y-1">
+                    <a href="dashboard_logistica.html" class="menu-item w-full flex items-center gap-3 px-3 py-2 rounded-xl transition hover:bg-slate-800 hover:text-white text-slate-300">
+                        <i class="fa-solid fa-chart-line text-indigo-400 w-5 text-center text-sm"></i>
+                        <span>Dashboard Logística</span>
+                    </a>
+                    <a href="gestaocoletaentrega.html" class="menu-item w-full flex items-center gap-3 px-3 py-2 rounded-xl transition hover:bg-slate-800 hover:text-white text-slate-300">
+                        <i class="fa-solid fa-truck-ramp-box text-emerald-400 w-5 text-center text-sm"></i>
+                        <span>Coletas & Entregas</span>
+                    </a>
+                    <a href="manutencaofrota.html" class="menu-item w-full flex items-center gap-3 px-3 py-2 rounded-xl transition hover:bg-slate-800 hover:text-white text-slate-300">
+                        <i class="fa-solid fa-wrench text-amber-400 w-5 text-center text-sm"></i>
+                        <span>Manutenção de Frota</span>
+                    </a>
+                    <a href="roteirizacao.html" class="menu-item w-full flex items-center gap-3 px-3 py-2 rounded-xl transition hover:bg-slate-800 hover:text-white text-slate-300">
+                        <i class="fa-solid fa-route text-sky-400 w-5 text-center text-sm"></i>
+                        <span>Roteirização</span>
+                    </a>
+                </div>
+            </div>
 
-            <a href="gestaoquimica.html" class="menu-item w-full flex items-center gap-3 px-3 py-2 rounded-xl transition hover:bg-slate-800 hover:text-white text-slate-300">
-                <i class="fa-solid fa-chart-line text-teal-600 w-5 text-center text-sm"></i>
-                <span>Dashboard Químico Geral</span>
-            </a>
-            
-            <a href="gestaoquimica.html" class="menu-item w-full flex items-center gap-3 px-3 py-2 rounded-xl transition hover:bg-slate-800 hover:text-white text-slate-300">
-                <i class="fa-solid fa-flask text-purple-400 w-5 text-center text-sm"></i>
-                <span>Recebimento de Químico</span>
-            </a>
-            
-            <a href="gestao_estoque_quimico.html" class="menu-item w-full flex items-center gap-3 px-3 py-2 rounded-xl transition hover:bg-slate-800 hover:text-white text-slate-300">
-                <i class="fa-solid fa-boxes-stacked text-indigo-400 w-5 text-center text-sm"></i>
-                <span>Estoque de Químicos</span>
-            </a>
+            <!-- GRUPO: GESTÃO QUÍMICA -->
+            <div>
+                <div class="px-3 pb-1 text-[10px] font-black tracking-wider text-slate-500 uppercase">Insumos & Químicos</div>
+                <div class="space-y-1">
+                    <a href="gestaoquimica.html" class="menu-item w-full flex items-center gap-3 px-3 py-2 rounded-xl transition hover:bg-slate-800 hover:text-white text-slate-300">
+                        <i class="fa-solid fa-chart-line text-teal-400 w-5 text-center text-sm"></i>
+                        <span>Dashboard Químico</span>
+                    </a>
+                    <a href="gestaoquimica.html" class="menu-item w-full flex items-center gap-3 px-3 py-2 rounded-xl transition hover:bg-slate-800 hover:text-white text-slate-300">
+                        <i class="fa-solid fa-flask text-purple-400 w-5 text-center text-sm"></i>
+                        <span>Recebimento Químico</span>
+                    </a>
+                    <a href="gestao_estoque_quimico.html" class="menu-item w-full flex items-center gap-3 px-3 py-2 rounded-xl transition hover:bg-slate-800 hover:text-white text-slate-300">
+                        <i class="fa-solid fa-boxes-stacked text-indigo-400 w-5 text-center text-sm"></i>
+                        <span>Estoque de Químicos</span>
+                    </a>
+                </div>
+            </div>
 
-            <a href="gestaodeagua.html" class="menu-item w-full flex items-center gap-3 px-3 py-2 rounded-xl transition hover:bg-slate-800 hover:text-white text-slate-300">
-                <i class="fa-solid fa-droplet text-cyan-400 w-5 text-center text-sm"></i>
-                <span>Gestão de Água</span>
-            </a>
-            
-            <a href="gestaodegas.html" class="menu-item w-full flex items-center gap-3 px-3 py-2 rounded-xl transition hover:bg-slate-800 hover:text-white text-slate-300">
-                <i class="fa-solid fa-fire-flame-simple text-orange-400 w-5 text-center text-sm"></i>
-                <span>Gestão de Gás</span>
-            </a>
-            
-            <a href="gestaodeenergia.html" class="menu-item w-full flex items-center gap-3 px-3 py-2 rounded-xl transition hover:bg-slate-800 hover:text-white text-slate-300">
-                <i class="fa-solid fa-bolt text-yellow-400 w-5 text-center text-sm"></i>
-                <span>Gestão de Energia</span>
-            </a>
+            <!-- GRUPO: UTILIDADES & RECURSOS -->
+            <div>
+                <div class="px-3 pb-1 text-[10px] font-black tracking-wider text-slate-500 uppercase">Utilidades & Recursos</div>
+                <div class="space-y-1">
+                    <a href="gestaodeagua.html" class="menu-item w-full flex items-center gap-3 px-3 py-2 rounded-xl transition hover:bg-slate-800 hover:text-white text-slate-300">
+                        <i class="fa-solid fa-droplet text-cyan-400 w-5 text-center text-sm"></i>
+                        <span>Gestão de Água</span>
+                    </a>
+                    <a href="gestaodegas.html" class="menu-item w-full flex items-center gap-3 px-3 py-2 rounded-xl transition hover:bg-slate-800 hover:text-white text-slate-300">
+                        <i class="fa-solid fa-fire-flame-simple text-orange-400 w-5 text-center text-sm"></i>
+                        <span>Gestão de Gás</span>
+                    </a>
+                    <a href="gestaodeenergia.html" class="menu-item w-full flex items-center gap-3 px-3 py-2 rounded-xl transition hover:bg-slate-800 hover:text-white text-slate-300">
+                        <i class="fa-solid fa-bolt text-yellow-400 w-5 text-center text-sm"></i>
+                        <span>Gestão de Energia</span>
+                    </a>
+                    <a href="gestaodehoras.html" class="menu-item w-full flex items-center gap-3 px-3 py-2 rounded-xl transition hover:bg-slate-800 hover:text-white text-slate-300">
+                        <i class="fa-solid fa-clock text-amber-500 w-5 text-center text-sm"></i>
+                        <span>Gestão de Horas</span>
+                    </a>
+                </div>
+            </div>
 
-            <a href="gestaodehoras.html" class="menu-item w-full flex items-center gap-3 px-3 py-2 rounded-xl transition hover:bg-slate-800 hover:text-white text-slate-300">
-                <i class="fa-solid fa-clock text-amber-600 w-5 text-center text-sm"></i>
-                <span>Gestão de Horas</span>
-            </a>
-            
-            <a href="pcm_manutencao.html" class="menu-item w-full flex items-center gap-3 px-3 py-2 rounded-xl transition hover:bg-slate-800 hover:text-white text-slate-300">
-                <i class="fa-solid fa-wrench text-emerald-400 w-5 text-center text-sm"></i>
-                <span>PCM & Manutenção</span>
-            </a>
+            <!-- GRUPO: MANUTENÇÃO INDUSTRIAL -->
+            <div>
+                <div class="px-3 pb-1 text-[10px] font-black tracking-wider text-slate-500 uppercase">Manutenção Industrial</div>
+                <div class="space-y-1">
+                    <a href="pcm_manutencao.html" class="menu-item w-full flex items-center gap-3 px-3 py-2 rounded-xl transition hover:bg-slate-800 hover:text-white text-slate-300">
+                        <i class="fa-solid fa-wrench text-emerald-400 w-5 text-center text-sm"></i>
+                        <span>PCM & Manutenção</span>
+                    </a>
+                </div>
+            </div>
 
-            <div class="pt-4 mt-2 border-t border-slate-800">
+            <!-- GRUPO: SISTEMA -->
+            <div class="pt-2 border-t border-slate-800">
                 <a href="configuracoes.html" class="menu-item w-full flex items-center gap-3 px-3 py-2 rounded-xl transition hover:bg-slate-800 hover:text-amber-400 text-slate-400 font-bold">
                     <i class="fa-solid fa-gear w-5 text-center text-sm"></i>
                     <span>Configurações</span>
