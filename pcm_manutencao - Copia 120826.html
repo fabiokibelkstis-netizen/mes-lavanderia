@@ -35,7 +35,6 @@
 </head>
 <body class="bg-slate-100 font-sans min-h-screen flex text-slate-800">
 
-    <!-- SIDEBAR -->
     <aside class="w-64 bg-slate-900 text-slate-300 flex flex-col justify-between min-h-screen sticky top-0 z-50">
         <div>
             <div class="p-5 border-b border-slate-800 flex items-center gap-3">
@@ -61,11 +60,6 @@
                 <button onclick="navegarPara('equipamentos')" id="btn-equipamentos" class="menu-item w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition hover:bg-slate-800 hover:text-white text-slate-300">
                     <i class="fa-solid fa-cubes text-blue-400 w-5 text-center text-sm"></i>
                     <span>Cad. Equipamentos</span>
-                </button>
-
-                <button onclick="navegarPara('capacidade')" id="btn-capacidade" class="menu-item w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition hover:bg-slate-800 hover:text-white text-slate-300">
-                    <i class="fa-solid fa-gauge-high text-orange-400 w-5 text-center text-sm"></i>
-                    <span>Capacidade Produção/h</span>
                 </button>
 
                 <button onclick="navegarPara('pmp')" id="btn-pmp" class="menu-item w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition hover:bg-slate-800 hover:text-white text-slate-300">
@@ -112,7 +106,6 @@
             </div>
         </header>
 
-        <!-- VIEW DASHBOARD -->
         <div id="view-dashboard" class="space-y-6">
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 border-l-4 border-l-emerald-500">
@@ -172,7 +165,6 @@
             </div>
         </div>
 
-        <!-- VIEW EQUIPAMENTOS -->
         <div id="view-equipamentos" class="hidden space-y-6">
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div class="space-y-6">
@@ -303,101 +295,6 @@
             </div>
         </div>
 
-        <!-- VIEW CAPACIDADE DE PRODUÇÃO POR HORA -->
-        <div id="view-capacidade" class="hidden space-y-6">
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 space-y-4">
-                    <div class="border-b pb-2 flex justify-between items-center text-orange-600">
-                        <h3 id="capFormTitulo" class="text-sm font-bold flex items-center gap-2">
-                            <i class="fa-solid fa-gauge-high"></i>
-                            <span>Cadastrar Capacidade de Produção</span>
-                        </h3>
-                        <button id="btnCancelarCap" onclick="cancelarEdicaoCapacidade()" class="hidden text-[11px] text-rose-600 font-bold hover:underline">
-                            <i class="fa-solid fa-xmark"></i> Cancelar
-                        </button>
-                    </div>
-
-                    <form id="formCapacidade" onsubmit="salvarCapacidade(event)" class="space-y-3 text-xs">
-                        <input type="hidden" id="capId">
-
-                        <div>
-                            <label class="block font-bold mb-1 text-slate-700">Equipamento / Máquina *</label>
-                            <select id="capEquipamento" required class="w-full p-2 border rounded-lg bg-slate-50 font-semibold focus:ring-2 focus:ring-orange-500 outline-none">
-                                <option value="">-- Selecione o Ativo --</option>
-                            </select>
-                        </div>
-
-                        <div>
-                            <label class="block font-bold mb-1 text-slate-700">Produto / Processo / SKU *</label>
-                            <input type="text" id="capProduto" required placeholder="Ex: Toalhas de Banho 500g ou Processo Padronizado" class="w-full p-2 border rounded-lg bg-slate-50 focus:ring-2 focus:ring-orange-500 outline-none">
-                        </div>
-
-                        <div class="grid grid-cols-2 gap-2">
-                            <div>
-                                <label class="block font-bold mb-1 text-slate-700">Unidade de Medida *</label>
-                                <select id="capUnidade" required class="w-full p-2 border rounded-lg bg-slate-50 focus:ring-2 focus:ring-orange-500 outline-none font-medium">
-                                    <option value="Peças/h">Peças / Hora</option>
-                                    <option value="Kg/h">Kg / Hora</option>
-                                    <option value="Litros/h">Litros / Hora</option>
-                                    <option value="Metros/h">Metros / Hora</option>
-                                    <option value="Caixas/h">Caixas / Hora</option>
-                                    <option value="Ciclos/h">Ciclos / Hora</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block font-bold mb-1 text-slate-700">Cap. Nominal / h *</label>
-                                <input type="number" step="0.01" id="capNominal" required placeholder="Ex: 500" oninput="calcularEficienciaCapacidade()" class="w-full p-2 border rounded-lg bg-slate-50 font-bold text-slate-800 focus:ring-2 focus:ring-orange-500 outline-none">
-                            </div>
-                        </div>
-
-                        <div class="grid grid-cols-2 gap-2">
-                            <div>
-                                <label class="block font-bold mb-1 text-slate-700">Cap. Efetiva (Meta) / h *</label>
-                                <input type="number" step="0.01" id="capEfetiva" required placeholder="Ex: 450" oninput="calcularEficienciaCapacidade()" class="w-full p-2 border rounded-lg bg-slate-50 font-bold text-orange-600 focus:ring-2 focus:ring-orange-500 outline-none">
-                            </div>
-                            <div>
-                                <label class="block font-bold mb-1 text-slate-700">Eficiência Esp. (%)</label>
-                                <input type="text" id="capEficienciaDisplay" readonly placeholder="Calculado..." class="w-full p-2 border rounded-lg bg-slate-200 text-slate-700 font-black cursor-not-allowed">
-                            </div>
-                        </div>
-
-                        <div>
-                            <label class="block font-bold mb-1 text-slate-700">Observações Operacionais</label>
-                            <textarea id="capObservacoes" placeholder="Ex: Parâmetro considerando gramatura nominal de 500g e 3 operadores em linha." class="w-full p-2 border rounded-lg bg-slate-50 focus:ring-2 focus:ring-orange-500 outline-none" rows="2"></textarea>
-                        </div>
-
-                        <button type="submit" id="btnSalvarCap" class="w-full bg-orange-600 hover:bg-orange-700 text-white font-bold p-2.5 rounded-xl transition shadow flex items-center justify-center gap-2">
-                            <i class="fa-solid fa-floppy-disk"></i> Cadastrar Capacidade
-                        </button>
-                    </form>
-                </div>
-
-                <div class="lg:col-span-2 bg-white p-5 rounded-2xl shadow-sm border border-slate-200 space-y-3">
-                    <h3 class="text-sm font-bold text-slate-800 border-b pb-2 flex justify-between items-center">
-                        <span>Matriz de Capacidades de Produção por Máquina</span>
-                        <span id="badgeTotalCapacidade" class="text-xs bg-orange-100 text-orange-800 font-bold px-2.5 py-0.5 rounded-full">0 cadastradas</span>
-                    </h3>
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left text-xs">
-                            <thead class="bg-slate-100 text-slate-700">
-                                <tr>
-                                    <th class="p-2.5 border">Máquina / Tag</th>
-                                    <th class="p-2.5 border">Produto / Processo</th>
-                                    <th class="p-2.5 border text-center">Unidade</th>
-                                    <th class="p-2.5 border text-right">Cap. Nominal</th>
-                                    <th class="p-2.5 border text-right">Cap. Efetiva (Meta)</th>
-                                    <th class="p-2.5 border text-center">Efic. Esp.</th>
-                                    <th class="p-2.5 border text-center w-20">Ações</th>
-                                </tr>
-                            </thead>
-                            <tbody id="tblCapacidade"></tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- VIEW PMP -->
         <div id="view-pmp" class="hidden space-y-6">
             <form id="formPMP" onsubmit="salvarPlanoPMP(event)" class="space-y-6">
                 <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 space-y-4">
@@ -521,7 +418,6 @@
             </div>
         </div>
 
-        <!-- VIEW TÉCNICOS -->
         <div id="view-tecnicos" class="hidden space-y-6">
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 space-y-4">
@@ -628,7 +524,6 @@
             </div>
         </div>
 
-        <!-- VIEW ORDENS DE SERVIÇO -->
         <div id="view-os" class="hidden space-y-6">
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 space-y-4">
@@ -702,7 +597,6 @@
             </div>
         </div>
 
-        <!-- VIEW LUBRIFICAÇÃO -->
         <div id="view-lubrificacao" class="hidden space-y-6">
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 space-y-4">
@@ -760,7 +654,6 @@
             </div>
         </div>
 
-        <!-- VIEW PEÇAS -->
         <div id="view-pecas" class="hidden space-y-6">
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 space-y-4">
@@ -824,7 +717,6 @@
             MACRO_MAQUINAS: "mes_macro_maquinas",
             MACRO_COMPONENTES: "mes_macro_componentes",
             EQUIPAMENTOS: "mes_equipamentos",
-            CAPACIDADE: "mes_capacidade_producao",
             TECNICOS: "mes_tecnicos",
             OS: "mes_os",
             LUBRIFICACAO: "mes_lubrificacao",
@@ -844,7 +736,7 @@
         });
 
         function navegarPara(viewId) {
-            const views = ["dashboard", "equipamentos", "capacidade", "pmp", "tecnicos", "os", "lubrificacao", "pecas"];
+            const views = ["dashboard", "equipamentos", "pmp", "tecnicos", "os", "lubrificacao", "pecas"];
             views.forEach(v => {
                 const el = document.getElementById(`view-${v}`);
                 const btn = document.getElementById(`btn-${v}`);
@@ -866,7 +758,6 @@
             const titulos = {
                 dashboard: ["Dashboard de Manutenção Industrial", "Indicadores operacionais de confiabilidade, disponibilidade e integração OEE."],
                 equipamentos: ["Cadastro do Parque de Máquinas e Ativos", "Hierarquia Macro de Máquinas e Componentes."],
-                capacidade: ["Cadastro de Capacidade de Produção por Hora", "Parâmetros operacionais e metas de cadência por máquina e produto."],
                 pmp: ["Plano de Manutenção Preventiva (PMP)", "Sistemática de planos preventivos por tempo ou horímetro."],
                 tecnicos: ["Cadastro de Mantenedores e Horários", "Gestão da equipe técnica, especialidades e escalas de trabalho."],
                 os: ["Gestão e Apontamento de Ordens de Serviço", "Registro de corretivas, preventivas e preditivas."],
@@ -893,144 +784,15 @@
             }
             if (!localStorage.getItem(CHAVES.MACRO_COMPONENTES)) {
                 localStorage.setItem(CHAVES.MACRO_COMPONENTES, JSON.stringify([
-                    "Geral / Conjunto", "Motor Elétrico", "Redutor de Velocidade", "Bomba de Água", "Inversor de Freqüência", "Válvula Solenóide"
+                    "Geral / Conjunto", "Motor Elétrico", "Redutor de Velocidade", "Bomba de Água", "Inversor de Freqüência", "Valvula Solenóide"
                 ]));
             }
             if (!localStorage.getItem(CHAVES.TECNICOS)) {
                 localStorage.setItem(CHAVES.TECNICOS, JSON.stringify([
-                    { id: "TEC-1", nome: "Carlos Eduardo Silveira", especialidade: "Mecânico", turno: "1º Turno", horario_inicio: "07:00", horario_fim: "16:48", contato: "(11) 98888-1111", status: "Ativo", criado_em: new Date().toISOString() },
-                    { id: "TEC-2", nome: "Marcos Vinicius Ribeiro", especialidade: "Eletricista", turno: "2º Turno", horario_inicio: "16:48", horario_fim: "01:30", contato: "(11) 98888-2222", status: "Ativo", criado_em: new Date().toISOString() }
+                    { id: "TEC-1", nome: "Carlos Eduardo Silveira", especialidade: "Mecânico", turno: "1º Turno", horario_inicio: "07:00", horario_fim: "16:48", contato: "(11) 98888-1111", status: "Ativo" },
+                    { id: "TEC-2", nome: "Marcos Vinicius Ribeiro", especialidade: "Eletricista", turno: "2º Turno", horario_inicio: "16:48", horario_fim: "01:30", contato: "(11) 98888-2222", status: "Ativo" }
                 ]));
             }
-        }
-
-        // ================= CAPACIDADE DE PRODUÇÃO POR HORA =================
-        function calcularEficienciaCapacidade() {
-            const nom = parseFloat(document.getElementById("capNominal").value) || 0;
-            const ef = parseFloat(document.getElementById("capEfetiva").value) || 0;
-            const display = document.getElementById("capEficienciaDisplay");
-
-            if (nom > 0 && ef > 0) {
-                const perc = (ef / nom) * 100;
-                display.value = `${perc.toFixed(1)}%`;
-            } else {
-                display.value = "-- %";
-            }
-        }
-
-        function salvarCapacidade(e) {
-            e.preventDefault();
-            const id = document.getElementById("capId").value || "CAP-" + Date.now();
-            const equipamento_id = document.getElementById("capEquipamento").value;
-            const produto = document.getElementById("capProduto").value.trim();
-            const unidade = document.getElementById("capUnidade").value;
-            const cap_nominal = Number(document.getElementById("capNominal").value) || 0;
-            const cap_efetiva = Number(document.getElementById("capEfetiva").value) || 0;
-            const observacoes = document.getElementById("capObservacoes").value.trim();
-
-            if (!equipamento_id) {
-                alert("Por favor, selecione um equipamento do parque.");
-                return;
-            }
-
-            let lista = JSON.parse(localStorage.getItem(CHAVES.CAPACIDADE) || "[]");
-            const index = lista.findIndex(c => String(c.id) === String(id));
-
-            const objetoCapacidade = {
-                id,
-                equipamento_id,
-                produto,
-                unidade,
-                cap_nominal,
-                cap_efetiva,
-                observacoes,
-                atualizado_em: new Date().toISOString()
-            };
-
-            if (index >= 0) {
-                lista[index] = objetoCapacidade;
-            } else {
-                objetoCapacidade.criado_em = new Date().toISOString();
-                lista.push(objetoCapacidade);
-            }
-
-            localStorage.setItem(CHAVES.CAPACIDADE, JSON.stringify(lista));
-            cancelarEdicaoCapacidade();
-            renderizarTabelas();
-            alert("Capacidade de produção por hora salva com sucesso!");
-        }
-
-        function editarCapacidade(id) {
-            const lista = JSON.parse(localStorage.getItem(CHAVES.CAPACIDADE) || "[]");
-            const cap = lista.find(c => String(c.id) === String(id));
-            if (!cap) return;
-
-            document.getElementById("capId").value = cap.id;
-            document.getElementById("capEquipamento").value = cap.equipamento_id;
-            document.getElementById("capProduto").value = cap.produto;
-            document.getElementById("capUnidade").value = cap.unidade;
-            document.getElementById("capNominal").value = cap.cap_nominal;
-            document.getElementById("capEfetiva").value = cap.cap_efetiva;
-            document.getElementById("capObservacoes").value = cap.observacoes || "";
-
-            calcularEficienciaCapacidade();
-
-            document.getElementById("capFormTitulo").innerHTML = `<i class="fa-solid fa-pen-to-square"></i> <span>Editar Capacidade de Produção</span>`;
-            document.getElementById("btnSalvarCap").innerHTML = `<i class="fa-solid fa-rotate"></i> Atualizar Capacidade`;
-            document.getElementById("btnCancelarCap").classList.remove("hidden");
-            document.getElementById("capProduto").focus();
-        }
-
-        function cancelarEdicaoCapacidade() {
-            document.getElementById("formCapacidade").reset();
-            document.getElementById("capId").value = "";
-            document.getElementById("capEficienciaDisplay").value = "-- %";
-            document.getElementById("capFormTitulo").innerHTML = `<i class="fa-solid fa-gauge-high"></i> <span>Cadastrar Capacidade de Produção</span>`;
-            document.getElementById("btnSalvarCap").innerHTML = `<i class="fa-solid fa-floppy-disk"></i> Cadastrar Capacidade`;
-            document.getElementById("btnCancelarCap").classList.add("hidden");
-        }
-
-        function renderizarTabelaCapacidade() {
-            const lista = JSON.parse(localStorage.getItem(CHAVES.CAPACIDADE) || "[]");
-            const eqList = JSON.parse(localStorage.getItem(CHAVES.EQUIPAMENTOS) || "[]");
-            const tbody = document.getElementById("tblCapacidade");
-            const badge = document.getElementById("badgeTotalCapacidade");
-
-            if (badge) badge.textContent = `${lista.length} cadastradas`;
-            if (!tbody) return;
-
-            if (lista.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="7" class="p-4 text-center text-slate-400 font-medium">Nenhuma capacidade de produção cadastrada.</td></tr>`;
-                return;
-            }
-
-            tbody.innerHTML = lista.map(c => {
-                const eq = eqList.find(e => String(e.id) === String(c.equipamento_id));
-                const efic = c.cap_nominal > 0 ? ((c.cap_efetiva / c.cap_nominal) * 100).toFixed(1) : 0;
-
-                return `
-                    <tr class="border-b hover:bg-slate-50 transition">
-                        <td class="p-2.5 font-bold text-orange-600">${eq ? eq.tag + ' - ' + eq.nome_macro : 'Ativo Removido'}</td>
-                        <td class="p-2.5 font-semibold text-slate-800">${c.produto}</td>
-                        <td class="p-2.5 text-center font-bold text-slate-500">${c.unidade}</td>
-                        <td class="p-2.5 text-right font-mono font-semibold">${Number(c.cap_nominal).toLocaleString('pt-BR')}</td>
-                        <td class="p-2.5 text-right font-mono font-bold text-orange-600">${Number(c.cap_efetiva).toLocaleString('pt-BR')}</td>
-                        <td class="p-2.5 text-center">
-                            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${efic >= 90 ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}">
-                                ${efic}%
-                            </span>
-                        </td>
-                        <td class="p-2.5 text-center space-x-1">
-                            <button onclick="editarCapacidade('${c.id}')" class="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg transition" title="Editar Capacidade">
-                                <i class="fa-solid fa-pen-to-square"></i>
-                            </button>
-                            <button onclick="excluirItem('${CHAVES.CAPACIDADE}', '${c.id}')" class="p-1.5 text-rose-600 hover:bg-rose-50 rounded-lg transition" title="Excluir Registro">
-                                <i class="fa-solid fa-trash-can"></i>
-                            </button>
-                        </td>
-                    </tr>
-                `;
-            }).join('');
         }
 
         // ================= TÉCNICOS E HORÁRIOS DE TRABALHO =================
@@ -1068,7 +830,6 @@
             if (index >= 0) {
                 lista[index] = objetoTecnico;
             } else {
-                objetoTecnico.criado_em = new Date().toISOString();
                 lista.push(objetoTecnico);
             }
 
@@ -1162,148 +923,6 @@
             `).join('');
         }
 
-        // ================= ORDENS DE SERVIÇO (O/S) =================
-        function salvarOS(e) {
-            e.preventDefault();
-            const id = document.getElementById("osId").value || "OS-" + Date.now();
-            const equipamento_id = document.getElementById("osEquipamento").value;
-            const tipo = document.getElementById("osTipo").value;
-            const data = document.getElementById("osData").value;
-            const tecnico = document.getElementById("osTecnico").value;
-            const horas = Number(document.getElementById("osHoras").value) || 0;
-            const descricao = document.getElementById("osDescricao").value.trim();
-
-            if (!equipamento_id) {
-                alert("Por favor, selecione um equipamento.");
-                return;
-            }
-
-            let lista = JSON.parse(localStorage.getItem(CHAVES.OS) || "[]");
-            const index = lista.findIndex(o => String(o.id) === String(id));
-
-            const objetoOS = {
-                id,
-                equipamento_id,
-                tipo,
-                data,
-                tecnico,
-                horas,
-                descricao,
-                atualizado_em: new Date().toISOString()
-            };
-
-            if (index >= 0) {
-                lista[index] = objetoOS;
-            } else {
-                objetoOS.criado_em = new Date().toISOString();
-                lista.push(objetoOS);
-            }
-
-            localStorage.setItem(CHAVES.OS, JSON.stringify(lista));
-            cancelarEdicaoOS();
-            renderizarTabelas();
-            atualizarKpisDashboard();
-            atualizarGrafico();
-            alert("Ordem de Serviço salva com sucesso!");
-        }
-
-        function cancelarEdicaoOS() {
-            document.getElementById("formOS").reset();
-            document.getElementById("osId").value = "";
-            document.getElementById("osFormTitulo").textContent = "Abertura / Apontamento de O/S";
-            document.getElementById("btnSalvarOS").textContent = "Salvar Ordem de Serviço";
-            document.getElementById("btnCancelarOS").classList.add("hidden");
-        }
-
-        // ================= LUBRIFICAÇÃO =================
-        function salvarLubrificacao(e) {
-            e.preventDefault();
-            const id = document.getElementById("lubId").value || "LUB-" + Date.now();
-            const equipamento_id = document.getElementById("lubEquipamento").value;
-            const ponto = document.getElementById("lubPonto").value.trim();
-            const lubrificante = document.getElementById("lubLubrificante").value.trim();
-            const frequencia = document.getElementById("lubFrequencia").value;
-
-            if (!equipamento_id) {
-                alert("Por favor, selecione um equipamento.");
-                return;
-            }
-
-            let lista = JSON.parse(localStorage.getItem(CHAVES.LUBRIFICACAO) || "[]");
-            const index = lista.findIndex(l => String(l.id) === String(id));
-
-            const objetoLub = {
-                id,
-                equipamento_id,
-                ponto,
-                lubrificante,
-                frequencia,
-                atualizado_em: new Date().toISOString()
-            };
-
-            if (index >= 0) {
-                lista[index] = objetoLub;
-            } else {
-                objetoLub.criado_em = new Date().toISOString();
-                lista.push(objetoLub);
-            }
-
-            localStorage.setItem(CHAVES.LUBRIFICACAO, JSON.stringify(lista));
-            cancelarEdicaoLubrificacao();
-            renderizarTabelas();
-            alert("Plano de lubrificação salvo com sucesso!");
-        }
-
-        function cancelarEdicaoLubrificacao() {
-            document.getElementById("formLubrificacao").reset();
-            document.getElementById("lubId").value = "";
-            document.getElementById("lubFormTitulo").textContent = "Plano de Lubrificação";
-            document.getElementById("btnSalvarLub").textContent = "Salvar Plano Lubrificação";
-            document.getElementById("btnCancelarLub").classList.add("hidden");
-        }
-
-        // ================= PEÇAS DE REPOSIÇÃO =================
-        function salvarPeca(e) {
-            e.preventDefault();
-            const id = document.getElementById("pecaId").value || "PEC-" + Date.now();
-            const codigo = document.getElementById("pecaCodigo").value.trim().toUpperCase();
-            const descricao = document.getElementById("pecaDescricao").value.trim();
-            const quantidade = Number(document.getElementById("pecaQtd").value) || 0;
-            const quantidade_minima = Number(document.getElementById("pecaQtdMin").value) || 0;
-
-            let lista = JSON.parse(localStorage.getItem(CHAVES.PECAS) || "[]");
-            const index = lista.findIndex(p => String(p.id) === String(id));
-
-            const objetoPeca = {
-                id,
-                codigo,
-                descricao,
-                quantidade,
-                quantidade_minima,
-                atualizado_em: new Date().toISOString()
-            };
-
-            if (index >= 0) {
-                lista[index] = objetoPeca;
-            } else {
-                objetoPeca.criado_em = new Date().toISOString();
-                lista.push(objetoPeca);
-            }
-
-            localStorage.setItem(CHAVES.PECAS, JSON.stringify(lista));
-            cancelarEdicaoPeca();
-            renderizarTabelas();
-            alert("Peça cadastrada com sucesso!");
-        }
-
-        function cancelarEdicaoPeca() {
-            document.getElementById("formPeca").reset();
-            document.getElementById("pecaId").value = "";
-            document.getElementById("pecaFormTitulo").textContent = "Cadastro de Peça de Reposição";
-            document.getElementById("btnSalvarPeca").textContent = "Cadastrar Peça";
-            document.getElementById("btnCancelarPeca").classList.add("hidden");
-        }
-
         // ================= AUXILIARES & OUTROS CADASTROS =================
         function carregarCombosMacro() {
             const macros = JSON.parse(localStorage.getItem(CHAVES.MACRO_MAQUINAS) || "[]");
@@ -1351,7 +970,6 @@
             const osEq = document.getElementById("osEquipamento");
             const pmpEq = document.getElementById("pmp_equipamento_id");
             const lubEq = document.getElementById("lubEquipamento");
-            const capEq = document.getElementById("capEquipamento");
             const fltEq = document.getElementById("filtroOsEquipamento");
 
             const eqOptions = `<option value="">-- Selecione o Ativo --</option>` + eqList.map(e => `<option value="${e.id}">${e.tag} - ${e.nome_macro} (${e.componente})</option>`).join('');
@@ -1359,7 +977,6 @@
             if (osEq) osEq.innerHTML = eqOptions;
             if (pmpEq) pmpEq.innerHTML = eqOptions;
             if (lubEq) lubEq.innerHTML = eqOptions;
-            if (capEq) capEq.innerHTML = eqOptions;
             if (fltEq) fltEq.innerHTML = `<option value="TODOS">-- Todos os Equipamentos --</option>` + eqList.map(e => `<option value="${e.id}">${e.tag} - ${e.nome_macro}</option>`).join('');
 
             const osTec = document.getElementById("osTecnico");
@@ -1383,14 +1000,10 @@
             let list = JSON.parse(localStorage.getItem(CHAVES.EQUIPAMENTOS) || "[]");
             const idx = list.findIndex(item => String(item.id) === String(id));
 
-            const eqData = { id, tag, nome_macro, componente, setor, tensao, capacidade, horas_dia, observacoes, atualizado_em: new Date().toISOString() };
+            const eqData = { id, tag, nome_macro, componente, setor, tensao, capacidade, horas_dia, observacoes };
 
-            if (idx >= 0) {
-                list[idx] = eqData;
-            } else {
-                eqData.criado_em = new Date().toISOString();
-                list.push(eqData);
-            }
+            if (idx >= 0) list[idx] = eqData;
+            else list.push(eqData);
 
             localStorage.setItem(CHAVES.EQUIPAMENTOS, JSON.stringify(list));
             cancelarEdicaoEquipamento();
@@ -1398,25 +1011,26 @@
             carregarCombosGlobais();
         }
 
-        function editarEquipamento(id) {
+	function editarEquipamento(id) {
             const list = JSON.parse(localStorage.getItem(CHAVES.EQUIPAMENTOS) || "[]");
-            const item = list.find(i => String(i.id) === String(id));
+            const item = list.find(i => i.id === id);
             if (!item) return;
 
             document.getElementById("eqId").value = item.id;
             document.getElementById("eqTag").value = item.tag;
-            document.getElementById("eqNomeMacro").value = item.nome_macro;
+            document.getElementById("eqNomeMacro").value = item.nomeMacro;
             document.getElementById("eqComponente").value = item.componente;
             document.getElementById("eqSetor").value = item.setor;
             document.getElementById("eqTensao").value = item.tensao;
             document.getElementById("eqCapacidade").value = item.capacidade;
-            document.getElementById("eqHorasDia").value = item.horas_dia;
+            document.getElementById("eqHorasDia").value = item.horasDia;
             document.getElementById("eqObservacoes").value = item.observacoes;
 
-            document.getElementById("eqFormTitulo").innerHTML = `<i class="fa-solid fa-pen-to-square"></i> <span>Editar Ativo / Componente</span>`;
-            document.getElementById("btnSalvarEq").textContent = "Atualizar Equipamento";
+            document.getElementById("eqFormTitulo").innerText = "Editar Equipamento / Ativo";
+            document.getElementById("btnSalvarEq").innerText = "Atualizar Equipamento";
             document.getElementById("btnCancelarEq").classList.remove("hidden");
         }
+
 
         function cancelarEdicaoEquipamento() {
             document.getElementById("formEquipamento").reset();
@@ -1441,16 +1055,17 @@
                         <td class="p-2">${e.tensao} / ${e.capacidade || '-'}</td>
                         <td class="p-2 text-center font-bold">${e.horas_dia}h</td>
                         <td class="p-2 text-slate-500 max-w-[150px] truncate">${e.observacoes || '-'}</td>
-                        <td class="p-2 text-center space-x-1">
-                            <button onclick="editarEquipamento('${e.id}')" class="p-1 text-blue-600 hover:bg-blue-50 rounded"><i class="fa-solid fa-pen"></i></button>
-                            <button onclick="excluirItem('${CHAVES.EQUIPAMENTOS}', '${e.id}')" class="p-1 text-rose-600 hover:bg-rose-50 rounded"><i class="fa-solid fa-trash"></i></button>
+                        <td class="p-2 text-center">
+
+			    <button onclick="editarEquipamento('${item.id}')" class="p-1 text-blue-600 hover:bg-blue-50 rounded"><i class="fa-solid fa-pen"></i></button>
+                            <button onclick="excluirEquipamento('${item.id}')" class="p-1 text-rose-600 hover:bg-rose-50 rounded"><i class="fa-solid fa-trash"></i></button>
+                            
+			    <button onclick="editarItem('${CHAVES.EQUIPAMENTOS}', '${e.id}')" class="text-rose-600 hover:text-rose-800"><i class="fa-solid fa-pen"></i></button>
+                            <button onclick="excluirItem('${CHAVES.EQUIPAMENTOS}', '${e.id}')" class="text-rose-600 hover:text-rose-800"><i class="fa-solid fa-trash"></i></button>
                         </td>
                     </tr>
                 `).join('');
             }
-
-            // Renderizar Capacidades
-            renderizarTabelaCapacidade();
 
             // Renderizar Mantenedores
             renderizarTabelaTecnicos();
