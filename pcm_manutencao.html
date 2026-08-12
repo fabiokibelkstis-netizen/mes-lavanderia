@@ -1428,6 +1428,7 @@
             const id = document.getElementById("eqId").value || "EQ-" + Date.now();
             const tag = document.getElementById("eqTag").value.trim().toUpperCase();
             const nome_macro = document.getElementById("eqNomeMacro").value;
+	    const fabricante = document.getElementById("eqFabricante").value.trim(); // CAPTURA DO CAMPO FABRICANTE
             const componente = document.getElementById("eqComponente").value;
             const setor = document.getElementById("eqSetor").value.trim();
             const tensao = document.getElementById("eqTensao").value;
@@ -1438,7 +1439,7 @@
             let list = JSON.parse(localStorage.getItem(CHAVES.EQUIPAMENTOS) || "[]");
             const idx = list.findIndex(item => String(item.id) === String(id));
 
-            const eqData = { id, tag, nome_macro, componente, setor, tensao, capacidade, horas_dia, observacoes, atualizado_em: new Date().toISOString() };
+            const eqData = { id, tag, nome_macro, fabricante, componente, setor, tensao, capacidade, horas_dia, observacoes, atualizado_em: new Date().toISOString() };
 
             if (idx >= 0) {
                 list[idx] = eqData;
