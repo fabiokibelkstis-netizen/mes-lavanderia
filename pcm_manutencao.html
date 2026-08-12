@@ -236,6 +236,10 @@
                                 <label class="block font-bold mb-1">Nome da Máquina (Selecione do Macro)</label>
                                 <select id="eqNomeMacro" required class="w-full p-2 border rounded-lg bg-slate-50 font-semibold"></select>
                             </div>
+                            <div>
+                                <label class="block font-bold mb-1">Fabricante</label>
+                                <input type="text" id="eqFabricante" placeholder="Ex: Jensen, Unimac" required class="w-full p-2 border rounded-lg bg-slate-50">
+                            </div>
 
                             <div class="grid grid-cols-2 gap-2">
                                 <div>
@@ -288,6 +292,7 @@
                                 <tr>
                                     <th class="p-2 border">Tag</th>
                                     <th class="p-2 border">Máquina Macro</th>
+                                    <th class="p-2 border">Fabricante</th>
                                     <th class="p-2 border">Componente</th>
                                     <th class="p-2 border">Setor</th>
                                     <th class="p-2 border">Tensão / Cap.</th>
@@ -1207,6 +1212,24 @@
             alert("Ordem de Serviço salva com sucesso!");
         }
 
+        function editarOS(id) {
+            const lista = JSON.parse(localStorage.getItem(CHAVES.OS) || "[]");
+            const os = lista.find(o => String(o.id) === String(id));
+            if (!os) return;
+
+            document.getElementById("osId").value = os.id;
+            document.getElementById("osEquipamento").value = os.equipamento_id;
+            document.getElementById("osTipo").value = os.tipo;
+            document.getElementById("osData").value = os.data;
+            document.getElementById("osTecnico").value = os.tecnico;
+            document.getElementById("osHoras").value = os.horas;
+            document.getElementById("osDescricao").value = os.descricao;
+
+            document.getElementById("osFormTitulo").textContent = "Editar Ordem de Serviço";
+            document.getElementById("btnSalvarOS").textContent = "Atualizar Ordem de Serviço";
+            document.getElementById("btnCancelarOS").classList.remove("hidden");
+        }
+
         function cancelarEdicaoOS() {
             document.getElementById("formOS").reset();
             document.getElementById("osId").value = "";
@@ -1254,6 +1277,22 @@
             alert("Plano de lubrificação salvo com sucesso!");
         }
 
+        function editarLubrificacao(id) {
+            const lista = JSON.parse(localStorage.getItem(CHAVES.LUBRIFICACAO) || "[]");
+            const lub = lista.find(l => String(l.id) === String(id));
+            if (!lub) return;
+
+            document.getElementById("lubId").value = lub.id;
+            document.getElementById("lubEquipamento").value = lub.equipamento_id;
+            document.getElementById("lubPonto").value = lub.ponto;
+            document.getElementById("lubLubrificante").value = lub.lubrificante;
+            document.getElementById("lubFrequencia").value = lub.frequencia;
+
+            document.getElementById("lubFormTitulo").textContent = "Editar Plano de Lubrificação";
+            document.getElementById("btnSalvarLub").textContent = "Atualizar Plano Lubrificação";
+            document.getElementById("btnCancelarLub").classList.remove("hidden");
+        }
+
         function cancelarEdicaoLubrificacao() {
             document.getElementById("formLubrificacao").reset();
             document.getElementById("lubId").value = "";
@@ -1294,6 +1333,22 @@
             cancelarEdicaoPeca();
             renderizarTabelas();
             alert("Peça cadastrada com sucesso!");
+        }
+
+        function editarPeca(id) {
+            const lista = JSON.parse(localStorage.getItem(CHAVES.PECAS) || "[]");
+            const peca = lista.find(p => String(p.id) === String(id));
+            if (!peca) return;
+
+            document.getElementById("pecaId").value = peca.id;
+            document.getElementById("pecaCodigo").value = peca.codigo;
+            document.getElementById("pecaDescricao").value = peca.descricao;
+            document.getElementById("pecaQtd").value = peca.quantidade;
+            document.getElementById("pecaQtdMin").value = peca.quantidade_minima;
+
+            document.getElementById("pecaFormTitulo").textContent = "Editar Peça de Reposição";
+            document.getElementById("btnSalvarPeca").textContent = "Atualizar Peça";
+            document.getElementById("btnCancelarPeca").classList.remove("hidden");
         }
 
         function cancelarEdicaoPeca() {
@@ -1406,6 +1461,7 @@
             document.getElementById("eqId").value = item.id;
             document.getElementById("eqTag").value = item.tag;
             document.getElementById("eqNomeMacro").value = item.nome_macro;
+            document.getElementById("eqFabricante").value = item.fabricante;
             document.getElementById("eqComponente").value = item.componente;
             document.getElementById("eqSetor").value = item.setor;
             document.getElementById("eqTensao").value = item.tensao;
@@ -1436,6 +1492,7 @@
                     <tr class="border-b hover:bg-slate-50">
                         <td class="p-2 font-mono font-bold text-blue-600">${e.tag}</td>
                         <td class="p-2 font-semibold">${e.nome_macro}</td>
+                        <td class="p-2 font-semibold">${e.fabricante}</td>
                         <td class="p-2 text-purple-700 font-semibold">${e.componente}</td>
                         <td class="p-2">${e.setor}</td>
                         <td class="p-2">${e.tensao} / ${e.capacidade || '-'}</td>
@@ -1468,8 +1525,9 @@
                             <td class="p-2">${l.ponto}</td>
                             <td class="p-2 text-amber-700 font-semibold">${l.lubrificante}</td>
                             <td class="p-2 text-center font-bold">${l.frequencia}</td>
-                            <td class="p-2 text-center">
-                                <button onclick="excluirItem('${CHAVES.LUBRIFICACAO}', '${l.id}')" class="text-rose-600 hover:text-rose-800"><i class="fa-solid fa-trash"></i></button>
+                            <td class="p-2 text-center space-x-1">
+                                <button onclick="editarLubrificacao('${l.id}')" class="p-1 text-blue-600 hover:bg-blue-50 rounded"><i class="fa-solid fa-pen"></i></button>
+                                <button onclick="excluirItem('${CHAVES.LUBRIFICACAO}', '${l.id}')" class="p-1 text-rose-600 hover:bg-rose-50 rounded"><i class="fa-solid fa-trash"></i></button>
                             </td>
                         </tr>
                     `;
@@ -1494,8 +1552,9 @@
                                     ${emAlerta ? 'Estoque Crítico' : 'OK'}
                                 </span>
                             </td>
-                            <td class="p-2 text-center">
-                                <button onclick="excluirItem('${CHAVES.PECAS}', '${p.id}')" class="text-rose-600 hover:text-rose-800"><i class="fa-solid fa-trash"></i></button>
+                            <td class="p-2 text-center space-x-1">
+                                <button onclick="editarPeca('${p.id}')" class="p-1 text-blue-600 hover:bg-blue-50 rounded"><i class="fa-solid fa-pen"></i></button>
+                                <button onclick="excluirItem('${CHAVES.PECAS}', '${p.id}')" class="p-1 text-rose-600 hover:bg-rose-50 rounded"><i class="fa-solid fa-trash"></i></button>
                             </td>
                         </tr>
                     `;
@@ -1519,8 +1578,9 @@
                             <td class="p-2">${o.tecnico}</td>
                             <td class="p-2 text-center font-bold text-rose-600">${o.horas}h</td>
                             <td class="p-2 text-slate-500">${o.descricao}</td>
-                            <td class="p-2 text-center">
-                                <button onclick="excluirItem('${CHAVES.OS}', '${o.id}')" class="text-rose-600 hover:text-rose-800"><i class="fa-solid fa-trash"></i></button>
+                            <td class="p-2 text-center space-x-1">
+                                <button onclick="editarOS('${o.id}')" class="p-1 text-blue-600 hover:bg-blue-50 rounded"><i class="fa-solid fa-pen"></i></button>
+                                <button onclick="excluirItem('${CHAVES.OS}', '${o.id}')" class="p-1 text-rose-600 hover:bg-rose-50 rounded"><i class="fa-solid fa-trash"></i></button>
                             </td>
                         </tr>
                     `;
