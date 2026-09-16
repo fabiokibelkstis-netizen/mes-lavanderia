@@ -1,0 +1,1185 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apontamento de Produção - Chão de Fábrica</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --danger: #dc2626;
+            --danger-dark: #b91c1c;
+            --bg: #f1f5f9;
+            --card-bg: #ffffff;
+            --text: #0f172a;
+            --border: #cbd5e1;
+            --success-bg: #f0fdf4;
+            --success-border: #bbf7d0;
+            --success-text: #166534;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            padding: 16px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 550px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 16px;
+        }
+
+        header h1 {
+            font-size: 1.4rem;
+            color: var(--text);
+        }
+
+        /* Card da Seleção de Máquina e Meta */
+        .machine-card {
+            background: #ffffff;
+            border-left: 5px solid var(--primary);
+            border-radius: 8px;
+            padding: 14px 16px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        /* Box de Exibição da Meta */
+        .meta-box {
+            margin-top: 10px;
+            padding: 10px 14px;
+            background-color: var(--success-bg);
+            border: 1px solid var(--success-border);
+            border-radius: 6px;
+            color: var(--success-text);
+            font-size: 0.9rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+        }
+
+        .meta-box strong {
+            font-size: 1.15rem;
+            color: #15803d;
+        }
+
+        /* KPI de Média, Desempenho e Eficiência */
+        .kpi-row {
+            display: flex;
+            gap: 6px;
+            margin-top: 10px;
+        }
+
+        .kpi-card {
+            flex: 1;
+            background: #f8fafc;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 8px 6px;
+            text-align: center;
+            min-width: 0;
+        }
+
+        .kpi-title {
+            font-size: 0.68rem;
+            color: #64748b;
+            font-weight: 700;
+            display: block;
+            margin-bottom: 2px;
+            text-transform: uppercase;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .status-pill {
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 12px;
+            font-size: 0.72rem;
+            font-weight: bold;
+        }
+
+        .status-green { background-color: #dcfce7; color: #166534; }
+        .status-red { background-color: #fee2e2; color: #991b1b; }
+        .status-gray { background-color: #e2e8f0; color: #475569; }
+
+        /* Quadro de Lançamentos Horários */
+        .hourly-quadro {
+            margin-top: 10px;
+            background: #ffffff;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 10px;
+        }
+
+        .hourly-header {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: #475569;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+
+        .hourly-list {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding-bottom: 4px;
+        }
+
+        .hourly-badge {
+            flex: 0 0 auto;
+            min-width: 75px;
+            padding: 6px 8px;
+            border-radius: 6px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+
+        .hourly-badge.met { background-color: #dcfce7; border: 1px solid #86efac; color: #166534; }
+        .hourly-badge.unmet { background-color: #fee2e2; border: 1px solid #fca5a5; color: #991b1b; }
+
+        /* Banner de Modo de Edição */
+        .edit-banner {
+            background-color: #fef3c7;
+            border: 1px solid #fde047;
+            color: #854d0e;
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .btn-cancel-edit {
+            background: #fef08a;
+            border: 1px solid #eab308;
+            color: #854d0e;
+            cursor: pointer;
+            font-weight: bold;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+        }
+
+        /* Selector de Modo (Tabs) */
+        .mode-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 14px;
+            border: 2px solid var(--border);
+            background: #e2e8f0;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            color: #475569;
+            transition: all 0.2s;
+        }
+
+        .tab-btn.active-prod { background-color: var(--primary); border-color: var(--primary); color: white; }
+        .tab-btn.active-parada { background-color: var(--danger); border-color: var(--danger); color: white; }
+
+        /* Card Form */
+        .card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .form-group { margin-bottom: 16px; }
+
+        .form-group label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #475569;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+        }
+
+        .form-row { display: flex; gap: 10px; }
+        .form-row .form-group { flex: 1; }
+
+        .time-input-group { display: flex; gap: 6px; }
+        .time-input-group input { flex: 1; }
+
+        .btn-now {
+            padding: 0 10px;
+            background: #e2e8f0;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            color: #334155;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .btn-now:hover { background: #cbd5e1; }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 1rem;
+            background-color: #f8fafc;
+        }
+
+        .select-machine {
+            font-size: 1.05rem;
+            font-weight: bold;
+            color: var(--primary-dark);
+            border: 2px solid var(--primary);
+            background-color: #eff6ff;
+        }
+
+        /* Grade de Botões de Motivos de Parada - Exibição Completa Sem Rolar */
+        .reasons-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 6px;
+            margin-top: 6px;
+        }
+
+        @media (min-width: 480px) {
+            .reasons-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        .btn-reason {
+            padding: 8px 10px;
+            border: 1px solid var(--border);
+            background-color: #f8fafc;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            color: var(--text);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            line-height: 1.25;
+            min-height: 42px;
+        }
+
+        .btn-reason:hover { background-color: #e2e8f0; }
+
+        .btn-reason.selected {
+            background-color: var(--danger);
+            color: white;
+            border-color: var(--danger-dark);
+            box-shadow: 0 2px 6px rgba(220, 38, 38, 0.35);
+            transform: scale(1.01);
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: white;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin-top: 10px;
+        }
+
+        .btn-prod { background-color: var(--primary); }
+        .btn-prod:hover { background-color: var(--primary-dark); }
+
+        .btn-parada { background-color: var(--danger); }
+        .btn-parada:hover { background-color: var(--danger-dark); }
+
+        .form-section { display: none; }
+        .form-section.active { display: block; }
+
+        /* Histórico */
+        .history-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .history-card h3 {
+            font-size: 0.95rem;
+            color: #64748b;
+            margin-bottom: 12px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 6px;
+        }
+
+        .history-list { list-style: none; }
+
+        .history-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px dashed var(--border);
+            font-size: 0.875rem;
+        }
+
+        .history-item:last-child { border-bottom: none; }
+
+        .history-actions {
+            display: flex;
+            gap: 6px;
+            margin-left: 8px;
+        }
+
+        .btn-action {
+            border: none;
+            background: none;
+            cursor: pointer;
+            padding: 6px 8px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            transition: background 0.2s;
+        }
+
+        .btn-action-edit { color: #2563eb; background-color: #eff6ff; }
+        .btn-action-edit:hover { background-color: #dbeafe; }
+
+        .btn-action-delete { color: #dc2626; background-color: #fef2f2; }
+        .btn-action-delete:hover { background-color: #fee2e2; }
+
+        .badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            color: white;
+        }
+
+        .badge-prod { background-color: var(--primary); }
+        .badge-parada { background-color: var(--danger); }
+
+        .machine-tag {
+            display: block;
+            font-size: 0.75rem;
+            color: #64748b;
+            margin-top: 2px;
+        }
+
+        @media (max-width: 380px) {
+            .reasons-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Apontamento Operacional</h1>
+    </header>
+
+    <!-- SELEÇÃO DA MÁQUINA, META E DESEMPENHO -->
+    <div class="machine-card">
+        <div class="form-group" style="margin-bottom: 0;">
+            <label for="selectMaquina">⚙️ Máquina em Operação</label>
+            <select id="selectMaquina" class="select-machine" onchange="aoSelecionarMaquina(this.value)" required>
+                <!-- Populado dinamicamente -->
+            </select>
+        </div>
+
+        <div id="boxMetaProducao" class="meta-box" style="display: none;">
+            <span>🎯 Meta / h (Cap. Efetiva):</span>
+            <strong id="valorMeta">0 Pçs/h</strong>
+        </div>
+
+        <!-- QUADRO DINÂMICO DE DESEMPENHO E LANÇAMENTOS DAS ÚLTIMAS HORAS -->
+        <div id="boxDesempenho" style="display: none;">
+            <div class="kpi-row">
+                <div class="kpi-card">
+                    <span id="lblKpi1" class="kpi-title">📊 Média Prod / h</span>
+                    <strong id="valorMediaProd" style="font-size: 0.95rem; color: #1e293b;">0 Pçs/h</strong>
+                </div>
+                <div class="kpi-card">
+                    <span id="lblKpi2" class="kpi-title">📈 Desempenho Hoje</span>
+                    <span id="badgeStatusGeral" class="status-pill status-gray">Sem dados</span>
+                </div>
+                <div class="kpi-card">
+                    <span id="lblKpi3" class="kpi-title">🎯 Eficiência Prod.</span>
+                    <strong id="valorKpi3" style="font-size: 0.95rem; color: #1e293b;">0%</strong>
+                </div>
+            </div>
+
+            <div class="hourly-quadro">
+                <div class="hourly-header">
+                    <span id="lblQuadroHeader">Lançamentos de Produção</span>
+                    <span style="font-size: 0.7rem; color: #94a3b8; font-weight: normal;">(Deslize p/ lado)</span>
+                </div>
+                <div id="listaApontamentosHora" class="hourly-list">
+                    <!-- Cards horários dinâmicos (Produção ou Paradas) -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Banner Informativo quando em Modo de Edição -->
+    <div id="bannerEdicao" class="edit-banner" style="display: none;">
+        <span>✏️ Editando um registro existente...</span>
+        <button type="button" class="btn-cancel-edit" onclick="cancelarEdicao()">Cancelar Edição</button>
+    </div>
+
+    <!-- Botões de Alternância de Tela -->
+    <div class="mode-selector">
+        <button type="button" class="tab-btn active-prod" id="btnTabProd" onclick="setMode('prod')">
+            📦 Produção
+        </button>
+        <button type="button" class="tab-btn" id="btnTabParada" onclick="setMode('parada')">
+            ⚠️ Parada
+        </button>
+    </div>
+
+    <!-- FORMULÁRIO 1: APONTAMENTO DE PRODUÇÃO -->
+    <div id="sectionProd" class="form-section active card">
+        <form id="formProducao" onsubmit="salvarProducao(event)">
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Data</label>
+                    <input type="date" id="prodData" required>
+                </div>
+                <div class="form-group">
+                    <label>Horário</label>
+                    <div class="time-input-group">
+                        <input type="time" id="prodHora" required>
+                        <button type="button" class="btn-now" onclick="setHorarioAtual('prodHora')">⏱️ Agora</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Quantidade Produzida na Hora</label>
+                <input type="number" id="prodQtd" placeholder="Ex: 150" min="1" step="any" required style="font-size: 1.2rem; font-weight: bold;">
+            </div>
+
+            <button type="submit" id="btnSubmitProd" class="btn-submit btn-prod">Confirmar Produção</button>
+        </form>
+    </div>
+
+    <!-- FORMULÁRIO 2: REGISTRO DE PARADA DE MÁQUINA -->
+    <div id="sectionParada" class="form-section card">
+        <form id="formParada" onsubmit="salvarParada(event)">
+            <div class="form-group">
+                <label>Data</label>
+                <input type="date" id="paradaData" required>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Horário Início</label>
+                    <div class="time-input-group">
+                        <input type="time" id="paradaHoraInicio" required>
+                        <button type="button" class="btn-now" onclick="setHorarioAtual('paradaHoraInicio')">⏱️ Agora</button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Horário Término</label>
+                    <div class="time-input-group">
+                        <input type="time" id="paradaHoraFim" required>
+                        <button type="button" class="btn-now" onclick="setHorarioAtual('paradaHoraFim')">⏱️ Agora</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Selecione o Motivo da Parada</label>
+                <div class="reasons-grid" id="gridMotivos">
+                    <button type="button" class="btn-reason" onclick="selecionarMotivo(this, '1 - Limpeza máquina')">1 - Limpeza máquina</button>
+                    <button type="button" class="btn-reason" onclick="selecionarMotivo(this, '2 - Passar lixa / parafina')">2 - Passar lixa / parafina</button>
+                    <button type="button" class="btn-reason" onclick="selecionarMotivo(this, '3 - Troca de fita / correia')">3 - Troca de fita / correia</button>
+                    <button type="button" class="btn-reason" onclick="selecionarMotivo(this, '4 - Enrosco')">4 - Enrosco (dobra)</button>
+                    <button type="button" class="btn-reason" onclick="selecionarMotivo(this, '5 - Roupa molhada')">5 - Roupa molhada</button>
+                    <button type="button" class="btn-reason" onclick="selecionarMotivo(this, '6 - Falta de roupa')">6 - Falta de roupa</button>
+                    <button type="button" class="btn-reason" onclick="selecionarMotivo(this, '7 - Reuniões diárias')">7 - Reuniões diárias</button>
+                    <button type="button" class="btn-reason" onclick="selecionarMotivo(this, '8 - Falta de operador')">8 - Falta de operador</button>
+                    <button type="button" class="btn-reason" onclick="selecionarMotivo(this, '9 - Falta energia/vapor/ar')">9 - Falta energia/vapor/ar</button>
+                    <button type="button" class="btn-reason" onclick="selecionarMotivo(this, '10 - Refeição')">10 - Refeição</button>
+                    <button type="button" class="btn-reason" onclick="selecionarMotivo(this, '11 - Ajustes de Máquina')">11 - Ajustes de Máquina</button>
+                    <button type="button" class="btn-reason" onclick="selecionarMotivo(this, '12 - Problemas mecânicos')">12 - Problemas mecânicos</button>
+                    <button type="button" class="btn-reason" onclick="selecionarMotivo(this, '13 - Manutenção preventiva')">13 - Manten. preventiva</button>
+                    <button type="button" class="btn-reason" onclick="selecionarMotivo(this, '14 - Manutenção corretiva')">14 - Manten. corretiva</button>
+                    <button type="button" class="btn-reason" onclick="selecionarMotivo(this, '15 - Falta de Gaiola')">15 - Falta de Gaiola</button>
+                    <button type="button" class="btn-reason" onclick="selecionarMotivo(this, '16 - Outros')">16 - Outros</button>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Observação / Detalhes (Opcional)</label>
+                <textarea id="paradaObs" rows="2" placeholder="Descreva brevemente..."></textarea>
+            </div>
+
+            <button type="submit" id="btnSubmitParada" class="btn-submit btn-parada">Registrar Parada</button>
+        </form>
+    </div>
+
+    <!-- HISTÓRICO DE LANÇAMENTOS FILTRADO CONFORME O MODO ATIVO -->
+    <div class="history-card">
+        <h3 id="lblHistoricoTitulo">Últimos Registros de Produção</h3>
+        <ul id="listaHistorico" class="history-list">
+            <!-- Inserido dinamicamente conforme aba ativa -->
+        </ul>
+    </div>
+</div>
+
+<script>
+    let modoAtual = 'prod'; // 'prod' ou 'parada'
+    let motivoSelecionado = "";
+    let editandoId = null;
+
+    const DEFAULT_CAPACIDADES = [
+        { maquina: "MAQ-01 (Calandra 01)", capEfetiva: 150, unidade: "Pçs/h" },
+        { maquina: "MAQ-02 (Calandra 02)", capEfetiva: 130, unidade: "Pçs/h" },
+        { maquina: "MAQ-03 (Dobradeira 01)", capEfetiva: 220, unidade: "Pçs/h" },
+        { maquina: "MAQ-04 (Dobradeira 02)", capEfetiva: 0, unidade: "Pçs/h" },
+        { maquina: "MAQ-05 (Lavadora Industrial)", capEfetiva: 90, unidade: "Kg/h" },
+        { maquina: "MAQ-06 (Secadora)", capEfetiva: 100, unidade: "Kg/h" }
+    ];
+
+    window.onload = function() {
+        preencherData();
+        setHorarioAtual('prodHora');
+        setHorarioAtual('paradaHoraInicio');
+        carregarMaquinasComMeta();
+        carregarHistorico();
+    };
+
+    function obterCapacidades() {
+        let dados = localStorage.getItem('pcm_capacidade_producao');
+        if (!dados) {
+            localStorage.setItem('pcm_capacidade_producao', JSON.stringify(DEFAULT_CAPACIDADES));
+            return DEFAULT_CAPACIDADES;
+        }
+        return JSON.parse(dados);
+    }
+
+    function carregarMaquinasComMeta() {
+        const capacidades = obterCapacidades();
+        const select = document.getElementById('selectMaquina');
+        select.innerHTML = '<option value="">-- Selecione a Máquina --</option>';
+
+        const maquinasComMeta = capacidades.filter(c => c.capEfetiva && Number(c.capEfetiva) > 0);
+
+        if (maquinasComMeta.length === 0) {
+            select.innerHTML = '<option value="">⚠️ Nenhuma máquina com Meta cadastrada</option>';
+            return;
+        }
+
+        maquinasComMeta.forEach(item => {
+            const opt = document.createElement('option');
+            opt.value = item.maquina;
+            opt.textContent = item.maquina;
+            select.appendChild(opt);
+        });
+
+        carregarMaquinaSalva();
+    }
+
+    function aoSelecionarMaquina(maquina) {
+        salvarMaquinaSelecionada(maquina);
+        atualizarMetaExibida(maquina);
+        atualizarDesempenhoMaquina(maquina);
+    }
+
+    function atualizarMetaExibida(maquina) {
+        const boxMeta = document.getElementById('boxMetaProducao');
+        const valorMeta = document.getElementById('valorMeta');
+
+        if (!maquina) {
+            boxMeta.style.display = 'none';
+            return;
+        }
+
+        const capacidades = obterCapacidades();
+        const item = capacidades.find(c => c.maquina === maquina);
+
+        if (item && item.capEfetiva) {
+            const un = item.unidade || 'Unid/h';
+            valorMeta.textContent = `${item.capEfetiva} ${un}`;
+            boxMeta.style.display = 'flex';
+        } else {
+            boxMeta.style.display = 'none';
+        }
+    }
+
+    // CÁLCULO DE MINUTOS DE PARADA
+    function calcularMinutosParada(horaInicio, horaFim) {
+        if (!horaInicio || !horaFim) return 0;
+        const [h1, m1] = horaInicio.split(':').map(Number);
+        const [h2, m2] = horaFim.split(':').map(Number);
+        if (isNaN(h1) || isNaN(m1) || isNaN(h2) || isNaN(m2)) return 0;
+
+        let d1 = new Date(0, 0, 0, h1, m1);
+        let d2 = new Date(0, 0, 0, h2, m2);
+        if (d2 < d1) d2.setDate(d2.getDate() + 1);
+
+        return Math.round((d2 - d1) / 1000 / 60);
+    }
+
+    // CÁLCULO DO TEMPO CALENDÁRIO PERCORRIDO (A PARTIR DAS 06:00H)
+    function calcularTempoCalendarioMinutos() {
+        const agora = new Date();
+        const inicioDia = new Date(agora);
+        
+        inicioDia.setHours(6, 0, 0, 0);
+
+        if (agora < inicioDia) {
+            inicioDia.setDate(inicioDia.getDate() - 1);
+        }
+
+        const diffMs = agora - inicioDia;
+        const diffMinutos = Math.floor(diffMs / (1000 * 60));
+
+        return Math.max(1, Math.min(diffMinutos, 1440));
+    }
+
+    // ATUALIZA O QUADRO SUPERIOR ADAPTANDO PARA MODO PRODUÇÃO OU PARADA
+    function atualizarDesempenhoMaquina(maquina) {
+        const boxDesempenho = document.getElementById('boxDesempenho');
+        if (!maquina) {
+            boxDesempenho.style.display = 'none';
+            return;
+        }
+
+        const historico = JSON.parse(localStorage.getItem('apontamentos_dia') || '[]');
+        const containerLista = document.getElementById('listaApontamentosHora');
+        const lblKpi1 = document.getElementById('lblKpi1');
+        const valorKpi1 = document.getElementById('valorMediaProd');
+        const lblKpi2 = document.getElementById('lblKpi2');
+        const badgeStatus = document.getElementById('badgeStatusGeral');
+        const lblKpi3 = document.getElementById('lblKpi3');
+        const valorKpi3 = document.getElementById('valorKpi3');
+        const lblQuadroHeader = document.getElementById('lblQuadroHeader');
+
+        if (modoAtual === 'prod') {
+            lblKpi1.textContent = '📊 Média Prod / h';
+            lblKpi2.textContent = '📈 Desempenho Hoje';
+            lblKpi3.textContent = '🎯 Eficiência Prod.';
+            lblQuadroHeader.textContent = 'Lançamentos de Produção';
+
+            const capacidades = obterCapacidades();
+            const capItem = capacidades.find(c => c.maquina === maquina);
+            const meta = capItem && capItem.capEfetiva ? Number(capItem.capEfetiva) : 0;
+            const unidade = capItem && capItem.unidade ? capItem.unidade : 'Pçs/h';
+
+            const apontamentosProd = historico.filter(item => 
+                (item.tipo || '').toUpperCase() === 'PRODUCAO' && item.maquina === maquina
+            );
+
+            if (apontamentosProd.length === 0) {
+                valorKpi1.textContent = `0 ${unidade}`;
+                badgeStatus.textContent = 'Sem dados';
+                badgeStatus.className = 'status-pill status-gray';
+                valorKpi3.textContent = '0%';
+                containerLista.innerHTML = '<span style="font-size:0.8rem; color:#94a3b8; font-style:italic;">Nenhuma produção registrada.</span>';
+                boxDesempenho.style.display = 'block';
+                return;
+            }
+
+            const soma = apontamentosProd.reduce((acc, curr) => acc + (Number(curr.qtd) || 0), 0);
+            const media = Math.round(soma / apontamentosProd.length);
+            valorKpi1.textContent = `${media} ${unidade}`;
+
+            if (meta > 0) {
+                const eficProd = ((media / meta) * 100).toFixed(1);
+                valorKpi3.textContent = `${eficProd}%`;
+
+                if (media >= meta) {
+                    badgeStatus.textContent = '🎯 Na Meta';
+                    badgeStatus.className = 'status-pill status-green';
+                } else {
+                    badgeStatus.textContent = '⚠️ Abaixo';
+                    badgeStatus.className = 'status-pill status-red';
+                }
+            } else {
+                valorKpi3.textContent = 'N/A';
+                badgeStatus.textContent = 'Sem Meta';
+                badgeStatus.className = 'status-pill status-gray';
+            }
+
+            containerLista.innerHTML = '';
+            
+            apontamentosProd.forEach(item => {
+                const qtdVal = Number(item.qtd) || 0;
+                const atingiu = meta > 0 ? qtdVal >= meta : true;
+
+                const card = document.createElement('div');
+                card.className = `hourly-badge ${atingiu ? 'met' : 'unmet'}`;
+                
+                card.innerHTML = `
+                    <span style="font-size:0.72rem; opacity:0.85; font-weight:600;">${item.hora || '--:--'}</span>
+                    <strong style="font-size:0.95rem; margin:2px 0;">${qtdVal}</strong>
+                    <span style="font-size:0.65rem; font-weight:bold;">${atingiu ? '✓ Meta' : '✕ Abaixo'}</span>
+                `;
+                containerLista.appendChild(card);
+            });
+
+        } else {
+            lblKpi1.textContent = '⚠️ Total Paradas';
+            lblKpi2.textContent = '⏱️ Tempo Parado';
+            lblKpi3.textContent = '⏱️ Efic. Disponibilidade';
+            lblQuadroHeader.textContent = 'Últimas Paradas por Ocorrência';
+
+            const apontamentosParada = historico.filter(item => 
+                (item.tipo || '').toUpperCase() === 'PARADA' && item.maquina === maquina
+            );
+
+            const tempoCalendario = calcularTempoCalendarioMinutos();
+
+            if (apontamentosParada.length === 0) {
+                valorKpi1.textContent = '0 Paradas';
+                badgeStatus.textContent = '0 min';
+                badgeStatus.className = 'status-pill status-green';
+                valorKpi3.textContent = '100%';
+                containerLista.innerHTML = '<span style="font-size:0.8rem; color:#94a3b8; font-style:italic;">Nenhuma parada registrada.</span>';
+                boxDesempenho.style.display = 'block';
+                return;
+            }
+
+            let totalMinutos = 0;
+            containerLista.innerHTML = '';
+
+            apontamentosParada.forEach(item => {
+                let hInicio = item.horaInicio || '';
+                let hFim = item.horaFim || '';
+                if (!hInicio && item.hora && item.hora.includes(' às ')) {
+                    const partes = item.hora.split(' às ');
+                    hInicio = partes[0] ? partes[0].trim() : '';
+                    hFim = partes[1] ? partes[1].trim() : '';
+                }
+
+                const minutos = calcularMinutosParada(hInicio, hFim);
+                totalMinutos += minutos;
+
+                let motivoTxt = item.motivo || item.detalhe || 'Parada';
+                if (motivoTxt.length > 14) {
+                    motivoTxt = motivoTxt.substring(0, 12) + '..';
+                }
+
+                const card = document.createElement('div');
+                card.className = 'hourly-badge unmet';
+                
+                card.innerHTML = `
+                    <span style="font-size:0.7rem; opacity:0.85; font-weight:600;">${item.hora || '--:--'}</span>
+                    <strong style="font-size:0.9rem; margin:2px 0;">${minutos > 0 ? minutos + ' min' : 'Parada'}</strong>
+                    <span style="font-size:0.65rem; font-weight:bold; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:70px;" title="${item.motivo || ''}">${motivoTxt}</span>
+                `;
+                containerLista.appendChild(card);
+            });
+
+            const eficDisp = Math.max(0, ((1 - (totalMinutos / tempoCalendario)) * 100)).toFixed(1);
+            valorKpi3.textContent = `${eficDisp}%`;
+
+            valorKpi1.textContent = `${apontamentosParada.length} ${apontamentosParada.length === 1 ? 'Parada' : 'Paradas'}`;
+            badgeStatus.textContent = `${totalMinutos} min acumulados`;
+            badgeStatus.className = 'status-pill status-red';
+        }
+
+        boxDesempenho.style.display = 'block';
+    }
+
+    function salvarMaquinaSelecionada(maquina) {
+        if(maquina) {
+            localStorage.setItem('maquina_ativa', maquina);
+        } else {
+            localStorage.removeItem('maquina_ativa');
+        }
+    }
+
+    function carregarMaquinaSalva() {
+        const maquinaSalva = localStorage.getItem('maquina_ativa');
+        const select = document.getElementById('selectMaquina');
+        
+        if (maquinaSalva) {
+            const existeOption = Array.from(select.options).some(opt => opt.value === maquinaSalva);
+            if (existeOption) {
+                select.value = maquinaSalva;
+                atualizarMetaExibida(maquinaSalva);
+                atualizarDesempenhoMaquina(maquinaSalva);
+            }
+        }
+    }
+
+    function selecionarMotivo(btnElement, valorMotivo) {
+        const botoes = document.querySelectorAll('.btn-reason');
+        botoes.forEach(b => b.classList.remove('selected'));
+
+        if (btnElement) {
+            btnElement.classList.add('selected');
+        }
+        motivoSelecionado = valorMotivo;
+    }
+
+    function setHorarioAtual(inputId) {
+        const agora = new Date();
+        const horas = String(agora.getHours()).padStart(2, '0');
+        const minutos = String(agora.getMinutes()).padStart(2, '0');
+        document.getElementById(inputId).value = `${horas}:${minutos}`;
+    }
+
+    function preencherData() {
+        const agora = new Date();
+        const ano = agora.getFullYear();
+        const mes = String(agora.getMonth() + 1).padStart(2, '0');
+        const dia = String(agora.getDate()).padStart(2, '0');
+        const dataFormatada = `${ano}-${mes}-${dia}`;
+
+        document.getElementById('prodData').value = dataFormatada;
+        document.getElementById('paradaData').value = dataFormatada;
+    }
+
+    function setMode(mode) {
+        modoAtual = mode;
+        const btnProd = document.getElementById('btnTabProd');
+        const btnParada = document.getElementById('btnTabParada');
+        const secProd = document.getElementById('sectionProd');
+        const secParada = document.getElementById('sectionParada');
+
+        preencherData();
+
+        if (mode === 'prod') {
+            btnProd.className = 'tab-btn active-prod';
+            btnParada.className = 'tab-btn';
+            secProd.className = 'form-section active card';
+            secParada.className = 'form-section';
+        } else {
+            btnProd.className = 'tab-btn';
+            btnParada.className = 'tab-btn active-parada';
+            secProd.className = 'form-section';
+            secParada.className = 'form-section active card';
+        }
+
+        const maquinaAtual = document.getElementById('selectMaquina').value;
+        atualizarDesempenhoMaquina(maquinaAtual);
+        carregarHistorico();
+    }
+
+    function salvarProducao(e) {
+        e.preventDefault();
+        
+        const maquina = document.getElementById('selectMaquina').value;
+        if (!maquina) {
+            alert('⚠️ Por favor, selecione a Máquina no topo da tela antes de continuar!');
+            document.getElementById('selectMaquina').focus();
+            return;
+        }
+
+        const data = document.getElementById('prodData').value;
+        const hora = document.getElementById('prodHora').value;
+        const qtdNum = Number(document.getElementById('prodQtd').value);
+
+        const registro = {
+            id: editandoId || Date.now(),
+            tipo: 'PRODUCAO',
+            maquina,
+            data,
+            hora,
+            qtd: qtdNum,
+            detalhe: `${qtdNum} Pçs/Unid`
+        };
+
+        salvarNoHistorico(registro);
+        
+        document.getElementById('prodQtd').value = '';
+        setHorarioAtual('prodHora');
+        
+        if (editandoId) {
+            alert('✅ Registro atualizado com sucesso!');
+            cancelarEdicao();
+        } else {
+            alert('✅ Produção registrada com sucesso!');
+        }
+
+        atualizarDesempenhoMaquina(maquina);
+    }
+
+    function salvarParada(e) {
+        e.preventDefault();
+
+        const maquina = document.getElementById('selectMaquina').value;
+        if (!maquina) {
+            alert('⚠️ Por favor, selecione a Máquina no topo da tela antes de continuar!');
+            document.getElementById('selectMaquina').focus();
+            return;
+        }
+
+        if (!motivoSelecionado) {
+            alert('⚠️ Por favor, toque em um dos botões de MOTIVO DA PARADA antes de confirmar!');
+            return;
+        }
+
+        const data = document.getElementById('paradaData').value;
+        const horaInicio = document.getElementById('paradaHoraInicio').value;
+        const horaFim = document.getElementById('paradaHoraFim').value;
+        const obs = document.getElementById('paradaObs').value;
+
+        let duracaoTexto = "";
+        if (horaInicio && horaFim) {
+            const diffMin = calcularMinutosParada(horaInicio, horaFim);
+            duracaoTexto = ` (${diffMin} min)`;
+        }
+
+        const registro = {
+            id: editandoId || Date.now(),
+            tipo: 'PARADA',
+            maquina,
+            data,
+            horaInicio,
+            horaFim,
+            motivo: motivoSelecionado,
+            obs,
+            hora: `${horaInicio} às ${horaFim}`,
+            detalhe: `${motivoSelecionado}${duracaoTexto}` + (obs ? ` - ${obs}` : '')
+        };
+
+        salvarNoHistorico(registro);
+
+        motivoSelecionado = "";
+        document.querySelectorAll('.btn-reason').forEach(b => b.classList.remove('selected'));
+
+        document.getElementById('paradaObs').value = '';
+        setHorarioAtual('paradaHoraInicio');
+        document.getElementById('paradaHoraFim').value = '';
+
+        if (editandoId) {
+            alert('✅ Parada atualizada com sucesso!');
+            cancelarEdicao();
+        } else {
+            alert('⚠️ Parada registrada com sucesso!');
+        }
+
+        atualizarDesempenhoMaquina(maquina);
+    }
+
+    function editarRegistro(id) {
+        const historico = JSON.parse(localStorage.getItem('apontamentos_dia') || '[]');
+        const item = historico.find(r => r.id == id);
+
+        if (!item) return;
+
+        editandoId = item.id;
+        document.getElementById('bannerEdicao').style.display = 'flex';
+
+        if (item.maquina) {
+            document.getElementById('selectMaquina').value = item.maquina;
+            aoSelecionarMaquina(item.maquina);
+        }
+
+        const tipoNorm = (item.tipo || '').toUpperCase();
+
+        if (tipoNorm === 'PRODUCAO') {
+            setMode('prod');
+            document.getElementById('prodData').value = item.data || '';
+            document.getElementById('prodHora').value = item.hora || '';
+            document.getElementById('prodQtd').value = item.qtd || '';
+            document.getElementById('btnSubmitProd').textContent = '💾 Salvar Alteração';
+        } else if (tipoNorm === 'PARADA') {
+            setMode('parada');
+
+            if (item.data) document.getElementById('paradaData').value = item.data;
+
+            let hInicio = item.horaInicio || '';
+            let hFim = item.horaFim || '';
+
+            if (!hInicio && item.hora && item.hora.includes(' às ')) {
+                const partes = item.hora.split(' às ');
+                hInicio = partes[0] ? partes[0].trim() : '';
+                hFim = partes[1] ? partes[1].trim() : '';
+            }
+            
+            document.getElementById('paradaHoraInicio').value = hInicio;
+            document.getElementById('paradaHoraFim').value = hFim;
+            document.getElementById('paradaObs').value = item.obs || '';
+
+            let motivoAlvo = item.motivo || '';
+            if (!motivoAlvo && item.detalhe) {
+                motivoAlvo = item.detalhe.split('(')[0].trim();
+            }
+
+            motivoSelecionado = "";
+            let encontrouBtn = false;
+            const botoes = document.querySelectorAll('.btn-reason');
+
+            botoes.forEach(b => {
+                b.classList.remove('selected');
+                const txtBtn = b.textContent.trim();
+
+                if (motivoAlvo && !encontrouBtn) {
+                    if (
+                        txtBtn.toLowerCase() === motivoAlvo.toLowerCase() ||
+                        txtBtn.toLowerCase().startsWith(motivoAlvo.toLowerCase()) ||
+                        motivoAlvo.toLowerCase().startsWith(txtBtn.toLowerCase()) ||
+                        (item.detalhe && item.detalhe.toLowerCase().includes(txtBtn.toLowerCase()))
+                    ) {
+                        b.classList.add('selected');
+                        motivoSelecionado = txtBtn;
+                        encontrouBtn = true;
+                    }
+                }
+            });
+
+            if (!motivoSelecionado && motivoAlvo) {
+                motivoSelecionado = motivoAlvo;
+            }
+
+            document.getElementById('btnSubmitParada').textContent = '💾 Salvar Alteração';
+        }
+
+        setTimeout(() => {
+            const banner = document.getElementById('bannerEdicao');
+            if (banner) {
+                banner.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }, 50);
+    }
+
+    function cancelarEdicao() {
+        editandoId = null;
+        document.getElementById('bannerEdicao').style.display = 'none';
+        document.getElementById('btnSubmitProd').textContent = 'Confirmar Produção';
+        document.getElementById('btnSubmitParada').textContent = 'Registrar Parada';
+        
+        document.getElementById('prodQtd').value = '';
+        document.getElementById('paradaObs').value = '';
+        motivoSelecionado = "";
+        document.querySelectorAll('.btn-reason').forEach(b => b.classList.remove('selected'));
+        
+        setHorarioAtual('prodHora');
+        setHorarioAtual('paradaHoraInicio');
+        document.getElementById('paradaHoraFim').value = '';
+    }
+
+    function excluirRegistro(id) {
+        if (!confirm('🗑️ Tem certeza que deseja excluir este lançamento?')) {
+            return;
+        }
+
+        let historico = JSON.parse(localStorage.getItem('apontamentos_dia') || '[]');
+        historico = historico.filter(item => item.id != id);
+        localStorage.setItem('apontamentos_dia', JSON.stringify(historico));
+
+        if (editandoId == id) {
+            cancelarEdicao();
+        }
+
+        carregarHistorico();
+
+        const maquinaAtual = document.getElementById('selectMaquina').value;
+        if (maquinaAtual) {
+            atualizarDesempenhoMaquina(maquinaAtual);
+        }
+    }
+
+    function salvarNoHistorico(item) {
+        let historico = JSON.parse(localStorage.getItem('apontamentos_dia') || '[]');
+        
+        if (editandoId) {
+            const index = historico.findIndex(r => r.id == editandoId);
+            if (index !== -1) {
+                historico[index] = item;
+            } else {
+                historico.unshift(item);
+            }
+        } else {
+            historico.unshift(item);
+        }
+
+        localStorage.setItem('apontamentos_dia', JSON.stringify(historico));
+        carregarHistorico();
+    }
+
+    function carregarHistorico() {
+        const historico = JSON.parse(localStorage.getItem('apontamentos_dia') || '[]');
+        const lista = document.getElementById('listaHistorico');
+        const lblHistoricoTitulo = document.getElementById('lblHistoricoTitulo');
+        lista.innerHTML = '';
+
+        if (modoAtual === 'prod') {
+            lblHistoricoTitulo.textContent = 'Últimos Registros de Produção';
+        } else {
+            lblHistoricoTitulo.textContent = 'Últimas Paradas Registradas';
+        }
+
+        const historicoFiltrado = historico.filter(item => {
+            const tipoNorm = (item.tipo || '').toUpperCase();
+            if (modoAtual === 'prod') return tipoNorm === 'PRODUCAO';
+            if (modoAtual === 'parada') return tipoNorm === 'PARADA';
+            return true;
+        });
+
+        if (historicoFiltrado.length === 0) {
+            const txtVazio = modoAtual === 'prod' ? 'Nenhum apontamento de produção hoje.' : 'Nenhuma parada registrada hoje.';
+            lista.innerHTML = `<li style="color:#94a3b8; font-style:italic;">${txtVazio}</li>`;
+            return;
+        }
+
+        historicoFiltrado.slice(0, 10).forEach(item => {
+            const li = document.createElement('li');
+            li.className = 'history-item';
+            
+            const isProd = (item.tipo || '').toUpperCase() === 'PRODUCAO';
+            const badgeClass = isProd ? 'badge-prod' : 'badge-parada';
+            const badgeText = isProd ? 'PROD' : 'PARADA';
+
+            li.innerHTML = `
+                <div style="flex:1;">
+                    <div>
+                        <span class="badge ${badgeClass}">${badgeText}</span>
+                        <strong style="margin-left: 6px;">${item.hora}</strong> - ${item.detalhe}
+                    </div>
+                    <span class="machine-tag">⚙️ ${item.maquina}</span>
+                </div>
+                <div class="history-actions">
+                    <button type="button" class="btn-action btn-action-edit" title="Editar Lançamento" onclick="editarRegistro(${item.id})">✏️</button>
+                    <button type="button" class="btn-action btn-action-delete" title="Excluir Lançamento" onclick="excluirRegistro(${item.id})">🗑️</button>
+                </div>
+            `;
+            lista.appendChild(li);
+        });
+    }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apontamento de Produção Hora a Hora</title>
+    <style>
+        :root {
+            --primary: #1e3a8a;
+            --primary-light: #2563eb;
+            --bg-gray: #f8fafc;
+            --border-color: #cbd5e1;
+            --text-color: #0f172a;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #e2e8f0;
+            color: var(--text-color);
+            padding: 20px;
+        }
+
+        .paper-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: #ffffff;
+            padding: 24px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        header {
+            border-bottom: 2px solid var(--primary);
+            padding-bottom: 12px;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            color: var(--primary);
+            font-size: 1.5rem;
+            text-transform: uppercase;
+            text-align: center;
+            letter-spacing: 1px;
+        }
+
+        .meta-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+            margin-top: 15px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: #475569;
+            margin-bottom: 4px;
+        }
+
+        input, select {
+            padding: 6px 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-size: 0.875rem;
+            width: 100%;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--primary-light);
+            box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+        }
+
+        .section-title {
+            background-color: var(--primary);
+            color: white;
+            font-size: 0.875rem;
+            font-weight: bold;
+            padding: 8px 12px;
+            margin: 24px 0 12px 0;
+            border-radius: 4px;
+            text-transform: uppercase;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 12px;
+            font-size: 0.8rem;
+        }
+
+        th, td {
+            border: 1px solid var(--border-color);
+            padding: 6px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #f1f5f9;
+            font-weight: 600;
+            color: #334155;
+        }
+
+        .table-input {
+            border: none;
+            text-align: center;
+            background: transparent;
+            width: 100%;
+            padding: 4px 0;
+        }
+
+        .table-input:focus {
+            background: #eff6ff;
+            outline: none;
+        }
+
+        .read-only {
+            background-color: #f8fafc;
+            font-weight: bold;
+        }
+
+        /* Downtime Codes Legend Grid */
+        .codes-legend {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 8px;
+            background-color: var(--bg-gray);
+            border: 1px solid var(--border-color);
+            padding: 12px;
+            border-radius: 4px;
+            margin-bottom: 16px;
+            font-size: 0.75rem;
+        }
+
+        .code-item {
+            display: flex;
+            gap: 8px;
+        }
+
+        .code-badge {
+            font-weight: bold;
+            background: #e2e8f0;
+            padding: 1px 6px;
+            border-radius: 3px;
+            min-width: 24px;
+            text-align: center;
+        }
+
+        .actions-bar {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-light);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary);
+        }
+
+        .btn-secondary {
+            background-color: #64748b;
+            color: white;
+        }
+
+        .signatures {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-top: 40px;
+            padding-top: 20px;
+        }
+
+        .signature-line {
+            border-top: 1px solid #94a3b8;
+            text-align: center;
+            padding-top: 4px;
+            font-size: 0.85rem;
+            color: #475569;
+        }
+
+        @media print {
+            body { background: white; padding: 0; }
+            .paper-container { box-shadow: none; padding: 0; }
+            .actions-bar, .btn-add-row { display: none !important; }
+            input, select { border: none !important; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="paper-container">
+    <header>
+        <h1>Apontamento de Produção Hora a Hora</h1>
+        <div class="meta-grid">
+            <div class="form-group">
+                <label>Data</label>
+                <input type="date" id="dataApontamento">
+            </div>
+            <div class="form-group">
+                <label>Turno / Máquina</label>
+                <input type="text" placeholder="Ex: Turno B / Máquina 02">
+            </div>
+            <div class="form-group">
+                <label>Operador / Linha</label>
+                <input type="text" placeholder="Nome do Operador">
+            </div>
+        </div>
+    </header>
+
+    <!-- SEÇÃO 1: PRODUÇÃO HORA A HORA -->
+    <div class="section-title">Produção Hora a Hora</div>
+    <div style="overflow-x: auto;">
+        <table id="tblProducao">
+            <thead>
+                <tr>
+                    <th>HORA</th>
+                    <th>15:00</th>
+                    <th>16:00</th>
+                    <th>17:00</th>
+                    <th>18:00</th>
+                    <th>19:00</th>
+                    <th>20:00</th>
+                    <th>21:00</th>
+                    <th>22:00</th>
+                    <th>23:10</th>
+                    <th>TOTAL</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <th>PRODUÇÃO</th>
+                    <td><input type="number" class="table-input prod-input" min="0"></td>
+                    <td><input type="number" class="table-input prod-input" min="0"></td>
+                    <td><input type="number" class="table-input prod-input" min="0"></td>
+                    <td><input type="number" class="table-input prod-input" min="0"></td>
+                    <td><input type="number" class="table-input prod-input" min="0"></td>
+                    <td><input type="number" class="table-input prod-input" min="0"></td>
+                    <td><input type="number" class="table-input prod-input" min="0"></td>
+                    <td><input type="number" class="table-input prod-input" min="0"></td>
+                    <td><input type="number" class="table-input prod-input" min="0"></td>
+                    <td id="totalProducao" class="read-only">0</td>
+                </tr>
+                <tr>
+                    <th>ACUMULADO</th>
+                    <td class="read-only acum-val">0</td>
+                    <td class="read-only acum-val">0</td>
+                    <td class="read-only acum-val">0</td>
+                    <td class="read-only acum-val">0</td>
+                    <td class="read-only acum-val">0</td>
+                    <td class="read-only acum-val">0</td>
+                    <td class="read-only acum-val">0</td>
+                    <td class="read-only acum-val">0</td>
+                    <td class="read-only acum-val">0</td>
+                    <td class="read-only acum-val">0</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- SEÇÃO 2: LEGENDA E REGISTRO DE PARADAS -->
+    <div class="section-title">Ocorrências de Parada de Máquina</div>
+    
+    <div class="codes-legend">
+        <div class="code-item"><span class="code-badge">1</span> Limpeza máquina</div>
+        <div class="code-item"><span class="code-badge">2</span> Passar lixa / parafina</div>
+        <div class="code-item"><span class="code-badge">3</span> Troca de fita / correia</div>
+        <div class="code-item"><span class="code-badge">4</span> Enrosco (informar dobra)</div>
+        <div class="code-item"><span class="code-badge">5</span> Roupa molhada</div>
+        <div class="code-item"><span class="code-badge">6</span> Falta de roupa</div>
+        <div class="code-item"><span class="code-badge">7</span> Reuniões diárias</div>
+        <div class="code-item"><span class="code-badge">8</span> Falta de operador</div>
+        <div class="code-item"><span class="code-badge">9</span> Falta energia/vapor/ar</div>
+        <div class="code-item"><span class="code-badge">10</span> Refeição</div>
+        <div class="code-item"><span class="code-badge">11</span> Ajustes de Máquina</div>
+        <div class="code-item"><span class="code-badge">12</span> Prob. mecânicos</div>
+        <div class="code-item"><span class="code-badge">13</span> Manutenção preventiva</div>
+        <div class="code-item"><span class="code-badge">14</span> Manutenção corretiva</div>
+        <div class="code-item"><span class="code-badge">15</span> Falta de Gaiola</div>
+        <div class="code-item"><span class="code-badge">16</span> Outros</div>
+    </div>
+
+    <table id="tblParadas">
+        <thead>
+            <tr>
+                <th style="width: 120px;">CÓDIGO PARADA</th>
+                <th style="width: 100px;">INÍCIO</th>
+                <th style="width: 100px;">TÉRMINO</th>
+                <th style="width: 110px;">MINUTOS PARADO</th>
+                <th>DESCRIÇÃO DA OCORRÊNCIA</th>
+            </tr>
+        </thead>
+        <tbody id="tbodyParadas">
+            <!-- Linhas geradas dinamicamente -->
+        </tbody>
+    </table>
+    <button class="btn btn-secondary btn-add-row" onclick="adicionarLinhaParada()">+ Nova Parada</button>
+
+    <!-- SEÇÃO 3: APONTAMENTO DE DEFEITOS -->
+    <div class="section-title">Apontamento de Defeitos</div>
+    <div style="overflow-x: auto;">
+        <table id="tblDefeitos">
+            <thead>
+                <tr>
+                    <th rowspan="2">ITEM</th>
+                    <th colspan="2">HORÁRIO</th>
+                    <th rowspan="2">CLIENTE</th>
+                    <th rowspan="2">PROD.</th>
+                    <th colspan="11">DEFEITOS DETECTADOS</th>
+                    <th rowspan="2">TOTAL</th>
+                    <th rowspan="2">RESPONSÁVEL</th>
+                </tr>
+                <tr>
+                    <th>INÍCIO</th>
+                    <th>FIM</th>
+                    <th>M. AMAR.</th>
+                    <th>M. PRETA</th>
+                    <th>M. FERR.</th>
+                    <th>OUTR. M.</th>
+                    <th>SUJID.</th>
+                    <th>MOLHAR</th>
+                    <th>REPASSE</th>
+                    <th>MISTURA</th>
+                    <th>RASGADO</th>
+                    <th>COSTURA</th>
+                    <th>OUTROS</th>
+                </tr>
+            </thead>
+            <tbody id="tbodyDefeitos">
+                <!-- Linhas de defeitos geradas dinamicamente -->
+            </tbody>
+        </table>
+    </div>
+    <button class="btn btn-secondary btn-add-row" onclick="adicionarLinhaDefeito()">+ Novo Apontamento de Defeito</button>
+
+    <!-- SEÇÃO 4: ASSINATURAS E AÇÕES -->
+    <div class="signatures">
+        <div class="signature-line">
+            Líder de Produção
+        </div>
+        <div class="signature-line">
+            Supervisor de Turno
+        </div>
+    </div>
+
+    <div class="actions-bar">
+        <button class="btn btn-secondary" onclick="window.print()">🖨️ Imprimir / Salvar PDF</button>
+    </div>
+</div>
+
+<script>
+    // Dicionário de Códigos de Parada
+    const codigosParada = {
+        1: "Limpeza máquina",
+        2: "Passar lixa / parafina",
+        3: "Troca de fita / correia",
+        4: "Enrosco (informar em qual dobra)",
+        5: "Roupa molhada",
+        6: "Falta de roupa",
+        7: "Reuniões diárias",
+        8: "Falta de operador",
+        9: "Falta energia elétrica/vapor/ar/etc.",
+        10: "Refeição",
+        11: "Ajustes de Máquina",
+        12: "Problemas mecânicos (informar o motivo)",
+        13: "Manutenção preventiva",
+        14: "Manutenção corretiva",
+        15: "Falta de Gaiola",
+        16: "Outros"
+    };
+
+    // Data Atual Padrão
+    document.getElementById('dataApontamento').valueAsDate = new Date();
+
+    // CALCULAR PRODUÇÃO HORA A HORA E ACUMULADO
+    const prodInputs = document.querySelectorAll('.prod-input');
+    const acumCells = document.querySelectorAll('.acum-val');
+    const totalProdCell = document.getElementById('totalProducao');
+
+    prodInputs.forEach((input, index) => {
+        input.addEventListener('input', () => {
+            calcularProducao();
+        });
+    });
+
+    function calcularProducao() {
+        let acumulado = 0;
+        prodInputs.forEach((input, idx) => {
+            const val = parseFloat(input.value) || 0;
+            acumulado += val;
+            acumCells[idx].textContent = acumulado;
+        });
+        // Total da coluna final
+        totalProdCell.textContent = acumulado;
+        acumCells[acumCells.length - 1].textContent = acumulado;
+    }
+
+    // ADICIONAR E GERENCIAR LINHAS DE PARADA
+    function adicionarLinhaParada() {
+        const tbody = document.getElementById('tbodyParadas');
+        const tr = document.createElement('tr');
+
+        let selectOptions = `<option value="">Selecione...</option>`;
+        for (const [code, desc] of Object.entries(codigosParada)) {
+            selectOptions += `<option value="${code}">${code} - ${desc}</option>`;
+        }
+
+        tr.innerHTML = `
+            <td>
+                <select class="parada-code" onchange="atualizarDescricaoParada(this)">
+                    ${selectOptions}
+                </select>
+            </td>
+            <td><input type="time" class="parada-inicio" onchange="calcularTempoParada(this)"></td>
+            <td><input type="time" class="parada-fim" onchange="calcularTempoParada(this)"></td>
+            <td class="read-only parada-minutos">0</td>
+            <td><input type="text" class="table-input parada-desc" placeholder="Detalhes da ocorrência..."></td>
+        `;
+        tbody.appendChild(tr);
+    }
+
+    function atualizarDescricaoParada(selectElement) {
+        const row = selectElement.closest('tr');
+        const descInput = row.querySelector('.parada-desc');
+        const code = selectElement.value;
+        if (code && codigosParada[code]) {
+            descInput.value = codigosParada[code];
+        }
+    }
+
+    function calcularTempoParada(element) {
+        const row = element.closest('tr');
+        const inicio = row.querySelector('.parada-inicio').value;
+        const fim = row.querySelector('.parada-fim').value;
+        const cellMinutos = row.querySelector('.parada-minutos');
+
+        if (inicio && fim) {
+            const [h1, m1] = inicio.split(':').map(Number);
+            const [h2, m2] = fim.split(':').map(Number);
+            
+            let d1 = new Date(0, 0, 0, h1, m1);
+            let d2 = new Date(0, 0, 0, h2, m2);
+
+            // Ajuste para viradas de turno / dia
+            if (d2 < d1) d2.setDate(d2.getDate() + 1);
+
+            const diffMinutes = Math.round((d2 - d1) / 1000 / 60);
+            cellMinutos.textContent = diffMinutes >= 0 ? diffMinutes : 0;
+        }
+    }
+
+    // ADICIONAR E GERENCIAR LINHAS DE DEFEITO
+    let contadorDefeitos = 0;
+    function adicionarLinhaDefeito() {
+        contadorDefeitos++;
+        const tbody = document.getElementById('tbodyDefeitos');
+        const tr = document.createElement('tr');
+
+        tr.innerHTML = `
+            <td class="read-only">${contadorDefeitos}</td>
+            <td><input type="time" class="table-input"></td>
+            <td><input type="time" class="table-input"></td>
+            <td><input type="text" class="table-input" style="width: 80px;"></td>
+            <td><input type="text" class="table-input" style="width: 60px;"></td>
+            <!-- 11 Defeitos -->
+            ${Array(11).fill('<td><input type="number" class="table-input defect-val" min="0" oninput="calcularTotalDefeitosLinha(this)"></td>').join('')}
+            <td class="read-only row-defect-total">0</td>
+            <td><input type="text" class="table-input" style="width: 80px;"></td>
+        `;
+        tbody.appendChild(tr);
+    }
+
+    function calcularTotalDefeitosLinha(input) {
+        const row = input.closest('tr');
+        const inputs = row.querySelectorAll('.defect-val');
+        let total = 0;
+        inputs.forEach(i => {
+            total += parseFloat(i.value) || 0;
+        });
+        row.querySelector('.row-defect-total').textContent = total;
+    }
+
+    // Inicializar a tela com 3 linhas padrão para paradas e defeitos
+    window.onload = function() {
+        for(let i = 0; i < 3; i++) adicionarLinhaParada();
+        for(let i = 0; i < 5; i++) adicionarLinhaDefeito();
+    };
+</script>
+
+</body>
+</html>
