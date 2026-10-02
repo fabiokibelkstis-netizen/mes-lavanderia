@@ -92,13 +92,6 @@
                     <i class="fa-solid fa-gears text-emerald-400 w-5 text-center text-sm"></i>
                     <span>Peças de Reposição</span>
                 </button>
-
-                <div class="px-3 py-2 pt-4 text-[10px] uppercase font-bold text-slate-500 tracking-wider">Banco de Dados</div>
-
-                <button onclick="navegarPara('sql')" id="btn-sql" class="menu-item w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition hover:bg-slate-800 hover:text-white text-slate-300">
-                    <i class="fa-solid fa-database text-cyan-400 w-5 text-center text-sm"></i>
-                    <span>Consulta & Exportação SQL</span>
-                </button>
             </nav>
         </div>
 
@@ -640,103 +633,53 @@
             </div>
         </div>
 
-        <!-- VIEW ORDENS DE SERVIÇO & APONTAMENTOS -->
+        <!-- VIEW ORDENS DE SERVIÇO -->
         <div id="view-os" class="hidden space-y-6">
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 space-y-4">
                     <div class="border-b pb-2 flex justify-between items-center">
-                        <h3 id="osFormTitulo" class="text-sm font-bold text-slate-800 flex items-center gap-2">
-                            <i class="fa-solid fa-file-signature text-rose-500"></i>
-                            <span>Abertura / Apontamento de O/S</span>
-                        </h3>
+                        <h3 id="osFormTitulo" class="text-sm font-bold text-slate-800">Abertura / Apontamento de O/S</h3>
                         <button id="btnCancelarOS" onclick="cancelarEdicaoOS()" class="hidden text-[11px] text-rose-600 font-bold hover:underline">
                             <i class="fa-solid fa-xmark"></i> Cancelar
                         </button>
                     </div>
                     <form id="formOS" onsubmit="salvarOS(event)" class="space-y-3 text-xs">
                         <input type="hidden" id="osId">
-
                         <div>
-                            <label class="block font-bold mb-1 text-slate-700">Equipamento / Componente *</label>
-                            <select id="osEquipamento" required class="w-full p-2 border rounded-lg bg-slate-50 font-semibold focus:ring-2 focus:ring-rose-500 outline-none"></select>
+                            <label class="block font-bold mb-1">Equipamento / Componente</label>
+                            <select id="osEquipamento" required class="w-full p-2 border rounded-lg bg-slate-50"></select>
                         </div>
-
-                        <div class="grid grid-cols-2 gap-2">
-                            <div>
-                                <label class="block font-bold mb-1 text-slate-700">Tipo de Manutenção *</label>
-                                <select id="osTipo" required class="w-full p-2 border rounded-lg bg-slate-50 font-semibold focus:ring-2 focus:ring-rose-500 outline-none">
-                                    <option value="Corretiva">Corretiva (Parada)</option>
-                                    <option value="Preventiva">Preventiva (Programada)</option>
-                                    <option value="Preditiva">Preditiva / Inspeção</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block font-bold mb-1 text-slate-700">Status O/S *</label>
-                                <select id="osStatus" required class="w-full p-2 border rounded-lg bg-slate-50 font-bold text-slate-800 focus:ring-2 focus:ring-rose-500 outline-none">
-                                    <option value="Aberta">Aberta</option>
-                                    <option value="Em Execucao">Em Execução</option>
-                                    <option value="Concluida">Concluída</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="grid grid-cols-2 gap-2">
-                            <div>
-                                <label class="block font-bold mb-1 text-slate-700">Data da O/S *</label>
-                                <input type="date" id="osData" required class="w-full p-2 border rounded-lg bg-slate-50 font-medium">
-                            </div>
-                            <div>
-                                <label class="block font-bold mb-1 text-slate-700">Técnico Responsável *</label>
-                                <select id="osTecnico" required class="w-full p-2 border rounded-lg bg-slate-50 font-semibold focus:ring-2 focus:ring-rose-500 outline-none"></select>
-                            </div>
-                        </div>
-
-                        <!-- SEÇÃO DE APONTAMENTO DETALHADO -->
-                        <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
-                            <span class="block text-[11px] font-bold text-slate-700 uppercase tracking-wider border-b pb-1">
-                                <i class="fa-solid fa-clock-rotate-left text-rose-500 mr-1"></i> Apontamento de Horas
-                            </span>
-                            <div class="grid grid-cols-2 gap-2">
-                                <div>
-                                    <label class="block font-semibold text-[11px] text-slate-600 mb-1">Hora Início</label>
-                                    <input type="time" id="osHoraInicio" value="08:00" class="w-full p-1.5 border rounded-lg bg-white font-semibold">
-                                </div>
-                                <div>
-                                    <label class="block font-semibold text-[11px] text-slate-600 mb-1">Hora Fim</label>
-                                    <input type="time" id="osHoraFim" value="09:30" class="w-full p-1.5 border rounded-lg bg-white font-semibold">
-                                </div>
-                            </div>
-                            <div class="grid grid-cols-2 gap-2">
-                                <div>
-                                    <label class="block font-semibold text-[11px] text-slate-600 mb-1">Horas Parada Máq.</label>
-                                    <input type="number" id="osHoras" step="0.1" required placeholder="Ex: 1.5" class="w-full p-1.5 border rounded-lg bg-white font-bold text-rose-600">
-                                </div>
-                                <div>
-                                    <label class="block font-semibold text-[11px] text-slate-600 mb-1">Horas Homem (MO)</label>
-                                    <input type="number" id="osHorasTrabalho" step="0.1" placeholder="Ex: 1.5" class="w-full p-1.5 border rounded-lg bg-white font-bold text-blue-600">
-                                </div>
-                            </div>
-                        </div>
-
                         <div>
-                            <label class="block font-bold mb-1 text-slate-700">Causa Raiz / Origem da Falha</label>
-                            <input type="text" id="osCausa" placeholder="Ex: Desgaste natural de rolamento / Falha elétrica no inversor" class="w-full p-2 border rounded-lg bg-slate-50">
+                            <label class="block font-bold mb-1">Tipo de Manutenção</label>
+                            <select id="osTipo" required class="w-full p-2 border rounded-lg bg-slate-50">
+                                <option value="Corretiva">Corretiva (Parada Não Planejada)</option>
+                                <option value="Preventiva">Preventiva (Programada)</option>
+                                <option value="Preditiva">Preditiva / Inspeção</option>
+                            </select>
                         </div>
-
                         <div>
-                            <label class="block font-bold mb-1 text-slate-700">Descrição do Serviço / Ação Realizada *</label>
-                            <textarea id="osDescricao" required placeholder="Relate a ação executada, substituição de peças ou ajustes realizados..." class="w-full p-2 border rounded-lg bg-slate-50" rows="3"></textarea>
+                            <label class="block font-bold mb-1">Data da O/S</label>
+                            <input type="date" id="osData" required class="w-full p-2 border rounded-lg bg-slate-50">
                         </div>
-
-                        <button type="submit" id="btnSalvarOS" class="w-full bg-rose-600 hover:bg-rose-700 text-white font-bold p-2.5 rounded-xl transition shadow flex items-center justify-center gap-2">
-                            <i class="fa-solid fa-floppy-disk"></i> Salvar Ordem de Serviço
-                        </button>
+                        <div>
+                            <label class="block font-bold mb-1">Técnico Responsável</label>
+                            <select id="osTecnico" required class="w-full p-2 border rounded-lg bg-slate-50"></select>
+                        </div>
+                        <div>
+                            <label class="block font-bold mb-1">Horas de Parada de Máquina (Intervenção)</label>
+                            <input type="number" id="osHoras" step="0.1" required placeholder="Ex: 1.5" class="w-full p-2 border rounded-lg bg-slate-50 font-bold">
+                        </div>
+                        <div>
+                            <label class="block font-bold mb-1">Descrição do Serviço / Ocasião</label>
+                            <textarea id="osDescricao" required placeholder="Relate o problema, causa e ação corretiva realizada..." class="w-full p-2 border rounded-lg bg-slate-50" rows="3"></textarea>
+                        </div>
+                        <button type="submit" id="btnSalvarOS" class="w-full bg-rose-600 hover:bg-rose-700 text-white font-bold p-2.5 rounded-xl transition shadow">Salvar Ordem de Serviço</button>
                     </form>
                 </div>
 
                 <div class="lg:col-span-2 bg-white p-5 rounded-2xl shadow-sm border border-slate-200 space-y-3">
                     <div class="border-b pb-2 flex flex-wrap items-center justify-between gap-2">
-                        <h3 class="text-sm font-bold text-slate-800">Histórico & Apontamento de Ordens de Serviço (O/S)</h3>
+                        <h3 class="text-sm font-bold text-slate-800">Histórico de Ordens de Serviço (O/S)</h3>
                         <div class="flex items-center gap-2">
                             <span class="font-bold text-slate-600 text-xs"><i class="fa-solid fa-filter text-rose-500 mr-1"></i>Filtrar:</span>
                             <select id="filtroOsEquipamento" onchange="renderizarTabelas()" class="p-1.5 border rounded-lg bg-slate-50 text-xs font-semibold">
@@ -750,11 +693,11 @@
                                 <tr>
                                     <th class="p-2 border">Data</th>
                                     <th class="p-2 border">Equipamento</th>
-                                    <th class="p-2 border">Tipo / Status</th>
+                                    <th class="p-2 border">Tipo</th>
                                     <th class="p-2 border">Técnico</th>
-                                    <th class="p-2 border text-center">Horas Parada</th>
-                                    <th class="p-2 border">Causa & Ação Realizada</th>
-                                    <th class="p-2 border text-center w-24">Ações</th>
+                                    <th class="p-2 border text-center">Horas</th>
+                                    <th class="p-2 border">Descrição</th>
+                                    <th class="p-2 border text-center w-20">Ações</th>
                                 </tr>
                             </thead>
                             <tbody id="tblOS"></tbody>
@@ -877,61 +820,6 @@
             </div>
         </div>
 
-        <!-- VIEW CONSULTA & EXPORTAÇÃO SQL -->
-        <div id="view-sql" class="hidden space-y-6">
-            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 space-y-4">
-                <div class="border-b pb-2 flex justify-between items-center text-cyan-600">
-                    <h3 class="text-sm font-bold flex items-center gap-2">
-                        <i class="fa-solid fa-terminal"></i>
-                        <span>Console de Consulta SQL Interativo & Gerador de Scripts</span>
-                    </h3>
-                    <span class="text-xs bg-cyan-100 text-cyan-800 font-bold px-2.5 py-0.5 rounded-full">Banco Relacional PCM</span>
-                </div>
-
-                <div class="grid grid-cols-1 lg:grid-cols-4 gap-4 text-xs">
-                    <div class="lg:col-span-3 space-y-3">
-                        <div>
-                            <label class="block font-bold mb-1 text-slate-700">Comando SQL / Consulta (SELECT * FROM ...)</label>
-                            <textarea id="sqlQueryInput" rows="4" class="w-full p-3 font-mono text-xs border rounded-xl bg-slate-900 text-emerald-400 focus:ring-2 focus:ring-cyan-500 outline-none" placeholder="Digite seu SQL aqui... Ex: SELECT * FROM ordens_servico"></textarea>
-                        </div>
-
-                        <div class="flex flex-wrap gap-2 items-center justify-between">
-                            <div class="flex flex-wrap gap-2">
-                                <button onclick="executarConsultaSQL()" class="bg-cyan-600 hover:bg-cyan-700 text-white font-bold px-4 py-2 rounded-xl transition shadow flex items-center gap-2">
-                                    <i class="fa-solid fa-play"></i> Executar Consulta
-                                </button>
-                                <button onclick="gerarScriptDumpSQL()" class="bg-slate-800 hover:bg-slate-900 text-white font-bold px-4 py-2 rounded-xl transition shadow flex items-center gap-2">
-                                    <i class="fa-solid fa-file-code"></i> Gerar Script DDL + INSERTS (SQL)
-                                </button>
-                            </div>
-                            <button onclick="copiarSQLResultado()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold px-3 py-2 rounded-xl transition text-xs">
-                                <i class="fa-regular fa-copy"></i> Copiar Resultado
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-2">
-                        <span class="block font-bold text-slate-700 border-b pb-1 text-[11px] uppercase">Consultas Rápidas SQL</span>
-                        <div class="space-y-1">
-                            <button onclick="preencherSQL('SELECT * FROM ordens_servico')" class="w-full text-left p-1.5 hover:bg-cyan-50 text-cyan-700 rounded text-[11px] font-mono truncate font-medium">1. Todas as O/S</button>
-                            <button onclick="preencherSQL('SELECT * FROM ordens_servico WHERE status = \'Concluida\'')" class="w-full text-left p-1.5 hover:bg-cyan-50 text-cyan-700 rounded text-[11px] font-mono truncate font-medium">2. O/S Concluídas</button>
-                            <button onclick="preencherSQL('SELECT * FROM equipamentos')" class="w-full text-left p-1.5 hover:bg-cyan-50 text-cyan-700 rounded text-[11px] font-mono truncate font-medium">3. Todos Equipamentos</button>
-                            <button onclick="preencherSQL('SELECT * FROM tecnicos WHERE status = \'Ativo\'')" class="w-full text-left p-1.5 hover:bg-cyan-50 text-cyan-700 rounded text-[11px] font-mono truncate font-medium">4. Técnicos Ativos</button>
-                            <button onclick="preencherSQL('SELECT * FROM pecas WHERE quantidade <= quantidade_minima')" class="w-full text-left p-1.5 hover:bg-cyan-50 text-cyan-700 rounded text-[11px] font-mono truncate font-medium">5. Peças em Crítico</button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- ÁREA DE EXIBIÇÃO DE RESULTADO SQL -->
-                <div class="space-y-2 pt-2 border-t">
-                    <span class="block text-xs font-bold text-slate-700 uppercase">Resultado da Consulta / Script SQL</span>
-                    <div id="containerSqlResultado" class="overflow-x-auto max-h-80 bg-slate-50 p-3 rounded-xl border font-mono text-xs text-slate-800">
-                        <p class="text-slate-400 italic">Clique em "Executar Consulta" ou "Gerar Script DDL" para visualizar aqui os dados em formato SQL.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
     </main>
 
     <div id="areaImpressao" class="hidden"></div>
@@ -961,7 +849,7 @@
         });
 
         function navegarPara(viewId) {
-            const views = ["dashboard", "equipamentos", "capacidade", "pmp", "tecnicos", "os", "lubrificacao", "pecas", "sql"];
+            const views = ["dashboard", "equipamentos", "capacidade", "pmp", "tecnicos", "os", "lubrificacao", "pecas"];
             views.forEach(v => {
                 const el = document.getElementById(`view-${v}`);
                 const btn = document.getElementById(`btn-${v}`);
@@ -986,10 +874,9 @@
                 capacidade: ["Cadastro de Capacidade de Produção por Hora", "Parâmetros operacionais e metas de cadência por máquina e produto."],
                 pmp: ["Plano de Manutenção Preventiva (PMP)", "Sistemática de planos preventivos por tempo ou horímetro."],
                 tecnicos: ["Cadastro de Mantenedores e Horários", "Gestão da equipe técnica, especialidades e escalas de trabalho."],
-                os: ["Gestão e Apontamento de Ordens de Serviço", "Registro de apontamentos de parada, causa e solução executada."],
+                os: ["Gestão e Apontamento de Ordens de Serviço", "Registro de corretivas, preventivas e preditivas."],
                 lubrificacao: ["Plano Geral de Lubrificação", "Mapeamento de pontos e especificações de lubrificantes."],
-                pecas: ["Almoxarifado e Peças de Reposição", "Controle de estoque crítico para manutenção."],
-                sql: ["Consulta Interativa & Banco de Dados SQL", "Execução de queries relacionais e exportação de scripts DDL/DML."]
+                pecas: ["Almoxarifado e Peças de Reposição", "Controle de estoque crítico para manutenção."]
             };
 
             if (titulos[viewId]) {
@@ -1280,20 +1167,15 @@
             `).join('');
         }
 
-        // ================= ORDENS DE SERVIÇO & APONTAMENTOS =================
+        // ================= ORDENS DE SERVIÇO (O/S) =================
         function salvarOS(e) {
             e.preventDefault();
             const id = document.getElementById("osId").value || "OS-" + Date.now();
             const equipamento_id = document.getElementById("osEquipamento").value;
             const tipo = document.getElementById("osTipo").value;
-            const status = document.getElementById("osStatus").value;
             const data = document.getElementById("osData").value;
             const tecnico = document.getElementById("osTecnico").value;
-            const hora_inicio = document.getElementById("osHoraInicio").value;
-            const hora_fim = document.getElementById("osHoraFim").value;
             const horas = Number(document.getElementById("osHoras").value) || 0;
-            const horas_trabalho = Number(document.getElementById("osHorasTrabalho").value) || horas;
-            const causa = document.getElementById("osCausa").value.trim();
             const descricao = document.getElementById("osDescricao").value.trim();
 
             if (!equipamento_id) {
@@ -1308,14 +1190,9 @@
                 id,
                 equipamento_id,
                 tipo,
-                status,
                 data,
                 tecnico,
-                hora_inicio,
-                hora_fim,
                 horas,
-                horas_trabalho,
-                causa,
                 descricao,
                 atualizado_em: new Date().toISOString()
             };
@@ -1343,41 +1220,21 @@
             document.getElementById("osId").value = os.id;
             document.getElementById("osEquipamento").value = os.equipamento_id;
             document.getElementById("osTipo").value = os.tipo;
-            document.getElementById("osStatus").value = os.status || "Concluida";
             document.getElementById("osData").value = os.data;
             document.getElementById("osTecnico").value = os.tecnico;
-            document.getElementById("osHoraInicio").value = os.hora_inicio || "08:00";
-            document.getElementById("osHoraFim").value = os.hora_fim || "09:30";
             document.getElementById("osHoras").value = os.horas;
-            document.getElementById("osHorasTrabalho").value = os.horas_trabalho || os.horas;
-            document.getElementById("osCausa").value = os.causa || "";
             document.getElementById("osDescricao").value = os.descricao;
 
-            document.getElementById("osFormTitulo").innerHTML = `<i class="fa-solid fa-pen-to-square"></i> <span>Editar O/S</span>`;
-            document.getElementById("btnSalvarOS").innerHTML = `<i class="fa-solid fa-rotate"></i> Atualizar O/S`;
+            document.getElementById("osFormTitulo").textContent = "Editar Ordem de Serviço";
+            document.getElementById("btnSalvarOS").textContent = "Atualizar Ordem de Serviço";
             document.getElementById("btnCancelarOS").classList.remove("hidden");
-        }
-
-        function concluirRapidoOS(id) {
-            let lista = JSON.parse(localStorage.getItem(CHAVES.OS) || "[]");
-            const os = lista.find(o => String(o.id) === String(id));
-            if (!os) return;
-
-            os.status = "Concluida";
-            os.atualizado_em = new Date().toISOString();
-            localStorage.setItem(CHAVES.OS, JSON.stringify(lista));
-            renderizarTabelas();
-            atualizarKpisDashboard();
-            atualizarGrafico();
-            alert(`O/S ${id} marcada como Concluída!`);
         }
 
         function cancelarEdicaoOS() {
             document.getElementById("formOS").reset();
             document.getElementById("osId").value = "";
-            document.getElementById("osStatus").value = "Aberta";
-            document.getElementById("osFormTitulo").innerHTML = `<i class="fa-solid fa-file-signature text-rose-500"></i> <span>Abertura / Apontamento de O/S</span>`;
-            document.getElementById("btnSalvarOS").innerHTML = `<i class="fa-solid fa-floppy-disk"></i> Salvar Ordem de Serviço`;
+            document.getElementById("osFormTitulo").textContent = "Abertura / Apontamento de O/S";
+            document.getElementById("btnSalvarOS").textContent = "Salvar Ordem de Serviço";
             document.getElementById("btnCancelarOS").classList.add("hidden");
         }
 
@@ -1571,7 +1428,7 @@
             const id = document.getElementById("eqId").value || "EQ-" + Date.now();
             const tag = document.getElementById("eqTag").value.trim().toUpperCase();
             const nome_macro = document.getElementById("eqNomeMacro").value;
-            const fabricante = document.getElementById("eqFabricante").value.trim();
+	    const fabricante = document.getElementById("eqFabricante").value.trim(); // CAPTURA DO CAMPO FABRICANTE
             const componente = document.getElementById("eqComponente").value;
             const setor = document.getElementById("eqSetor").value.trim();
             const tensao = document.getElementById("eqTensao").value;
@@ -1631,12 +1488,12 @@
             const eqList = JSON.parse(localStorage.getItem(CHAVES.EQUIPAMENTOS) || "[]");
             const tblEq = document.getElementById("tblEquipamentos");
             if (tblEq) {
-                tblEq.innerHTML = eqList.length === 0 ? `<tr><td colspan="9" class="p-3 text-center text-slate-400">Nenhum equipamento cadastrado.</td></tr>` :
+                tblEq.innerHTML = eqList.length === 0 ? `<tr><td colspan="8" class="p-3 text-center text-slate-400">Nenhum equipamento cadastrado.</td></tr>` :
                 eqList.map(e => `
                     <tr class="border-b hover:bg-slate-50">
                         <td class="p-2 font-mono font-bold text-blue-600">${e.tag}</td>
                         <td class="p-2 font-semibold">${e.nome_macro}</td>
-                        <td class="p-2 font-semibold">${e.fabricante || '-'}</td>
+                        <td class="p-2 font-semibold">${e.fabricante}</td>
                         <td class="p-2 text-purple-700 font-semibold">${e.componente}</td>
                         <td class="p-2">${e.setor}</td>
                         <td class="p-2">${e.tensao} / ${e.capacidade || '-'}</td>
@@ -1705,7 +1562,7 @@
                 }).join('');
             }
 
-            // Renderizar OS com Apontamentos
+            // Renderizar OS
             const osList = JSON.parse(localStorage.getItem(CHAVES.OS) || "[]");
             const filtro = document.getElementById("filtroOsEquipamento")?.value || "TODOS";
             const tblOS = document.getElementById("tblOS");
@@ -1714,24 +1571,16 @@
                 tblOS.innerHTML = filtradas.length === 0 ? `<tr><td colspan="7" class="p-3 text-center text-slate-400">Nenhuma Ordem de Serviço registrada.</td></tr>` :
                 filtradas.map(o => {
                     const eq = eqList.find(e => String(e.id) === String(o.equipamento_id));
-                    const statusBg = o.status === 'Concluida' ? 'bg-emerald-100 text-emerald-800' : o.status === 'Em Execucao' ? 'bg-blue-100 text-blue-800' : 'bg-amber-100 text-amber-800';
                     return `
                         <tr class="border-b hover:bg-slate-50">
-                            <td class="p-2 font-medium text-slate-600">${o.data}</td>
+                            <td class="p-2 font-medium">${o.data}</td>
                             <td class="p-2 font-bold text-blue-600">${eq ? eq.tag + ' - ' + eq.nome_macro : 'Excluído'}</td>
-                            <td class="p-2 font-semibold">
-                                <div>${o.tipo}</div>
-                                <span class="px-2 py-0.5 rounded-full text-[9px] font-bold ${statusBg}">${o.status || 'Aberta'}</span>
-                            </td>
+                            <td class="p-2 font-semibold">${o.tipo}</td>
                             <td class="p-2">${o.tecnico}</td>
                             <td class="p-2 text-center font-bold text-rose-600">${o.horas}h</td>
-                            <td class="p-2 text-slate-600">
-                                <div class="font-bold text-[11px] text-slate-700">${o.causa ? 'Causa: ' + o.causa : ''}</div>
-                                <div class="text-slate-500 text-[10px]">${o.descricao}</div>
-                            </td>
+                            <td class="p-2 text-slate-500">${o.descricao}</td>
                             <td class="p-2 text-center space-x-1">
-                                ${o.status !== 'Concluida' ? `<button onclick="concluirRapidoOS('${o.id}')" class="p-1 text-emerald-600 hover:bg-emerald-50 rounded" title="Concluir O/S"><i class="fa-solid fa-check"></i></button>` : ''}
-                                <button onclick="editarOS('${o.id}')" class="p-1 text-blue-600 hover:bg-blue-50 rounded" title="Editar / Apontar"><i class="fa-solid fa-pen"></i></button>
+                                <button onclick="editarOS('${o.id}')" class="p-1 text-blue-600 hover:bg-blue-50 rounded"><i class="fa-solid fa-pen"></i></button>
                                 <button onclick="excluirItem('${CHAVES.OS}', '${o.id}')" class="p-1 text-rose-600 hover:bg-rose-50 rounded"><i class="fa-solid fa-trash"></i></button>
                             </td>
                         </tr>
@@ -2039,98 +1888,6 @@
 
             chartTiposOSInstance.data.datasets[0].data = [c, p, pd];
             chartTiposOSInstance.update();
-        }
-
-        // ================= MOTOR DE CONSULTA SQL =================
-        function preencherSQL(query) {
-            document.getElementById("sqlQueryInput").value = query;
-            executarConsultaSQL();
-        }
-
-        function executarConsultaSQL() {
-            const rawQuery = document.getElementById("sqlQueryInput").value.trim();
-            const container = document.getElementById("containerSqlResultado");
-
-            if (!rawQuery) {
-                container.innerHTML = `<p class="text-rose-500 font-bold">Por favor, digite uma consulta SQL.</p>`;
-                return;
-            }
-
-            const queryUpper = rawQuery.toUpperCase();
-            let tabelaName = "";
-
-            if (queryUpper.includes("FROM ORDENS_SERVICO")) tabelaName = CHAVES.OS;
-            else if (queryUpper.includes("FROM EQUIPAMENTOS")) tabelaName = CHAVES.EQUIPAMENTOS;
-            else if (queryUpper.includes("FROM TECNICOS")) tabelaName = CHAVES.TECNICOS;
-            else if (queryUpper.includes("FROM CAPACIDADE_PRODUCAO")) tabelaName = CHAVES.CAPACIDADE;
-            else if (queryUpper.includes("FROM LUBRIFICACAO")) tabelaName = CHAVES.LUBRIFICACAO;
-            else if (queryUpper.includes("FROM PECAS")) tabelaName = CHAVES.PECAS;
-            else if (queryUpper.includes("FROM PMP_PLANOS")) tabelaName = CHAVES.PMP;
-
-            if (!tabelaName) {
-                container.innerHTML = `<p class="text-amber-600 font-bold">Tabela não identificada. Tabelas disponíveis: <br>• ordens_servico<br>• equipamentos<br>• tecnicos<br>• capacidade_producao<br>• lubrificacao<br>• pecas<br>• pmp_planos</p>`;
-                return;
-            }
-
-            let dados = JSON.parse(localStorage.getItem(tabelaName) || "[]");
-
-            if (queryUpper.includes("WHERE STATUS = 'CONCLUIDA'")) {
-                dados = dados.filter(d => d.status === 'Concluida');
-            } else if (queryUpper.includes("WHERE STATUS = 'ATIVO'")) {
-                dados = dados.filter(d => d.status === 'Ativo');
-            } else if (queryUpper.includes("WHERE QUANTIDADE <= QUANTIDADE_MINIMA")) {
-                dados = dados.filter(d => Number(d.quantidade) <= Number(d.quantidade_minima));
-            }
-
-            if (dados.length === 0) {
-                container.innerHTML = `<p class="text-slate-500">Consulta executada com sucesso. (0 registros retornados)</p>`;
-                return;
-            }
-
-            const colunas = Object.keys(dados[0]);
-            let htmlTable = `<table class="w-full text-left text-xs border border-slate-300">
-                <thead class="bg-slate-800 text-white">
-                    <tr>${colunas.map(c => `<th class="p-2 border border-slate-700">${c}</th>`).join('')}</tr>
-                </thead>
-                <tbody>
-                    ${dados.map(row => `
-                        <tr class="border-b hover:bg-slate-100">
-                            ${colunas.map(col => `<td class="p-2 border border-slate-200">${typeof row[col] === 'object' ? JSON.stringify(row[col]) : row[col]}</td>`).join('')}
-                        </tr>
-                    `).join('')}
-                </tbody>
-            </table>`;
-
-            container.innerHTML = htmlTable;
-        }
-
-        function gerarScriptDumpSQL() {
-            const container = document.getElementById("containerSqlResultado");
-            const eqList = JSON.parse(localStorage.getItem(CHAVES.EQUIPAMENTOS) || "[]");
-            const osList = JSON.parse(localStorage.getItem(CHAVES.OS) || "[]");
-            const tecList = JSON.parse(localStorage.getItem(CHAVES.TECNICOS) || "[]");
-
-            let sqlScript = `-- DDL & DML DUMP PCM MES DONA ZARA\n-- Gerado em: ${new Date().toLocaleString('pt-BR')}\n\n`;
-
-            sqlScript += `CREATE TABLE IF NOT EXISTS equipamentos (\n  id VARCHAR(50) PRIMARY KEY,\n  tag VARCHAR(50) NOT NULL,\n  nome_macro VARCHAR(100),\n  fabricante VARCHAR(100),\n  componente VARCHAR(100),\n  setor VARCHAR(100),\n  tensao VARCHAR(20),\n  capacidade VARCHAR(50),\n  horas_dia INT,\n  observacoes TEXT\n);\n\n`;
-
-            eqList.forEach(e => {
-                sqlScript += `INSERT INTO equipamentos (id, tag, nome_macro, fabricante, componente, setor, tensao, capacidade, horas_dia, observacoes) VALUES ('${e.id}', '${e.tag}', '${e.nome_macro}', '${e.fabricante || ''}', '${e.componente}', '${e.setor}', '${e.tensao}', '${e.capacidade || ''}', ${e.horas_dia || 16}, '${e.observacoes || ''}');\n`;
-            });
-
-            sqlScript += `\nCREATE TABLE IF NOT EXISTS ordens_servico (\n  id VARCHAR(50) PRIMARY KEY,\n  equipamento_id VARCHAR(50),\n  tipo VARCHAR(30),\n  status VARCHAR(30),\n  data DATE,\n  tecnico VARCHAR(100),\n  horas_parada NUMERIC(5,2),\n  causa TEXT,\n  descricao TEXT\n);\n\n`;
-
-            osList.forEach(o => {
-                sqlScript += `INSERT INTO ordens_servico (id, equipamento_id, tipo, status, data, tecnico, horas_parada, causa, descricao) VALUES ('${o.id}', '${o.equipamento_id}', '${o.tipo}', '${o.status || 'Aberta'}', '${o.data}', '${o.tecnico}', ${o.horas}, '${o.causa || ''}', '${o.descricao}');\n`;
-            });
-
-            container.innerHTML = `<pre class="bg-slate-900 text-emerald-400 p-4 rounded-xl overflow-x-auto font-mono text-xs select-all">${sqlScript}</pre>`;
-        }
-
-        function copiarSQLResultado() {
-            const container = document.getElementById("containerSqlResultado");
-            const texto = container.innerText;
-            navigator.clipboard.writeText(texto).then(() => alert("Conteúdo copiado para a área de transferência!"));
         }
     </script>
 </body>

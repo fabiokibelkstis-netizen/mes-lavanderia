@@ -253,36 +253,6 @@
 
         .btn-now:hover { background: #cbd5e1; }
 
-        /* Botões de Incremento Rápido */
-        .quick-add-group {
-            display: flex;
-            gap: 8px;
-            margin-top: 8px;
-        }
-
-        .btn-quick {
-            flex: 1;
-            padding: 8px 0;
-            background-color: #e2e8f0;
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            font-size: 0.85rem;
-            font-weight: bold;
-            color: #334155;
-            cursor: pointer;
-            transition: background 0.15s;
-        }
-
-        .btn-quick:hover { background-color: #cbd5e1; }
-
-        .btn-quick-reset {
-            background-color: #fee2e2;
-            color: #991b1b;
-            border-color: #fca5a5;
-        }
-
-        .btn-quick-reset:hover { background-color: #fecaca; }
-
         input, select, textarea {
             width: 100%;
             padding: 12px;
@@ -300,7 +270,7 @@
             background-color: #eff6ff;
         }
 
-        /* Grade de Botões de Motivos de Parada */
+        /* Grade de Botões de Motivos de Parada - Exibição Completa Sem Rolar */
         .reasons-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -477,11 +447,11 @@
 
             <div class="hourly-quadro">
                 <div class="hourly-header">
-                    <span id="lblQuadroHeader">Produção Consolidada Por Hora</span>
+                    <span id="lblQuadroHeader">Lançamentos de Produção</span>
                     <span style="font-size: 0.7rem; color: #94a3b8; font-weight: normal;">(Deslize p/ lado)</span>
                 </div>
                 <div id="listaApontamentosHora" class="hourly-list">
-                    <!-- Cards horários dinâmicos -->
+                    <!-- Cards horários dinâmicos (Produção ou Paradas) -->
                 </div>
             </div>
         </div>
@@ -523,13 +493,6 @@
             <div class="form-group">
                 <label>Quantidade Produzida na Hora</label>
                 <input type="number" id="prodQtd" placeholder="Ex: 150" min="1" step="any" required style="font-size: 1.2rem; font-weight: bold;">
-                
-                <div class="quick-add-group">
-                    <button type="button" class="btn-quick" onclick="adicionarQtd(10)">+10</button>
-                    <button type="button" class="btn-quick" onclick="adicionarQtd(50)">+50</button>
-                    <button type="button" class="btn-quick" onclick="adicionarQtd(100)">+100</button>
-                    <button type="button" class="btn-quick btn-quick-reset" onclick="document.getElementById('prodQtd').value=''">Zerar</button>
-                </div>
             </div>
 
             <button type="submit" id="btnSubmitProd" class="btn-submit btn-prod">Confirmar Produção</button>
@@ -555,7 +518,7 @@
                 <div class="form-group">
                     <label>Horário Término</label>
                     <div class="time-input-group">
-                        <input type="time" id="paradaHoraFim" placeholder="Em aberto">
+                        <input type="time" id="paradaHoraFim" required>
                         <button type="button" class="btn-now" onclick="setHorarioAtual('paradaHoraFim')">⏱️ Agora</button>
                     </div>
                 </div>
@@ -592,11 +555,11 @@
         </form>
     </div>
 
-    <!-- HISTÓRICO DE LANÇAMENTOS -->
+    <!-- HISTÓRICO DE LANÇAMENTOS FILTRADO CONFORME O MODO ATIVO -->
     <div class="history-card">
         <h3 id="lblHistoricoTitulo">Últimos Registros de Produção</h3>
         <ul id="listaHistorico" class="history-list">
-            <!-- Inserido dinamicamente -->
+            <!-- Inserido dinamicamente conforme aba ativa -->
         </ul>
     </div>
 </div>
@@ -681,15 +644,9 @@
         }
     }
 
-    // CÁLCULO DE MINUTOS DE PARADA (SUPORTE A PARADAS EM ABERTO)
+    // CÁLCULO DE MINUTOS DE PARADA
     function calcularMinutosParada(horaInicio, horaFim) {
-        if (!horaInicio) return 0;
-
-        if (!horaFim) {
-            const agora = new Date();
-            horaFim = `${String(agora.getHours()).padStart(2, '0')}:${String(agora.getMinutes()).padStart(2, '0')}`;
-        }
-
+        if (!horaInicio || !horaFim) return 0;
         const [h1, m1] = horaInicio.split(':').map(Number);
         const [h2, m2] = horaFim.split(':').map(Number);
         if (isNaN(h1) || isNaN(m1) || isNaN(h2) || isNaN(m2)) return 0;
@@ -698,12 +655,14 @@
         let d2 = new Date(0, 0, 0, h2, m2);
         if (d2 < d1) d2.setDate(d2.getDate() + 1);
 
-        return Math.max(1, Math.round((d2 - d1) / 1000 / 60));
+        return Math.round((d2 - d1) / 1000 / 60);
     }
 
+    // CÁLCULO DO TEMPO CALENDÁRIO PERCORRIDO (A PARTIR DAS 06:00H)
     function calcularTempoCalendarioMinutos() {
         const agora = new Date();
         const inicioDia = new Date(agora);
+        
         inicioDia.setHours(6, 0, 0, 0);
 
         if (agora < inicioDia) {
@@ -716,6 +675,7 @@
         return Math.max(1, Math.min(diffMinutos, 1440));
     }
 
+    // ATUALIZA O QUADRO SUPERIOR ADAPTANDO PARA MODO PRODUÇÃO OU PARADA
     function atualizarDesempenhoMaquina(maquina) {
         const boxDesempenho = document.getElementById('boxDesempenho');
         if (!maquina) {
@@ -737,7 +697,7 @@
             lblKpi1.textContent = '📊 Média Prod / h';
             lblKpi2.textContent = '📈 Desempenho Hoje';
             lblKpi3.textContent = '🎯 Eficiência Prod.';
-            lblQuadroHeader.textContent = 'Produção Consolidada Por Hora';
+            lblQuadroHeader.textContent = 'Lançamentos de Produção';
 
             const capacidades = obterCapacidades();
             const capItem = capacidades.find(c => c.maquina === maquina);
@@ -758,17 +718,8 @@
                 return;
             }
 
-            // AGRUPAMENTO DA PRODUÇÃO POR HORA CHEIA (Ex: 08:00)
-            const producaoPorHora = {};
-            apontamentosProd.forEach(item => {
-                const horaChave = item.hora ? item.hora.split(':')[0] + ':00' : '00:00';
-                producaoPorHora[horaChave] = (producaoPorHora[horaChave] || 0) + (Number(item.qtd) || 0);
-            });
-
-            const horasTotais = Object.keys(producaoPorHora).length;
-            const somaTotal = Object.values(producaoPorHora).reduce((a, b) => a + b, 0);
-            const media = Math.round(somaTotal / (horasTotais || 1));
-
+            const soma = apontamentosProd.reduce((acc, curr) => acc + (Number(curr.qtd) || 0), 0);
+            const media = Math.round(soma / apontamentosProd.length);
             valorKpi1.textContent = `${media} ${unidade}`;
 
             if (meta > 0) {
@@ -790,16 +741,16 @@
 
             containerLista.innerHTML = '';
             
-            Object.keys(producaoPorHora).sort().forEach(horaKey => {
-                const qtdHora = producaoPorHora[horaKey];
-                const atingiu = meta > 0 ? qtdHora >= meta : true;
+            apontamentosProd.forEach(item => {
+                const qtdVal = Number(item.qtd) || 0;
+                const atingiu = meta > 0 ? qtdVal >= meta : true;
 
                 const card = document.createElement('div');
                 card.className = `hourly-badge ${atingiu ? 'met' : 'unmet'}`;
                 
                 card.innerHTML = `
-                    <span style="font-size:0.72rem; opacity:0.85; font-weight:600;">${horaKey}</span>
-                    <strong style="font-size:0.95rem; margin:2px 0;">${qtdHora}</strong>
+                    <span style="font-size:0.72rem; opacity:0.85; font-weight:600;">${item.hora || '--:--'}</span>
+                    <strong style="font-size:0.95rem; margin:2px 0;">${qtdVal}</strong>
                     <span style="font-size:0.65rem; font-weight:bold;">${atingiu ? '✓ Meta' : '✕ Abaixo'}</span>
                 `;
                 containerLista.appendChild(card);
@@ -851,8 +802,8 @@
                 card.className = 'hourly-badge unmet';
                 
                 card.innerHTML = `
-                    <span style="font-size:0.7rem; opacity:0.85; font-weight:600;">${item.horaInicio || item.hora || '--:--'}</span>
-                    <strong style="font-size:0.9rem; margin:2px 0;">${minutos} min</strong>
+                    <span style="font-size:0.7rem; opacity:0.85; font-weight:600;">${item.hora || '--:--'}</span>
+                    <strong style="font-size:0.9rem; margin:2px 0;">${minutos > 0 ? minutos + ' min' : 'Parada'}</strong>
                     <span style="font-size:0.65rem; font-weight:bold; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:70px;" title="${item.motivo || ''}">${motivoTxt}</span>
                 `;
                 containerLista.appendChild(card);
@@ -913,8 +864,10 @@
         const ano = agora.getFullYear();
         const mes = String(agora.getMonth() + 1).padStart(2, '0');
         const dia = String(agora.getDate()).padStart(2, '0');
-        document.getElementById('prodData').value = `${ano}-${mes}-${dia}`;
-        document.getElementById('paradaData').value = `${ano}-${mes}-${dia}`;
+        const dataFormatada = `${ano}-${mes}-${dia}`;
+
+        document.getElementById('prodData').value = dataFormatada;
+        document.getElementById('paradaData').value = dataFormatada;
     }
 
     function setMode(mode) {
@@ -941,11 +894,6 @@
         const maquinaAtual = document.getElementById('selectMaquina').value;
         atualizarDesempenhoMaquina(maquinaAtual);
         carregarHistorico();
-    }
-
-    function adicionarQtd(valor) {
-        const input = document.getElementById('prodQtd');
-        input.value = (Number(input.value) || 0) + valor;
     }
 
     function salvarProducao(e) {
@@ -1007,10 +955,11 @@
         const horaFim = document.getElementById('paradaHoraFim').value;
         const obs = document.getElementById('paradaObs').value;
 
-        const diffMin = calcularMinutosParada(horaInicio, horaFim);
-        const emAndamento = !horaFim;
-        const duracaoTexto = emAndamento ? ` (${diffMin} min - Em andamento)` : ` (${diffMin} min)`;
-        const horaExibicao = emAndamento ? `${horaInicio} (Em aberto)` : `${horaInicio} às ${horaFim}`;
+        let duracaoTexto = "";
+        if (horaInicio && horaFim) {
+            const diffMin = calcularMinutosParada(horaInicio, horaFim);
+            duracaoTexto = ` (${diffMin} min)`;
+        }
 
         const registro = {
             id: editandoId || Date.now(),
@@ -1021,7 +970,7 @@
             horaFim,
             motivo: motivoSelecionado,
             obs,
-            hora: horaExibicao,
+            hora: `${horaInicio} às ${horaFim}`,
             detalhe: `${motivoSelecionado}${duracaoTexto}` + (obs ? ` - ${obs}` : '')
         };
 
@@ -1071,21 +1020,43 @@
 
             if (item.data) document.getElementById('paradaData').value = item.data;
 
-            document.getElementById('paradaHoraInicio').value = item.horaInicio || '';
-            document.getElementById('paradaHoraFim').value = item.horaFim || '';
+            let hInicio = item.horaInicio || '';
+            let hFim = item.horaFim || '';
+
+            if (!hInicio && item.hora && item.hora.includes(' às ')) {
+                const partes = item.hora.split(' às ');
+                hInicio = partes[0] ? partes[0].trim() : '';
+                hFim = partes[1] ? partes[1].trim() : '';
+            }
+            
+            document.getElementById('paradaHoraInicio').value = hInicio;
+            document.getElementById('paradaHoraFim').value = hFim;
             document.getElementById('paradaObs').value = item.obs || '';
 
             let motivoAlvo = item.motivo || '';
+            if (!motivoAlvo && item.detalhe) {
+                motivoAlvo = item.detalhe.split('(')[0].trim();
+            }
+
             motivoSelecionado = "";
+            let encontrouBtn = false;
             const botoes = document.querySelectorAll('.btn-reason');
 
             botoes.forEach(b => {
                 b.classList.remove('selected');
                 const txtBtn = b.textContent.trim();
 
-                if (motivoAlvo && (txtBtn.toLowerCase() === motivoAlvo.toLowerCase() || txtBtn.toLowerCase().startsWith(motivoAlvo.toLowerCase()))) {
-                    b.classList.add('selected');
-                    motivoSelecionado = txtBtn;
+                if (motivoAlvo && !encontrouBtn) {
+                    if (
+                        txtBtn.toLowerCase() === motivoAlvo.toLowerCase() ||
+                        txtBtn.toLowerCase().startsWith(motivoAlvo.toLowerCase()) ||
+                        motivoAlvo.toLowerCase().startsWith(txtBtn.toLowerCase()) ||
+                        (item.detalhe && item.detalhe.toLowerCase().includes(txtBtn.toLowerCase()))
+                    ) {
+                        b.classList.add('selected');
+                        motivoSelecionado = txtBtn;
+                        encontrouBtn = true;
+                    }
                 }
             });
 
@@ -1098,7 +1069,9 @@
 
         setTimeout(() => {
             const banner = document.getElementById('bannerEdicao');
-            if (banner) banner.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            if (banner) {
+                banner.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
         }, 50);
     }
 
@@ -1119,18 +1092,24 @@
     }
 
     function excluirRegistro(id) {
-        if (!confirm('🗑️ Tem certeza que deseja excluir este lançamento?')) return;
+        if (!confirm('🗑️ Tem certeza que deseja excluir este lançamento?')) {
+            return;
+        }
 
         let historico = JSON.parse(localStorage.getItem('apontamentos_dia') || '[]');
         historico = historico.filter(item => item.id != id);
         localStorage.setItem('apontamentos_dia', JSON.stringify(historico));
 
-        if (editandoId == id) cancelarEdicao();
+        if (editandoId == id) {
+            cancelarEdicao();
+        }
 
         carregarHistorico();
 
         const maquinaAtual = document.getElementById('selectMaquina').value;
-        if (maquinaAtual) atualizarDesempenhoMaquina(maquinaAtual);
+        if (maquinaAtual) {
+            atualizarDesempenhoMaquina(maquinaAtual);
+        }
     }
 
     function salvarNoHistorico(item) {
@@ -1138,8 +1117,11 @@
         
         if (editandoId) {
             const index = historico.findIndex(r => r.id == editandoId);
-            if (index !== -1) historico[index] = item;
-            else historico.unshift(item);
+            if (index !== -1) {
+                historico[index] = item;
+            } else {
+                historico.unshift(item);
+            }
         } else {
             historico.unshift(item);
         }
@@ -1154,11 +1136,17 @@
         const lblHistoricoTitulo = document.getElementById('lblHistoricoTitulo');
         lista.innerHTML = '';
 
-        lblHistoricoTitulo.textContent = modoAtual === 'prod' ? 'Últimos Registros de Produção' : 'Últimas Paradas Registradas';
+        if (modoAtual === 'prod') {
+            lblHistoricoTitulo.textContent = 'Últimos Registros de Produção';
+        } else {
+            lblHistoricoTitulo.textContent = 'Últimas Paradas Registradas';
+        }
 
         const historicoFiltrado = historico.filter(item => {
             const tipoNorm = (item.tipo || '').toUpperCase();
-            return modoAtual === 'prod' ? tipoNorm === 'PRODUCAO' : tipoNorm === 'PARADA';
+            if (modoAtual === 'prod') return tipoNorm === 'PRODUCAO';
+            if (modoAtual === 'parada') return tipoNorm === 'PARADA';
+            return true;
         });
 
         if (historicoFiltrado.length === 0) {
