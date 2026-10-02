@@ -1,3 +1,4 @@
+[cite: 10]
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -23,7 +24,7 @@
                 </div>
             </div>
             <div class="flex items-center gap-2">
-                <a href="apontamento_campo.html" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold px-4 py-2 rounded-xl transition flex items-center gap-2 shadow">
+                <a href="apontamento_campo_4.html" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold px-4 py-2 rounded-xl transition flex items-center gap-2 shadow">
                     <i class="fa-solid fa-plus-circle"></i> Novo Lançamento de Campo
                 </a>
                 <a href="index.html" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl text-xs font-bold transition flex items-center gap-2 border border-slate-700">
@@ -207,24 +208,106 @@
 
     <!-- SCRIPT DE PROCESSAMENTO DOS DADOS -->
     <script>
+        function getApiBaseUrl() {
+            const ipSalvo = localStorage.getItem('mes_api_ip');
+            if (ipSalvo) return ipSalvo.replace(/\/$/, '');
+            if (window.location.protocol.startsWith('http')) {
+                if (window.location.port && !['3000', '80', '443'].includes(window.location.port)) {
+                    return `${window.location.protocol}//${window.location.hostname}:3000`;
+                }
+                return window.location.origin.replace(/\/$/, '');
+            }
+            return 'http://192.168.1.120:3000';
+        }
+
+        const API_BASE_URL = getApiBaseUrl();
+
         let rawHistorico = [];
         let chartBarraInstance = null;
         let chartRoscaInstance = null;
 
-        document.addEventListener('DOMContentLoaded', () => {
-            carregarEProcessarDados();
-            definirUltimos7Dias();
+        document.addEventListener('DOMContentLoaded', async () => {
+            definirUltimos7DiasDatas();
+            await carregarEProcessarDados();
         });
 
-        /* CARREGA DADOS DO LOCALSTORAGE (OU MOCK INICIAL SE VAZIO) */
-        function carregarEProcessarDados() {
-            const saved = localStorage.getItem('mes_historico_coleta_entrega');
-            if (saved) {
-                rawHistorico = JSON.parse(saved);
+        function extrairLista(json) {
+            if (Array.isArray(json)) return json;
+            if (json && typeof json === 'object') {
+                if (Array.isArray(json.data)) return json.data;
+                if (Array.isArray(json.result)) return json.result;
+                if (Array.isArray(json.registros)) return json.registros;
+                if (Array.isArray(json.clientes)) return json.clientes;
+                if (Array.isArray(json.equipe)) return json.equipe;
+                if (Array.isArray(json.veiculos)) return json.veiculos;
+                if (Array.isArray(json.apontamentos)) return json.apontamentos;
+            }
+            return [];
+        }
+
+        function normalizarRegistro(item) {
+            if (!item) return null;
+            return {
+                id: item.id || item.id_apontamento || null,
+                data: item.data || item.data_apontamento || item.dataApontamento || new Date().toISOString().split('T')[0],
+                cliente: item.cliente || item.cliente_nome || item.clienteNome || item.nome_cliente || 'Não Identificado',
+                motorista: item.motorista || item.motorista_nome || item.motoristaNome || 'Não Identificado',
+                ajudante: item.ajudante || item.ajudante_nome || item.ajudanteNome || 'NENHUM',
+                veiculo: item.veiculo || item.veiculo_nome || item.veiculoNome || 'NÃO INFORMADO',
+                horaChegada: item.horaChegada || item.hora_chegada || item.horaChegadaStr || '--:--',
+                horaSaida: item.horaSaida || item.hora_saida || item.horaSaidaStr || '--:--',
+                gaiolasEntregues: parseInt(item.gaiolasEntregues ?? item.gaiolas_entregues ?? 0) || 0,
+                osEntregues: String(item.osEntregues ?? item.os_entregues ?? '-'),
+                gaiolasColetadas: parseInt(item.gaiolasColetadas ?? item.gaiolas_coletadas ?? 0) || 0,
+                osColetadas: String(item.osColetadas ?? item.os_coletadas ?? '-'),
+                obs: item.obs || item.observacoes || item.observacao || 'Nenhuma.'
+            };
+        }
+
+        /* CARREGA DADOS DO SQL E DO LOCALSTORAGE */
+        async function carregarEProcessarDados() {
+            let dadosSQL = null;
+
+            // Tenta buscar no Servidor SQL / API
+            try {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 8000);
+                const res = await fetch(`${API_BASE_URL}/api/apontamentos`, { signal: controller.signal });
+                clearTimeout(timeoutId);
+                if (res.ok) {
+                    const data = await res.json();
+                    const lista = extrairLista(data);
+                    if (Array.isArray(lista) && lista.length > 0) {
+                        dadosSQL = lista.map(normalizarRegistro);
+                    }
+                }
+            } catch (e) {
+                console.warn('Não foi possível conectar ao banco SQL. Usando dados locais.', e);
+            }
+
+            // Carrega histórico do localStorage
+            const savedLocal = localStorage.getItem('mes_historico_coleta_entrega');
+            let dadosLocais = [];
+            if (savedLocal) {
+                try {
+                    const parsed = JSON.parse(savedLocal);
+                    if (Array.isArray(parsed)) {
+                        dadosLocais = parsed.map(normalizarRegistro);
+                    }
+                } catch (e) {}
+            }
+
+            if (dadosSQL && dadosSQL.length > 0) {
+                const idsSQL = new Set(dadosSQL.map(d => String(d.id)).filter(id => id && id !== 'null'));
+                const apenasLocaisNaoSincronizados = dadosLocais.filter(dl => !dl.id || !idsSQL.has(String(dl.id)));
+                rawHistorico = [...dadosSQL, ...apenasLocaisNaoSincronizados];
+            } else if (dadosLocais.length > 0) {
+                rawHistorico = dadosLocais;
             } else {
-                // Dados demonstrativos padrão para a interface inicial
+                // Mock demonstrativo inicial se não houver dados em nenhum lugar
                 rawHistorico = [
                     {
+                        id: 1,
                         data: '2026-08-10',
                         cliente: 'Hospital São Luiz',
                         motorista: 'João da Silva',
@@ -239,6 +322,7 @@
                         obs: 'Entrega efetuada com sucesso.'
                     },
                     {
+                        id: 2,
                         data: '2026-08-10',
                         cliente: 'Hotel Unique',
                         motorista: 'João da Silva',
@@ -253,6 +337,7 @@
                         obs: 'Sem ocorrências.'
                     },
                     {
+                        id: 3,
                         data: '2026-08-11',
                         cliente: 'Restaurante Fasano',
                         motorista: 'Marcos Oliveira',
@@ -269,16 +354,21 @@
                 ];
                 localStorage.setItem('mes_historico_coleta_entrega', JSON.stringify(rawHistorico));
             }
+
+            atualizarTela();
         }
 
-        function definirUltimos7Dias() {
+        function definirUltimos7DiasDatas() {
             const hoje = new Date();
             const seteDiasAtras = new Date();
             seteDiasAtras.setDate(hoje.getDate() - 6);
 
             document.getElementById('filtroDataFim').value = hoje.toISOString().split('T')[0];
             document.getElementById('filtroDataInicio').value = seteDiasAtras.toISOString().split('T')[0];
+        }
 
+        function definirUltimos7Dias() {
+            definirUltimos7DiasDatas();
             atualizarTela();
         }
 
@@ -450,9 +540,9 @@
             const ordenadosInvertidos = [...dados].reverse();
 
             tbody.innerHTML = ordenadosInvertidos.map((item) => {
-                const indexOriginal = dados.indexOf(item);
-                const dataFmt = new Date(item.data + 'T00:00:00').toLocaleDateString('pt-BR');
+                const dataFmt = item.data ? new Date(item.data + 'T00:00:00').toLocaleDateString('pt-BR') : '--/--/----';
                 const horarioFmt = `${item.horaChegada || '--:--'} às ${item.horaSaida || '--:--'}`;
+                const idRef = item.id || '';
 
                 return `
                     <tr class="hover:bg-slate-50 transition border-b">
@@ -461,23 +551,23 @@
                             <div class="text-[10px] text-slate-400 font-normal">${horarioFmt}</div>
                         </td>
                         <td class="p-3 text-center font-bold text-slate-800">${item.cliente}</td>
-                        <td class="p-3 text-center text-slate-700 font-semibold">${item.veiculo || 'NÃO INFORMADO'}</td>
+                        <td class="p-3 text-center text-slate-700 font-semibold">${item.veiculo}</td>
                         <td class="p-3 text-center text-slate-600">
                             <div class="font-semibold text-slate-700">${item.motorista}</div>
-                            <div class="text-[10px] text-slate-400">Ajudante: ${item.ajudante || 'Nenhum'}</div>
+                            <div class="text-[10px] text-slate-400">Ajudante: ${item.ajudante}</div>
                         </td>
                         <td class="p-3 text-center">
-                            <span class="font-bold text-emerald-600">${item.gaiolasEntregues || 0} Gaiola(s)</span>
-                            <div class="text-[10px] text-slate-500">OS: ${item.osEntregues || '-'}</div>
+                            <span class="font-bold text-emerald-600">${item.gaiolasEntregues} Gaiola(s)</span>
+                            <div class="text-[10px] text-slate-500">OS: ${item.osEntregues}</div>
                         </td>
                         <td class="p-3 text-center">
-                            <span class="font-bold text-blue-600">${item.gaiolasColetadas || 0} Gaiola(s)</span>
-                            <div class="text-[10px] text-slate-500">OS: ${item.osColetadas || '-'}</div>
+                            <span class="font-bold text-blue-600">${item.gaiolasColetadas} Gaiola(s)</span>
+                            <div class="text-[10px] text-slate-500">OS: ${item.osColetadas}</div>
                         </td>
-                        <td class="p-3 text-center text-slate-600 max-w-xs truncate" title="${item.obs || ''}">${item.obs || '-'}</td>
+                        <td class="p-3 text-center text-slate-600 max-w-xs truncate" title="${item.obs}">${item.obs}</td>
                         <td class="p-3 text-center">
-                            <button onclick="recompartilharWhatsApp(${indexOriginal})" class="text-emerald-600 font-bold px-1.5 py-1" title="Reenviar no WhatsApp"><i class="fa-brands fa-whatsapp text-base"></i></button>
-                            <button onclick="excluirRegistro(${indexOriginal})" class="text-red-600 font-bold px-1.5 py-1" title="Excluir">❌</button>
+                            <button onclick="recompartilharWhatsApp('${idRef}')" class="text-emerald-600 font-bold px-1.5 py-1" title="Reenviar no WhatsApp"><i class="fa-brands fa-whatsapp text-base"></i></button>
+                            <button onclick="excluirRegistroPorId('${idRef}')" class="text-red-600 font-bold px-1.5 py-1" title="Excluir">❌</button>
                         </td>
                     </tr>
                 `;
@@ -555,8 +645,8 @@
             });
         }
 
-        function recompartilharWhatsApp(index) {
-            const item = rawHistorico[index];
+        function recompartilharWhatsApp(idRef) {
+            const item = rawHistorico.find(r => String(r.id) === String(idRef)) || rawHistorico[0];
             if (!item) return;
 
             const textoMensagem = 
@@ -564,32 +654,42 @@
 --------------------------------
 🏢 *Cliente:* ${item.cliente}
 👤 *Motorista:* ${item.motorista}
-🤝 *Ajudante:* ${item.ajudante || 'NENHUM'}
-🚛 *Veículo:* ${item.veiculo || 'NÃO INFORMADO'}
+🤝 *Ajudante:* ${item.ajudante}
+🚛 *Veículo:* ${item.veiculo}
 --------------------------------
-⏱️ *Horário Chegada:* ${item.horaChegada || '--:--'}
-⏱️ *Horário Saída:* ${item.horaSaida || '--:--'}
+⏱️ *Horário Chegada:* ${item.horaChegada}
+⏱️ *Horário Saída:* ${item.horaSaida}
 --------------------------------
 📦 *ENTREGA (ROUPA LIMPA)*
-• Gaiolas Entregues: *${item.gaiolasEntregues || 0}*
-• OS(s) Entregues: *${item.osEntregues || '-'}*
+• Gaiolas Entregues: *${item.gaiolasEntregues}*
+• OS(s) Entregues: *${item.osEntregues}*
 
 🧺 *COLETA (ROUPA SUJA)*
-• Gaiolas Coletadas: *${item.gaiolasColetadas || 0}*
-• OS(s) Coletadas: *${item.osColetadas || '-'}*
+• Gaiolas Coletadas: *${item.gaiolasColetadas}*
+• OS(s) Coletadas: *${item.osColetadas}*
 --------------------------------
-📝 *Observações:* ${item.obs || 'Nenhuma.'}`;
+📝 *Observações:* ${item.obs}`;
 
             const urlWhatsApp = `https://api.whatsapp.com/send?text=${encodeURIComponent(textoMensagem)}`;
             window.open(urlWhatsApp, '_blank');
         }
 
-        function excluirRegistro(index) {
+        async function excluirRegistroPorId(idRef) {
             if (confirm("Deseja realmente excluir este apontamento de campo?")) {
-                rawHistorico.splice(index, 1);
-                localStorage.setItem('mes_historico_coleta_entrega', JSON.stringify(rawHistorico));
-                carregarEProcessarDados();
-                atualizarTela();
+                const index = rawHistorico.findIndex(r => String(r.id) === String(idRef));
+                if (index !== -1) {
+                    const item = rawHistorico[index];
+                    if (item && item.id) {
+                        try {
+                            await fetch(`${API_BASE_URL}/api/apontamentos/${item.id}`, { method: 'DELETE' });
+                        } catch (e) {
+                            console.warn('Erro ao deletar no servidor SQL:', e);
+                        }
+                    }
+                    rawHistorico.splice(index, 1);
+                    localStorage.setItem('mes_historico_coleta_entrega', JSON.stringify(rawHistorico));
+                    atualizarTela();
+                }
             }
         }
     </script>
