@@ -80,71 +80,24 @@
             </div>
         </div>
 
-        <!-- RESUMOS OPERACIONAIS (MOTORISTA E VEÍCULO) -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <!-- RESUMO POR MOTORISTA -->
-            <div class="bg-white rounded-2xl shadow-md p-6 border border-slate-200">
-                <h3 class="text-sm font-bold text-slate-800 mb-4 border-b pb-2 flex items-center gap-2">
-                    <i class="fa-solid fa-id-card-clip text-emerald-600"></i>
-                    Resumo Operacional por Motorista
-                </h3>
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left text-xs border-collapse">
-                        <thead class="bg-emerald-50 text-emerald-900">
-                            <tr>
-                                <th class="p-3 border border-emerald-200">Motorista</th>
-                                <th class="p-3 border border-emerald-200 text-center">Clientes</th>
-                                <th class="p-3 border border-emerald-200 text-center">Entregues</th>
-                                <th class="p-3 border border-emerald-200 text-center">Coletadas</th>
-                                <th class="p-3 border border-emerald-200 text-center">% Atend.</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tabelaResumoMotoristas"></tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- RESUMO POR VEÍCULO -->
-            <div class="bg-white rounded-2xl shadow-md p-6 border border-slate-200">
-                <h3 class="text-sm font-bold text-slate-800 mb-4 border-b pb-2 flex items-center gap-2">
-                    <i class="fa-solid fa-truck text-emerald-600"></i>
-                    Resumo Operacional por Veículo
-                </h3>
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left text-xs border-collapse">
-                        <thead class="bg-emerald-50 text-emerald-900">
-                            <tr>
-                                <th class="p-3 border border-emerald-200">Veículo</th>
-                                <th class="p-3 border border-emerald-200 text-center">Clientes</th>
-                                <th class="p-3 border border-emerald-200 text-center">Entregues</th>
-                                <th class="p-3 border border-emerald-200 text-center">Coletadas</th>
-                                <th class="p-3 border border-emerald-200 text-center">% Atend.</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tabelaResumoVeiculos"></tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-
-        <!-- RESUMO DE GAIOLAS POR CLIENTE (SALDO) -->
+        <!-- RESUMO POR MOTORISTA / EQUIPE -->
         <div class="bg-white rounded-2xl shadow-md p-6 border border-slate-200">
             <h3 class="text-sm font-bold text-slate-800 mb-4 border-b pb-2 flex items-center gap-2">
-                <i class="fa-solid fa-boxes-packing text-emerald-600"></i>
-                Resumo de Gaiolas por Cliente (Saldo do Período)
+                <i class="fa-solid fa-id-card-clip text-emerald-600"></i>
+                Resumo Operacional por Motorista
             </h3>
             <div class="overflow-x-auto">
                 <table class="w-full text-left text-xs border-collapse">
-                    <thead class="bg-slate-100 text-slate-700">
+                    <thead class="bg-emerald-50 text-emerald-900">
                         <tr>
-                            <th class="p-3 border">Cliente</th>
-                            <th class="p-3 border text-center">Atendimentos</th>
-                            <th class="p-3 border text-center">Gaiolas Entregues</th>
-                            <th class="p-3 border text-center">Gaiolas Coletadas</th>
-                            <th class="p-3 border text-center">Saldo (Entregues - Coletadas)</th>
+                            <th class="p-3 border border-emerald-200">Motorista</th>
+                            <th class="p-3 border border-emerald-200 text-center">Clientes Atendidos</th>
+                            <th class="p-3 border border-emerald-200 text-center">Gaiolas Entregues</th>
+                            <th class="p-3 border border-emerald-200 text-center">Gaiolas Coletadas</th>
+                            <th class="p-3 border border-emerald-200 text-center">Representatividade (% Atend.)</th>
                         </tr>
                     </thead>
-                    <tbody id="tabelaResumoClientes"></tbody>
+                    <tbody id="tabelaResumoMotoristas"></tbody>
                 </table>
             </div>
         </div>
@@ -185,7 +138,6 @@
                         <tr>
                             <th class="p-3 border text-center">Data / Horário</th>
                             <th class="p-3 border text-center">Cliente</th>
-                            <th class="p-3 border text-center">Veículo</th>
                             <th class="p-3 border text-center">Equipe (Mot / Ajud)</th>
                             <th class="p-3 border text-center">Entrega (Gaiolas / OS)</th>
                             <th class="p-3 border text-center">Coleta (Gaiolas / OS)</th>
@@ -229,7 +181,6 @@
                         cliente: 'Hospital São Luiz',
                         motorista: 'João da Silva',
                         ajudante: 'Carlos Souza',
-                        veiculo: 'ABC-1234 - Fiat Fiorino',
                         horaChegada: '08:15',
                         horaSaida: '09:00',
                         gaiolasEntregues: 4,
@@ -243,7 +194,6 @@
                         cliente: 'Hotel Unique',
                         motorista: 'João da Silva',
                         ajudante: 'Carlos Souza',
-                        veiculo: 'ABC-1234 - Fiat Fiorino',
                         horaChegada: '09:30',
                         horaSaida: '10:10',
                         gaiolasEntregues: 2,
@@ -257,7 +207,6 @@
                         cliente: 'Restaurante Fasano',
                         motorista: 'Marcos Oliveira',
                         ajudante: 'NENHUM',
-                        veiculo: 'DEF-5678 - Hyundai HR',
                         horaChegada: '07:45',
                         horaSaida: '08:20',
                         gaiolasEntregues: 1,
@@ -304,8 +253,6 @@
             const filtrados = obterLancamentosFiltrados();
             renderizarKPIs(filtrados);
             renderizarResumoMotoristas(filtrados);
-            renderizarResumoVeiculos(filtrados);
-            renderizarResumoClientes(filtrados);
             renderizarTabelaHistorico(filtrados);
             renderizarGraficoBarras(filtrados);
             renderizarGraficoRosca(filtrados);
@@ -322,7 +269,6 @@
             document.getElementById('kpiBalancoGaiolas').innerText = `${totalEntregues} / ${totalColetadas}`;
         }
 
-        /* 1. RESUMO POR MOTORISTA */
         function renderizarResumoMotoristas(dados) {
             const tbody = document.getElementById('tabelaResumoMotoristas');
             const totalAtendimentosGeral = dados.length;
@@ -358,98 +304,18 @@
             }).join('');
         }
 
-        /* 2. RESUMO POR VEÍCULO */
-        function renderizarResumoVeiculos(dados) {
-            const tbody = document.getElementById('tabelaResumoVeiculos');
-            const totalAtendimentosGeral = dados.length;
-
-            const ag = {};
-
-            dados.forEach(i => {
-                const veic = i.veiculo || 'Não Informado';
-                if (!ag[veic]) ag[veic] = { qtd: 0, entregues: 0, coletadas: 0 };
-                ag[veic].qtd += 1;
-                ag[veic].entregues += (parseInt(i.gaiolasEntregues) || 0);
-                ag[veic].coletadas += (parseInt(i.gaiolasColetadas) || 0);
-            });
-
-            const keys = Object.keys(ag);
-            if (keys.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="5" class="p-3 text-center italic text-slate-400">Nenhum atendimento registrado no período.</td></tr>';
-                return;
-            }
-
-            tbody.innerHTML = keys.map(v => {
-                const item = ag[v];
-                const pct = totalAtendimentosGeral > 0 ? (item.qtd / totalAtendimentosGeral) * 100 : 0;
-                return `
-                    <tr class="hover:bg-slate-50 border-b">
-                        <td class="p-2.5 font-semibold text-slate-800">${v}</td>
-                        <td class="p-2.5 text-center text-slate-600 font-bold">${item.qtd}</td>
-                        <td class="p-2.5 text-center font-bold text-emerald-600">${item.entregues} un</td>
-                        <td class="p-2.5 text-center font-bold text-blue-600">${item.coletadas} un</td>
-                        <td class="p-2.5 text-center font-semibold text-slate-700">${pct.toFixed(1)}%</td>
-                    </tr>
-                `;
-            }).join('');
-        }
-
-        /* 3. RESUMO DE GAIOLAS POR CLIENTE (SALDO) */
-        function renderizarResumoClientes(dados) {
-            const tbody = document.getElementById('tabelaResumoClientes');
-
-            const ag = {};
-
-            dados.forEach(i => {
-                const cli = i.cliente || 'Não Identificado';
-                if (!ag[cli]) ag[cli] = { qtd: 0, entregues: 0, coletadas: 0 };
-                ag[cli].qtd += 1;
-                ag[cli].entregues += (parseInt(i.gaiolasEntregues) || 0);
-                ag[cli].coletadas += (parseInt(i.gaiolasColetadas) || 0);
-            });
-
-            const keys = Object.keys(ag);
-            if (keys.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="5" class="p-3 text-center italic text-slate-400">Nenhum atendimento registrado no período.</td></tr>';
-                return;
-            }
-
-            tbody.innerHTML = keys.map(c => {
-                const item = ag[c];
-                const saldo = item.entregues - item.coletadas;
-                let saldoBadge = 'text-slate-700 bg-slate-100';
-                if (saldo > 0) saldoBadge = 'text-emerald-700 bg-emerald-100';
-                else if (saldo < 0) saldoBadge = 'text-blue-700 bg-blue-100';
-
-                return `
-                    <tr class="hover:bg-slate-50 border-b">
-                        <td class="p-2.5 font-semibold text-slate-800">${c}</td>
-                        <td class="p-2.5 text-center text-slate-600 font-bold">${item.qtd}</td>
-                        <td class="p-2.5 text-center font-bold text-emerald-600">${item.entregues} un</td>
-                        <td class="p-2.5 text-center font-bold text-blue-600">${item.coletadas} un</td>
-                        <td class="p-2.5 text-center">
-                            <span class="inline-block px-2.5 py-1 rounded-lg text-xs font-bold ${saldoBadge}">
-                                ${saldo > 0 ? '+' : ''}${saldo} un
-                            </span>
-                        </td>
-                    </tr>
-                `;
-            }).join('');
-        }
-
-        /* 4. HISTÓRICO COMPLETO DE LANÇAMENTOS */
         function renderizarTabelaHistorico(dados) {
             const tbody = document.getElementById('tabelaHistoricoLogistica');
             document.getElementById('qtdRegistros').innerText = `${dados.length} registro(s)`;
 
             if (dados.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="8" class="p-4 text-center italic text-slate-400">Nenhum lançamento no período selecionado.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="7" class="p-4 text-center italic text-slate-400">Nenhum lançamento no período selecionado.</td></tr>';
                 return;
             }
 
             const ordenadosInvertidos = [...dados].reverse();
 
-            tbody.innerHTML = ordenadosInvertidos.map((item) => {
+            tbody.innerHTML = ordenadosInvertidos.map((item, idx) => {
                 const indexOriginal = dados.indexOf(item);
                 const dataFmt = new Date(item.data + 'T00:00:00').toLocaleDateString('pt-BR');
                 const horarioFmt = `${item.horaChegada || '--:--'} às ${item.horaSaida || '--:--'}`;
@@ -461,7 +327,6 @@
                             <div class="text-[10px] text-slate-400 font-normal">${horarioFmt}</div>
                         </td>
                         <td class="p-3 text-center font-bold text-slate-800">${item.cliente}</td>
-                        <td class="p-3 text-center text-slate-700 font-semibold">${item.veiculo || 'NÃO INFORMADO'}</td>
                         <td class="p-3 text-center text-slate-600">
                             <div class="font-semibold text-slate-700">${item.motorista}</div>
                             <div class="text-[10px] text-slate-400">Ajudante: ${item.ajudante || 'Nenhum'}</div>
@@ -565,7 +430,6 @@
 🏢 *Cliente:* ${item.cliente}
 👤 *Motorista:* ${item.motorista}
 🤝 *Ajudante:* ${item.ajudante || 'NENHUM'}
-🚛 *Veículo:* ${item.veiculo || 'NÃO INFORMADO'}
 --------------------------------
 ⏱️ *Horário Chegada:* ${item.horaChegada || '--:--'}
 ⏱️ *Horário Saída:* ${item.horaSaida || '--:--'}
