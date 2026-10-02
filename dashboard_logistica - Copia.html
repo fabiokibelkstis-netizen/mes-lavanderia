@@ -72,12 +72,12 @@
                 <i class="fa-solid fa-chart-pie text-indigo-600"></i> Indicadores Operacionais & Financeiros
             </h2>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 <!-- KPI 1: ATENDIMENTOS DE CAMPO -->
-                <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 border-l-4 border-l-slate-700">
+                <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 border-l-4 border-l-emerald-500">
                     <div class="flex justify-between items-center">
-                        <span class="text-xs font-bold text-slate-500 uppercase">Atendimentos</span>
-                        <i class="fa-solid fa-truck-ramp-box text-slate-700 text-lg"></i>
+                        <span class="text-xs font-bold text-slate-500 uppercase">Atendimentos Realizados</span>
+                        <i class="fa-solid fa-truck-ramp-box text-emerald-500 text-lg"></i>
                     </div>
                     <p id="kpiTotalAtendimentos" class="text-2xl font-black text-slate-800 mt-2">0</p>
                     <div class="mt-2 text-[11px] text-slate-500 flex justify-between">
@@ -86,66 +86,42 @@
                     </div>
                 </div>
 
-                <!-- KPI CARD INDIVIDUAL 1: GAIOLAS ENTREGUES -->
-                <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 border-l-4 border-l-emerald-500">
-                    <div class="flex justify-between items-center">
-                        <span class="text-xs font-bold text-slate-500 uppercase">Gaiolas Entregues</span>
-                        <i class="fa-solid fa-box-open text-emerald-500 text-lg"></i>
-                    </div>
-                    <p id="kpiGaiolasEntreguesGeral" class="text-2xl font-black text-emerald-600 mt-2">0 un</p>
-                    <p class="mt-2 text-[11px] text-slate-500 font-medium">
-                        Total Roupa Limpa (Campo)
-                    </p>
-                </div>
-
-                <!-- KPI CARD INDIVIDUAL 2: GAIOLAS COLETADAS -->
-                <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 border-l-4 border-l-blue-500">
-                    <div class="flex justify-between items-center">
-                        <span class="text-xs font-bold text-slate-500 uppercase">Gaiolas Coletadas</span>
-                        <i class="fa-solid fa-boxes-stacked text-blue-500 text-lg"></i>
-                    </div>
-                    <p id="kpiGaiolasColetadasGeral" class="text-2xl font-black text-blue-600 mt-2">0 un</p>
-                    <p class="mt-2 text-[11px] text-slate-500 font-medium">
-                        Total Roupa Suja (Campo)
-                    </p>
-                </div>
-
-                <!-- KPI 4: MANUTENÇÃO & OS -->
+                <!-- KPI 2: MANUTENÇÃO & OS -->
                 <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 border-l-4 border-l-amber-500">
                     <div class="flex justify-between items-center">
-                        <span class="text-xs font-bold text-slate-500 uppercase">Ordens Serviço</span>
+                        <span class="text-xs font-bold text-slate-500 uppercase">Ordens de Serviço (O.S.)</span>
                         <i class="fa-solid fa-wrench text-amber-500 text-lg"></i>
                     </div>
                     <p id="kpiTotalOS" class="text-2xl font-black text-slate-800 mt-2">0</p>
                     <div class="mt-2 text-[11px] text-slate-500 flex justify-between">
                         <span>Abertas: <b id="kpiOSAbertas" class="text-amber-600">0</b></span>
-                        <span>Andam.: <b id="kpiOSEmAndamento" class="text-blue-600">0</b></span>
+                        <span>Em Andamento: <b id="kpiOSEmAndamento" class="text-blue-600">0</b></span>
                     </div>
                 </div>
 
-                <!-- KPI 5: CUSTO COM MANUTENÇÃO -->
+                <!-- KPI 3: CUSTO COM MANUTENÇÃO -->
                 <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 border-l-4 border-l-rose-500">
                     <div class="flex justify-between items-center">
-                        <span class="text-xs font-bold text-slate-500 uppercase">Custo Manutenção</span>
+                        <span class="text-xs font-bold text-slate-500 uppercase">Custo Total Manutenção</span>
                         <i class="fa-solid fa-sack-dollar text-rose-500 text-lg"></i>
                     </div>
                     <p id="kpiCustoTotalManutencao" class="text-2xl font-black text-rose-600 mt-2">R$ 0,00</p>
                     <div class="mt-2 text-[11px] text-slate-500 flex justify-between">
-                        <span>Prev.: <b id="kpiCustoPreventiva" class="text-emerald-600">R$ 0</b></span>
-                        <span>Corr.: <b id="kpiCustoCorretiva" class="text-rose-600">R$ 0</b></span>
+                        <span>Preventiva: <b id="kpiCustoPreventiva" class="text-emerald-600">R$ 0</b></span>
+                        <span>Corretiva: <b id="kpiCustoCorretiva" class="text-rose-600">R$ 0</b></span>
                     </div>
                 </div>
 
-                <!-- KPI 6: ROTEIRIZAÇÃO & OCUPAÇÃO -->
+                <!-- KPI 4: ROTEIRIZAÇÃO & OCUPAÇÃO -->
                 <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 border-l-4 border-l-indigo-500">
                     <div class="flex justify-between items-center">
-                        <span class="text-xs font-bold text-slate-500 uppercase">Ocupação Frota</span>
+                        <span class="text-xs font-bold text-slate-500 uppercase">Ocupação da Frota</span>
                         <i class="fa-solid fa-route text-indigo-500 text-lg"></i>
                     </div>
                     <p id="kpiTaxaOcupacaoMedia" class="text-2xl font-black text-indigo-600 mt-2">0%</p>
                     <div class="mt-2 text-[11px] text-slate-500 flex justify-between">
-                        <span>Rotas: <b id="kpiTotalRotas" class="text-slate-800">0</b></span>
-                        <span>Plan.: <b id="kpiGaiolasPlanejadas" class="text-indigo-600">0 un</b></span>
+                        <span>Rotas Ativas: <b id="kpiTotalRotas" class="text-slate-800">0</b></span>
+                        <span>Gaiolas Plan.: <b id="kpiGaiolasPlanejadas" class="text-indigo-600">0 un</b></span>
                     </div>
                 </div>
             </div>
@@ -189,50 +165,25 @@
                 </div>
             </div>
 
-            <!-- TABELAS RESUMO DE CAMPO: MOTORISTA & VEÍCULO -->
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <!-- TABELA RESUMO POR MOTORISTA -->
-                <div class="bg-white rounded-2xl shadow-md p-6 border border-slate-200">
-                    <h3 class="text-sm font-bold text-slate-800 mb-4 border-b pb-2 flex items-center gap-2">
-                        <i class="fa-solid fa-id-card-clip text-emerald-600"></i>
-                        Resumo Operacional por Motorista
-                    </h3>
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left text-xs border-collapse">
-                            <thead class="bg-emerald-50 text-emerald-900">
-                                <tr>
-                                    <th class="p-3 border border-emerald-200">Motorista</th>
-                                    <th class="p-3 border border-emerald-200 text-center">Atend.</th>
-                                    <th class="p-3 border border-emerald-200 text-center">Gaiolas Entregues</th>
-                                    <th class="p-3 border border-emerald-200 text-center">Gaiolas Coletadas</th>
-                                    <th class="p-3 border border-emerald-200 text-center">% Part.</th>
-                                </tr>
-                            </thead>
-                            <tbody id="tabelaResumoMotoristas"></tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <!-- INDICADOR DE ENTREGAS POR VEÍCULO -->
-                <div class="bg-white rounded-2xl shadow-md p-6 border border-slate-200">
-                    <h3 class="text-sm font-bold text-slate-800 mb-4 border-b pb-2 flex items-center gap-2">
-                        <i class="fa-solid fa-truck-moving text-indigo-600"></i>
-                        Indicador de Entregas por Veículo (Campo)
-                    </h3>
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left text-xs border-collapse">
-                            <thead class="bg-indigo-50 text-indigo-900">
-                                <tr>
-                                    <th class="p-3 border border-indigo-200">Veículo</th>
-                                    <th class="p-3 border border-indigo-200 text-center">Atend.</th>
-                                    <th class="p-3 border border-indigo-200 text-center">Gaiolas Entregues</th>
-                                    <th class="p-3 border border-indigo-200 text-center">Gaiolas Coletadas</th>
-                                    <th class="p-3 border border-indigo-200 text-center">% Part.</th>
-                                </tr>
-                            </thead>
-                            <tbody id="tabelaResumoEntregasVeiculo"></tbody>
-                        </table>
-                    </div>
+            <!-- TABELA RESUMO POR MOTORISTA -->
+            <div class="bg-white rounded-2xl shadow-md p-6 border border-slate-200">
+                <h3 class="text-sm font-bold text-slate-800 mb-4 border-b pb-2 flex items-center gap-2">
+                    <i class="fa-solid fa-id-card-clip text-emerald-600"></i>
+                    Resumo Operacional por Motorista
+                </h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs border-collapse">
+                        <thead class="bg-emerald-50 text-emerald-900">
+                            <tr>
+                                <th class="p-3 border border-emerald-200">Motorista</th>
+                                <th class="p-3 border border-emerald-200 text-center">Atendimentos</th>
+                                <th class="p-3 border border-emerald-200 text-center">Gaiolas Entregues</th>
+                                <th class="p-3 border border-emerald-200 text-center">Gaiolas Coletadas</th>
+                                <th class="p-3 border border-emerald-200 text-center">% Representatividade</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabelaResumoMotoristas"></tbody>
+                    </table>
                 </div>
             </div>
         </div>
@@ -346,9 +297,9 @@
                 dadosColetaEntrega = JSON.parse(savedColeta);
             } else {
                 dadosColetaEntrega = [
-                    { data: '2026-08-10', cliente: 'Hospital São Luiz', motorista: 'João da Silva', ajudante: 'Carlos Souza', veiculo: 'Caminhão Mercedes Atego 1719 (ABC-1234)', horaChegada: '08:15', horaSaida: '09:00', gaiolasEntregues: 4, osEntregues: '1024, 1025', gaiolasColetadas: 3, osColetadas: '8501, 8502', obs: 'Entrega efetuada com sucesso.' },
-                    { data: '2026-08-10', cliente: 'Hotel Unique', motorista: 'João da Silva', ajudante: 'Carlos Souza', veiculo: 'Caminhão Mercedes Atego 1719 (ABC-1234)', horaChegada: '09:30', horaSaida: '10:10', gaiolasEntregues: 2, osEntregues: '1026', gaiolasColetadas: 2, osColetadas: '8503', obs: 'Sem ocorrências.' },
-                    { data: '2026-08-11', cliente: 'Restaurante Fasano', motorista: 'Marcos Oliveira', ajudante: 'NENHUM', veiculo: 'Fiat Fiorino Furgão (JKL-3456)', horaChegada: '07:45', horaSaida: '08:20', gaiolasEntregues: 1, osEntregues: '1027', gaiolasColetadas: 1, osColetadas: '8504', obs: 'Aguardou liberação da doca.' }
+                    { data: '2026-08-10', cliente: 'Hospital São Luiz', motorista: 'João da Silva', ajudante: 'Carlos Souza', horaChegada: '08:15', horaSaida: '09:00', gaiolasEntregues: 4, osEntregues: '1024, 1025', gaiolasColetadas: 3, osColetadas: '8501, 8502', obs: 'Entrega efetuada com sucesso.' },
+                    { data: '2026-08-10', cliente: 'Hotel Unique', motorista: 'João da Silva', ajudante: 'Carlos Souza', horaChegada: '09:30', horaSaida: '10:10', gaiolasEntregues: 2, osEntregues: '1026', gaiolasColetadas: 2, osColetadas: '8503', obs: 'Sem ocorrências.' },
+                    { data: '2026-08-11', cliente: 'Restaurante Fasano', motorista: 'Marcos Oliveira', ajudante: 'NENHUM', horaChegada: '07:45', horaSaida: '08:20', gaiolasEntregues: 1, osEntregues: '1027', gaiolasColetadas: 1, osColetadas: '8504', obs: 'Aguardou liberação da doca.' }
                 ];
                 localStorage.setItem('mes_historico_coleta_entrega', JSON.stringify(dadosColetaEntrega));
             }
@@ -480,14 +431,6 @@
             document.getElementById('kpiGaiolasEntregues').innerText = `${gaiolasEntregues} un`;
             document.getElementById('kpiGaiolasColetadas').innerText = `${gaiolasColetadas} un`;
 
-            // Indicadores Individuais de Gaiolas Entregues e Coletadas
-            if (document.getElementById('kpiGaiolasEntreguesGeral')) {
-                document.getElementById('kpiGaiolasEntreguesGeral').innerText = `${gaiolasEntregues} un`;
-            }
-            if (document.getElementById('kpiGaiolasColetadasGeral')) {
-                document.getElementById('kpiGaiolasColetadasGeral').innerText = `${gaiolasColetadas} un`;
-            }
-
             // Manutenção
             const totalOS = manutencoes.length;
             const abertasOS = manutencoes.filter(m => m.status === 'Aberta').length;
@@ -515,26 +458,25 @@
 
         /* 4. RENDERIZAÇÃO DA ABA DE COLETAS E ENTREGAS */
         function renderizarAbaColetas(dados) {
-            const totalGeral = dados.length;
-
             // Tabela Motoristas
-            const tbodyMot = document.getElementById('tabelaResumoMotoristas');
-            const agMot = {};
+            const tbody = document.getElementById('tabelaResumoMotoristas');
+            const totalGeral = dados.length;
+            const ag = {};
 
             dados.forEach(i => {
                 const mot = i.motorista || 'Não Identificado';
-                if (!agMot[mot]) agMot[mot] = { qtd: 0, entregues: 0, coletadas: 0 };
-                agMot[mot].qtd += 1;
-                agMot[mot].entregues += (parseInt(i.gaiolasEntregues) || 0);
-                agMot[mot].coletadas += (parseInt(i.gaiolasColetadas) || 0);
+                if (!ag[mot]) ag[mot] = { qtd: 0, entregues: 0, coletadas: 0 };
+                ag[mot].qtd += 1;
+                ag[mot].entregues += (parseInt(i.gaiolasEntregues) || 0);
+                ag[mot].coletadas += (parseInt(i.gaiolasColetadas) || 0);
             });
 
-            const keysMot = Object.keys(agMot);
-            if (keysMot.length === 0) {
-                tbodyMot.innerHTML = '<tr><td colspan="5" class="p-3 text-center italic text-slate-400">Nenhum atendimento registrado no período.</td></tr>';
+            const keys = Object.keys(ag);
+            if (keys.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" class="p-3 text-center italic text-slate-400">Nenhum atendimento registrado no período.</td></tr>';
             } else {
-                tbodyMot.innerHTML = keysMot.map(m => {
-                    const item = agMot[m];
+                tbody.innerHTML = keys.map(m => {
+                    const item = ag[m];
                     const pct = totalGeral > 0 ? (item.qtd / totalGeral) * 100 : 0;
                     return `
                         <tr class="hover:bg-slate-50 border-b">
@@ -546,39 +488,6 @@
                         </tr>
                     `;
                 }).join('');
-            }
-
-            // Tabela Indicador de Entregas por Veículo
-            const tbodyVeic = document.getElementById('tabelaResumoEntregasVeiculo');
-            if (tbodyVeic) {
-                const agVeic = {};
-
-                dados.forEach(i => {
-                    const veic = i.veiculo || 'Não Informado';
-                    if (!agVeic[veic]) agVeic[veic] = { qtd: 0, entregues: 0, coletadas: 0 };
-                    agVeic[veic].qtd += 1;
-                    agVeic[veic].entregues += (parseInt(i.gaiolasEntregues) || 0);
-                    agVeic[veic].coletadas += (parseInt(i.gaiolasColetadas) || 0);
-                });
-
-                const keysVeic = Object.keys(agVeic);
-                if (keysVeic.length === 0) {
-                    tbodyVeic.innerHTML = '<tr><td colspan="5" class="p-3 text-center italic text-slate-400">Nenhum lançamento registrado por veículo.</td></tr>';
-                } else {
-                    tbodyVeic.innerHTML = keysVeic.map(v => {
-                        const item = agVeic[v];
-                        const pct = totalGeral > 0 ? (item.qtd / totalGeral) * 100 : 0;
-                        return `
-                            <tr class="hover:bg-slate-50 border-b">
-                                <td class="p-2.5 font-semibold text-slate-800">${v}</td>
-                                <td class="p-2.5 text-center text-slate-600 font-bold">${item.qtd}</td>
-                                <td class="p-2.5 text-center font-bold text-emerald-600">${item.entregues} un</td>
-                                <td class="p-2.5 text-center font-bold text-blue-600">${item.coletadas} un</td>
-                                <td class="p-2.5 text-center font-semibold text-slate-700">${pct.toFixed(1)}%</td>
-                            </tr>
-                        `;
-                    }).join('');
-                }
             }
 
             // Gráfico Barras (Gaiolas)
@@ -690,7 +599,7 @@
                 type: 'doughnut',
                 data: {
                     labels: ['Abertas', 'Em Andamento', 'Fechadas'],
-                    datasets: [{ label: 'Qtd OS', data: [abertas, andamento, fechadas], backgroundColor: ['#d97706', '#2563eb', '#059669'] }]
+                    datasets: [{ data: [abertas, andamento, fechadas], backgroundColor: ['#d97706', '#2563eb', '#059669'] }]
                 },
                 options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
             });
