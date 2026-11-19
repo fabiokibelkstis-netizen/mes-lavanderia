@@ -412,6 +412,59 @@ app.post('/api/apontamento', async (req, res) => {
     }
 });
 
+// Listar todos os atendimentos CRM
+app.get('/api/crm/atendimentos', async (req, res) => {
+    try {
+        // Adapte pool.query (pg) ou request.query (mssql) conforme seu driver atual
+        const result = await db.query('SELECT * FROM crm_atendimentos ORDER BY data_abertura DESC');
+        res.json(result.rows || result.recordset || []);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Registrar novo atendimento CRM
+app.post('/api/crm/atendimentos', async (req, res) => {
+    try {
+        const { 
+            protocolo, cliente_nome, solicitante_nome, canal_atendimento, 
+            tipo_atendimento, motivo_reclamacao, artigo_reclamado, numero_os, descricao 
+        } = req.body;
+        
+        const query = `
+            INSERT INTO crm_atendimentos 
+            (protocolo, cliente_nome, solicitante_nome, canal_atendimento, tipo_atendimento, motivo_reclamacao, artigo_reclamado, numero_os, descricao)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *
+        `;
+        const values = [
+            protocolo, cliente_nome, solicitante_nome, canal_atendimento, 
+            tipo_atendimento, motivo_reclamacao, artigo_reclamado, numero_os, descricao
+        ];
+        const result = await db.query(query, values);
+        res.status(201).json(result.rows[0]);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Atualizar status e tratativa do atendimento
+app.put('/api/crm/atendimentos/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { status, tratativa } = req.body;
+        const dataFechamento = status === 'RESOLVIDO' ? new Date() : null;
+        await db.query(
+            'UPDATE crm_atendimentos SET status = $1, tratativa = $2, data_fechamento = $3 WHERE id = $4',
+            [status, tratativa, dataFechamento, id]
+        );
+        res.json({ success: true });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+
+
 // =================================================================
 // 7. ROTAS DE NAVEGAÇÃO E PÁGINAS HTML
 // =================================================================

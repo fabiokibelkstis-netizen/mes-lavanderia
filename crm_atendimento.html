@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MES - CRM & Atendimento ao Cliente | Lavanderia Dona Zara</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body class="bg-slate-100 font-sans min-h-screen flex flex-col justify-between">
+
+    <!-- CABEÇALHO -->
+    <header class="bg-slate-900 text-white p-4 shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto flex flex-wrap justify-between items-center gap-4">
+            <div class="flex items-center gap-3">
+                <div class="bg-indigo-600 p-2.5 rounded-xl text-white shadow">
+                    <i class="fa-solid fa-headset text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold tracking-wider">MES - CRM & Atendimento ao Cliente</h1>
+                    <p class="text-xs text-slate-400">Gestão de Reclamações, Solicitações, Elogios e Qualidade</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-2">
+                <button onclick="alternarAba('gestao')" id="btnAbaGestao" class="bg-indigo-600 text-white text-xs font-bold px-4 py-2 rounded-xl transition flex items-center gap-2 shadow">
+                    <i class="fa-solid fa-table-list"></i> Painel de Chamados
+                </button>
+                <button onclick="alternarAba('novo')" id="btnAbaNovo" class="bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold px-4 py-2 rounded-xl transition flex items-center gap-2 border border-slate-700">
+                    <i class="fa-solid fa-plus-circle text-emerald-400"></i> Novo Registro
+                </button>
+                <button onclick="alternarAba('config')" id="btnAbaConfig" class="bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold px-4 py-2 rounded-xl transition flex items-center gap-2 border border-slate-700">
+                    <i class="fa-solid fa-sliders text-amber-400"></i> Configurações
+                </button>
+                <a href="index.html" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl text-xs font-bold transition flex items-center gap-2 border border-slate-700">
+                    <i class="fa-solid fa-arrow-left"></i> Menu
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- CONTEÚDO PRINCIPAL -->
+    <main class="max-w-7xl mx-auto w-full p-4 my-4 space-y-6">
+
+        <!-- ========================================================= -->
+        <!-- ABA 1: PAINEL DE GESTÃO E ACOMPANHAMENTO DE CHAMADOS      -->
+        <!-- ========================================================= -->
+        <div id="secaoGestao" class="space-y-6">
+            
+            <!-- KPIS -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+                <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
+                    <span class="text-[11px] font-bold text-slate-500 uppercase">Total de Registros</span>
+                    <p id="kpiTotal" class="text-2xl font-black text-slate-800 mt-1">0</p>
+                </div>
+                <div class="bg-white p-4 rounded-2xl shadow-sm border-l-4 border-red-500">
+                    <span class="text-[11px] font-bold text-slate-500 uppercase">Reclamações</span>
+                    <p id="kpiReclamacoes" class="text-2xl font-black text-red-600 mt-1">0</p>
+                </div>
+                <div class="bg-white p-4 rounded-2xl shadow-sm border-l-4 border-amber-500">
+                    <span class="text-[11px] font-bold text-slate-500 uppercase">Solicitações</span>
+                    <p id="kpiSolicitacoes" class="text-2xl font-black text-amber-600 mt-1">0</p>
+                </div>
+                <div class="bg-white p-4 rounded-2xl shadow-sm border-l-4 border-emerald-500">
+                    <span class="text-[11px] font-bold text-slate-500 uppercase">Elogios</span>
+                    <p id="kpiElogios" class="text-2xl font-black text-emerald-600 mt-1">0</p>
+                </div>
+                <div class="bg-white p-4 rounded-2xl shadow-sm border-l-4 border-indigo-500">
+                    <span class="text-[11px] font-bold text-slate-500 uppercase">Chamados em Aberto</span>
+                    <p id="kpiAbertos" class="text-2xl font-black text-indigo-600 mt-1">0</p>
+                </div>
+            </div>
+
+            <!-- FILTROS -->
+            <div class="bg-white rounded-2xl shadow-md p-4 border border-slate-200 flex flex-wrap items-center justify-between gap-4">
+                <div class="flex flex-wrap items-center gap-3 text-xs w-full">
+                    <div class="flex items-center gap-2 text-slate-700 font-bold">
+                        <i class="fa-solid fa-filter text-indigo-600"></i> Filtros:
+                    </div>
+                    <select id="filtroTipo" onchange="renderizarTabelaCRM()" class="p-2 border rounded-lg bg-slate-50 font-semibold outline-none focus:ring-2 focus:ring-indigo-500">
+                        <option value="">Todos os Tipos</option>
+                    </select>
+                    <select id="filtroMotivo" onchange="renderizarTabelaCRM()" class="p-2 border rounded-lg bg-slate-50 font-semibold outline-none focus:ring-2 focus:ring-indigo-500">
+                        <option value="">Todos os Motivos</option>
+                    </select>
+                    <select id="filtroArtigo" onchange="renderizarTabelaCRM()" class="p-2 border rounded-lg bg-slate-50 font-semibold outline-none focus:ring-2 focus:ring-indigo-500">
+                        <option value="">Todos os Artigos</option>
+                    </select>
+                    <select id="filtroStatus" onchange="renderizarTabelaCRM()" class="p-2 border rounded-lg bg-slate-50 font-semibold outline-none focus:ring-2 focus:ring-indigo-500">
+                        <option value="">Todos os Status</option>
+                        <option value="ABERTO">Aberto</option>
+                        <option value="EM ANÁLISE">Em Análise</option>
+                        <option value="RESOLVIDO">Resolvido</option>
+                    </select>
+                    <input type="text" id="filtroBusca" onkeyup="renderizarTabelaCRM()" placeholder="Buscar cliente, protocolo ou contato..." class="p-2 border rounded-lg bg-slate-50 flex-1 min-w-[180px] outline-none focus:ring-2 focus:ring-indigo-500">
+                </div>
+            </div>
+
+            <!-- TABELA DE CHAMADOS -->
+            <div class="bg-white rounded-2xl shadow-md p-6 border border-slate-200">
+                <div class="flex justify-between items-center mb-4 border-b pb-2">
+                    <h3 class="text-sm font-bold text-slate-800">Histórico de Atendimentos CRM</h3>
+                    <span id="contadorChamados" class="text-xs text-slate-500">0 registro(s)</span>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs border-collapse">
+                        <thead class="bg-slate-100 text-slate-700">
+                            <tr>
+                                <th class="p-3 border">Protocolo / Data</th>
+                                <th class="p-3 border">Cliente / Solicitante</th>
+                                <th class="p-3 border text-center">Canal</th>
+                                <th class="p-3 border text-center">Tipo / Motivo</th>
+                                <th class="p-3 border text-center">Artigo / Qtd / OS</th>
+                                <th class="p-3 border">Relato / Ocorrência</th>
+                                <th class="p-3 border text-center">Status</th>
+                                <th class="p-3 border text-center">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabelaChamadosCRM"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================================= -->
+        <!-- ABA 2: FORMULÁRIO DE NOVO REGISTRO DE ATENDIMENTO         -->
+        <!-- ========================================================= -->
+        <div id="secaoNovo" class="hidden max-w-3xl mx-auto">
+            <div class="bg-white rounded-2xl shadow-md p-6 border border-slate-200">
+                <h2 class="text-base font-bold text-slate-800 mb-4 border-b pb-3 flex items-center gap-2">
+                    <i class="fa-solid fa-file-pen text-indigo-600"></i>
+                    Registrar Novo Atendimento ao Cliente
+                </h2>
+
+                <form id="formCRM" onsubmit="salvarAtendimentoCRM(event)" class="space-y-4">
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- CLIENTE PRÉ-CADASTRADO NO MES -->
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">Cliente (Pré-cadastrado MES) *</label>
+                            <select id="crmCliente" required class="w-full p-2.5 border rounded-xl text-xs bg-slate-50 font-bold text-slate-800 outline-none focus:ring-2 focus:ring-indigo-500">
+                                <option value="">Carregando clientes do MES...</option>
+                            </select>
+                        </div>
+
+                        <!-- NOME DE QUEM RECLAMOU / CONTATO -->
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">Nome do Contato / Quem Registrou *</label>
+                            <input type="text" id="crmSolicitante" required placeholder="Ex: Maria Silva (Governanta)" class="w-full p-2.5 border rounded-xl text-xs bg-slate-50 outline-none focus:ring-2 focus:ring-indigo-500">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- TIPO DE ATENDIMENTO -->
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">Tipo de Atendimento *</label>
+                            <select id="crmTipo" required class="w-full p-2.5 border rounded-xl text-xs bg-slate-50 font-semibold outline-none focus:ring-2 focus:ring-indigo-500"></select>
+                        </div>
+
+                        <!-- MOTIVO / TIPO DE RECLAMAÇÃO -->
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">Motivo / Tipo de Reclamação *</label>
+                            <select id="crmMotivo" required class="w-full p-2.5 border rounded-xl text-xs bg-slate-50 font-semibold outline-none focus:ring-2 focus:ring-rose-500"></select>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <!-- ARTIGO RECLAMADO -->
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">Artigo Relacionado *</label>
+                            <select id="crmArtigo" required class="w-full p-2.5 border rounded-xl text-xs bg-slate-50 font-semibold outline-none focus:ring-2 focus:ring-indigo-500"></select>
+                        </div>
+
+                        <!-- QUANTIDADE DE ITENS RECLAMADOS -->
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">Qtd. Itens Reclamados</label>
+                            <input type="number" id="crmQuantidade" min="0" value="0" placeholder="Ex: 15" class="w-full p-2.5 border rounded-xl text-xs bg-slate-50 font-bold text-slate-800 outline-none focus:ring-2 focus:ring-indigo-500">
+                        </div>
+
+                        <!-- CANAL DE ATENDIMENTO -->
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">Canal de Atendimento *</label>
+                            <select id="crmCanal" required class="w-full p-2.5 border rounded-xl text-xs bg-slate-50 font-semibold outline-none focus:ring-2 focus:ring-indigo-500"></select>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">Nº Ordem de Serviço (OS) / Lote</label>
+                            <input type="text" id="crmOS" placeholder="Opcional (Ex: 1045)" class="w-full p-2.5 border rounded-xl text-xs bg-slate-50 outline-none focus:ring-2 focus:ring-indigo-500">
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">Status Inicial</label>
+                            <select id="crmStatusInicial" class="w-full p-2.5 border rounded-xl text-xs bg-slate-50 font-semibold outline-none focus:ring-2 focus:ring-indigo-500">
+                                <option value="ABERTO">Aberto (Aguardando Tratativa)</option>
+                                <option value="EM ANÁLISE">Em Análise Interna</option>
+                                <option value="RESOLVIDO">Resolvido no Ato</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- DESCRIÇÃO DETALHADA -->
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Descrição Detalhada da Ocorrência / Solicitação *</label>
+                        <textarea id="crmDescricao" rows="4" required placeholder="Descreva os detalhes informados pelo cliente (tipo de mancha, atraso, elogio à equipe, etc.)..." class="w-full p-3 border rounded-xl text-xs bg-slate-50 outline-none focus:ring-2 focus:ring-indigo-500"></textarea>
+                    </div>
+
+                    <div class="flex justify-end gap-3 pt-2">
+                        <button type="button" onclick="alternarAba('gestao')" class="px-5 py-2.5 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold rounded-xl text-xs transition">
+                            Cancelar
+                        </button>
+                        <button type="submit" class="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl text-xs shadow-lg transition flex items-center gap-2">
+                            <i class="fa-solid fa-check"></i> Salvar Registro CRM
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- ========================================================= -->
+        <!-- ABA 3: CONFIGURAÇÕES DE PARÂMETROS DO CRM                 -->
+        <!-- ========================================================= -->
+        <div id="secaoConfig" class="hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            
+            <!-- CONFIG: TIPOS DE ATENDIMENTO -->
+            <div class="bg-white rounded-2xl shadow-md p-5 border border-slate-200 space-y-4">
+                <h3 class="text-sm font-bold text-slate-800 border-b pb-2 flex items-center gap-2">
+                    <i class="fa-solid fa-tags text-indigo-600"></i> Tipos de Atendimento
+                </h3>
+                <div class="flex gap-2">
+                    <input type="text" id="novoTipoInput" placeholder="Ex: Dúvida, Sugestão..." class="flex-1 p-2 border rounded-lg text-xs bg-slate-50 outline-none focus:ring-2 focus:ring-indigo-500">
+                    <button onclick="adicionarParametro('tipos', 'novoTipoInput')" class="bg-indigo-600 hover:bg-indigo-500 text-white px-3 py-2 rounded-lg text-xs font-bold">
+                        <i class="fa-solid fa-plus"></i>
+                    </button>
+                </div>
+                <ul id="listaConfigTipos" class="divide-y text-xs"></ul>
+            </div>
+
+            <!-- CONFIG: MOTIVO / TIPO DE RECLAMAÇÃO -->
+            <div class="bg-white rounded-2xl shadow-md p-5 border border-slate-200 space-y-4">
+                <h3 class="text-sm font-bold text-slate-800 border-b pb-2 flex items-center gap-2">
+                    <i class="fa-solid fa-triangle-exclamation text-rose-600"></i> Motivos / Reclamação
+                </h3>
+                <div class="flex gap-2">
+                    <input type="text" id="novoMotivoInput" placeholder="Ex: Rasgo, Odor, Troca..." class="flex-1 p-2 border rounded-lg text-xs bg-slate-50 outline-none focus:ring-2 focus:ring-rose-500">
+                    <button onclick="adicionarParametro('motivos', 'novoMotivoInput')" class="bg-rose-600 hover:bg-rose-500 text-white px-3 py-2 rounded-lg text-xs font-bold">
+                        <i class="fa-solid fa-plus"></i>
+                    </button>
+                </div>
+                <ul id="listaConfigMotivos" class="divide-y text-xs"></ul>
+            </div>
+
+            <!-- CONFIG: ARTIGOS RECLAMADOS -->
+            <div class="bg-white rounded-2xl shadow-md p-5 border border-slate-200 space-y-4">
+                <h3 class="text-sm font-bold text-slate-800 border-b pb-2 flex items-center gap-2">
+                    <i class="fa-solid fa-layer-group text-emerald-600"></i> Artigos (Enxoval)
+                </h3>
+                <div class="flex gap-2">
+                    <input type="text" id="novoArtigoInput" placeholder="Ex: Roupão, Piso, Toalha..." class="flex-1 p-2 border rounded-lg text-xs bg-slate-50 outline-none focus:ring-2 focus:ring-emerald-500">
+                    <button onclick="adicionarParametro('artigos', 'novoArtigoInput')" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-2 rounded-lg text-xs font-bold">
+                        <i class="fa-solid fa-plus"></i>
+                    </button>
+                </div>
+                <ul id="listaConfigArtigos" class="divide-y text-xs"></ul>
+            </div>
+
+            <!-- CONFIG: CANAIS DE ATENDIMENTO -->
+            <div class="bg-white rounded-2xl shadow-md p-5 border border-slate-200 space-y-4">
+                <h3 class="text-sm font-bold text-slate-800 border-b pb-2 flex items-center gap-2">
+                    <i class="fa-solid fa-comments text-amber-600"></i> Canais de Atendimento
+                </h3>
+                <div class="flex gap-2">
+                    <input type="text" id="novoCanalInput" placeholder="Ex: Instagram, Portal..." class="flex-1 p-2 border rounded-lg text-xs bg-slate-50 outline-none focus:ring-2 focus:ring-amber-500">
+                    <button onclick="adicionarParametro('canais', 'novoCanalInput')" class="bg-amber-600 hover:bg-amber-500 text-white px-3 py-2 rounded-lg text-xs font-bold">
+                        <i class="fa-solid fa-plus"></i>
+                    </button>
+                </div>
+                <ul id="listaConfigCanais" class="divide-y text-xs"></ul>
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- MODAL DE TRATATIVA DO CHAMADO -->
+    <div id="modalTratativa" class="fixed inset-0 bg-slate-900/60 hidden items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-2xl shadow-xl max-w-lg w-full p-6 space-y-4">
+            <div class="flex justify-between items-center border-b pb-3">
+                <h3 class="text-sm font-bold text-slate-800">Tratativa do Atendimento (<span id="modalProtocolo" class="text-indigo-600"></span>)</h3>
+                <button onclick="fecharModalTratativa()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <div class="bg-slate-50 p-3 rounded-xl text-xs space-y-1 border">
+                <p><strong>Cliente:</strong> <span id="modalCliente"></span></p>
+                <p><strong>Motivo:</strong> <span id="modalMotivo" class="font-semibold text-rose-700"></span></p>
+                <p><strong>Artigo / Qtd:</strong> <span id="modalArtigoQtd" class="font-semibold text-slate-700"></span></p>
+                <p><strong>Relato:</strong> <span id="modalRelato" class="text-slate-600"></span></p>
+            </div>
+            <input type="hidden" id="modalIdChamado">
+            <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">Atualizar Status</label>
+                <select id="modalStatus" class="w-full p-2.5 border rounded-xl text-xs bg-slate-50 font-bold">
+                    <option value="ABERTO">Aberto</option>
+                    <option value="EM ANÁLISE">Em Análise</option>
+                    <option value="RESOLVIDO">Resolvido / Concluído</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">Solução / Parecer Técnico</label>
+                <textarea id="modalParecer" rows="3" placeholder="Descreva a ação tomada..." class="w-full p-2.5 border rounded-xl text-xs bg-slate-50 outline-none focus:ring-2 focus:ring-indigo-500"></textarea>
+            </div>
+            <div class="flex justify-end gap-2 pt-2">
+                <button onclick="fecharModalTratativa()" class="px-4 py-2 bg-slate-200 text-slate-700 rounded-xl text-xs font-bold">Cancelar</button>
+                <button onclick="salvarTratativa()" class="px-5 py-2 bg-indigo-600 text-white rounded-xl text-xs font-bold shadow">Salvar Tratativa</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- RODAPÉ -->
+    <footer class="bg-white border-t border-slate-200 p-4 text-center text-xs text-slate-500">
+        MES Dona Zara &copy; 2026 - Módulo de CRM & Qualidade no Atendimento
+    </footer>
+
+    <script>
+        function getApiBaseUrl() {
+            const ipSalvo = localStorage.getItem('mes_api_ip');
+            if (ipSalvo) return ipSalvo.replace(/\/$/, '');
+            if (window.location.protocol.startsWith('http')) {
+                if (window.location.port && !['3000', '80', '443'].includes(window.location.port)) {
+                    return `${window.location.protocol}//${window.location.hostname}:3000`;
+                }
+                return window.location.origin.replace(/\/$/, '');
+            }
+            return 'http://192.168.1.120:3000';
+        }
+
+        const API_BASE_URL = getApiBaseUrl();
+
+        const CONFIG_PADRAO = {
+            tipos: ['Reclamação', 'Solicitação', 'Elogio'],
+            motivos: ['Passadoria', 'Manchas', 'Atraso de Entrega', 'Quantidade de Entrega', 'Não se aplica'],
+            artigos: ['Lençol', 'Fronha', 'Capa / Edredom', 'Toalhas', 'Especial', 'Geral / Não se aplica'],
+            canais: ['WhatsApp', 'Telefone', 'E-mail', 'Motorista / Presencial']
+        };
+
+        let configCRM = JSON.parse(localStorage.getItem('mes_crm_config')) || CONFIG_PADRAO;
+        if (!configCRM.motivos) {
+            configCRM.motivos = CONFIG_PADRAO.motivos;
+            localStorage.setItem('mes_crm_config', JSON.stringify(configCRM));
+        }
+
+        let listaChamados = [];
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            await carregarClientesMES();
+            atualizarSelectsConfiguracao();
+            renderizarListasConfiguracao();
+            await carregarChamadosCRM();
+        });
+
+        /* NAVEGAÇÃO ENTRE ABAS */
+        function alternarAba(aba) {
+            document.getElementById('secaoGestao').classList.add('hidden');
+            document.getElementById('secaoNovo').classList.add('hidden');
+            document.getElementById('secaoConfig').classList.add('hidden');
+
+            const btnPadrao = 'bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold px-4 py-2 rounded-xl transition flex items-center gap-2 border border-slate-700';
+            const btnAtivo = 'bg-indigo-600 text-white text-xs font-bold px-4 py-2 rounded-xl transition flex items-center gap-2 shadow';
+
+            document.getElementById('btnAbaGestao').className = aba === 'gestao' ? btnAtivo : btnPadrao;
+            document.getElementById('btnAbaNovo').className = aba === 'novo' ? btnAtivo : btnPadrao;
+            document.getElementById('btnAbaConfig').className = aba === 'config' ? btnAtivo : btnPadrao;
+
+            if (aba === 'gestao') document.getElementById('secaoGestao').classList.remove('hidden');
+            if (aba === 'novo') document.getElementById('secaoNovo').classList.remove('hidden');
+            if (aba === 'config') document.getElementById('secaoConfig').classList.remove('hidden');
+        }
+
+        /* 1. CARREGAR CLIENTES DO MES */
+        async function carregarClientesMES() {
+            let clientes = [];
+            try {
+                const res = await fetch(`${API_BASE_URL}/api/clientes`);
+                if (res.ok) {
+                    const data = await res.json();
+                    clientes = Array.isArray(data) ? data : (data.data || data.clientes || []);
+                }
+            } catch (e) {}
+
+            if (clientes.length === 0) {
+                const chaves = ['mes_config_clientes', 'mes_clientes', 'mes_cadastro_clientes', 'clientes'];
+                for (let k of chaves) {
+                    const saved = localStorage.getItem(k);
+                    if (saved) {
+                        clientes = JSON.parse(saved);
+                        break;
+                    }
+                }
+            }
+
+            if (clientes.length === 0) {
+                clientes = [
+                    { nome: 'Hospital São Luiz' },
+                    { nome: 'Hotel Unique' },
+                    { nome: 'Blue Tree Premium Alphaville' },
+                    { nome: 'Restaurante Fasano' }
+                ];
+            }
+
+            const select = document.getElementById('crmCliente');
+            select.innerHTML = '<option value="">-- Selecione o Cliente Cadastrado --</option>';
+            clientes.forEach(c => {
+                const nome = typeof c === 'string' ? c : (c.nomeFantasia || c.nome_fantasia || c.nome || c.cliente_nome || c.razaoSocial || '');
+                if (nome) select.innerHTML += `<option value="${nome}">${nome}</option>`;
+            });
+        }
+
+        /* 2. GERENCIAMENTO DE PARÂMETROS CONFIGURÁVEIS */
+        function atualizarSelectsConfiguracao() {
+            const preencher = (idSelect, itens, placeholder) => {
+                const el = document.getElementById(idSelect);
+                el.innerHTML = placeholder ? `<option value="">${placeholder}</option>` : '';
+                itens.forEach(item => {
+                    el.innerHTML += `<option value="${item}">${item}</option>`;
+                });
+            };
+
+            preencher('crmTipo', configCRM.tipos, '-- Selecione o Tipo --');
+            preencher('crmMotivo', configCRM.motivos, '-- Selecione o Motivo --');
+            preencher('crmArtigo', configCRM.artigos, '-- Selecione o Artigo --');
+            preencher('crmCanal', configCRM.canais, '-- Selecione o Canal --');
+
+            preencher('filtroTipo', configCRM.tipos, 'Todos os Tipos');
+            preencher('filtroMotivo', configCRM.motivos, 'Todos os Motivos');
+            preencher('filtroArtigo', configCRM.artigos, 'Todos os Artigos');
+        }
+
+        function renderizarListasConfiguracao() {
+            const render = (idLista, chave, itens) => {
+                const ul = document.getElementById(idLista);
+                ul.innerHTML = itens.map((item, idx) => `
+                    <li class="py-2 flex justify-between items-center text-slate-700 font-medium">
+                        <span>${item}</span>
+                        <button onclick="removerParametro('${chave}', ${idx})" class="text-red-500 hover:text-red-700 px-2" title="Remover">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                    </li>
+                `).join('');
+            };
+
+            render('listaConfigTipos', 'tipos', configCRM.tipos);
+            render('listaConfigMotivos', 'motivos', configCRM.motivos);
+            render('listaConfigArtigos', 'artigos', configCRM.artigos);
+            render('listaConfigCanais', 'canais', configCRM.canais);
+        }
+
+        function adicionarParametro(chave, idInput) {
+            const input = document.getElementById(idInput);
+            const valor = input.value.trim();
+            if (!valor) return;
+
+            if (!configCRM[chave].includes(valor)) {
+                configCRM[chave].push(valor);
+                localStorage.setItem('mes_crm_config', JSON.stringify(configCRM));
+                atualizarSelectsConfiguracao();
+                renderizarListasConfiguracao();
+            }
+            input.value = '';
+        }
+
+        function removerParametro(chave, index) {
+            if (configCRM[chave].length <= 1) return alert('É necessário manter ao menos uma opção ativa.');
+            configCRM[chave].splice(index, 1);
+            localStorage.setItem('mes_crm_config', JSON.stringify(configCRM));
+            atualizarSelectsConfiguracao();
+            renderizarListasConfiguracao();
+        }
+
+        /* 3. SALVAR NOVO ATENDIMENTO CRM */
+        async function salvarAtendimentoCRM(e) {
+            e.preventDefault();
+
+            const agora = new Date();
+            const protocolo = `CRM-${agora.getFullYear()}${String(agora.getMonth()+1).padStart(2,'0')}${String(agora.getDate()).padStart(2,'0')}-${Math.floor(100 + Math.random() * 900)}`;
+
+            const novoRegistro = {
+                id: Date.now(),
+                protocolo,
+                data_abertura: agora.toISOString(),
+                cliente_nome: document.getElementById('crmCliente').value,
+                solicitante_nome: document.getElementById('crmSolicitante').value.trim(),
+                tipo_atendimento: document.getElementById('crmTipo').value,
+                motivo_reclamacao: document.getElementById('crmMotivo').value,
+                artigo_reclamado: document.getElementById('crmArtigo').value,
+                quantidade_itens: parseInt(document.getElementById('crmQuantidade').value) || 0,
+                canal_atendimento: document.getElementById('crmCanal').value,
+                numero_os: document.getElementById('crmOS').value.trim() || '-',
+                status: document.getElementById('crmStatusInicial').value,
+                descricao: document.getElementById('crmDescricao').value.trim(),
+                tratativa: ''
+            };
+
+            try {
+                const res = await fetch(`${API_BASE_URL}/api/crm/atendimentos`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(novoRegistro)
+                });
+                if (res.ok) {
+                    const salvo = await res.json();
+                    if (salvo && salvo.id) novoRegistro.id = salvo.id;
+                }
+            } catch (err) {}
+
+            listaChamados.unshift(novoRegistro);
+            localStorage.setItem('mes_crm_atendimentos', JSON.stringify(listaChamados));
+
+            document.getElementById('formCRM').reset();
+            alert(`Atendimento registrado com sucesso!\nProtocolo: ${protocolo}`);
+            
+            atualizarKPIs();
+            renderizarTabelaCRM();
+            alternarAba('gestao');
+        }
+
+        /* 4. CARREGAR E EXIBIR CHAMADOS */
+        async function carregarChamadosCRM() {
+            try {
+                const res = await fetch(`${API_BASE_URL}/api/crm/atendimentos`);
+                if (res.ok) {
+                    const dados = await res.json();
+                    if (Array.isArray(dados) && dados.length > 0) {
+                        listaChamados = dados;
+                        localStorage.setItem('mes_crm_atendimentos', JSON.stringify(listaChamados));
+                    }
+                }
+            } catch (e) {}
+
+            if (listaChamados.length === 0) {
+                listaChamados = JSON.parse(localStorage.getItem('mes_crm_atendimentos') || '[]');
+            }
+
+            atualizarKPIs();
+            renderizarTabelaCRM();
+        }
+
+        function atualizarKPIs() {
+            document.getElementById('kpiTotal').innerText = listaChamados.length;
+            document.getElementById('kpiReclamacoes').innerText = listaChamados.filter(c => c.tipo_atendimento.toLowerCase().includes('reclama')).length;
+            document.getElementById('kpiSolicitacoes').innerText = listaChamados.filter(c => c.tipo_atendimento.toLowerCase().includes('solicita')).length;
+            document.getElementById('kpiElogios').innerText = listaChamados.filter(c => c.tipo_atendimento.toLowerCase().includes('elogio')).length;
+            document.getElementById('kpiAbertos').innerText = listaChamados.filter(c => c.status !== 'RESOLVIDO').length;
+        }
+
+        function renderizarTabelaCRM() {
+            const fTipo = document.getElementById('filtroTipo').value;
+            const fMotivo = document.getElementById('filtroMotivo').value;
+            const fArtigo = document.getElementById('filtroArtigo').value;
+            const fStatus = document.getElementById('filtroStatus').value;
+            const fBusca = document.getElementById('filtroBusca').value.toLowerCase();
+
+            const filtrados = listaChamados.filter(c => {
+                if (fTipo && c.tipo_atendimento !== fTipo) return false;
+                if (fMotivo && (c.motivo_reclamacao || 'Não se aplica') !== fMotivo) return false;
+                if (fArtigo && c.artigo_reclamado !== fArtigo) return false;
+                if (fStatus && c.status !== fStatus) return false;
+                if (fBusca) {
+                    const texto = `${c.protocolo} ${c.cliente_nome} ${c.solicitante_nome} ${c.motivo_reclamacao || ''} ${c.descricao}`.toLowerCase();
+                    if (!texto.includes(fBusca)) return false;
+                }
+                return true;
+            });
+
+            document.getElementById('contadorChamados').innerText = `${filtrados.length} registro(s)`;
+            const tbody = document.getElementById('tabelaChamadosCRM');
+
+            if (filtrados.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" class="p-6 text-center italic text-slate-400">Nenhum atendimento encontrado com os filtros aplicados.</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = filtrados.map(item => {
+                const dataFmt = new Date(item.data_abertura).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute: '2-digit' });
+                
+                let badgeTipo = 'bg-slate-100 text-slate-700';
+                if (item.tipo_atendimento.toLowerCase().includes('reclama')) badgeTipo = 'bg-red-100 text-red-700';
+                else if (item.tipo_atendimento.toLowerCase().includes('solicita')) badgeTipo = 'bg-amber-100 text-amber-800';
+                else if (item.tipo_atendimento.toLowerCase().includes('elogio')) badgeTipo = 'bg-emerald-100 text-emerald-700';
+
+                let badgeStatus = 'bg-red-50 text-red-600 border border-red-200';
+                if (item.status === 'EM ANÁLISE') badgeStatus = 'bg-amber-50 text-amber-700 border border-amber-200';
+                if (item.status === 'RESOLVIDO') badgeStatus = 'bg-emerald-50 text-emerald-700 border border-emerald-200';
+
+                const motivoExibicao = item.motivo_reclamacao || 'Não se aplica';
+                const qtdExibicao = item.quantidade_itens ? `${item.quantidade_itens} un` : '0 un';
+
+                return `
+                    <tr class="hover:bg-slate-50 border-b transition">
+                        <td class="p-3">
+                            <div class="font-bold text-indigo-700">${item.protocolo}</div>
+                            <div class="text-[10px] text-slate-400">${dataFmt}</div>
+                        </td>
+                        <td class="p-3">
+                            <div class="font-bold text-slate-800">${item.cliente_nome}</div>
+                            <div class="text-[10px] text-slate-500"><i class="fa-regular fa-user mr-1"></i>${item.solicitante_nome}</div>
+                        </td>
+                        <td class="p-3 text-center font-medium text-slate-600">${item.canal_atendimento}</td>
+                        <td class="p-3 text-center">
+                            <span class="px-2 py-0.5 rounded-md text-[10px] font-bold ${badgeTipo}">${item.tipo_atendimento}</span>
+                            <div class="text-[10px] font-semibold text-rose-700 mt-1">${motivoExibicao}</div>
+                        </td>
+                        <td class="p-3 text-center">
+                            <div class="font-semibold text-slate-700">${item.artigo_reclamado} <span class="text-indigo-600 font-bold">(${qtdExibicao})</span></div>
+                            <div class="text-[10px] text-slate-400">OS: ${item.numero_os || '-'}</div>
+                        </td>
+                        <td class="p-3 max-w-xs">
+                            <p class="truncate text-slate-700" title="${item.descricao}">${item.descricao}</p>
+                            ${item.tratativa ? `<p class="text-[10px] text-emerald-700 font-semibold mt-1 truncate" title="${item.tratativa}">✔ ${item.tratativa}</p>` : ''}
+                        </td>
+                        <td class="p-3 text-center">
+                            <span class="px-2 py-1 rounded-full text-[10px] font-bold ${badgeStatus}">${item.status}</span>
+                        </td>
+                        <td class="p-3 text-center whitespace-nowrap">
+                            <button onclick="abrirModalTratativa(${item.id})" class="text-indigo-600 hover:text-indigo-800 font-bold px-1.5" title="Responder / Tratar">
+                                <i class="fa-solid fa-pen-to-square"></i>
+                            </button>
+                            <button onclick="compartilharCRMWhatsApp(${item.id})" class="text-emerald-600 hover:text-emerald-800 font-bold px-1.5" title="Enviar Resumo WhatsApp">
+                                <i class="fa-brands fa-whatsapp"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        /* 5. TRATATIVA E WHATSAPP */
+        function abrirModalTratativa(id) {
+            const item = listaChamados.find(c => c.id === id);
+            if (!item) return;
+
+            document.getElementById('modalIdChamado').value = item.id;
+            document.getElementById('modalProtocolo').innerText = item.protocolo;
+            document.getElementById('modalCliente').innerText = `${item.cliente_nome} (${item.solicitante_nome})`;
+            document.getElementById('modalMotivo').innerText = item.motivo_reclamacao || 'Não se aplica';
+            document.getElementById('modalArtigoQtd').innerText = `${item.artigo_reclamado} — ${item.quantidade_itens || 0} un`;
+            document.getElementById('modalRelato').innerText = item.descricao;
+            document.getElementById('modalStatus').value = item.status;
+            document.getElementById('modalParecer').value = item.tratativa || '';
+
+            document.getElementById('modalTratativa').classList.remove('hidden');
+            document.getElementById('modalTratativa').classList.add('flex');
+        }
+
+        function fecharModalTratativa() {
+            document.getElementById('modalTratativa').classList.add('hidden');
+            document.getElementById('modalTratativa').classList.remove('flex');
+        }
+
+        async function salvarTratativa() {
+            const id = parseInt(document.getElementById('modalIdChamado').value);
+            const status = document.getElementById('modalStatus').value;
+            const tratativa = document.getElementById('modalParecer').value.trim();
+
+            const idx = listaChamados.findIndex(c => c.id === id);
+            if (idx !== -1) {
+                listaChamados[idx].status = status;
+                listaChamados[idx].tratativa = tratativa;
+                localStorage.setItem('mes_crm_atendimentos', JSON.stringify(listaChamados));
+
+                try {
+                    await fetch(`${API_BASE_URL}/api/crm/atendimentos/${id}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ status, tratativa })
+                    });
+                } catch (e) {}
+            }
+
+            fecharModalTratativa();
+            atualizarKPIs();
+            renderizarTabelaCRM();
+        }
+
+        function compartilharCRMWhatsApp(id) {
+            const item = listaChamados.find(c => c.id === id);
+            if (!item) return;
+
+            const msg = 
+`🎧 *REGISTRO CRM - DONA ZARA*
+--------------------------------
+📌 *Protocolo:* ${item.protocolo}
+🏢 *Cliente:* ${item.cliente_nome}
+👤 *Contato:* ${item.solicitante_nome}
+📱 *Canal:* ${item.canal_atendimento}
+--------------------------------
+🏷️ *Tipo:* ${item.tipo_atendimento}
+⚠️ *Motivo:* ${item.motivo_reclamacao || 'Não se aplica'}
+🛏️ *Artigo:* ${item.artigo_reclamado} (${item.quantidade_itens || 0} un)
+🔢 *OS:* ${item.numero_os || '-'}
+📊 *Status:* ${item.status}
+--------------------------------
+📝 *Ocorrência:* ${item.descricao}
+${item.tratativa ? `\n✅ *Tratativa:* ${item.tratativa}` : ''}`;
+
+            window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`, '_blank');
+        }
+    </script>
+</body>
+</html>
